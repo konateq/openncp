@@ -8,4 +8,11 @@
     </parent>
     <artifactId>openncp-api</artifactId>
     <name>openncp-api</name>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>openncp-api-client</module>
+        <module>openncp-api-server</module>
+    </modules>
 </project>

@@ -5,14 +5,10 @@
         <groupId>eu.europa.ec.sante.ehdsi</groupId>
         <artifactId>openncp</artifactId>
         <version>7.1.0</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>openncp-core</artifactId>
-    <name>openncp-core</name>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>openncp-core-client</module>
-        <module>openncp-core-server</module>
-        <module>openncp-core-common</module>
-    </modules>
+    <groupId>org.example</groupId>
+    <artifactId>openncp-gateway-backend</artifactId>
+    <name>Archetype - openncp-gateway-backend</name>
+    <url>http://maven.apache.org</url>
 </project>

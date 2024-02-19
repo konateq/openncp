@@ -3,9 +3,19 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.europa.ec.sante.ehdsi</groupId>
-        <artifactId>openncp</artifactId>
+        <artifactId>openncp-core</artifactId>
         <version>7.1.0</version>
     </parent>
     <artifactId>openncp-core-server</artifactId>
     <name>openncp-core-server</name>
+
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>eu.europa.ec.sante.ehdsi</groupId>
+            <artifactId>openncp-core-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
