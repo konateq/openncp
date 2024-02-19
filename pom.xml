@@ -30,16 +30,15 @@
     <mailingLists/>
 
     <modules>
-        <module>openncp-application</module>
-        <module>openncp-core</module>
-        <module>openncp-context</module>
-        <module>openncp-common</module>
         <module>openncp-api</module>
-        <module>openncp-connectors</module>
-        <module>openncp-web-manager</module>
+        <module>openncp-application</module>
         <module>openncp-audit</module>
-        <module>openncp-web-manager/openncp-web-manager-frontend</module>
-        <module>openncp-web-manager/openncp-web-manager-backend</module>
+        <module>openncp-common</module>
+        <module>openncp-connectors</module>
+        <module>openncp-context</module>
+        <module>openncp-core</module>
+        <module>openncp-web-manager</module>
+
     </modules>
 
     <scm>

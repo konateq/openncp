@@ -7,4 +7,12 @@
         <version>7.1.0</version>
     </parent>
     <artifactId>openncp-web-manager</artifactId>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>openncp-web-manager-frontend</module>
+        <module>openncp-web-manager-backend</module>
+    </modules>
+
 </project>
