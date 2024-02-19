@@ -36,10 +36,10 @@
         <module>openncp-common</module>
         <module>openncp-api</module>
         <module>openncp-connectors</module>
-        <module>openncp-gateway</module>
+        <module>openncp-web-manager</module>
         <module>openncp-audit</module>
-        <module>openncp-gateway/openncp-gateway-frontend</module>
-        <module>openncp-gateway/openncp-gateway-backend</module>
+        <module>openncp-web-manager/openncp-web-manager-frontend</module>
+        <module>openncp-web-manager/openncp-web-manager-backend</module>
     </modules>
 
     <scm>

@@ -5,10 +5,7 @@
         <groupId>eu.europa.ec.sante.ehdsi</groupId>
         <artifactId>openncp</artifactId>
         <version>7.1.0</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
-    <groupId>org.example</groupId>
-    <artifactId>openncp-gateway-frontend</artifactId>
-    <name>Archetype - openncp-gateway-frontend</name>
-    <url>http://maven.apache.org</url>
+    <artifactId>openncp-web-manager-backend</artifactId>
+    <name>openncp-web-manager-backend</name>
 </project>
