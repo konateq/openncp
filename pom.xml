@@ -36,6 +36,13 @@
         <module>openncp-common</module>
         <module>openncp-api</module>
         <module>openncp-connectors</module>
+        <module>openncp-gateway</module>
+        <module>openncp-audit</module>
+        <module>openncp-api/openncp-api-client</module>
+        <module>openncp-api/openncp-api-server</module>
+        <module>openncp-core/openncp-core-client</module>
+        <module>openncp-core/openncp-core-server</module>
+        <module>openncp-core/openncp-core-common</module>
     </modules>
 
     <scm>

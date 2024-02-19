@@ -6,8 +6,11 @@
         <artifactId>openncp</artifactId>
         <version>7.1.0</version>
     </parent>
-    <groupId>org.example</groupId>
     <artifactId>openncp-application</artifactId>
-    <name>Archetype - openncp-application</name>
-    <url>http://maven.apache.org</url>
+    <packaging>pom</packaging>
+    <name>openncp-application</name>
+    <modules>
+        <module>openncp-application-client</module>
+        <module>openncp-application-server</module>
+    </modules>
 </project>

@@ -6,8 +6,6 @@
         <artifactId>openncp</artifactId>
         <version>7.1.0</version>
     </parent>
-    <groupId>org.example</groupId>
     <artifactId>openncp-api</artifactId>
-    <name>Archetype - openncp-api</name>
-    <url>http://maven.apache.org</url>
+    <name>openncp-api</name>
 </project>
