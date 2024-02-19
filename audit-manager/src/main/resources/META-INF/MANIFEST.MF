@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Specification-Version: 2.4.2
-Implementation-Version: 2.4.2

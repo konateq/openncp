@@ -1,8 +1,0 @@
-<cc:queryPatient xmlns:cc="http://clientconnector.protocolterminator.openncp.epsos/">
-  <arg0>
-    <countryCode>ZZ</countryCode>
-    <patientDemographics>
-        <givenName>Jhon</givenName>
-    </patientDemographics>
-  </arg0>
-</cc:queryPatient>

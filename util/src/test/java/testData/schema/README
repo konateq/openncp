@@ -1,1 +1,0 @@
-Created using: max@massimac ~/Desktop $ xjc etsirem.xsd -d test -p eu.esens.abb.nonrep.etsi.rem -b bin1.xjb  -extension
