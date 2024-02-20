@@ -8,4 +8,7 @@
     </parent>
     <artifactId>openncp-audit</artifactId>
     <name>openncp-audit</name>
+
+    <dependencies>
+    </dependencies>
 </project>
