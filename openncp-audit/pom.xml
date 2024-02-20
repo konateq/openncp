@@ -10,6 +10,12 @@
     <name>openncp-audit</name>
 
     <dependencies>
+        <!-- OpenNCP dependencies -->
+        <dependency>
+            <groupId>eu.europa.ec.sante.ehdsi</groupId>
+            <artifactId>openncp-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- JAXB dependencies -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -19,6 +25,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <!-- Apache dependencies -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
         <!-- Test dependencies -->
         <dependency>
