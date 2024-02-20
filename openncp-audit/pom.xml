@@ -10,11 +10,15 @@
     <name>openncp-audit</name>
 
     <dependencies>
+        <!-- JAXB dependencies -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
         <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>
@@ -26,4 +30,26 @@
             <artifactId>xmlunit</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.14.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <extension>true</extension>
+                    <schemaDirectory>src/main/resources</schemaDirectory>
+                    <generatePackage>net.RFC3881</generatePackage>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
