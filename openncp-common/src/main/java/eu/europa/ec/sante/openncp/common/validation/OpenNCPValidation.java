@@ -1,0 +1,252 @@
+package eu.europa.ec.sante.openncp.common.validation;
+
+import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
+import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.validation.reporting.ReportBuilder;
+import eu.europa.ec.sante.openncp.common.validation.util.DetailedResultUnMarshaller;
+import eu.europa.ec.sante.openncp.common.validation.util.ObjectType;
+import eu.europa.ec.sante.openncp.common.validation.util.XdsModel;
+import net.ihe.gazelle.jaxb.result.sante.Assertion;
+import net.ihe.gazelle.jaxb.result.sante.DetailedResult;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.DatatypeConverter;
+import javax.xml.transform.TransformerException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+public class OpenNCPValidation {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenNCPValidation.class);
+    private static final String MSG_VALIDATION_EXECUTION = "Remote validation executed in: '{}ms'";
+
+    private OpenNCPValidation() {
+    }
+
+    /**
+     * @param document
+     * @param eventType
+     * @param ncpSide
+     */
+    public static void validateAuditMessage(String document, String eventType, NcpSide ncpSide) {
+
+        LOGGER.info("Audit Message Validation: '{}'-'{}'", eventType, ncpSide.getName());
+        String validator = ValidatorUtil.obtainAuditModel(eventType, ncpSide);
+
+        if (isRemoteValidationEnable()) {
+
+            new Thread(() -> {
+                StopWatch watch = new StopWatch();
+                watch.start();
+                AuditMessageValidator auditMessageValidator = GazelleValidatorFactory.getAuditMessageValidator();
+                String xmlResult = auditMessageValidator.validateDocument(document, validator);
+                ReportBuilder.build(ReportBuilder.formatDate(), validator, ObjectType.AUDIT.toString(), document,
+                        DetailedResultUnMarshaller.unmarshal(xmlResult), xmlResult, ncpSide);
+                watch.stop();
+                LOGGER.info(MSG_VALIDATION_EXECUTION, watch.getTime());
+            }).start();
+        } else {
+            ReportBuilder.build(ReportBuilder.formatDate(), validator, ObjectType.AUDIT.toString(), document, ncpSide);
+        }
+    }
+
+    /**
+     * @param assertion
+     * @param ncpSide
+     */
+    public static void validateHCPAssertion(Assertion assertion, NcpSide ncpSide) {
+
+        LOGGER.info("validate HCP Assertion...");
+        validateAssertion(assertion, ValidatorUtil.EHDSI_ASSERTION_HCP_IDENTITY, ncpSide);
+    }
+
+    /**
+     * @param assertion
+     * @param ncpSide
+     */
+    public static void validateNoKAssertion(Assertion assertion, NcpSide ncpSide) {
+
+        LOGGER.info("validate Next Of Kin Assertion...");
+        validateAssertion(assertion, ValidatorUtil.EHDSI_ASSERTION_NOK, ncpSide);
+    }
+
+    /**
+     * @param assertion
+     * @param ncpSide
+     */
+    public static void validateTRCAssertion(Assertion assertion, NcpSide ncpSide) {
+
+        LOGGER.info("validate TRC Assertion...");
+        validateAssertion(assertion, ValidatorUtil.EHDSI_ASSERTION_TRC, ncpSide);
+    }
+
+    /**
+     * @param assertion
+     * @param schematron
+     * @param ncpSide
+     */
+    private static void validateAssertion(Assertion assertion, String schematron, NcpSide ncpSide) {
+
+        LOGGER.info("[Validation Service: Assertion Validator]");
+        try {
+            String base64 = DatatypeConverter.printBase64Binary(XMLUtil.prettyPrint(assertion.getDOM()).getBytes(StandardCharsets.UTF_8));
+
+            if (isRemoteValidationEnable()) {
+
+                new Thread(() -> {
+                    StopWatch watch = new StopWatch();
+                    watch.start();
+                    String xmlResult;
+                    SchematronValidator schematronValidator = GazelleValidatorFactory.getSchematronValidator();
+                    xmlResult = schematronValidator.validateObject(base64, schematron, schematron);
+                    DetailedResult detailedResult = DetailedResultUnMarshaller.unmarshal(xmlResult);
+                    ReportBuilder.build(ReportBuilder.formatDate(), schematron, ObjectType.ASSERTION.toString(), base64, detailedResult, xmlResult, ncpSide);
+                    watch.stop();
+                    LOGGER.info(MSG_VALIDATION_EXECUTION, watch.getTime());
+                }).start();
+
+            } else {
+                ReportBuilder.build(ReportBuilder.formatDate(), schematron, ObjectType.ASSERTION.toString(), base64, ncpSide);
+            }
+        } catch (TransformerException e) {
+            LOGGER.error("TransformerException: '{}'", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * @param request
+     * @param ncpSide
+     */
+    public static void validatePatientDemographicRequest(String request, NcpSide ncpSide) {
+
+        validatePatientDemographic(request, ValidatorUtil.EHDSI_ID_SERVICE_REQUEST, ObjectType.XCPD_QUERY_REQUEST, ncpSide);
+    }
+
+    /**
+     * @param request
+     * @param ncpSide
+     */
+    public static void validatePatientDemographicResponse(String request, NcpSide ncpSide) {
+
+        validatePatientDemographic(request, ValidatorUtil.EHDSI_ID_SERVICE_RESPONSE, ObjectType.XCPD_QUERY_RESPONSE, ncpSide);
+    }
+
+    /**
+     * @param request
+     * @param validator
+     * @param objectType
+     * @param ncpSide
+     */
+    private static void validatePatientDemographic(String request, String validator, ObjectType objectType, NcpSide ncpSide) {
+
+        LOGGER.info("[Validation Service: XCPD Validator]");
+        if (isRemoteValidationEnable()) {
+
+            new Thread(() -> {
+                StopWatch watch = new StopWatch();
+                watch.start();
+                HL7v3Validator hl7v3Validator = GazelleValidatorFactory.getHL7v3Validator();
+                String xmlResult = hl7v3Validator.validateDocument(request, validator, ncpSide);
+                DetailedResult detailedResult = DetailedResultUnMarshaller.unmarshal(xmlResult);
+                ReportBuilder.build(ReportBuilder.formatDate(), validator, objectType.toString(), request, detailedResult, xmlResult, ncpSide);
+                watch.stop();
+                LOGGER.info(MSG_VALIDATION_EXECUTION, watch.getTime());
+            }).start();
+        } else {
+
+            ReportBuilder.build(ReportBuilder.formatDate(), validator, objectType.toString(), request, ncpSide);
+        }
+    }
+
+    /**
+     * @param message
+     * @param ncpSide
+     */
+    public static void validateCrossCommunityAccess(String message, NcpSide ncpSide, List<ClassCode> classCodes) {
+
+        LOGGER.info("[Validation Service: XCA Validator]");
+        XdsModel xdsModel = ValidatorUtil.obtainModelXca(message, classCodes);
+        validateXDSMessage(message, xdsModel, ncpSide);
+    }
+
+    /**
+     * @param request
+     * @param ncpSide
+     */
+    public static void validateXDRMessage(String request, NcpSide ncpSide, List<String> classCodes) {
+
+        LOGGER.info("[Validation Service: XDR Validator]");
+        XdsModel xdsModel = ValidatorUtil.obtainModelXdr(request, classCodes);
+        validateXDSMessage(request, xdsModel, ncpSide);
+    }
+
+    private static void validateXDSMessage(String message, XdsModel xdsModel, NcpSide ncpSide) {
+
+        if (isRemoteValidationEnable()) {
+
+            new Thread(() -> {
+                StopWatch watch = new StopWatch();
+                watch.start();
+                XdsValidator xdsValidator = GazelleValidatorFactory.getXdsValidator();
+                String xmlResult = xdsValidator.validateDocument(message, xdsModel.getValidatorName());
+                DetailedResult detailedResult = DetailedResultUnMarshaller.unmarshal(xmlResult);
+                ReportBuilder.build(ReportBuilder.formatDate(), xdsModel.getValidatorName(), xdsModel.getObjectType(), message, detailedResult, xmlResult, ncpSide);
+                watch.stop();
+                LOGGER.info(MSG_VALIDATION_EXECUTION, watch.getTime());
+            }).start();
+        } else {
+            ReportBuilder.build(ReportBuilder.formatDate(), xdsModel.getValidatorName(), xdsModel.getObjectType(), message, ncpSide);
+        }
+    }
+
+    /**
+     * @param cda
+     * @param ncpSide
+     * @param classCode
+     * @param isPivot
+     */
+    public static void validateCdaDocument(String cda, NcpSide ncpSide, ClassCode classCode, boolean isPivot) {
+
+        LOGGER.info("[Validation Service: CDA Validator]");
+        boolean isScannedDocument = cda.contains("nonXMLBody");
+        String cdaModel = ValidatorUtil.obtainCdaModel(classCode, isPivot, isScannedDocument);
+
+        if (isRemoteValidationEnable()) {
+
+            new Thread(() -> {
+                StopWatch watch = new StopWatch();
+                watch.start();
+                String xmlResult = GazelleValidatorFactory.getCdaValidator().validateDocument(cda, cdaModel, ncpSide);
+                DetailedResult detailedResult = DetailedResultUnMarshaller.unmarshal(xmlResult);
+                ReportBuilder.build(ReportBuilder.formatDate(), cdaModel, ObjectType.CDA.toString(), cda, detailedResult, xmlResult, ncpSide);
+                watch.stop();
+                LOGGER.info(MSG_VALIDATION_EXECUTION, watch.getTime());
+            }).start();
+        } else {
+            ReportBuilder.build(ReportBuilder.formatDate(), cdaModel, ObjectType.CDA.toString(), cda, ncpSide);
+        }
+    }
+
+    /**
+     * @return
+     */
+    public static boolean isValidationEnable() {
+
+        return ConfigurationManagerFactory.getConfigurationManager().getBooleanProperty("automated.validation") &&
+                !StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name());
+    }
+
+    /**
+     * @return
+     */
+    public static boolean isRemoteValidationEnable() {
+
+        return ConfigurationManagerFactory.getConfigurationManager().getBooleanProperty("automated.validation.remote");
+    }
+}

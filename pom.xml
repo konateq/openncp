@@ -67,11 +67,16 @@
         <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-validator.version>1.7</commons-validator.version>
+        <httpclient.version>4.5.14</httpclient.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
+        <jaxb2-plugin.version>2.3.1</jaxb2-plugin.version>
         <junit.version>4.13.2</junit.version>
         <logback.version>1.2.11</logback.version>
+        <opensaml.version>4.0.1</opensaml.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <xmlunit.version>1.6</xmlunit.version>
+        <spring-ws.version>3.0.9.RELEASE</spring-ws.version>
+        <xerces.version>2.12.2</xerces.version>
+        <xmlunit.version>1.1</xmlunit.version>
     </properties>
 
     <dependencyManagement>
@@ -92,6 +97,11 @@
                 <artifactId>commons-validator</artifactId>
                 <version>${commons-validator.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
             <!-- JAXB dependencies -->
             <dependency>
                 <groupId>javax.xml.bind</groupId>
@@ -103,6 +113,56 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            <!-- Spring dependencies -->
+            <dependency>
+                <groupId>org.springframework.ws</groupId>
+                <artifactId>spring-ws-core</artifactId>
+                <version>${spring-ws.version}</version>
+            </dependency>
+            <!-- OpenSAML dependencies -->
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml-core</artifactId>
+                <version>${opensaml.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.xerces</groupId>
+                        <artifactId>xercesImpl</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.xerces</groupId>
+                        <artifactId>xml-apis</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.xerces</groupId>
+                        <artifactId>serializer</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.xalan</groupId>
+                        <artifactId>xalan</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>log4j</artifactId>
+                        <groupId>log4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>slf4j-jdk14</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>log4j-over-slf4j</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Test dependencies -->
             <dependency>
