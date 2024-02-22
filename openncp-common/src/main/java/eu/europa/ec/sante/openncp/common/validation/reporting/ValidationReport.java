@@ -1,10 +1,10 @@
 package eu.europa.ec.sante.openncp.common.validation.reporting;
 
-import eu.epsos.validation.datamodel.common.NcpSide;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tr.com.srdc.epsos.util.Constants;
 
 import java.io.File;
 
@@ -61,9 +61,9 @@ public class ValidationReport {
             if (listOfFiles[i].isFile()) {
                 sb.append("\n");
                 if (i == listOfFiles.length - 1) {
-                    sb.append(" \u2514\u2500" + processFile(listOfFiles[i]));
+                    sb.append(" \u2514\u2500").append(processFile(listOfFiles[i]));
                 } else {
-                    sb.append(" \u251c\u2500" + processFile(listOfFiles[i]));
+                    sb.append(" \u251c\u2500").append(processFile(listOfFiles[i]));
                 }
             }
         }
@@ -152,13 +152,11 @@ public class ValidationReport {
             return;
         }
 
-        if (folder.listFiles().length != 0) {
             for (File f : folder.listFiles()) {
                 if (!f.delete()) {
                     LOG.info("Could not remove the following file: " + f.getAbsolutePath());
                 }
             }
-        }
     }
 
     public static void cleanValidationDir(String path) {

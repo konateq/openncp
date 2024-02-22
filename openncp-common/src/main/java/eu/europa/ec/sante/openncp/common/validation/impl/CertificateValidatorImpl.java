@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.common.validation.impl;
 
-import eu.europa.ec.sante.ehdsi.gazelle.validation.CertificateValidator;
+import eu.europa.ec.sante.openncp.common.validation.CertificateValidator;
 import net.ihe.gazelle.jaxb.certificate.sante.Validate;
 import net.ihe.gazelle.jaxb.certificate.sante.ValidateResponse;
 import org.slf4j.Logger;
