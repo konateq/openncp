@@ -92,6 +92,7 @@
         <spring-boot.version>2.7.11</spring-boot.version>
         <spring-ws.version>3.0.9.RELEASE</spring-ws.version>
         <spring.version>5.3.27</spring.version>
+        <springfox.version>2.9.2</springfox.version>
         <xerces.version>2.12.2</xerces.version>
         <xmlsec.version>2.3.0</xmlsec.version>
         <xmlunit.version>1.1</xmlunit.version>
@@ -236,6 +237,11 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
             <!-- Spring dependencies -->
             <dependency>
                 <groupId>org.springframework.ws</groupId>
@@ -246,6 +252,27 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-oxm</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+            <!-- Springfox dependencies -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${springfox.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${springfox.version}</version>
             </dependency>
             <!-- OpenSAML dependencies -->
             <dependency>
@@ -326,6 +353,17 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-jpa</artifactId>
                 <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Saaj dependencies -->
             <dependency>

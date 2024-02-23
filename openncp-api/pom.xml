@@ -14,5 +14,6 @@
     <modules>
         <module>openncp-api-client</module>
         <module>openncp-api-server</module>
+        <module>openncp-api-general</module>
     </modules>
 </project>
