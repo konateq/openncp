@@ -1,14 +1,14 @@
 package eu.europa.ec.sante.openncp.audit.auditmessagebuilders;
 
 import com.google.common.io.Resources;
-import eu.epsos.validation.datamodel.common.NcpSide;
 import eu.europa.ec.sante.openncp.audit.*;
 import eu.europa.ec.sante.openncp.audit.auditmessagebuilders.PivotTranslationAuditMessageBuilder;
+import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import net.RFC3881.AuditMessage;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
-import tr.com.srdc.epsos.util.DateUtil;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.net.URL;

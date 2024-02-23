@@ -1,8 +1,9 @@
 package eu.europa.ec.sante.openncp.common.validation.impl;
 
 import com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl;
-import eu.europa.ec.sante.ehdsi.gazelle.validation.*;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.StandardProperties;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
+import eu.europa.ec.sante.openncp.common.configuration.StandardProperties;
+import eu.europa.ec.sante.openncp.common.validation.*;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;

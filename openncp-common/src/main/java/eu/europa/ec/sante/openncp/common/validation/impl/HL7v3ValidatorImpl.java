@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.common.validation.impl;
 
-import eu.epsos.validation.datamodel.common.NcpSide;
-import eu.europa.ec.sante.ehdsi.gazelle.validation.HL7v3Validator;
+import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.validation.HL7v3Validator;
 import net.ihe.gazelle.jaxb.hl7v3.sante.ValidateBase64Document;
 import net.ihe.gazelle.jaxb.hl7v3.sante.ValidateBase64DocumentResponse;
 import net.ihe.gazelle.jaxb.hl7v3.sante.ValidateDocument;

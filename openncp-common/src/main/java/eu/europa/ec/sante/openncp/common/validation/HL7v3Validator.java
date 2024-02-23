@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.common.validation;
 
-import eu.epsos.validation.datamodel.common.NcpSide;
+
+import eu.europa.ec.sante.openncp.common.NcpSide;
 
 public interface HL7v3Validator {
 

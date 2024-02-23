@@ -1,14 +1,14 @@
 package eu.europa.ec.sante.openncp.common.validation.reporting;
 
-import eu.epsos.validation.datamodel.common.NcpSide;
-import eu.europa.ec.sante.ehdsi.gazelle.validation.GazelleConfiguration;
-import eu.europa.ec.sante.ehdsi.gazelle.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.common.validation.GazelleConfiguration;
+import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import net.ihe.gazelle.jaxb.result.sante.DetailedResult;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tr.com.srdc.epsos.util.Constants;
 
 import java.io.BufferedWriter;
 import java.io.File;

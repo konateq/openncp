@@ -64,18 +64,36 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
+        <java.optimize>true</java.optimize>
+        <joda-time.version>2.10.13</joda-time.version>
+        <commons-configuration2.version>2.8.0</commons-configuration2.version>
         <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-validator.version>1.7</commons-validator.version>
+        <dom4j.version>2.1.3</dom4j.version>
+        <dynamic-discovery-client.version>1.11</dynamic-discovery-client.version>
+        <hapi.fhir.version>6.6.0</hapi.fhir.version>
+        <hibernate.version>5.6.15.Final</hibernate.version>
         <httpclient.version>4.5.14</httpclient.version>
+        <ihe.gazelle.version>1.6</ihe.gazelle.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb2-plugin.version>2.3.1</jaxb2-plugin.version>
+        <jackson.version>2.14.3</jackson.version>
+        <jaxen.version>1.1.6</jaxen.version>
         <junit.version>4.13.2</junit.version>
         <logback.version>1.2.11</logback.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <opensaml.version>4.0.1</opensaml.version>
+        <servlet-api.version>3.1.0</servlet-api.version>
         <slf4j.version>1.7.36</slf4j.version>
+        <saaj-impl.version>1.3.25</saaj-impl.version>
+        <spring-boot.version>2.7.11</spring-boot.version>
         <spring-ws.version>3.0.9.RELEASE</spring-ws.version>
+        <spring.version>5.3.27</spring.version>
         <xerces.version>2.12.2</xerces.version>
+        <xmlsec.version>2.3.0</xmlsec.version>
         <xmlunit.version>1.1</xmlunit.version>
     </properties>
 
@@ -93,6 +111,17 @@
                 <version>${commons-lang3.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-configuration2</artifactId>
+                <version>${commons-configuration2.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-text</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>commons-validator</groupId>
                 <artifactId>commons-validator</artifactId>
                 <version>${commons-validator.version}</version>
@@ -102,11 +131,104 @@
                 <artifactId>httpclient</artifactId>
                 <version>${httpclient.version}</version>
             </dependency>
+            <dependency>
+                <artifactId>xmlsec</artifactId>
+                <groupId>org.apache.santuario</groupId>
+                <version>${xmlsec.version}</version>
+            </dependency>
+            <!-- DOM4J dependencies -->
+            <dependency>
+                <groupId>org.dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>${dom4j.version}</version>
+            </dependency>
+            <!-- Dynamic Discovery Client dependecies -->
+            <dependency>
+                <groupId>eu.europa.ec.dynamic-discovery</groupId>
+                <artifactId>dynamic-discovery-client</artifactId>
+                <version>${dynamic-discovery-client.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- FHIR dependencies -->
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-base</artifactId>
+                <version>${hapi.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-structures-r4</artifactId>
+                <version>${hapi.fhir.version}</version>
+            </dependency>
+            <!-- Hibernate dependencies -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <!-- IHE Gazelle dependencies -->
+            <dependency>
+                <groupId>net.ihe.gazelle.epsos.validator</groupId>
+                <artifactId>cdaepsos-validator-jar</artifactId>
+                <version>${ihe.gazelle.version}</version>
+                <scope>compile</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>net.sf.saxon</artifactId>
+                        <groupId>saxon9he</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- Jackson dependencies -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <!-- Javax servlet dependencies -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${servlet-api.version}</version>
+            </dependency>
+            <!-- Jaxen dependencies -->
+            <dependency>
+                <groupId>jaxen</groupId>
+                <artifactId>jaxen</artifactId>
+                <version>${jaxen.version}</version>
+            </dependency>
             <!-- JAXB dependencies -->
             <dependency>
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
+            </dependency>
+            <!-- Joda time dependencies -->
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>${joda-time.version}</version>
             </dependency>
             <!-- Logging -->
             <dependency>
@@ -119,6 +241,11 @@
                 <groupId>org.springframework.ws</groupId>
                 <artifactId>spring-ws-core</artifactId>
                 <version>${spring-ws.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-oxm</artifactId>
+                <version>${spring.version}</version>
             </dependency>
             <!-- OpenSAML dependencies -->
             <dependency>
@@ -163,6 +290,48 @@
                         <groupId>com.google.guava</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml-saml-impl</artifactId>
+                <version>${opensaml.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml-security-impl</artifactId>
+                <version>${opensaml.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- Spring boot dependencies -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <!-- Saaj dependencies -->
+            <dependency>
+                <groupId>com.sun.xml.messaging.saaj</groupId>
+                <artifactId>saaj-impl</artifactId>
+                <version>${saaj-impl.version}</version>
             </dependency>
             <!-- Test dependencies -->
             <dependency>
@@ -216,6 +385,18 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
                     <version>3.0.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.10.1</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <optimize>${java.optimize}</optimize>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <showDeprecation>true</showDeprecation>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

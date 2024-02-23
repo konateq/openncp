@@ -7,7 +7,77 @@
         <version>7.1.0</version>
     </parent>
     <artifactId>openncp-core-common</artifactId>
-    <name>Archetype - openncp-core-common</name>
+    <name>openncp-core-common</name>
 
     <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- OpenNCP dependencies -->
+        <dependency>
+            <groupId>eu.europa.ec.sante.ehdsi</groupId>
+            <artifactId>openncp-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.sante.ehdsi</groupId>
+            <artifactId>openncp-audit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- IHE Gazelle validator dependencies -->
+        <dependency>
+            <groupId>net.ihe.gazelle.epsos.validator</groupId>
+            <artifactId>cdaepsos-validator-jar</artifactId>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>net.sf.saxon</artifactId>
+                    <groupId>saxon9he</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Javax Servlet dependencies -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <!-- Spring boot dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <!-- FHIR dependencies -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-r4</artifactId>
+        </dependency>
+        <!-- Jackson dependencies -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <!-- Logback dependencies -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
