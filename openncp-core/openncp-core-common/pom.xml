@@ -8,6 +8,9 @@
     </parent>
     <artifactId>openncp-core-common</artifactId>
     <name>Archetype - openncp-core-common</name>
+    <modules>
+        <module>ncp-pt-utils</module>
+    </modules>
 
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 </project>
