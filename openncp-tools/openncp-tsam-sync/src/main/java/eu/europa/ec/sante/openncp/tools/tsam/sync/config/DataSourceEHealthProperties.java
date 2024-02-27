@@ -21,7 +21,7 @@ import java.util.HashMap;
 @EnableJpaRepositories(
         entityManagerFactoryRef = "secondEntityManager",
         transactionManagerRef = "secondPlatformTransactionManager",
-        basePackages = {"eu.europa.ec.sante.ehdsi.openncp.tsam.sync.domainehealthproperty.repository"}
+        basePackages = {"eu.europa.ec.sante.openncp.tsam.sync.domainehealthproperty.repository"}
 )
 @EntityScan(basePackageClasses = {Property.class})
 @ConfigurationProperties(prefix = "tsam-sync.datasource-ehealth-properties")
@@ -90,7 +90,7 @@ public class DataSourceEHealthProperties {
     public LocalContainerEntityManagerFactoryBean secondEntityManager(){
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(secondDataSource());
-        em.setPackagesToScan(new String[]{"eu.europa.ec.sante.ehdsi.openncp.tsam.sync.domainehealthproperty.model"});
+        em.setPackagesToScan(new String[]{"eu.europa.ec.sante.openncp.tsam.sync.domainehealthproperty.model"});
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

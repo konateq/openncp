@@ -39,7 +39,7 @@ public class DatabaseConfiguration {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder, DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
-                .packages("eu.europa.ec.sante.ehdsi.openncp.tm.persistence.model")
+                .packages("eu.europa.ec.sante.openncp.tm.persistence.model")
                 .build();
     }
 

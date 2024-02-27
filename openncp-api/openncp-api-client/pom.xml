@@ -13,8 +13,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.europa.ec.sante.ehdsi</groupId>
-            <artifactId>openncp-core-client</artifactId>
+            <groupId>eu.europa.ec.sante</groupId>
+            <artifactId>openncp-cdadisplaytool</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

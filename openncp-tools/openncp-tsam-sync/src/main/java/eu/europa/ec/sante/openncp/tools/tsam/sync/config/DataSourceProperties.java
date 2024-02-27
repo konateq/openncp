@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 @Configuration
 @Primary
-@EnableJpaRepositories("eu.europa.ec.sante.ehdsi.openncp.tsam.sync.repository")
+@EnableJpaRepositories("eu.europa.ec.sante.openncp.tsam.sync.repository")
 @EntityScan(basePackageClasses = {CodeSystem.class, CodeSystemVersion.class, Concept.class})
 @ConfigurationProperties(prefix = "tsam-sync.datasource")
 public class DataSourceProperties {
@@ -94,7 +94,7 @@ public class DataSourceProperties {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(firstDataSource());
-        em.setPackagesToScan("eu.europa.ec.sante.ehdsi.openncp.tsam.sync.domain");
+        em.setPackagesToScan("eu.europa.ec.sante.openncp.tsam.sync.domain");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
