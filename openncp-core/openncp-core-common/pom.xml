@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>eu.europa.ec.sante.ehdsi</groupId>
+        <groupId>eu.europa.ec.sante</groupId>
         <artifactId>openncp-core</artifactId>
         <version>7.1.0</version>
     </parent>
@@ -14,12 +14,12 @@
     <dependencies>
         <!-- OpenNCP dependencies -->
         <dependency>
-            <groupId>eu.europa.ec.sante.ehdsi</groupId>
+            <groupId>eu.europa.ec.sante</groupId>
             <artifactId>openncp-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.sante.ehdsi</groupId>
+            <groupId>eu.europa.ec.sante</groupId>
             <artifactId>openncp-audit</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -71,7 +71,6 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>
