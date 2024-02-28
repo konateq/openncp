@@ -2,20 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>eu.europa.ec.sante.ehdsi</groupId>
+        <groupId>eu.europa.ec.sante</groupId>
         <artifactId>openncp-core</artifactId>
         <version>7.1.0</version>
     </parent>
     <artifactId>openncp-core-client</artifactId>
     <name>openncp-core-client</name>
+    <modules>
+        <module>cda-display-tool</module>
+    </modules>
 
-    <packaging>jar</packaging>
-
-    <dependencies>
-        <dependency>
-            <groupId>eu.europa.ec.sante.ehdsi</groupId>
-            <artifactId>openncp-core-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <packaging>pom</packaging>
 </project>
