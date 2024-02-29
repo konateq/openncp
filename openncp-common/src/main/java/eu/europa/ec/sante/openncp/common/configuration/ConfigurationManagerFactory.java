@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.common.configuration;
 
+import eu.europa.ec.sante.openncp.common.configuration.util.Assert;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 

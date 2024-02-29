@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.common.validation;
 
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -8,7 +9,6 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tr.com.srdc.epsos.util.Constants;
 
 import java.io.File;
 
