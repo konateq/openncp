@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.client.cdadisplaytool.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
