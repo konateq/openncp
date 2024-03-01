@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.audit.eventidentification;
 
-import net.RFC3881.EventID;
+import net.RFC3881.dicom.EventID;
 
 public class EventIDBuilder {
 

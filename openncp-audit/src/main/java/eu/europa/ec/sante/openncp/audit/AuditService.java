@@ -8,7 +8,7 @@ import eu.europa.ec.sante.openncp.audit.serialization.AuditLogSerializerImpl;
 import eu.europa.ec.sante.openncp.audit.utils.SerializableMessage;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
-import net.RFC3881.AuditMessage;
+import net.RFC3881.dicom.AuditMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

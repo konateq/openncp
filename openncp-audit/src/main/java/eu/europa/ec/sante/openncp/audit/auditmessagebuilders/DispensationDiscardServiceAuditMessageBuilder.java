@@ -2,7 +2,7 @@ package eu.europa.ec.sante.openncp.audit.auditmessagebuilders;
 
 import eu.europa.ec.sante.openncp.audit.EventLog;
 import eu.europa.ec.sante.openncp.audit.AuditConstant;
-import net.RFC3881.AuditMessage;
+import net.RFC3881.dicom.AuditMessage;
 
 public class DispensationDiscardServiceAuditMessageBuilder extends AbstractAuditMessageBuilder implements AuditMessageBuilder {
     @Override
