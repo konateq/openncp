@@ -105,7 +105,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <xerces.version>2.12.2</xerces.version>
         <hikaricp.version>4.0.3</hikaricp.version>
-        <springfox.version>2.9.2</springfox.version>
+        <springfox.version>3.0.0</springfox.version>
         <xerces.version>2.12.2</xerces.version>
         <xmlsec.version>2.3.0</xmlsec.version>
         <xmlunit.version>1.1</xmlunit.version>
@@ -456,6 +456,16 @@
                         <artifactId>tomcat-jdbc</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-tomcat</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
             <!-- Saaj dependencies -->
             <dependency>
