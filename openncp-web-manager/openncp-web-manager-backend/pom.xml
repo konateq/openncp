@@ -8,6 +8,7 @@
     </parent>
     <artifactId>openncp-web-manager-backend</artifactId>
     <name>openncp-web-manager-backend</name>
+    <packaging>war</packaging>
 
     <properties>
         <bootstrap.version>5.2.2</bootstrap.version>
@@ -19,12 +20,8 @@
         <passay.version>1.6.1</passay.version>
         <poi-ooxml.version>5.2.2</poi-ooxml.version>
         <querydsl.version>5.0.0</querydsl.version>
-        <spring-boot.version>2.7.11</spring-boot.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
-        <xmlbean.version>5.0.3</xmlbean.version>
-        <commons-collections.version>3.2.2</commons-collections.version>
-        <hikaricp.version>4.0.3</hikaricp.version>
-        <javamelody.version>1.94.0</javamelody.version>
+        <xmlbeans.version>5.0.3</xmlbeans.version>
     </properties>
 
     <build>
@@ -114,7 +111,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>ch.qos.logback</groupId>
@@ -125,7 +121,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>${spring-boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -152,7 +147,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-oxm</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
@@ -172,7 +166,6 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>${mariadb-connector.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -198,7 +191,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
@@ -223,17 +215,15 @@
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
-            <version>${xmlbean.version}</version>
+            <version>${xmlbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.santuario</groupId>
             <artifactId>xmlsec</artifactId>
-            <version>${xmlsec.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
-            <version>${saxon-he.version}</version>
             <scope>runtime</scope>
         </dependency>
         <!--OpenNCP dependencies-->
@@ -265,7 +255,6 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
@@ -310,7 +299,6 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
         </dependency>
         <!-- Monitoring -->
         <dependency>
