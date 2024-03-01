@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>eu.europa.ec.sante.ehdsi</groupId>
+        <groupId>eu.europa.ec.sante</groupId>
         <artifactId>openncp-web-manager</artifactId>
         <version>7.1.0</version>
     </parent>
@@ -22,6 +22,9 @@
         <spring-boot.version>2.7.11</spring-boot.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
         <xmlbean.version>5.0.3</xmlbean.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
+        <hikaricp.version>4.0.3</hikaricp.version>
+        <javamelody.version>1.94.0</javamelody.version>
     </properties>
 
     <build>
@@ -150,11 +153,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-oxm</artifactId>
             <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>${spring-tx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>

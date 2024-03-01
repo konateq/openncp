@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.smpeditor.service;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.smpeditor.service;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.util.XmlUtil;
 import org.apache.commons.lang3.StringUtils;

@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.service;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.service;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.persistence.model.Property;
 import eu.europa.ec.sante.ehdsi.openncp.gateway.persistence.repository.PropertyRepository;

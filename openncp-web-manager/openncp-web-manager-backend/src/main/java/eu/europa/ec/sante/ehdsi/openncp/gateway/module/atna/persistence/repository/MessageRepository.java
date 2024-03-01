@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna.persistence.repository;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna.persistence.repository;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna.persistence.model.MessageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

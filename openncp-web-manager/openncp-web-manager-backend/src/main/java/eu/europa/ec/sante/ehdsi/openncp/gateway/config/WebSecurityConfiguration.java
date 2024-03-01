@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.config;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.config;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.persistence.repository.UserRepository;
 import eu.europa.ec.sante.ehdsi.openncp.gateway.security.DefaultUserDetailsService;

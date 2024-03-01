@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.security;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.eadc;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.eadc;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.module.eadc.persistence.model.Transaction;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna.persistence.model.Error;
 import eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna.persistence.repository.ErrorRepository;

@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.service;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.service;
 
 import eu.europa.ec.dynamicdiscovery.DynamicDiscovery;
 import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;

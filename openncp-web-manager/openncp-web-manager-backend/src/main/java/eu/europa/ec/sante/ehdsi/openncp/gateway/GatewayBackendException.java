@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway;
+package eu.europa.ec.sante.ehdsi.openncp.gateway;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.service.ExceptionType;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.util;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.util;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

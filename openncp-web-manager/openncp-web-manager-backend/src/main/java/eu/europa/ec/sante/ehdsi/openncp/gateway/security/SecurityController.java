@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.security;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.security;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.domain.User;
 import org.springframework.http.HttpHeaders;

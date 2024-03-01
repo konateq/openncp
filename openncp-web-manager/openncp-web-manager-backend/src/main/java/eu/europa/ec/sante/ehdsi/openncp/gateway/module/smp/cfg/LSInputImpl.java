@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.cfg;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.cfg;
 
 import org.w3c.dom.ls.LSInput;
 

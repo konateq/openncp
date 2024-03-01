@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.smpeditor.web.rest;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp.smpeditor.web.rest;
 
 import eu.europa.ec.dynamicdiscovery.DynamicDiscovery;
 import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;

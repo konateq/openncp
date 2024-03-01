@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.eadc.persistence.model;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.eadc.persistence.model;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.module.eadc.Direction;
 import eu.europa.ec.sante.ehdsi.openncp.gateway.module.eadc.persistence.model.EadcDbTimeConverter;

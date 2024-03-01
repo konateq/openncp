@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.config;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.config;
 
 import org.apache.catalina.Context;
 import org.apache.tomcat.util.descriptor.web.ContextResource;

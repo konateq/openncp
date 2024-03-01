@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.web.rest;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.web.rest;
 
 import eu.europa.ec.sante.ehdsi.openncp.gateway.persistence.model.User;
 import eu.europa.ec.sante.ehdsi.openncp.gateway.service.ExceptionFactory;

@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.smp;
 
 import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManagerException;
 import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManagerFactory;

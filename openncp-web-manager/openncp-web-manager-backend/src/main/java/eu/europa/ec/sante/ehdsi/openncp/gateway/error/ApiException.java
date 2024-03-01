@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.error;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;

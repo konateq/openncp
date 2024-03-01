@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna.domain;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna.domain;
 
 import generated.AuditMessage;
 

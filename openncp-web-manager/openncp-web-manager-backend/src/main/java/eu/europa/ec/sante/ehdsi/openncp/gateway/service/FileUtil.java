@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.service;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

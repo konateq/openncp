@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.web.rest;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.web.rest;
 
 import javax.validation.constraints.NotBlank;
 

@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna.domain.old;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna.domain.old;
 
 public class Code {
 

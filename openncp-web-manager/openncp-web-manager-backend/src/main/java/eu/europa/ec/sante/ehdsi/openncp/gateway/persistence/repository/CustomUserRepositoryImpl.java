@@ -1,4 +1,4 @@
-package src.main.java.eu.europa.ec.sante.ehdsi.openncp.gateway.persistence.repository;
+package eu.europa.ec.sante.ehdsi.openncp.gateway.persistence.repository;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.JPQLQuery;
