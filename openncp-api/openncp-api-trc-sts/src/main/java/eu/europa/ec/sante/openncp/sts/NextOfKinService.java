@@ -5,18 +5,47 @@ import java.text.ParseException;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.sun.xml.ws.api.security.trust.WSTrustException;
+import eu.europa.ec.sante.openncp.audit.AuditServiceFactory;
+import eu.europa.ec.sante.openncp.audit.EventActionCode;
+import eu.europa.ec.sante.openncp.audit.EventLog;
+import eu.europa.ec.sante.openncp.audit.EventOutcomeIndicator;
+import eu.europa.ec.sante.openncp.audit.EventType;
+import eu.europa.ec.sante.openncp.audit.TransactionName;
+import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
+import eu.europa.ec.sante.openncp.common.util.DateUtil;
+import eu.europa.ec.sante.openncp.transformation.util.HttpUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPBody;
+import jakarta.xml.soap.SOAPConstants;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPHeader;
 import jakarta.xml.soap.SOAPMessage;
 import jakarta.xml.ws.BindingType;
 import jakarta.xml.ws.Provider;
 import jakarta.xml.ws.Service;
 import jakarta.xml.ws.ServiceMode;
 
+import jakarta.xml.ws.WebServiceException;
 import jakarta.xml.ws.WebServiceProvider;
+import jakarta.xml.ws.handler.MessageContext;
+import org.apache.commons.lang3.StringUtils;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.MarshallingException;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Attribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 
@@ -71,13 +100,10 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
                 }
             }
             List<Attribute> attributeList = buildNextOfKinAttributes(nextOfKinDetail);
-            var nextOfKinAssertion = samlNextOfKinIssuer.issueNextOfKinToken(hcpIdAssertion, "doctorId",
-                    hcpIdAssertion.getID(), attributeList);
-            if (hcpIdAssertion != null) {
-                logger.info("HCP Assertion Date: '{}' TRC Assertion Date: '{}' -- '{}'",
-                        hcpIdAssertion.getIssueInstant().atZone(ZoneId.of("UTC")),
+            Assertion nextOfKinAssertion = samlNextOfKinIssuer.issueNextOfKinToken(hcpIdAssertion, "doctorId",
+                                                                                   hcpIdAssertion.getID(), attributeList);
+            logger.info("HCP Assertion Date: '{}' TRC Assertion Date: '{}' -- '{}'", hcpIdAssertion.getIssueInstant().atZone(ZoneId.of("UTC")),
                         nextOfKinAssertion.getIssueInstant().atZone(ZoneId.of("UTC")), nextOfKinAssertion.getAuthnStatements().isEmpty());
-            }
             Document signedDoc = builder.newDocument();
             var marshallerFactory = XMLObjectProviderRegistrySupport.getMarshallerFactory();
             marshallerFactory.getMarshaller(nextOfKinAssertion).marshall(nextOfKinAssertion, signedDoc);
@@ -98,7 +124,7 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
                 logger.info("WebServiceContext JAX-WS - No User authenticated");
             }
 
-            sslCommonName = HTTPUtil.getSubjectDN(false);
+            sslCommonName = HttpUtil.getSubjectDN(false);
             sendNOKAuditMessage(samlNextOfKinIssuer.getPointOfCare(), samlNextOfKinIssuer.getHumanRequestorNameId(),
                     samlNextOfKinIssuer.getHumanRequestorSubjectId(), samlNextOfKinIssuer.getFunctionalRole(), nextOfKinDetail.getLivingSubjectIds().get(0),
                     samlNextOfKinIssuer.getFacilityType(), nextOfKinAssertion.getID(), sslCommonName, messageId,
@@ -118,7 +144,8 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
 
         var auditService = AuditServiceFactory.getInstance();
         XMLGregorianCalendar date = DateUtil.getDateAsXMLGregorian(new Date());
-        String trcCommonName = HTTPUtil.getTlsCertificateCommonName(ConfigurationManagerFactory.getConfigurationManager().getProperty("secman.nextOfKin.url"));
+        String trcCommonName = HttpUtil.getTlsCertificateCommonName(
+                ConfigurationManagerFactory.getConfigurationManager().getProperty("secman.nextOfKin.url"));
         String sourceGateway = getClientIP();
         logger.info("STS Client IP: '{}'", sourceGateway);
         var messageContext = context.getMessageContext();
@@ -127,11 +154,11 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
 
         //TODO: Review Audit Trail specification - Identifying SC and SP as value of CN from TLS certificate.
         EventLog eventLogNOKA = EventLog.createEventLogNOKA(TransactionName.NOK_ASSERTION, EventActionCode.EXECUTE,
-                date, EventOutcomeIndicator.FULL_SUCCESS, pointOfCareID, facilityType, humanRequestorNameID,
-                humanRequestorRole, humanRequestorSubjectID, certificateCommonName, trcCommonName,
-                ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"),
-                nokID, Constants.UUID_PREFIX + assertionId, reqMid, reqSecHeader, resMid, resSecHeader,
-                IPUtil.isLocalLoopbackIp(sourceGateway) ? serverName : sourceGateway, STSUtils.getSTSServerIP(), NcpSide.NCP_B);
+                                                            date, EventOutcomeIndicator.FULL_SUCCESS, pointOfCareID, facilityType, humanRequestorNameID,
+                                                            humanRequestorRole, humanRequestorSubjectID, certificateCommonName, trcCommonName,
+                                                            ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"),
+                                                            nokID, Constants.UUID_PREFIX + assertionId, reqMid, reqSecHeader, resMid, resSecHeader,
+                                                            IPUtil.isLocalLoopbackIp(sourceGateway) ? serverName : sourceGateway, STSUtils.getSTSServerIP(), NcpSide.NCP_B);
 
         eventLogNOKA.setEventType(EventType.NOK_ASSERTION);
         auditService.write(eventLogNOKA, "13", "2");

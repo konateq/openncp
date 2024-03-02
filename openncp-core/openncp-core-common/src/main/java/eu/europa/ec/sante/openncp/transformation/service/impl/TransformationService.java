@@ -20,6 +20,7 @@ import eu.europa.ec.sante.openncp.tsam.response.RetrievedConcept;
 import eu.europa.ec.sante.openncp.tsam.response.TSAMResponseStructure;
 import eu.europa.ec.sante.openncp.tsam.service.ITerminologyService;
 import eu.europa.ec.sante.openncp.tsam.util.CodedElement;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
@@ -30,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 import org.w3c.dom.*;
 
-import javax.annotation.PostConstruct;
 import javax.xml.XMLConstants;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;

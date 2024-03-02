@@ -39,10 +39,6 @@
         <module>openncp-core</module>
         <module>openncp-web-manager</module>
         <module>openncp-tools</module>
-        <module>openncp-application/openncp-application-trc-sts</module>
-        <module>openncp-api/openncp-api-trc-sts</module>
-        <module>openncp-core/openncp-core-trc-sts</module>
-
     </modules>
 
     <scm>
