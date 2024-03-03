@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: '/openncp-gateway',
+  publicPath: '/openncp-web-manager',
   transpileDependencies: [
     'vuetify'
   ]

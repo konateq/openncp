@@ -1,5 +1,5 @@
 {
-  "name": "openncp-gateway-frontend",
+  "name": "openncp-web-manager-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {

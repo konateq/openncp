@@ -87,7 +87,7 @@
     <v-app-bar app clipped-left color="indigo">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>
-        <span class="title">OpenNCP Gateway Portal</span>
+        <span class="title">OpenNCP Web Manager Portal</span>
       </v-toolbar-title>
       <v-spacer />
 

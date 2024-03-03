@@ -183,7 +183,7 @@ const routes = [
 
 const router = new VueRouter({
   // mode: 'history',
-  base: 'openncp-gateway/',
+  base: 'openncp-web-manager/',
   routes
 })
 
