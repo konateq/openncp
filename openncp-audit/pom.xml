@@ -62,7 +62,7 @@
                 <configuration>
                     <extension>true</extension>
                     <schemaDirectory>src/main/resources</schemaDirectory>
-                    <generatePackage>net.RFC3881</generatePackage>
+                    <generatePackage>net.RFC3881.dicom</generatePackage>
                 </configuration>
             </plugin>
         </plugins>

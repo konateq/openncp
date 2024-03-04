@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.audit.eventidentification;
 
-import net.RFC3881.EventTypeCode;
+import net.RFC3881.dicom.EventTypeCode;
 
 public class EventTypeCodeBuilder {
     private String codeSystemName;

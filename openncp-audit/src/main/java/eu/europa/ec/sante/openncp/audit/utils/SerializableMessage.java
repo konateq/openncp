@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.audit.utils;
 
-import net.RFC3881.AuditMessage;
+import net.RFC3881.dicom.AuditMessage;
 
 import java.io.Serializable;
 

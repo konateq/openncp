@@ -4,7 +4,7 @@ import com.google.common.io.Resources;
 import eu.europa.ec.sante.openncp.audit.*;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
-import net.RFC3881.AuditMessage;
+import net.RFC3881.dicom.AuditMessage;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;

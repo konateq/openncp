@@ -3,8 +3,8 @@ package eu.europa.ec.sante.openncp.audit.auditmessagebuilders;
 import eu.europa.ec.sante.openncp.audit.EventActionCode;
 import eu.europa.ec.sante.openncp.audit.EventLog;
 import eu.europa.ec.sante.openncp.audit.AuditConstant;
-import net.RFC3881.AuditMessage;
-import net.RFC3881.ObjectFactory;
+import net.RFC3881.dicom.AuditMessage;
+import net.RFC3881.dicom.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
