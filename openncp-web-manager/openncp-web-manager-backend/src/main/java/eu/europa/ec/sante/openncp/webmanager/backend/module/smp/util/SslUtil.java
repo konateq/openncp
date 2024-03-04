@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util;
 
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManager;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.GatewayProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -19,11 +19,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
-public class HttpUtil {
+public class SslUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SslUtil.class);
 
-    private HttpUtil() {
+    private SslUtil() {
     }
 
     public static SSLContext createSSLContext() {

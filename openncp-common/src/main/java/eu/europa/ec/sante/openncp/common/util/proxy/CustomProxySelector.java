@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.transformation.util.proxy;
+package eu.europa.ec.sante.openncp.common.util.proxy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

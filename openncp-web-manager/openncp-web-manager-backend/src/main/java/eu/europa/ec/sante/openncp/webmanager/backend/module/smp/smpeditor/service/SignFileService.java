@@ -2,7 +2,7 @@ package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.servi
 
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.Constants;
 import eu.europa.ec.sante.openncp.webmanager.backend.service.FileUtil;
-import eu.europa.ec.sante.ehdsi.openncp.util.security.CryptographicConstant;
+import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;

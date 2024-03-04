@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.web.rest;
 
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.webmanager.backend.error.ApiException;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.cfg.ReadSMPProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.Countries;

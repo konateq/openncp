@@ -1,16 +1,16 @@
-package eu.europa.ec.sante.openncp.transformation.util;
+package eu.europa.ec.sante.openncp.common.util;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.transformation.util.proxy.CustomProxySelector;
-import eu.europa.ec.sante.openncp.transformation.util.proxy.ProxyCredentials;
 import eu.europa.ec.sante.openncp.common.configuration.StandardProperties;
+import eu.europa.ec.sante.openncp.common.util.proxy.CustomProxySelector;
+import eu.europa.ec.sante.openncp.common.util.proxy.ProxyCredentials;
 import org.cryptacular.util.CertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

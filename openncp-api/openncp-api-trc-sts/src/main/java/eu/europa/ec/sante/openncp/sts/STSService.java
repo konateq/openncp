@@ -30,7 +30,7 @@ import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
-import eu.europa.ec.sante.openncp.transformation.util.HttpUtil;
+import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import jakarta.xml.soap.MessageFactory;
 import jakarta.xml.soap.SOAPBody;
 import jakarta.xml.soap.SOAPConstants;

@@ -1,5 +1,7 @@
 package eu.europa.ec.sante.openncp.common.configuration;
 
+import eu.europa.ec.dynamicdiscovery.DynamicDiscoveryBuilder;
+
 import java.util.Map;
 
 /**
@@ -7,6 +9,9 @@ import java.util.Map;
  * properties used by all the components.
  */
 public interface ConfigurationManager {
+
+
+    DynamicDiscoveryBuilder initializeDynamicDiscoveryFetcher();
 
     /**
      * @param key

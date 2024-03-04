@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.transformation.util.proxy;
+package eu.europa.ec.sante.openncp.common.util.proxy;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
