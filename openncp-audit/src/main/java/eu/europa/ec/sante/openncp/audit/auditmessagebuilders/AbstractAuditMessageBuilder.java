@@ -8,7 +8,7 @@ import eu.europa.ec.sante.openncp.audit.eventidentification.EventTypeCodeBuilder
 import eu.europa.ec.sante.openncp.audit.AuditConstant;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import net.RFC3881.dicom.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

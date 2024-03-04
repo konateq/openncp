@@ -10,7 +10,6 @@ import net.RFC3881.dicom.AuditMessage;
 import net.RFC3881.dicom.ParticipantObjectDetail;
 import net.RFC3881.dicom.ParticipantObjectIDTypeCode;
 import net.RFC3881.dicom.ParticipantObjectIdentificationContents;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
