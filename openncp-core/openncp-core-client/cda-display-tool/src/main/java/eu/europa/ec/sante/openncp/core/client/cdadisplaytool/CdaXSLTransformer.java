@@ -2,7 +2,7 @@ package eu.europa.ec.sante.openncp.core.client.cdadisplaytool;
 
 import eu.europa.ec.sante.openncp.core.client.cdadisplaytool.exceptions.TerminologyFileNotFoundException;
 import eu.europa.ec.sante.openncp.core.client.cdadisplaytool.exceptions.UITransformationException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

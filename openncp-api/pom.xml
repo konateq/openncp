@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.sante</groupId>
         <artifactId>openncp</artifactId>
-        <version>7.1.0</version>
+        <version>8.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>openncp-api</artifactId>
     <name>openncp-api</name>
@@ -15,5 +15,6 @@
         <module>openncp-api-client</module>
         <module>openncp-api-server</module>
         <module>openncp-api-general</module>
+        <module>openncp-api-trc-sts</module>
     </modules>
 </project>
