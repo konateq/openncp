@@ -1,8 +1,8 @@
 package eu.europa.ec.sante.openncp.audit.eventidentification;
 
-import net.RFC3881.EventID;
-import net.RFC3881.EventIdentificationContents;
-import net.RFC3881.EventTypeCode;
+import net.RFC3881.dicom.EventID;
+import net.RFC3881.dicom.EventIdentificationContents;
+import net.RFC3881.dicom.EventTypeCode;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;

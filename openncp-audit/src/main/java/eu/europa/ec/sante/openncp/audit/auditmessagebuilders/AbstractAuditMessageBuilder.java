@@ -7,8 +7,8 @@ import eu.europa.ec.sante.openncp.audit.eventidentification.EventIdentificationC
 import eu.europa.ec.sante.openncp.audit.eventidentification.EventTypeCodeBuilder;
 import eu.europa.ec.sante.openncp.audit.AuditConstant;
 import eu.europa.ec.sante.openncp.common.NcpSide;
-import net.RFC3881.*;
-import org.apache.commons.lang.StringUtils;
+import net.RFC3881.dicom.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +23,9 @@ public abstract class AbstractAuditMessageBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAuditMessageBuilder.class);
 
     protected AuditMessage addParticipantObject(AuditMessage auditMessage, String participantId, Short participantCode,
-                                              Short participantRole, String participantName, String PS_ObjectCode, String PS_ObjectCodeName,
-                                              String PS_ObjectCodeValue, String PS_originalText,
-                                              String PS_getQueryByParameterPayload, String PS_getHciIdentifierPayload) {
+                                                Short participantRole, String participantName, String PS_ObjectCode, String PS_ObjectCodeName,
+                                                String PS_ObjectCodeValue, String PS_originalText,
+                                                String PS_getQueryByParameterPayload, String PS_getHciIdentifierPayload) {
 
         ParticipantObjectIdentificationContents participantObjectIdentification = new ParticipantObjectIdentificationContents();
         participantObjectIdentification.setParticipantObjectID(participantId);

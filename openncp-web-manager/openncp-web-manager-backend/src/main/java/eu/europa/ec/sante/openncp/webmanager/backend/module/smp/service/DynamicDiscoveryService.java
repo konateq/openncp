@@ -5,7 +5,7 @@ import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.model.DocumentIdentifier;
 import eu.europa.ec.dynamicdiscovery.model.ParticipantIdentifier;
 import eu.europa.ec.dynamicdiscovery.model.ServiceMetadata;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.*;
+import eu.europa.ec.sante.openncp.common.configuration.*;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.DynamicDiscoveryClient;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
-import tr.com.srdc.epsos.util.XMLUtil;
+import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 
 import javax.net.ssl.SSLContext;
 import javax.xml.transform.TransformerException;

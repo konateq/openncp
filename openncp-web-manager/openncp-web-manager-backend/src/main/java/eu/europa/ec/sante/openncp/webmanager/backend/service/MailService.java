@@ -1,8 +1,8 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.service;
 
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManager;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManagerFactory;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.PropertyNotFoundException;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.PropertyNotFoundException;
 import eu.europa.ec.sante.openncp.webmanager.backend.config.ApplicationProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.config.SmtpProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.persistence.model.User;

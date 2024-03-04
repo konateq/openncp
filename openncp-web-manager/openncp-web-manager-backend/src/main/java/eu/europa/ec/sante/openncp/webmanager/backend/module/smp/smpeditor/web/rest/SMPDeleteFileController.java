@@ -5,9 +5,9 @@ import eu.europa.ec.dynamicdiscovery.exception.ConnectionException;
 import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.model.DocumentIdentifier;
 import eu.europa.ec.dynamicdiscovery.model.ParticipantIdentifier;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManager;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManagerFactory;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.StandardProperties;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.StandardProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.error.ApiException;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.cfg.ReadSMPProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.ReferenceCollection;
@@ -16,10 +16,10 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.AuditMan
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.DynamicDiscoveryService;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.DynamicDiscoveryClient;
-import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.HttpUtil;
+import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.SslUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -199,7 +199,7 @@ public class SMPDeleteFileController {
         }
 
         // Trust own CA and all self-signed certs
-        SSLContext sslcontext = HttpUtil.createSSLContext();
+        SSLContext sslcontext = SslUtil.createSSLContext();
 
         //DELETE
         HttpDelete httpdelete = new HttpDelete(uri);
@@ -324,7 +324,7 @@ public class SMPDeleteFileController {
         }
 
         // Trust own CA and all self-signed certs
-        SSLContext sslcontext = HttpUtil.createSSLContext();
+        SSLContext sslcontext = SslUtil.createSSLContext();
 
         //DELETE
         HttpDelete httpdelete = new HttpDelete(uri);

@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.tools.tsam.sync.config;
 
 import eu.europa.ec.sante.openncp.tools.tsam.sync.cts.support.SimpleClientHttpRequestFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -10,7 +11,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration

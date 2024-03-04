@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service;
 
-import eu.europa.ec.sante.ehdsi.openncp.util.security.CryptographicConstant;
+import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
