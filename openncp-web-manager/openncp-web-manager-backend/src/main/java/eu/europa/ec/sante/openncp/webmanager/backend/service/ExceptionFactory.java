@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.service;
 
-import eu.europa.ec.sante.openncp.webmanager.backend.GatewayBackendException;
+import eu.europa.ec.sante.openncp.webmanager.backend.WebManagerBackendException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,14 +13,14 @@ public class ExceptionFactory {
     private ExceptionFactory() {
     }
 
-    public static GatewayBackendException create(final Throwable cause, final ExceptionType exceptionType,
-                                                 final Object... messageArguments) {
+    public static WebManagerBackendException create(final Throwable cause, final ExceptionType exceptionType,
+                                                    final Object... messageArguments) {
         LOGGER.error(MessageFormat.format(exceptionType.getMessage(), messageArguments), cause);
-        return new GatewayBackendException(exceptionType, cause, messageArguments);
+        return new WebManagerBackendException(exceptionType, cause, messageArguments);
     }
 
-    public static GatewayBackendException create(final ExceptionType exceptionType, final Object... messageArguments) {
+    public static WebManagerBackendException create(final ExceptionType exceptionType, final Object... messageArguments) {
         LOGGER.error(MessageFormat.format(exceptionType.getMessage(), messageArguments));
-        return new GatewayBackendException(exceptionType, messageArguments);
+        return new WebManagerBackendException(exceptionType, messageArguments);
     }
 }

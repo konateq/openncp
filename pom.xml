@@ -5,7 +5,7 @@
 
     <groupId>eu.europa.ec.sante</groupId>
     <artifactId>openncp</artifactId>
-    <version>7.1.0</version>
+    <version>8.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OpenNCP Reference Implementation</name>
@@ -23,11 +23,11 @@
         </license>
     </licenses>
 
-    <developers/>
+    <developers />
 
-    <contributors/>
+    <contributors />
 
-    <mailingLists/>
+    <mailingLists />
 
     <modules>
         <module>openncp-api</module>
@@ -39,7 +39,6 @@
         <module>openncp-core</module>
         <module>openncp-web-manager</module>
         <module>openncp-tools</module>
-
     </modules>
 
     <scm>
@@ -51,7 +50,7 @@
         <system>JIRA</system>
         <url>https://citnet.tech.ec.europa.eu/CITnet/jira/projects/EHEALTH/</url>
     </issueManagement>
-    <ciManagement/>
+    <ciManagement />
     <distributionManagement>
         <repository>
             <id>gitlab-maven</id>
@@ -69,7 +68,6 @@
         <java.optimize>true</java.optimize>
         <joda-time.version>2.10.13</joda-time.version>
         <commons-configuration2.version>2.8.0</commons-configuration2.version>
-        <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-text.version>1.10.0</commons-text.version>
         <commons-validator.version>1.7</commons-validator.version>
@@ -105,7 +103,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <xerces.version>2.12.2</xerces.version>
         <hikaricp.version>4.0.3</hikaricp.version>
-        <springfox.version>2.9.2</springfox.version>
+        <springfox.version>3.0.0</springfox.version>
         <xerces.version>2.12.2</xerces.version>
         <xmlsec.version>2.3.0</xmlsec.version>
         <xmlunit.version>1.1</xmlunit.version>
@@ -130,11 +128,6 @@
                 </exclusions>
             </dependency>
             <!-- Apache dependencies -->
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
@@ -457,12 +450,44 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-tomcat</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
             <!-- Saaj dependencies -->
             <dependency>
                 <groupId>com.sun.xml.messaging.saaj</groupId>
                 <artifactId>saaj-impl</artifactId>
                 <version>${saaj-impl.version}</version>
             </dependency>
+            <dependency>
+                <groupId>jakarta.xml.ws</groupId>
+                <artifactId>jakarta.xml.ws-api</artifactId>
+                <version>4.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>2.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.wss</groupId>
+                <artifactId>xws-security</artifactId>
+                <version>3.0</version>
+            </dependency>
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
@@ -526,6 +551,7 @@
                         <optimize>${java.optimize}</optimize>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <showDeprecation>true</showDeprecation>
+                        <release>${java.version}</release>
                     </configuration>
                 </plugin>
             </plugins>

@@ -5,16 +5,16 @@ import org.springframework.http.HttpStatus;
 
 import java.text.MessageFormat;
 
-public class GatewayBackendException extends RuntimeException {
+public class WebManagerBackendException extends RuntimeException {
 
     private final ExceptionType exceptionType;
 
-    public GatewayBackendException(ExceptionType exceptionType, Object... messageArguments) {
+    public WebManagerBackendException(ExceptionType exceptionType, Object... messageArguments) {
         super(MessageFormat.format(exceptionType.getMessage(), messageArguments));
         this.exceptionType = exceptionType;
     }
 
-    public GatewayBackendException(ExceptionType exceptionType, final Throwable cause, Object... messageArguments) {
+    public WebManagerBackendException(ExceptionType exceptionType, final Throwable cause, Object... messageArguments) {
         super(MessageFormat.format(exceptionType.getMessage(), messageArguments), cause);
         this.exceptionType = exceptionType;
     }
