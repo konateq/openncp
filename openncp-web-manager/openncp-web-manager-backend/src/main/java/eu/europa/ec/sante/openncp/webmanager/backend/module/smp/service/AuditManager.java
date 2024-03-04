@@ -1,18 +1,17 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service;
 
-import epsos.ccd.gnomon.auditmanager.*;
-import eu.epsos.validation.datamodel.common.NcpSide;
-import eu.europa.ec.sante.ehdsi.openncp.audit.AuditService;
-import eu.europa.ec.sante.ehdsi.openncp.audit.AuditServiceFactory;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
+import eu.europa.ec.sante.openncp.audit.*;
+import eu.europa.ec.sante.openncp.audit.AuditService;
+import eu.europa.ec.sante.openncp.audit.AuditServiceFactory;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import tr.com.srdc.epsos.util.http.HTTPUtil;
-import tr.com.srdc.epsos.util.http.IPUtil;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -109,8 +108,8 @@ public class AuditManager {
                                                            String errorMessagePartObjectId, byte[] errorMessagePartObjectDetail,
                                                            String smpServerUri) {
 
-        String serviceConsumerUserId = HTTPUtil.getSubjectDN(false);
-        String serviceProviderUserId = HTTPUtil.getTlsCertificateCommonName(smpServerUri);
+        String serviceConsumerUserId = HttpUtil.getSubjectDN(false);
+        String serviceProviderUserId = HttpUtil.getTlsCertificateCommonName(smpServerUri);
         String localIp = IPUtil.getPrivateServerIp();
         String participantId = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
         URI uri = null;

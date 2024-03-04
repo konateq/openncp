@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util;
 
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManager;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.GatewayProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
