@@ -23,11 +23,11 @@
         </license>
     </licenses>
 
-    <developers/>
+    <developers />
 
-    <contributors/>
+    <contributors />
 
-    <mailingLists/>
+    <mailingLists />
 
     <modules>
         <module>openncp-api</module>
@@ -39,7 +39,6 @@
         <module>openncp-core</module>
         <module>openncp-web-manager</module>
         <module>openncp-tools</module>
-
     </modules>
 
     <scm>
@@ -51,7 +50,7 @@
         <system>JIRA</system>
         <url>https://citnet.tech.ec.europa.eu/CITnet/jira/projects/EHEALTH/</url>
     </issueManagement>
-    <ciManagement/>
+    <ciManagement />
     <distributionManagement>
         <repository>
             <id>gitlab-maven</id>
@@ -467,6 +466,28 @@
                 <artifactId>saaj-impl</artifactId>
                 <version>${saaj-impl.version}</version>
             </dependency>
+            <dependency>
+                <groupId>jakarta.xml.ws</groupId>
+                <artifactId>jakarta.xml.ws-api</artifactId>
+                <version>4.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>2.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.wss</groupId>
+                <artifactId>xws-security</artifactId>
+                <version>3.0</version>
+            </dependency>
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>

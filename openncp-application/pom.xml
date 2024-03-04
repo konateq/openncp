@@ -12,5 +12,6 @@
     <modules>
         <module>openncp-application-client</module>
         <module>openncp-application-server</module>
+        <module>openncp-application-trc-sts</module>
     </modules>
 </project>

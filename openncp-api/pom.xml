@@ -15,5 +15,6 @@
         <module>openncp-api-client</module>
         <module>openncp-api-server</module>
         <module>openncp-api-general</module>
+        <module>openncp-api-trc-sts</module>
     </modules>
 </project>
