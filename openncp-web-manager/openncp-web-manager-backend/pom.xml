@@ -232,13 +232,8 @@
         </dependency>
         <!--OpenNCP dependencies-->
         <dependency>
-            <groupId>eu.europa.ec.sante.ehdsi</groupId>
-            <artifactId>openncp-configuration-manager</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.europa.ec.sante.ehdsi</groupId>
-            <artifactId>openncp-audit-manager</artifactId>
+            <groupId>eu.europa.ec.sante</groupId>
+            <artifactId>openncp-audit</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
