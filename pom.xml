@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>eu.europa.ec.sante.ehdsi</groupId>
+    <groupId>eu.europa.ec.sante</groupId>
     <artifactId>openncp</artifactId>
-    <version>7.1.0</version>
+    <version>8.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OpenNCP Reference Implementation</name>
@@ -23,11 +23,11 @@
         </license>
     </licenses>
 
-    <developers/>
+    <developers />
 
-    <contributors/>
+    <contributors />
 
-    <mailingLists/>
+    <mailingLists />
 
     <modules>
         <module>openncp-api</module>
@@ -38,7 +38,7 @@
         <module>openncp-context</module>
         <module>openncp-core</module>
         <module>openncp-web-manager</module>
-
+        <module>openncp-tools</module>
     </modules>
 
     <scm>
@@ -50,7 +50,7 @@
         <system>JIRA</system>
         <url>https://citnet.tech.ec.europa.eu/CITnet/jira/projects/EHEALTH/</url>
     </issueManagement>
-    <ciManagement/>
+    <ciManagement />
     <distributionManagement>
         <repository>
             <id>gitlab-maven</id>
@@ -68,25 +68,42 @@
         <java.optimize>true</java.optimize>
         <joda-time.version>2.10.13</joda-time.version>
         <commons-configuration2.version>2.8.0</commons-configuration2.version>
-        <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-text.version>1.10.0</commons-text.version>
         <commons-validator.version>1.7</commons-validator.version>
         <dom4j.version>2.1.3</dom4j.version>
         <dynamic-discovery-client.version>1.11</dynamic-discovery-client.version>
+        <ehealth.termservice.rest.model.version>2.1.2</ehealth.termservice.rest.model.version>
+        <hapi.fhir.version>6.6.0</hapi.fhir.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <httpclient.version>4.5.14</httpclient.version>
+        <ihe.gazelle.version>1.6</ihe.gazelle.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb2-plugin.version>2.3.1</jaxb2-plugin.version>
+        <jackson.version>2.14.3</jackson.version>
         <jaxen.version>1.1.6</jaxen.version>
         <junit.version>4.13.2</junit.version>
         <logback.version>1.2.11</logback.version>
+        <mariadb-connector.version>3.1.4</mariadb-connector.version>
+        <mysql-connector.version>8.0.33</mysql-connector.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <oracle-connector.version>12.2.0.1</oracle-connector.version>
         <opensaml.version>4.0.1</opensaml.version>
+        <postgresql-connector.version>42.6.0</postgresql-connector.version>
+        <servlet-api.version>3.1.0</servlet-api.version>
         <slf4j.version>1.7.36</slf4j.version>
         <saaj-impl.version>1.3.25</saaj-impl.version>
+        <saxon-he.version>10.6</saxon-he.version>
+        <spring-boot.version>2.7.11</spring-boot.version>
+        <spring-tx.version>5.3.27</spring-tx.version>
         <spring-ws.version>3.0.9.RELEASE</spring-ws.version>
         <spring.version>5.3.27</spring.version>
+        <javamelody.version>1.94.0</javamelody.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
+        <xerces.version>2.12.2</xerces.version>
+        <hikaricp.version>4.0.3</hikaricp.version>
+        <springfox.version>3.0.0</springfox.version>
         <xerces.version>2.12.2</xerces.version>
         <xmlsec.version>2.3.0</xmlsec.version>
         <xmlunit.version>1.1</xmlunit.version>
@@ -109,16 +126,32 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Apache dependencies -->
+            <!-- eHealth termservice rest model dependencies -->
             <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.version}</version>
+                <groupId>eu.europa.ec.sante.ehdsi.termservice</groupId>
+                <artifactId>ehealth-termservice-rest-model</artifactId>
+                <version>${ehealth.termservice.rest.model.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hibernate-validator</artifactId>
+                        <groupId>org.hibernate</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
+            <!-- Apache dependencies -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -152,6 +185,27 @@
                 <artifactId>dom4j</artifactId>
                 <version>${dom4j.version}</version>
             </dependency>
+            <!-- Databases drivers -->
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql-connector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>${mariadb-connector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc8</artifactId>
+                <version>${oracle-connector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql-connector.version}</version>
+            </dependency>
             <!-- Dynamic Discovery Client dependecies -->
             <dependency>
                 <groupId>eu.europa.ec.dynamic-discovery</groupId>
@@ -172,11 +226,55 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- FHIR dependencies -->
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-base</artifactId>
+                <version>${hapi.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-structures-r4</artifactId>
+                <version>${hapi.fhir.version}</version>
+            </dependency>
             <!-- Hibernate dependencies -->
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
                 <version>${hibernate.version}</version>
+            </dependency>
+            <!-- IHE Gazelle dependencies -->
+            <dependency>
+                <groupId>net.ihe.gazelle.epsos.validator</groupId>
+                <artifactId>cdaepsos-validator-jar</artifactId>
+                <version>${ihe.gazelle.version}</version>
+                <scope>compile</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>net.sf.saxon</artifactId>
+                        <groupId>saxon9he</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- Jackson dependencies -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <!-- Javax servlet dependencies -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${servlet-api.version}</version>
             </dependency>
             <!-- Jaxen dependencies -->
             <dependency>
@@ -202,6 +300,32 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${spring-tx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <!-- Saxon dependencies -->
+            <dependency>
+                <groupId>net.sf.saxon</groupId>
+                <artifactId>Saxon-HE</artifactId>
+                <version>${saxon-he.version}</version>
+            </dependency>
             <!-- Spring dependencies -->
             <dependency>
                 <groupId>org.springframework.ws</groupId>
@@ -212,6 +336,37 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-oxm</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons-collections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>${xerces.version}</version>
+            </dependency>
+            <!-- Springfox dependencies -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${springfox.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${springfox.version}</version>
             </dependency>
             <!-- OpenSAML dependencies -->
             <dependency>
@@ -287,12 +442,72 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- Spring boot dependencies -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-jdbc</artifactId>
+                <version>${spring-boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-jdbc</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-tomcat</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
             <!-- Saaj dependencies -->
             <dependency>
                 <groupId>com.sun.xml.messaging.saaj</groupId>
                 <artifactId>saaj-impl</artifactId>
                 <version>${saaj-impl.version}</version>
             </dependency>
+            <dependency>
+                <groupId>jakarta.xml.ws</groupId>
+                <artifactId>jakarta.xml.ws-api</artifactId>
+                <version>4.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>2.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.wss</groupId>
+                <artifactId>xws-security</artifactId>
+                <version>3.0</version>
+            </dependency>
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
@@ -356,6 +571,7 @@
                         <optimize>${java.optimize}</optimize>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <showDeprecation>true</showDeprecation>
+                        <release>${java.version}</release>
                     </configuration>
                 </plugin>
             </plugins>

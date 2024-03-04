@@ -2,10 +2,40 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>eu.europa.ec.sante.ehdsi</groupId>
-        <artifactId>openncp</artifactId>
-        <version>7.1.0</version>
+        <groupId>eu.europa.ec.sante</groupId>
+        <artifactId>openncp-web-manager</artifactId>
+        <version>8.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>openncp-web-manager-frontend</artifactId>
     <name>openncp-web-manager-frontend</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>monitoring</id>
+            <properties>
+                <enable.monitoring.start/>
+                <enable.monitoring.stop/>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>net.bull.javamelody</groupId>
+                    <artifactId>javamelody-core</artifactId>
+                    <version>${javamelody.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.jrobin</groupId>
+                    <artifactId>jrobin</artifactId>
+                    <version>1.5.9</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
 </project>
