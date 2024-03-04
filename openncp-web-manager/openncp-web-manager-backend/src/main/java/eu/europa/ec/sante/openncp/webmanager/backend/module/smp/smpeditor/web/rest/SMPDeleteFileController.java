@@ -16,7 +16,7 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.AuditMan
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.DynamicDiscoveryService;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.DynamicDiscoveryClient;
-import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.HttpUtil;
+import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.SslUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -199,7 +199,7 @@ public class SMPDeleteFileController {
         }
 
         // Trust own CA and all self-signed certs
-        SSLContext sslcontext = HttpUtil.createSSLContext();
+        SSLContext sslcontext = SslUtil.createSSLContext();
 
         //DELETE
         HttpDelete httpdelete = new HttpDelete(uri);
@@ -324,7 +324,7 @@ public class SMPDeleteFileController {
         }
 
         // Trust own CA and all self-signed certs
-        SSLContext sslcontext = HttpUtil.createSSLContext();
+        SSLContext sslcontext = SslUtil.createSSLContext();
 
         //DELETE
         HttpDelete httpdelete = new HttpDelete(uri);

@@ -19,11 +19,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
-public class HttpUtil {
+public class SslUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SslUtil.class);
 
-    private HttpUtil() {
+    private SslUtil() {
     }
 
     public static SSLContext createSSLContext() {

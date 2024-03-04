@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.transformation.util.proxy;
+package eu.europa.ec.sante.openncp.common.util.proxy;
 
 import java.io.Serializable;
 

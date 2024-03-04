@@ -17,7 +17,7 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleEr
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.BdxSmpValidator;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.DynamicDiscoveryClient;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.SMPConverter;
-import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.HttpUtil;
+import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.SslUtil;
 import eu.europa.ec.sante.openncp.webmanager.backend.service.FileUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -204,7 +204,7 @@ public class SMPUploadFileController {
         }
 
         // Trust own CA and all self-signed certs
-        SSLContext sslcontext = HttpUtil.createSSLContext();
+        SSLContext sslcontext = SslUtil.createSSLContext();
 
         //PUT
         HttpPut httpput = new HttpPut(uri);

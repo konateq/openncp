@@ -6,6 +6,7 @@ import eu.europa.ec.sante.openncp.audit.*;
 import eu.europa.ec.sante.openncp.audit.AuditService;
 import eu.europa.ec.sante.openncp.audit.AuditServiceFactory;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
