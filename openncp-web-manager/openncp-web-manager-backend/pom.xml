@@ -113,7 +113,11 @@
             <groupId>eu.europa.ec.sante</groupId>
             <artifactId>openncp-common</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.sante</groupId>
+            <artifactId>openncp-audit</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -229,12 +233,6 @@
             <groupId>net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
             <scope>runtime</scope>
-        </dependency>
-        <!--OpenNCP dependencies-->
-        <dependency>
-            <groupId>eu.europa.ec.sante</groupId>
-            <artifactId>openncp-audit</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
