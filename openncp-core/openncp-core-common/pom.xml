@@ -18,11 +18,6 @@
             <artifactId>openncp-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>eu.europa.ec.sante</groupId>
-            <artifactId>openncp-audit</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- IHE Gazelle validator dependencies -->
         <dependency>
             <groupId>net.ihe.gazelle.epsos.validator</groupId>
