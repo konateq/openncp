@@ -115,11 +115,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.sante</groupId>
-            <artifactId>openncp-audit</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>

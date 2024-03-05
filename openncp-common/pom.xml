@@ -191,6 +191,19 @@
             <groupId>com.sun.xml.messaging.saaj</groupId>
             <artifactId>saaj-impl</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -325,6 +338,22 @@
                         </goals>
                         <configuration>
                             <packageName>net.ihe.gazelle.jaxb.result.sante</packageName>
+                            <clearOutputDir>false</clearOutputDir>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Dicom audits</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/resources/DICOM_Unsigned.xsd</source>
+                            </sources>
+                            <xjbSources>
+                                <xjbSource>src/main/resources/global.xjb</xjbSource>
+                            </xjbSources>
+                            <packageName>net.RFC3881.dicom</packageName>
                             <clearOutputDir>false</clearOutputDir>
                         </configuration>
                     </execution>

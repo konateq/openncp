@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.sts;
 
 
-import eu.europa.ec.sante.openncp.audit.AuditServiceFactory;
+import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import org.slf4j.Logger;

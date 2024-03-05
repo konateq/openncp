@@ -32,7 +32,6 @@
     <modules>
         <module>openncp-api</module>
         <module>openncp-application</module>
-        <module>openncp-audit</module>
         <module>openncp-common</module>
         <module>openncp-connectors</module>
         <module>openncp-context</module>
@@ -263,12 +262,6 @@
                         <artifactId>slf4j-log4j12</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <!-- Jackson dependencies -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <!-- Javax servlet dependencies -->
             <dependency>
