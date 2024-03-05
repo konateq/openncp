@@ -20,12 +20,12 @@ import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.handler.MessageContext;
 
 import com.sun.xml.ws.api.security.trust.WSTrustException;
-import eu.europa.ec.sante.openncp.audit.AuditServiceFactory;
-import eu.europa.ec.sante.openncp.audit.EventActionCode;
-import eu.europa.ec.sante.openncp.audit.EventLog;
-import eu.europa.ec.sante.openncp.audit.EventOutcomeIndicator;
-import eu.europa.ec.sante.openncp.audit.EventType;
-import eu.europa.ec.sante.openncp.audit.TransactionName;
+import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
+import eu.europa.ec.sante.openncp.common.audit.EventActionCode;
+import eu.europa.ec.sante.openncp.common.audit.EventLog;
+import eu.europa.ec.sante.openncp.common.audit.EventOutcomeIndicator;
+import eu.europa.ec.sante.openncp.common.audit.EventType;
+import eu.europa.ec.sante.openncp.common.audit.TransactionName;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
