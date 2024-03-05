@@ -14,8 +14,56 @@
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.sante</groupId>
+            <artifactId>openncp-core-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.sante</groupId>
             <artifactId>openncp-cdadisplaytool</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-xmlbeans</artifactId>
+        </dependency>
+        <!-- Logging dependencies -->
+
     </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.build.directory}/generated-sources/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-wsdl2code-maven-plugin</artifactId>
+                <version>${axis2.version}</version>
+                <executions>
+                    <execution>
+                        <id>Generate_Server_Code</id>
+                        <goals>
+                            <goal>wsdl2code</goal>
+                        </goals>
+                        <configuration>
+                            <packageName>eu.europa.ec.sante.openncp.api.client</packageName>
+                            <wsdlFile>src/main/resources/wsdl/ClientConnectorService.wsdl</wsdlFile>
+                            <databindingName>xmlbeans</databindingName>
+                            <generateAllClasses>false</generateAllClasses>
+                            <generateServerSide>false</generateServerSide>
+                            <generateServerSideInterface>true</generateServerSideInterface>
+                            <generateServicesXml>true</generateServicesXml>
+                            <generateTestcase>false</generateTestcase>
+                            <outputDirectory>target/generated-sources/</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -74,6 +74,7 @@
         <dynamic-discovery-client.version>1.11</dynamic-discovery-client.version>
         <ehealth.termservice.rest.model.version>2.1.2</ehealth.termservice.rest.model.version>
         <hapi.fhir.version>6.6.0</hapi.fhir.version>
+        <herasaf-xacml.version>1.0.4.RELEASE</herasaf-xacml.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <httpclient.version>4.5.14</httpclient.version>
         <ihe.gazelle.version>1.6</ihe.gazelle.version>
@@ -104,6 +105,7 @@
         <hikaricp.version>4.0.3</hikaricp.version>
         <springfox.version>3.0.0</springfox.version>
         <xerces.version>2.12.2</xerces.version>
+        <xmlbeans.version>3.1.0</xmlbeans.version>
         <xmlsec.version>2.3.0</xmlsec.version>
         <xmlunit.version>1.1</xmlunit.version>
         <guava.version>31.0.1-jre</guava.version>
@@ -116,7 +118,6 @@
         <herasaf-xacml.version>1.0.4.RELEASE</herasaf-xacml.version>
         <mail.version>1.6.2</mail.version>
         <ibatis-sqlmap.version>2.3.4.726</ibatis-sqlmap.version>
-        <saxon-he.version>10.6</saxon-he.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <axis2.version>1.8.1</axis2.version>
         <axiom-api.version>1.4.0</axiom-api.version>
@@ -407,6 +408,22 @@
             </dependency>
             <dependency>
                 <groupId>org.opensaml</groupId>
+                <artifactId>opensaml-xacml-impl</artifactId>
+                <version>${opensaml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml-xacml-saml-impl</artifactId>
+                <version>${opensaml.version}</version>
+            </dependency>
+            <!-- XML beans dependency -->
+            <dependency>
+                <groupId>org.apache.xmlbeans</groupId>
+                <artifactId>xmlbeans</artifactId>
+                <version>${xmlbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opensaml</groupId>
                 <artifactId>opensaml-saml-impl</artifactId>
                 <version>${opensaml.version}</version>
                 <exclusions>
@@ -500,7 +517,17 @@
                 <artifactId>xws-security</artifactId>
                 <version>3.0</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.herasaf.xacml.core</groupId>
+                <artifactId>herasaf-xacml-core</artifactId>
+                <version>${herasaf-xacml.version}</version>
+            </dependency>
+            <!-- Axis2 dependencies -->
+            <dependency>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-xmlbeans</artifactId>
+                <version>${axis2.version}</version>
+            </dependency>
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>

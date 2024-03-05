@@ -8,9 +8,29 @@
     </parent>
     <artifactId>openncp-core-client</artifactId>
     <name>openncp-core-client</name>
-    <modules>
-        <module>cda-display-tool</module>
-    </modules>
 
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- OpenNCP dependencies -->
+        <dependency>
+                <groupId>eu.europa.ec.sante</groupId>
+                <artifactId>openncp-core-common</artifactId>
+                <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

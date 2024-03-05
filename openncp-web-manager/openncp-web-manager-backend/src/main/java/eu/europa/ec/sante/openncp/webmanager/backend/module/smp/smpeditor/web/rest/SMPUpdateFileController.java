@@ -6,7 +6,7 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.cfg.ReadSMPPrope
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.Countries;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.BdxSmpValidator;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.SMPConverter;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.FileUtil;
+import eu.europa.ec.sante.openncp.webmanager.backend.service.PermissionUtil;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPFields;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPType;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPUpdateFields;
@@ -64,7 +64,7 @@ public class SMPUpdateFileController {
     @PostMapping(path = "/smpeditor/updater/setSmpFileToUpdate")
     public ResponseEntity<SMPUpdateFields> createSMPHttp(@RequestPart MultipartFile multipartFile) throws IOException {
 
-        FileUtil.initializeFolders(Constants.SMP_DIR_PATH);
+        PermissionUtil.initializeFolders(Constants.SMP_DIR_PATH);
         File smpFile = new File(Constants.SMP_DIR_PATH + File.separator + multipartFile.getOriginalFilename());
         try {
             multipartFile.transferTo(smpFile);
