@@ -32,7 +32,6 @@
     <modules>
         <module>openncp-api</module>
         <module>openncp-application</module>
-        <module>openncp-audit</module>
         <module>openncp-common</module>
         <module>openncp-connectors</module>
         <module>openncp-context</module>
