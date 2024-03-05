@@ -18,11 +18,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.sante</groupId>
-            <artifactId>openncp-cdadisplaytool</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-xmlbeans</artifactId>
         </dependency>
