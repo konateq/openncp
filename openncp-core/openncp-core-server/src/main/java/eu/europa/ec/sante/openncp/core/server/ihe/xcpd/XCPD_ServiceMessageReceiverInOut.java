@@ -1,17 +1,13 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xcpd;
 
-import com.spirit.epsos.cc.adc.EadcEntry;
-import ee.affecto.epsos.util.EventLogUtil;
-import epsos.ccd.gnomon.auditmanager.EventLog;
-import eu.epsos.pt.eadc.EadcUtilWrapper;
-import eu.epsos.pt.eadc.util.EadcUtil;
-import eu.epsos.validation.datamodel.common.NcpSide;
-import eu.europa.ec.sante.ehdsi.eadc.ServiceType;
-import eu.europa.ec.sante.ehdsi.gazelle.validation.OpenNCPValidation;
-import eu.europa.ec.sante.ehdsi.openncp.audit.AuditService;
-import eu.europa.ec.sante.ehdsi.openncp.audit.AuditServiceFactory;
-import eu.europa.ec.sante.ehdsi.openncp.util.OpenNCPConstants;
-import eu.europa.ec.sante.ehdsi.openncp.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.audit.EventLog;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+
+import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
+import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.util.XMLUtil;
+import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -23,12 +19,9 @@ import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201306UV02;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tr.com.srdc.epsos.util.Constants;
-import tr.com.srdc.epsos.util.XMLUtil;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
