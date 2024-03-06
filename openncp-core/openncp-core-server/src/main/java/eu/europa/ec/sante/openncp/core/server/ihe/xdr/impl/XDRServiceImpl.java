@@ -25,6 +25,8 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorList;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
+import eu.europa.ec.sante.openncp.core.common.exception.DocumentProcessingException;
+import eu.europa.ec.sante.openncp.core.common.exception.NoConsentException;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
@@ -891,7 +893,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
          * the consent document.
          */
         for (int i = 0; i < request.getDocument().size(); i++) {
-            Document doc = request.getDocument().get(i);
+            ProvideAndRegisterDocumentSetRequestType.Document doc = request.getDocument().get(i);
 
             try {
                 /* Validate CDA epSOS Pivot */
