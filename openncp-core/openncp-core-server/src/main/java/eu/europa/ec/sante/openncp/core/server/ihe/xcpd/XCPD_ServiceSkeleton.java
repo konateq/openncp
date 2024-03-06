@@ -1,11 +1,10 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xcpd;
 
-import epsos.ccd.gnomon.auditmanager.EventLog;
-import eu.epsos.protocolterminators.ws.server.xcpd.XCPDServiceInterface;
+
+import eu.europa.ec.sante.openncp.common.audit.EventLog;
+import eu.europa.ec.sante.openncp.core.common.org.hl7.v3.PRPAIN201305UV02;
+import eu.europa.ec.sante.openncp.core.common.org.hl7.v3.PRPAIN201306UV02;
 import org.apache.axiom.soap.SOAPHeader;
-import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201306UV02;
-import tr.com.srdc.epsos.ws.server.xcpd.impl.XCPDServiceImpl;
 
 /**
  * XCPD_ServiceSkeleton java skeleton for the axisService
