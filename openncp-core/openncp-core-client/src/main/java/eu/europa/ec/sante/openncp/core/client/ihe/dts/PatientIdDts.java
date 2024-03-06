@@ -1,65 +1,46 @@
-/*
- * This file is part of epSOS OpenNCP implementation
- * Copyright (C) 2012 SPMS (Serviços Partilhados do Ministério da Saúde - Portugal)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Contact email: epsos@iuz.pt
- */
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import epsos.openncp.protocolterminator.clientconnector.PatientId;
+import eu.europa.ec.sante.openncp.core.common.datamodel.PatientId;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * This is an Data Transformation Service. This provide functions to transform
- * data into a PatientDemographics object.
+ * This is an Data Transformation Service. This provide functions to transform data into a PatientDemographics object.
  *
  * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
- * @author Marcelo Fonseca<code> - marcelo.fonseca@iuz.pt</code>
  */
 public final class PatientIdDts {
 
-    public static PatientId[] newInstance(final List<tr.com.srdc.epsos.data.model.PatientId> patientId) {
-        if (patientId == null) {
-            return null;
-        }
-
-        PatientId[] result = new PatientId[patientId.size()];
-        for(int i = 0; i < patientId.size(); i++) {
-            result[i] = newInstance(patientId.get(i));
-        }
-
-        return result;
-    }
-
-    public static PatientId newInstance(final tr.com.srdc.epsos.data.model.PatientId patientId) {
-        if (patientId == null) {
-            return null;
-        }
-
-        PatientId result = PatientId.Factory.newInstance();
-        result.setRoot(patientId.getRoot());
-        result.setExtension(patientId.getExtension());
-
-        return result;
-    }
-
-    /**
-     * Private constructor to disable class instantiation.
-     */
     private PatientIdDts() {
+    }
+
+    public static List<PatientId> newInstance(final eu.europa.ec.sante.openncp.core.client.PatientId[] patientIdList) {
+
+        if (patientIdList == null) {
+            return Collections.emptyList();
+        }
+
+        List<PatientId> result = new ArrayList<>(patientIdList.length);
+        for (eu.europa.ec.sante.openncp.core.client.PatientId patientId : patientIdList) {
+            result.add(newInstance(patientId));
+        }
+
+        return result;
+    }
+
+    public static PatientId newInstance(final eu.europa.ec.sante.openncp.core.client.PatientId patientId) {
+
+        if (patientId == null) {
+            return null;
+        }
+
+        PatientId result = new PatientId();
+        result.setRoot(StringUtils.trim(patientId.getRoot()));
+        result.setExtension(StringUtils.trim(patientId.getExtension()));
+
+        return result;
     }
 }

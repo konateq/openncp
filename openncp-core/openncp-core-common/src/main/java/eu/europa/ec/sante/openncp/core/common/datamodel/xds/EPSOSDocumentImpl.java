@@ -1,7 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.datamodel.xds;
 
-import eu.europa.ec.sante.ehdsi.constant.ClassCode;
-import fi.kela.se.epsos.data.model.SearchCriteria.Criteria;
+import eu.europa.ec.sante.openncp.common.ClassCode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
@@ -57,8 +56,8 @@ public class EPSOSDocumentImpl implements EPSOSDocument {
     public boolean matchesCriteria(SearchCriteria searchCriteria) {
 
         logger.debug("Processing Search Criteria");
-        String patientIdCriteria = searchCriteria.getCriteriaValue(Criteria.PATIENT_ID);
-        String documentIdCriteria = searchCriteria.getCriteriaValue(Criteria.DOCUMENT_ID);
+        String patientIdCriteria = searchCriteria.getCriteriaValue(SearchCriteria.Criteria.PATIENT_ID);
+        String documentIdCriteria = searchCriteria.getCriteriaValue(SearchCriteria.Criteria.DOCUMENT_ID);
 
         if (patientIdCriteria != null && !patientIdCriteria.isEmpty()) {
             //TODO: EHNCP-2055 Inconsistency in handling patient id

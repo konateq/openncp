@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.datamodel.xds;
 
-import tr.com.srdc.epsos.data.model.SubstitutionCodeEnum;
+import eu.europa.ec.sante.openncp.core.common.datamodel.SubstitutionCodeEnum;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class EPDocumentMetaDataImpl extends EPSOSDocumentMetaDataImpl implements EPDocumentMetaData {

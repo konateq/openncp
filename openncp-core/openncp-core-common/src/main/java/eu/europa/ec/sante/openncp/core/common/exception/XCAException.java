@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.exception;
 
-import eu.europa.ec.sante.ehdsi.constant.error.OpenNCPErrorCode;
+import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 
 /**
  * Holds exceptions originated in the XCA Query / Retrieve process.

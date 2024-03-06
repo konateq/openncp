@@ -1,11 +1,9 @@
 package eu.europa.ec.sante.openncp.core.common.datamodel.xds;
 
-import eu.europa.ec.sante.ehdsi.constant.ClassCode;
+import eu.europa.ec.sante.openncp.common.ClassCode;
 
 /**
  * EPSOSDocument interface. Includes EPSOSDocumentMetaData and includes DOM Document.
- *
- * @author mimyllyv
  */
 public interface EPSOSDocument {
 

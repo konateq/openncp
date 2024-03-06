@@ -20,7 +20,10 @@
 
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import epsos.openncp.protocolterminator.clientconnector.GenericDocumentCode;
+import eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is an Data Transformation Service. This provide functions to transform
@@ -30,14 +33,29 @@ import epsos.openncp.protocolterminator.clientconnector.GenericDocumentCode;
  * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
  */
 public class GenericDocumentCodeDts {
-    
-    public static GenericDocumentCode newInstance(tr.com.srdc.epsos.data.model.GenericDocumentCode genericDocCode){
-        final GenericDocumentCode result = GenericDocumentCode.Factory.newInstance();
-        result.setSchema(genericDocCode.getSchema());
-        result.setValue(genericDocCode.getValue());
-        result.setNodeRepresentation(genericDocCode.getValue());
+
+    public static List<GenericDocumentCode> newInstance(List<eu.europa.ec.sante.openncp.core.client.GenericDocumentCode> documentCodes) {
+        final List<GenericDocumentCode> result = new ArrayList<>();
+
+        for (eu.europa.ec.sante.openncp.core.client.GenericDocumentCode documentCode: documentCodes) {
+            GenericDocumentCode genericDocumentCode = new GenericDocumentCode();
+            genericDocumentCode.setSchema(documentCode.getSchema());
+            genericDocumentCode.setValue(documentCode.getNodeRepresentation());
+            result.add(genericDocumentCode);
+        }
         return result;
     }
+
+    public static GenericDocumentCode newInstance(eu.europa.ec.sante.openncp.core.client.GenericDocumentCode documentCode) {
+        final GenericDocumentCode result = new GenericDocumentCode();
+
+        result.setSchema(documentCode.getSchema());
+        result.setValue(documentCode.getNodeRepresentation());
+
+        return result;
+    }
+
+    /**
 
     /**
      *Private constructor to disable class instantiation.

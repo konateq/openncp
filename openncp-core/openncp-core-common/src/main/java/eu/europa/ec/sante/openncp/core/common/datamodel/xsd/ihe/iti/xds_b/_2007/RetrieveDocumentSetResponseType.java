@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007;
 
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

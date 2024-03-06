@@ -1,8 +1,7 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
+import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
 import org.apache.commons.lang3.StringUtils;
-import tr.com.srdc.epsos.data.model.PatientDemographics;
-import tr.com.srdc.epsos.data.model.PatientDemographics.Gender;
 
 import java.text.ParseException;
 
@@ -27,9 +26,9 @@ public final class PatientDemographicsDts {
      * @return a PatientDemographics object.
      * @throws ParseException
      * @see PatientDemographics
-     * @see epsos.openncp.protocolterminator.clientconnector.QueryPatientDocument
+     * @see eu.europa.ec.sante.openncp.core.client.QueryPatientDocument
      */
-    public static PatientDemographics newInstance(final epsos.openncp.protocolterminator.clientconnector.PatientDemographics patientDemographics) throws ParseException {
+    public static PatientDemographics newInstance(final eu.europa.ec.sante.openncp.core.client.PatientDemographics patientDemographics) throws ParseException {
 
         if (patientDemographics == null) {
             return null;
@@ -38,7 +37,7 @@ public final class PatientDemographicsDts {
         final PatientDemographics result = new PatientDemographics();
 
         if (StringUtils.isNotBlank(patientDemographics.getAdministrativeGender())) {
-            result.setAdministrativeGender(Gender.parseGender(StringUtils.trim(patientDemographics.getAdministrativeGender())));
+            result.setAdministrativeGender(PatientDemographics.Gender.parseGender(StringUtils.trim(patientDemographics.getAdministrativeGender())));
         }
         if (patientDemographics.getBirthDate() != null) {
             result.setBirthDate(patientDemographics.getBirthDate().getTime());

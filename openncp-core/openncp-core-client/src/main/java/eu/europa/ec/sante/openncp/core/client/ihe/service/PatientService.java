@@ -1,15 +1,7 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
-import eu.epsos.exceptions.XCAException;
-import eu.epsos.pt.ws.client.xca.XcaInitGateway;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.RegisteredService;
-import eu.europa.ec.sante.ehdsi.constant.assertion.AssertionEnum;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import org.opensaml.saml.saml2.core.Assertion;
-import tr.com.srdc.epsos.data.model.GenericDocumentCode;
-import tr.com.srdc.epsos.data.model.PatientId;
-import tr.com.srdc.epsos.data.model.xds.QueryResponse;
-import tr.com.srdc.epsos.data.model.xds.XDSDocument;
+
 
 import java.util.List;
 import java.util.Map;

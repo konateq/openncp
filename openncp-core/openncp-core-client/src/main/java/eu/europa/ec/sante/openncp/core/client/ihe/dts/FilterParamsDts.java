@@ -19,12 +19,12 @@
  */
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import tr.com.srdc.epsos.data.model.FilterParams;
+import eu.europa.ec.sante.openncp.core.common.datamodel.FilterParams;
 
 public class FilterParamsDts {
 
 
-    public static FilterParams newInstance(final epsos.openncp.protocolterminator.clientconnector.FilterParams filterParams) {
+    public static FilterParams newInstance(final eu.europa.ec.sante.openncp.core.client.FilterParams filterParams) {
 
         if( filterParams == null) {
             return null;

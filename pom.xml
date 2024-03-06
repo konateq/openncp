@@ -76,6 +76,7 @@
         <hapi.fhir.version>6.6.0</hapi.fhir.version>
         <herasaf-xacml.version>1.0.4.RELEASE</herasaf-xacml.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
+        <hl7v3.version>1.3.7</hl7v3.version>
         <httpclient.version>4.5.14</httpclient.version>
         <ihe.gazelle.version>1.6</ihe.gazelle.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
@@ -528,6 +529,12 @@
                 <artifactId>axis2-xmlbeans</artifactId>
                 <version>${axis2.version}</version>
             </dependency>
+            <!-- HL7 dependencies -->
+            <dependency>
+                <groupId>net.ihe.gazelle</groupId>
+                <artifactId>hl7v3-code-jar</artifactId>
+                <version>${hl7v3.version}</version>
+            </dependency>
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
@@ -570,6 +577,10 @@
             <id>openSamlRep</id>
             <name>Official OpenSaml Repository</name>
             <url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>gazelle</id>
+            <url>https://gazelle.ihe.net/nexus/content/repositories/releases/</url>
         </repository>
     </repositories>
 

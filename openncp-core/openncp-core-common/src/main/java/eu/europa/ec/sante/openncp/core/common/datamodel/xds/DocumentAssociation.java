@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.datamodel.xds;
 
-import eu.europa.ec.sante.ehdsi.constant.ClassCode;
+import eu.europa.ec.sante.openncp.common.ClassCode;
 
 /**
  * DocumentAssociation which includes XML and PDF versions of DocumentMetaData.

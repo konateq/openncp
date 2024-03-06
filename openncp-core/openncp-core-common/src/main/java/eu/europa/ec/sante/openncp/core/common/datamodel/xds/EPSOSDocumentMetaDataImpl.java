@@ -1,8 +1,8 @@
 package eu.europa.ec.sante.openncp.core.common.datamodel.xds;
 
-import eu.europa.ec.sante.ehdsi.constant.ClassCode;
+import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.core.common.datamodel.SimpleConfidentialityEnum;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import tr.com.srdc.epsos.data.model.SimpleConfidentialityEnum;
 
 import java.util.Date;
 

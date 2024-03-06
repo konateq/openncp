@@ -1,10 +1,9 @@
 package eu.europa.ec.sante.openncp.core.common.datamodel.xds;
 
-import eu.europa.ec.sante.ehdsi.constant.ClassCode;
-import fi.kela.se.epsos.data.model.SearchCriteria.Criteria;
+import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.core.common.datamodel.SimpleConfidentialityEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
-import tr.com.srdc.epsos.data.model.SimpleConfidentialityEnum;
 
 import java.util.Date;
 import java.util.List;
@@ -36,7 +35,7 @@ public class DocumentFactory {
      * @param value    - Value of the parameter
      * @return an initialized instance of the SearchCriteria interface used to pass the search parameters
      */
-    public static SearchCriteria createSearchCriteria(Criteria criteria, String value) {
+    public static SearchCriteria createSearchCriteria(SearchCriteria.Criteria criteria, String value) {
         SearchCriteria searchCriteria = new SearchCriteriaImpl();
         searchCriteria.add(criteria, value);
         return searchCriteria;
@@ -645,88 +644,5 @@ public class DocumentFactory {
 
         return createEDDocument(EPSOSDocumentMetaData.EPSOSDOCUMENT_FORMAT_XML, id, patientId, effectiveDate,
                 repositoryId, title, author, size, hash);
-    }
-
-    //  Management of the ConsentDocument (not currently implemented in OpenNCP).
-
-    /**
-     * @deprecated Service currently not implemented in OpenNCP
-     */
-    @Deprecated(since = "2.4.0", forRemoval = true)
-    private static ConsentDocumentMetaData createConsentDocument(int documentFormat, String id, String patientId,
-                                                                 Date effectiveDate, String repositoryId, String title,
-                                                                 String author, Long size, String hash) {
-
-        EPSOSDocumentMetaData metaData = new EPSOSDocumentMetaDataImpl(id, patientId, documentFormat, effectiveDate,
-                ClassCode.CONSENT_CLASSCODE, repositoryId, title, author, size, hash);
-        return new ConsentDocumentMetaDataImpl(metaData);
-    }
-
-    /**
-     * @deprecated Service currently not implemented in OpenNCP
-     */
-    @Deprecated(since = "2.4.0", forRemoval = true)
-    public static ConsentDocumentMetaData createConsentDocumentPDF(String id, String patientId, Date effectiveDate,
-                                                                   String repositoryId, String title, String author,
-                                                                   Long size, String hash) {
-
-        return createConsentDocument(EPSOSDocumentMetaData.EPSOSDOCUMENT_FORMAT_PDF, id, patientId, effectiveDate,
-                repositoryId, title, author, size, hash);
-    }
-
-    /**
-     * @deprecated Service currently not implemented in OpenNCP
-     */
-    @Deprecated(since = "2.4.0", forRemoval = true)
-    public static ConsentDocumentMetaData createConsentDocumentXML(String id, String patientId, Date effectiveDate,
-                                                                   String repositoryId, String title, String author,
-                                                                   Long size, String hash) {
-
-        return createConsentDocument(EPSOSDocumentMetaData.EPSOSDOCUMENT_FORMAT_XML, id, patientId, effectiveDate,
-                repositoryId, title, author, size, hash);
-    }
-
-    //  Management of the MRODocument (not currently implemented in OpenNCP).
-
-    /**
-     * @deprecated Service currently not implemented in OpenNCP
-     */
-    @Deprecated(since = "2.4.0", forRemoval = true)
-    private static MroDocumentMetaData createMroDocument(int documentFormat, String id, String patientId,
-                                                         Date effectiveDate, String repositoryId, String title,
-                                                         String author, SimpleConfidentialityEnum confidentiality,
-                                                         String languageCode, Long size, String hash) {
-
-        MroDocumentMetaDataImpl.SimpleConfidentialityMetadata confidentialityMetadata =
-                new MroDocumentMetaDataImpl.SimpleConfidentialityMetadata(confidentiality);
-        EPSOSDocumentMetaData metaData = new EPSOSDocumentMetaDataImpl(id, patientId, documentFormat, effectiveDate,
-                ClassCode.MRO_CLASSCODE, repositoryId, title, author, confidentialityMetadata, languageCode, size, hash);
-        return new MroDocumentMetaDataImpl(metaData);
-    }
-
-    /**
-     * @deprecated Service currently not implemented in OpenNCP
-     */
-    @Deprecated(since = "2.4.0", forRemoval = true)
-    public static MroDocumentMetaData createMroDocumentPDF(String id, String patientId, Date effectiveDate,
-                                                           String repositoryId, String title, String author,
-                                                           SimpleConfidentialityEnum confidentiality,
-                                                           String languageCode, Long size, String hash) {
-
-        return createMroDocument(EPSOSDocumentMetaData.EPSOSDOCUMENT_FORMAT_PDF, id, patientId, effectiveDate,
-                repositoryId, title, author, confidentiality, languageCode, size, hash);
-    }
-
-    /**
-     * @deprecated Service currently not implemented in OpenNCP
-     */
-    @Deprecated(since = "2.4.0", forRemoval = true)
-    public static MroDocumentMetaData createMroDocumentXML(String id, String patientId, Date effectiveDate,
-                                                           String repositoryId, String title, String author,
-                                                           SimpleConfidentialityEnum confidentiality,
-                                                           String languageCode, Long size, String hash) {
-
-        return createMroDocument(EPSOSDocumentMetaData.EPSOSDOCUMENT_FORMAT_XML, id, patientId, effectiveDate,
-                repositoryId, title, author, confidentiality, languageCode, size, hash);
     }
 }

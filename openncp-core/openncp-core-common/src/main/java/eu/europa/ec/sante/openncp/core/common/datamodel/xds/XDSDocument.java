@@ -1,7 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.datamodel.xds;
 
-import fi.kela.se.epsos.data.model.OrCDDocumentMetaData;
-import tr.com.srdc.epsos.data.model.GenericDocumentCode;
+import eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode;
 
 import java.util.ArrayList;
 import java.util.List;

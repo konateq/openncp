@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.common.datamodel.xds;
 
+import eu.europa.ec.sante.openncp.core.common.datamodel.PatientId;
 import org.w3c.dom.Document;
-import tr.com.srdc.epsos.data.model.PatientId;
 
 import java.util.Iterator;
 

@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007;
 
-import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.lcm._3.SubmitObjectsRequest;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;

@@ -1,12 +1,10 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import epsos.openncp.protocolterminator.clientconnector.SubmitDocumentResponse;
-import tr.com.srdc.epsos.data.model.XdrResponse;
+import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponse;
+import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
 
 /**
- * This is an Data Transformation Service. This provide functions to transform data into a SubmitDocumentResponseDts object.
- *
- * @author Marcelo Fonseca<code> - marcelo.fonseca@iuz.pt</code>
+ * This is a Data Transformation Service. This provides functions to transform data into a SubmitDocumentResponseDts object.
  */
 public class SubmitDocumentResponseDts {
 
