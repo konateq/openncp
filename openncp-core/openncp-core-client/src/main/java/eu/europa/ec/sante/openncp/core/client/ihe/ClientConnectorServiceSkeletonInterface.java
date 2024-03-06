@@ -2,6 +2,9 @@ package eu.europa.ec.sante.openncp.core.client.ihe;
 
 import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.exception.NoPatientIdDiscoveredException;
+import eu.europa.ec.sante.openncp.core.common.exception.XCAException;
+import eu.europa.ec.sante.openncp.core.common.exception.XDRException;
 import org.opensaml.saml.saml2.core.Assertion;
 
 import java.text.ParseException;

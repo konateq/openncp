@@ -20,7 +20,6 @@ package eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3;
 
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.lcm._3.*;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.lcm._3.*;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotListType;
 
 import javax.xml.bind.annotation.*;
