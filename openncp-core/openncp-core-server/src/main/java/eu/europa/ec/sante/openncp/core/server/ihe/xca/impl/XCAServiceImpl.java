@@ -11,9 +11,11 @@ import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
+import eu.europa.ec.sante.openncp.core.common.constants.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.datamodel.FilterParams;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.*;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.ObjectFactory;
@@ -31,6 +33,8 @@ import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseSt
 import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
+import eu.europa.ec.sante.openncp.core.server.ihe.RegistryErrorUtils;
+import eu.europa.ec.sante.openncp.core.server.ihe.xca.DocumentSearchInterface;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.ep.EPExtrinsicObjectBuilder;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.orcd.OrCDExtrinsicObjectBuilder;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.ps.PSExtrinsicObjectBuilder;
@@ -236,11 +240,6 @@ public class XCAServiceImpl implements XCAServiceInterface {
                 case PS_CLASSCODE:
                     eventLog.setEventType(EventType.PATIENT_SERVICE_RETRIEVE);
                     eventLog.setEI_TransactionName(TransactionName.PATIENT_SERVICE_RETRIEVE);
-                    eventLog.setEI_EventActionCode(EventActionCode.READ);
-                    break;
-                case MRO_CLASSCODE:
-                    eventLog.setEventType(EventType.MRO_RETRIEVE);
-                    eventLog.setEI_TransactionName(TransactionName.MRO_SERVICE_RETRIEVE);
                     eventLog.setEI_EventActionCode(EventActionCode.READ);
                     break;
                 case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
@@ -578,39 +577,6 @@ public class XCAServiceImpl implements XCAServiceInterface {
 
                             PSDocumentMetaData docPdf = psDoc.getPDFDocumentMetaData();
                             PSDocumentMetaData docXml = psDoc.getXMLDocumentMetaData();
-                            responseStatus = AdhocQueryResponseStatus.SUCCESS;
-
-                            var xmlUUID = "";
-                            if (docXml != null) {
-                                var eotXML = ofRim.createExtrinsicObjectType();
-                                xmlUUID = PSExtrinsicObjectBuilder.build(request, eotXML, docXml, false);
-                                response.getRegistryObjectList().getIdentifiable().add(ofRim.createExtrinsicObject(eotXML));
-                            }
-                            var pdfUUID = "";
-                            if (docPdf != null) {
-                                var eotPDF = ofRim.createExtrinsicObjectType();
-                                pdfUUID = PSExtrinsicObjectBuilder.build(request, eotPDF, docPdf, true);
-                                response.getRegistryObjectList().getIdentifiable().add(ofRim.createExtrinsicObject(eotPDF));
-                            }
-                            if (!xmlUUID.equals("") && !pdfUUID.equals("")) {
-                                response.getRegistryObjectList().getIdentifiable().add(ofRim.createAssociation(makeAssociation(pdfUUID, xmlUUID)));
-                            }
-                        }
-                        break;
-                    case MRO_CLASSCODE:
-                        DocumentAssociation<MroDocumentMetaData> mro = documentSearchService.getMroDocumentList(
-                                DocumentFactory.createSearchCriteria().addPatientId(fullPatientId));
-
-                        if (mro == null || (mro.getPDFDocumentMetaData() == null && mro.getXMLDocumentMetaData() == null)) {
-                            RegistryErrorUtils.addErrorMessage(registryErrorList, OpenNCPErrorCode.ERROR_MRO_NO_DATA,
-                                    OpenNCPErrorCode.ERROR_MRO_NO_DATA.getDescription(), "",
-                                    RegistryErrorSeverity.ERROR_SEVERITY_WARNING);
-                            responseStatus = AdhocQueryResponseStatus.SUCCESS;
-                        } else {
-
-                            MroDocumentMetaData docPdf = mro.getPDFDocumentMetaData();
-                            MroDocumentMetaData docXml = mro.getXMLDocumentMetaData();
-
                             responseStatus = AdhocQueryResponseStatus.SUCCESS;
 
                             var xmlUUID = "";

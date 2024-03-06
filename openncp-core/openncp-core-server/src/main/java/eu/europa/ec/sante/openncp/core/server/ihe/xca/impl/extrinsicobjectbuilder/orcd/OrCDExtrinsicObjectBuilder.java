@@ -1,21 +1,17 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.orcd;
 
-import eu.epsos.util.IheConstants;
-import eu.epsos.util.xca.XCAConstants;
-import eu.europa.ec.sante.ehdsi.constant.ihe.ClassificationScheme;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xds.OrCDDocumentMetaData;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory;
-import fi.kela.se.epsos.data.model.OrCDDocumentMetaData;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ClassificationType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObjectType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
+import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.AbstractExtrinsicObjectBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tr.com.srdc.epsos.util.Constants;
-import tr.com.srdc.epsos.util.DateUtil;
-import tr.com.srdc.epsos.ws.server.xca.impl.ClassificationBuilder;
-import tr.com.srdc.epsos.ws.server.xca.impl.SlotBuilder;
-import tr.com.srdc.epsos.ws.server.xca.impl.extrinsicobjectbuilder.AbstractExtrinsicObjectBuilder;
+
+import static eu.europa.ec.sante.openncp.common.configuration.util.Constants.UUID_PREFIX;
 
 import java.util.UUID;
 

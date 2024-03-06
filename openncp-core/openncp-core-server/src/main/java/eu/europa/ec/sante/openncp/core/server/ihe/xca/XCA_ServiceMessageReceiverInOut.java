@@ -1,22 +1,15 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca;
 
-import com.spirit.epsos.cc.adc.EadcEntry;
-import ee.affecto.epsos.util.EventLogUtil;
-import epsos.ccd.gnomon.auditmanager.EventLog;
-import eu.epsos.pt.eadc.EadcUtilWrapper;
-import eu.epsos.pt.eadc.util.EadcUtil;
-import eu.epsos.util.xca.XCAConstants;
-import eu.epsos.validation.datamodel.common.NcpSide;
-import eu.europa.ec.sante.ehdsi.constant.ClassCode;
-import eu.europa.ec.sante.ehdsi.eadc.ServiceType;
-import eu.europa.ec.sante.ehdsi.gazelle.validation.OpenNCPValidation;
-import eu.europa.ec.sante.ehdsi.openncp.audit.AuditServiceFactory;
-import eu.europa.ec.sante.ehdsi.openncp.util.OpenNCPConstants;
-import eu.europa.ec.sante.ehdsi.openncp.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
+import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
+import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import eu.europa.ec.sante.openncp.core.common.constants.xca.XCAConstants;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;
 import org.apache.axiom.om.*;
@@ -35,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import tr.com.srdc.epsos.util.XMLUtil;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
@@ -45,6 +38,9 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.*;
+
+import static eu.europa.ec.sante.openncp.common.configuration.util.Constants.UUID_PREFIX;
+import static eu.europa.ec.sante.openncp.common.configuration.util.Constants.COUNTRY_CODE;
 
 /**
  * XCA_ServiceMessageReceiverInOut message receiver
@@ -65,8 +61,8 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
             jc = JAXBContext.newInstance(
                     AdhocQueryRequest.class,
                     AdhocQueryResponse.class,
-                    ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.class,
-                    ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.class);
+                    RetrieveDocumentSetRequestType.class,
+                    RetrieveDocumentSetResponseType.class);
         } catch (JAXBException ex) {
             LOGGER.error("Unable to create JAXBContext: '{}'", ex.getMessage(), ex);
             Runtime.getRuntime().exit(-1);
@@ -84,7 +80,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
             return it.next().getText();
         } else {
             // [Mustafa: May 8, 2012]: Should not be empty string, sch. gives error.
-            return tr.com.srdc.epsos.util.Constants.UUID_PREFIX;
+            return Constants.UUID_PREFIX;
         }
     }
 
@@ -100,7 +96,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         // Out Envelop
         SOAPEnvelope envelope = null;
 
-        ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType retrieveDocumentSetResponseType = null;
+        RetrieveDocumentSetResponseType retrieveDocumentSetResponseType = null;
         ServiceType serviceType = null;
         Document clinicalDocument = null;
         try {
@@ -272,7 +268,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         } finally {
             if(!eadcError.isEmpty()) {
                 EadcUtilWrapper.invokeEadcFailure(msgContext, newMsgContext, null, clinicalDocument, startTime, endTime,
-                        tr.com.srdc.epsos.util.Constants.COUNTRY_CODE, EadcEntry.DsTypes.EADC, EadcUtil.Direction.INBOUND, serviceType, eadcError);
+                        Constants.COUNTRY_CODE, EadcEntry.DsTypes.EADC, EadcUtil.Direction.INBOUND, serviceType, eadcError);
                 eadcError = "";
             }
         }
