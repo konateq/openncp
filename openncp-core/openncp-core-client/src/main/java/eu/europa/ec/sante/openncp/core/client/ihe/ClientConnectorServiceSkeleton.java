@@ -1,7 +1,19 @@
 package eu.europa.ec.sante.openncp.core.client.ihe;
 
-import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentDocument1;
-import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponseDocument;
+import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.core.client.*;
+import eu.europa.ec.sante.openncp.core.client.exception.ClientConnectorException;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.*;
+import eu.europa.ec.sante.openncp.core.client.ihe.service.*;
+import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
+import eu.europa.ec.sante.openncp.core.client.logging.LoggingSlf4j;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xds.QueryResponse;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import eu.europa.ec.sante.openncp.core.common.exception.NoPatientIdDiscoveredException;
+import eu.europa.ec.sante.openncp.core.common.exception.XCAException;
+import eu.europa.ec.sante.openncp.core.common.exception.XDRException;
 import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
@@ -46,17 +58,17 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
 
         try {
             /* Creating request */
-            List<tr.com.srdc.epsos.data.model.PatientDemographics> xcpdResp;
+            List<PatientDemographics> xcpdResp;
             var queryPatientRequest = queryPatient.getQueryPatient().getArg0();
             var patientDemographics = queryPatientRequest.getPatientDemographics();
-            tr.com.srdc.epsos.data.model.PatientDemographics request = eu.epsos.pt.cc.dts.PatientDemographicsDts.newInstance(patientDemographics);
+            PatientDemographics request = PatientDemographicsDts.newInstance(patientDemographics);
             String countryCode = queryPatientRequest.getCountryCode();
 
             // Calling XCPD Client
             xcpdResp = IdentificationService.findIdentityByTraits(request, assertionMap, countryCode);
 
             //  Response
-            List<PatientDemographics> aux = eu.epsos.pt.cc.dts.axis2.PatientDemographicsDts.newInstance(xcpdResp);
+            List<PatientDemographics> aux = PatientDemographicsDts.newInstance(xcpdResp);
             var queryPatientResponse = QueryPatientResponseDts.newInstance(aux);
             queryPatientResponseDocument.setQueryPatientResponse(queryPatientResponse);
 
@@ -91,15 +103,15 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
         String countryCode = queryDocumentRequest.getCountryCode();
 
         List<GenericDocumentCode> classCodes = Arrays.asList(queryDocumentRequest.getClassCodeArray());
-        List<tr.com.srdc.epsos.data.model.GenericDocumentCode> documentCodes =
-                eu.epsos.pt.cc.dts.GenericDocumentCodeDts.newInstance(classCodes);
+        List<GenericDocumentCode> documentCodes =
+                GenericDocumentCodeDts.newInstance(classCodes);
 
         var filterParamsReceived = queryDocumentRequest.getFilterParams();
-        var patientId = eu.epsos.pt.cc.dts.PatientIdDts.newInstance(queryDocumentRequest.getPatientId());
+        var patientId = PatientIdDts.newInstance(queryDocumentRequest.getPatientId());
 
-        var filterParams = eu.epsos.pt.cc.dts.FilterParamsDts.newInstance(filterParamsReceived);
+        var filterParams = FilterParamsDts.newInstance(filterParamsReceived);
 
-        for (tr.com.srdc.epsos.data.model.GenericDocumentCode documentCode : documentCodes) {
+        for (GenericDocumentCode documentCode : documentCodes) {
             if (!documentCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {
                 throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION + documentCode.getSchema());
             }
@@ -116,9 +128,6 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
                         break;
                     case EP_CLASSCODE:
                         response = OrderService.list(patientId, countryCode, documentCodes.get(0), assertionMap);
-                        break;
-                    case MRO_CLASSCODE:
-                        response = MroService.list(patientId, countryCode, documentCodes.get(0), assertionMap);
                         break;
                     case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
                     case ORCD_LABORATORY_RESULTS_CLASSCODE:
@@ -186,14 +195,14 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
         String targetLanguage = retrieveDocumentRequest.getTargetLanguage();
 
         GenericDocumentCode tmpCode = retrieveDocumentRequest.getClassCode();
-        tr.com.srdc.epsos.data.model.GenericDocumentCode documentCode = eu.epsos.pt.cc.dts.GenericDocumentCodeDts.newInstance(tmpCode);
+        GenericDocumentCode documentCode = GenericDocumentCodeDts.newInstance(tmpCode);
 
         if (!documentCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {
             throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION + documentCode.getSchema());
         }
 
         try {
-            DocumentResponse response;
+            RetrieveDocumentSetResponseType.DocumentResponse response;
             var xdsDocument = XdsDocumentDts.newInstance(documentId);
             xdsDocument.setClassCode(documentCode);
 
@@ -208,9 +217,6 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
                     response = OrderService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
                             assertionMap);
                     break;
-                case MRO_CLASSCODE:
-                    response = MroService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage, assertionMap);
-                    break;
                 case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
                 case ORCD_LABORATORY_RESULTS_CLASSCODE:
                 case ORCD_MEDICAL_IMAGING_REPORTS_CLASSCODE:
@@ -222,7 +228,7 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
                     throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_EXCEPTION + documentCode.getValue());
             }
 
-            result = RetrieveDocumentResponseDTS.newInstance(response);
+            result = RetrieveDocumentResponseDts.newInstance(response);
 
         } catch (ClientConnectorException ex) {
             LoggingSlf4j.error(logger, methodName, ex);
@@ -275,10 +281,6 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
             var classCodeValue = ClassCode.getByCode(classCodeNode);
             switch (classCodeValue) {
 
-                // call XDR Client for Consent
-                case CONSENT_CLASSCODE:
-                    response = ConsentService.put(document, patientDemographics, countryCode, assertionMap);
-                    break;
                 // call XDR Client for eP
                 case ED_CLASSCODE:
                     if (StringUtils.equals(nodeRepresentation, "urn:eHDSI:ed:discard:2020")) {
@@ -286,10 +288,6 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
                     } else {
                         response = DispensationService.initialize(document, patientDemographics, countryCode, assertionMap);
                     }
-                    break;
-                // call XDR Client for HCER
-                case HCER_CLASSCODE:
-                    response = HcerService.submit(document, patientDemographics, countryCode, assertionMap);
                     break;
                 case EDD_CLASSCODE:
                     response = DispensationService.discard(document, patientDemographics, countryCode, assertionMap);
