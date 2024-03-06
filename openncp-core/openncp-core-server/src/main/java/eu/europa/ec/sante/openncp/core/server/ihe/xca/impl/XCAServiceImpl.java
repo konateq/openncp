@@ -1,12 +1,21 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl;
 
+import eu.europa.ec.sante.openncp.common.audit.*;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
+import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
+import eu.europa.ec.sante.openncp.common.util.DateUtil;
+import eu.europa.ec.sante.openncp.common.util.XMLUtil;
+import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
 import eu.europa.ec.sante.openncp.core.common.constants.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.common.ClassCode;
-import eu.europa.ec.sante.openncp.common.audit.EventActionCode;
-import eu.europa.ec.sante.openncp.common.audit.EventLog;
-import eu.europa.ec.sante.openncp.common.audit.EventType;
-import eu.europa.ec.sante.openncp.common.audit.TransactionName;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xds.*;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;
@@ -16,6 +25,16 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObje
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
 
+import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
+import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
+import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.ep.EPExtrinsicObjectBuilder;
+import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.orcd.OrCDExtrinsicObjectBuilder;
+import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.ps.PSExtrinsicObjectBuilder;
+import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -864,9 +883,9 @@ public class XCAServiceImpl implements XCAServiceInterface {
             EPSOSDocument epsosDoc;
             try {
                 epsosDoc = documentSearchService.getDocument(DocumentFactory.createSearchCriteria()
-                        .add(Criteria.DOCUMENT_ID, documentId)
+                        .add(SearchCriteria.Criteria.DOCUMENT_ID, documentId)
                         .addPatientId(fullPatientId)
-                        .add(Criteria.REPOSITORY_ID, repositoryId));
+                        .add(SearchCriteria.Criteria.REPOSITORY_ID, repositoryId));
             } catch (NIException e) {
                 logger.error("NIException: '{}'", e.getMessage(), e);
                 var stackTraceLines = e.getStackTrace();

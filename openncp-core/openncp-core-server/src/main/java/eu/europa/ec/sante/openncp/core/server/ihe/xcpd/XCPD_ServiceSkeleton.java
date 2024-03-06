@@ -4,6 +4,7 @@ package eu.europa.ec.sante.openncp.core.server.ihe.xcpd;
 import eu.europa.ec.sante.openncp.common.audit.EventLog;
 import eu.europa.ec.sante.openncp.core.common.org.hl7.v3.PRPAIN201305UV02;
 import eu.europa.ec.sante.openncp.core.common.org.hl7.v3.PRPAIN201306UV02;
+import eu.europa.ec.sante.openncp.core.server.ihe.xcpd.impl.XCPDServiceImpl;
 import org.apache.axiom.soap.SOAPHeader;
 
 /**

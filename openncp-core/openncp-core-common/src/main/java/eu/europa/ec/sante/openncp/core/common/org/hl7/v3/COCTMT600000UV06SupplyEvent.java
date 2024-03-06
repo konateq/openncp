@@ -1,0 +1,563 @@
+/**
+ * Copyright (C) 2011, 2012 SRDC Yazilim Arastirma ve Gelistirme ve Danismanlik Tic. Ltd. Sti. <epsos@srdc.com.tr>
+ * 
+ * This file is part of SRDC epSOS NCP.
+ * 
+ * SRDC epSOS NCP is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SRDC epSOS NCP is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SRDC epSOS NCP. If not, see <http://www.gnu.org/licenses/>.
+ */
+package eu.europa.ec.sante.openncp.core.common.org.hl7.v3;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * <p>Java class for COCT_MT600000UV06.SupplyEvent complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="COCT_MT600000UV06.SupplyEvent">
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
+ *         &lt;element name="code" type="{urn:hl7-org:v3}CD"/>
+ *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
+ *         &lt;element name="priorityCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="product" type="{urn:hl7-org:v3}COCT_MT600000UV06.Product" maxOccurs="2"/>
+ *         &lt;element name="performer" type="{urn:hl7-org:v3}COCT_MT600000UV06.Performer" minOccurs="0"/>
+ *         &lt;element name="origin" type="{urn:hl7-org:v3}COCT_MT600000UV06.Origin" minOccurs="0"/>
+ *         &lt;element name="destination" type="{urn:hl7-org:v3}COCT_MT600000UV06.Destination" minOccurs="0"/>
+ *         &lt;element name="location" type="{urn:hl7-org:v3}COCT_MT600000UV06.Location"/>
+ *         &lt;element name="pertinentInformation1" type="{urn:hl7-org:v3}COCT_MT600000UV06.PertinentInformation1" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="pertinentInformation2" type="{urn:hl7-org:v3}COCT_MT600000UV06.PertinentInformation2"/>
+ *         &lt;element name="pertinentInformation3" type="{urn:hl7-org:v3}COCT_MT600000UV06.PertinentInformation" maxOccurs="unbounded" minOccurs="0"/>
+ *       &lt;/sequence>
+ *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
+ *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassSupply" />
+ *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMood" fixed="EVN" />
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "COCT_MT600000UV06.SupplyEvent", propOrder = {
+    "realmCode",
+    "typeId",
+    "templateId",
+    "code",
+    "effectiveTime",
+    "priorityCode",
+    "product",
+    "performer",
+    "origin",
+    "destination",
+    "location",
+    "pertinentInformation1",
+    "pertinentInformation2",
+    "pertinentInformation3"
+})
+public class COCTMT600000UV06SupplyEvent {
+
+    protected List<org.hl7.v3.CS> realmCode;
+    protected org.hl7.v3.II typeId;
+    protected List<org.hl7.v3.II> templateId;
+    @XmlElement(required = true)
+    protected org.hl7.v3.CD code;
+    protected org.hl7.v3.IVLTS effectiveTime;
+    protected List<org.hl7.v3.CE> priorityCode;
+    @XmlElement(required = true)
+    protected List<org.hl7.v3.COCTMT600000UV06Product> product;
+    @XmlElementRef(name = "performer", namespace = "urn:hl7-org:v3", type = JAXBElement.class)
+    protected JAXBElement<org.hl7.v3.COCTMT600000UV06Performer> performer;
+    @XmlElementRef(name = "origin", namespace = "urn:hl7-org:v3", type = JAXBElement.class)
+    protected JAXBElement<org.hl7.v3.COCTMT600000UV06Origin> origin;
+    @XmlElementRef(name = "destination", namespace = "urn:hl7-org:v3", type = JAXBElement.class)
+    protected JAXBElement<org.hl7.v3.COCTMT600000UV06Destination> destination;
+    @XmlElement(required = true)
+    protected org.hl7.v3.COCTMT600000UV06Location location;
+    @XmlElement(nillable = true)
+    protected List<org.hl7.v3.COCTMT600000UV06PertinentInformation1> pertinentInformation1;
+    @XmlElement(required = true, nillable = true)
+    protected org.hl7.v3.COCTMT600000UV06PertinentInformation2 pertinentInformation2;
+    @XmlElement(nillable = true)
+    protected List<org.hl7.v3.COCTMT600000UV06PertinentInformation> pertinentInformation3;
+    @XmlAttribute
+    protected List<String> nullFlavor;
+    @XmlAttribute(required = true)
+    protected org.hl7.v3.ActClassSupply classCode;
+    @XmlAttribute(required = true)
+    protected List<String> moodCode;
+
+    /**
+     * Gets the value of the realmCode property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link org.hl7.v3.CS }
+     * 
+     * 
+     */
+    public List<org.hl7.v3.CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<org.hl7.v3.CS>();
+        }
+        return this.realmCode;
+    }
+
+    /**
+     * Gets the value of the typeId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link org.hl7.v3.II }
+     *     
+     */
+    public org.hl7.v3.II getTypeId() {
+        return typeId;
+    }
+
+    /**
+     * Sets the value of the typeId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link org.hl7.v3.II }
+     *     
+     */
+    public void setTypeId(org.hl7.v3.II value) {
+        this.typeId = value;
+    }
+
+    /**
+     * Gets the value of the templateId property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link org.hl7.v3.II }
+     * 
+     * 
+     */
+    public List<org.hl7.v3.II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<org.hl7.v3.II>();
+        }
+        return this.templateId;
+    }
+
+    /**
+     * Gets the value of the code property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link org.hl7.v3.CD }
+     *     
+     */
+    public org.hl7.v3.CD getCode() {
+        return code;
+    }
+
+    /**
+     * Sets the value of the code property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link org.hl7.v3.CD }
+     *     
+     */
+    public void setCode(org.hl7.v3.CD value) {
+        this.code = value;
+    }
+
+    /**
+     * Gets the value of the effectiveTime property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link org.hl7.v3.IVLTS }
+     *     
+     */
+    public org.hl7.v3.IVLTS getEffectiveTime() {
+        return effectiveTime;
+    }
+
+    /**
+     * Sets the value of the effectiveTime property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link org.hl7.v3.IVLTS }
+     *     
+     */
+    public void setEffectiveTime(org.hl7.v3.IVLTS value) {
+        this.effectiveTime = value;
+    }
+
+    /**
+     * Gets the value of the priorityCode property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the priorityCode property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPriorityCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link org.hl7.v3.CE }
+     * 
+     * 
+     */
+    public List<org.hl7.v3.CE> getPriorityCode() {
+        if (priorityCode == null) {
+            priorityCode = new ArrayList<org.hl7.v3.CE>();
+        }
+        return this.priorityCode;
+    }
+
+    /**
+     * Gets the value of the product property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the product property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getProduct().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link org.hl7.v3.COCTMT600000UV06Product }
+     * 
+     * 
+     */
+    public List<org.hl7.v3.COCTMT600000UV06Product> getProduct() {
+        if (product == null) {
+            product = new ArrayList<org.hl7.v3.COCTMT600000UV06Product>();
+        }
+        return this.product;
+    }
+
+    /**
+     * Gets the value of the performer property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link org.hl7.v3.COCTMT600000UV06Performer }{@code >}
+     *     
+     */
+    public JAXBElement<org.hl7.v3.COCTMT600000UV06Performer> getPerformer() {
+        return performer;
+    }
+
+    /**
+     * Sets the value of the performer property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link org.hl7.v3.COCTMT600000UV06Performer }{@code >}
+     *     
+     */
+    public void setPerformer(JAXBElement<org.hl7.v3.COCTMT600000UV06Performer> value) {
+        this.performer = ((JAXBElement<org.hl7.v3.COCTMT600000UV06Performer> ) value);
+    }
+
+    /**
+     * Gets the value of the origin property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link org.hl7.v3.COCTMT600000UV06Origin }{@code >}
+     *     
+     */
+    public JAXBElement<org.hl7.v3.COCTMT600000UV06Origin> getOrigin() {
+        return origin;
+    }
+
+    /**
+     * Sets the value of the origin property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link org.hl7.v3.COCTMT600000UV06Origin }{@code >}
+     *     
+     */
+    public void setOrigin(JAXBElement<org.hl7.v3.COCTMT600000UV06Origin> value) {
+        this.origin = ((JAXBElement<org.hl7.v3.COCTMT600000UV06Origin> ) value);
+    }
+
+    /**
+     * Gets the value of the destination property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link org.hl7.v3.COCTMT600000UV06Destination }{@code >}
+     *     
+     */
+    public JAXBElement<org.hl7.v3.COCTMT600000UV06Destination> getDestination() {
+        return destination;
+    }
+
+    /**
+     * Sets the value of the destination property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link org.hl7.v3.COCTMT600000UV06Destination }{@code >}
+     *     
+     */
+    public void setDestination(JAXBElement<org.hl7.v3.COCTMT600000UV06Destination> value) {
+        this.destination = ((JAXBElement<org.hl7.v3.COCTMT600000UV06Destination> ) value);
+    }
+
+    /**
+     * Gets the value of the location property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link org.hl7.v3.COCTMT600000UV06Location }
+     *     
+     */
+    public org.hl7.v3.COCTMT600000UV06Location getLocation() {
+        return location;
+    }
+
+    /**
+     * Sets the value of the location property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link org.hl7.v3.COCTMT600000UV06Location }
+     *     
+     */
+    public void setLocation(org.hl7.v3.COCTMT600000UV06Location value) {
+        this.location = value;
+    }
+
+    /**
+     * Gets the value of the pertinentInformation1 property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the pertinentInformation1 property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPertinentInformation1().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link org.hl7.v3.COCTMT600000UV06PertinentInformation1 }
+     * 
+     * 
+     */
+    public List<org.hl7.v3.COCTMT600000UV06PertinentInformation1> getPertinentInformation1() {
+        if (pertinentInformation1 == null) {
+            pertinentInformation1 = new ArrayList<org.hl7.v3.COCTMT600000UV06PertinentInformation1>();
+        }
+        return this.pertinentInformation1;
+    }
+
+    /**
+     * Gets the value of the pertinentInformation2 property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link org.hl7.v3.COCTMT600000UV06PertinentInformation2 }
+     *     
+     */
+    public org.hl7.v3.COCTMT600000UV06PertinentInformation2 getPertinentInformation2() {
+        return pertinentInformation2;
+    }
+
+    /**
+     * Sets the value of the pertinentInformation2 property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link org.hl7.v3.COCTMT600000UV06PertinentInformation2 }
+     *     
+     */
+    public void setPertinentInformation2(org.hl7.v3.COCTMT600000UV06PertinentInformation2 value) {
+        this.pertinentInformation2 = value;
+    }
+
+    /**
+     * Gets the value of the pertinentInformation3 property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the pertinentInformation3 property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPertinentInformation3().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link org.hl7.v3.COCTMT600000UV06PertinentInformation }
+     * 
+     * 
+     */
+    public List<org.hl7.v3.COCTMT600000UV06PertinentInformation> getPertinentInformation3() {
+        if (pertinentInformation3 == null) {
+            pertinentInformation3 = new ArrayList<org.hl7.v3.COCTMT600000UV06PertinentInformation>();
+        }
+        return this.pertinentInformation3;
+    }
+
+    /**
+     * Gets the value of the nullFlavor property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getNullFlavor().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * 
+     * 
+     */
+    public List<String> getNullFlavor() {
+        if (nullFlavor == null) {
+            nullFlavor = new ArrayList<String>();
+        }
+        return this.nullFlavor;
+    }
+
+    /**
+     * Gets the value of the classCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link org.hl7.v3.ActClassSupply }
+     *     
+     */
+    public org.hl7.v3.ActClassSupply getClassCode() {
+        return classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link org.hl7.v3.ActClassSupply }
+     *     
+     */
+    public void setClassCode(org.hl7.v3.ActClassSupply value) {
+        this.classCode = value;
+    }
+
+    /**
+     * Gets the value of the moodCode property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the moodCode property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getMoodCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * 
+     * 
+     */
+    public List<String> getMoodCode() {
+        if (moodCode == null) {
+            moodCode = new ArrayList<String>();
+        }
+        return this.moodCode;
+    }
+
+}
