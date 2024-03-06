@@ -2,6 +2,8 @@ package eu.europa.ec.sante.openncp.core.server.ihe.xca;
 
 import epsos.ccd.gnomon.auditmanager.EventLog;
 import eu.epsos.protocolterminators.ws.server.xca.XCAServiceInterface;
+import eu.europa.ec.sante.openncp.common.audit.EventLog;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;

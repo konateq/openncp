@@ -603,10 +603,10 @@ public class PRPAIN201306UV02MCCIMT000300UV01Message {
      * 
      * @return
      *     possible object is
-     *     {@link org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01ControlActProcess }
+     *     {@link PRPAIN201306UV02MFMIMT700711UV01ControlActProcess }
      *     
      */
-    public org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01ControlActProcess getControlActProcess() {
+    public PRPAIN201306UV02MFMIMT700711UV01ControlActProcess getControlActProcess() {
         return controlActProcess;
     }
 
@@ -615,7 +615,7 @@ public class PRPAIN201306UV02MCCIMT000300UV01Message {
      * 
      * @param value
      *     allowed object is
-     *     {@link org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01ControlActProcess }
+     *     {@link PRPAIN201306UV02MFMIMT700711UV01ControlActProcess }
      *     
      */
     public void setControlActProcess(org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01ControlActProcess value) {

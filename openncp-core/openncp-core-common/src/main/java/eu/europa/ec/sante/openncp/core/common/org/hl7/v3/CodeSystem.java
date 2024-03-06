@@ -729,6 +729,10 @@ public enum CodeSystem {
         value = v;
     }
 
+    public String getOID() {
+        return value;
+    }
+
     public String value() {
         return value;
     }

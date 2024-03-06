@@ -1,36 +1,32 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xcpd.impl;
 
-import epsos.ccd.gnomon.auditmanager.*;
-import eu.epsos.protocolterminators.ws.server.xcpd.PatientSearchInterface;
-import eu.epsos.protocolterminators.ws.server.xcpd.PatientSearchInterfaceWithDemographics;
-import eu.epsos.protocolterminators.ws.server.xcpd.XCPDServiceInterface;
-import eu.epsos.protocolterminators.ws.server.xcpd.exception.XCPDNIException;
-import eu.epsos.util.EvidenceUtils;
-import eu.europa.ec.sante.ehdsi.constant.error.OpenNCPErrorCode;
-import eu.europa.ec.sante.ehdsi.constant.error.XCPDErrorCode;
-import eu.europa.ec.sante.ehdsi.openncp.assertionvalidator.Helper;
-import eu.europa.ec.sante.ehdsi.openncp.assertionvalidator.exceptions.OpenNCPErrorCodeException;
-import eu.europa.ec.sante.ehdsi.openncp.assertionvalidator.saml.SAML2Validator;
-import eu.europa.ec.sante.ehdsi.openncp.util.OpenNCPConstants;
-import eu.europa.ec.sante.ehdsi.openncp.util.ServerMode;
+
+import eu.europa.ec.sante.openncp.common.audit.*;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
+import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
+import eu.europa.ec.sante.openncp.common.util.DateUtil;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
+import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
+import eu.europa.ec.sante.openncp.core.common.exception.XCPDErrorCode;
+import eu.europa.ec.sante.openncp.core.common.org.hl7.v3.*;
+import eu.europa.ec.sante.openncp.core.server.ihe.xcpd.XCPDServiceInterface;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.v3.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
-import tr.com.srdc.epsos.data.model.PatientDemographics;
-import tr.com.srdc.epsos.data.model.PatientId;
-import tr.com.srdc.epsos.util.Constants;
-import tr.com.srdc.epsos.util.DateUtil;
-import tr.com.srdc.epsos.util.http.HTTPUtil;
+
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;

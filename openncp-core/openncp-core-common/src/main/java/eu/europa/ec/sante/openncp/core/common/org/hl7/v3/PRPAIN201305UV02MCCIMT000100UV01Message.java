@@ -83,7 +83,7 @@ import java.util.List;
     "controlActProcess"
 })
 @XmlSeeAlso({
-    org.hl7.v3.PRPAIN201305UV02.class
+    PRPAIN201305UV02.class
 })
 public class PRPAIN201305UV02MCCIMT000100UV01Message {
 
@@ -592,10 +592,10 @@ public class PRPAIN201305UV02MCCIMT000100UV01Message {
      * 
      * @return
      *     possible object is
-     *     {@link org.hl7.v3.PRPAIN201305UV02QUQIMT021001UV01ControlActProcess }
+     *     {@link PRPAIN201305UV02QUQIMT021001UV01ControlActProcess }
      *     
      */
-    public org.hl7.v3.PRPAIN201305UV02QUQIMT021001UV01ControlActProcess getControlActProcess() {
+    public PRPAIN201305UV02QUQIMT021001UV01ControlActProcess getControlActProcess() {
         return controlActProcess;
     }
 
@@ -604,7 +604,7 @@ public class PRPAIN201305UV02MCCIMT000100UV01Message {
      * 
      * @param value
      *     allowed object is
-     *     {@link org.hl7.v3.PRPAIN201305UV02QUQIMT021001UV01ControlActProcess }
+     *     {@link PRPAIN201305UV02QUQIMT021001UV01ControlActProcess }
      *     
      */
     public void setControlActProcess(org.hl7.v3.PRPAIN201305UV02QUQIMT021001UV01ControlActProcess value) {
