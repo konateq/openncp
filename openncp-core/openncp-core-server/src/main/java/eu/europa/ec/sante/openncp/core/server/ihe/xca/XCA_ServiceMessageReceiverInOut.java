@@ -3,8 +3,11 @@ package eu.europa.ec.sante.openncp.core.server.ihe.xca;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
+import eu.europa.ec.sante.openncp.common.audit.EventLog;
+import eu.europa.ec.sante.openncp.common.audit.EventLogUtil;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.common.constants.xca.XCAConstants;
@@ -28,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
@@ -118,7 +121,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
                 throw new AxisFault(err);
             }
 
-            String randomUUID = tr.com.srdc.epsos.util.Constants.UUID_PREFIX + UUID.randomUUID();
+            String randomUUID = Constants.UUID_PREFIX + UUID.randomUUID();
             String methodName;
 
             if ((op.getName() != null) && ((methodName = JavaUtils.xmlNameToJavaIdentifier(op.getName().getLocalPart())) != null)) {
