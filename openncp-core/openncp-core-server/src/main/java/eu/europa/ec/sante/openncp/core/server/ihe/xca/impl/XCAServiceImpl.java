@@ -8,6 +8,7 @@ import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.common.RegistryErrorSeverity;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
@@ -28,6 +29,7 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
 
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
+import eu.europa.ec.sante.openncp.core.common.exception.NIException;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;

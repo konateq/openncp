@@ -1,13 +1,9 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca;
 
-import eu.epsos.protocolterminators.ws.server.common.NationalConnectorInterface;
-import eu.epsos.protocolterminators.ws.server.exception.NIException;
-import eu.europa.ec.sante.ehdsi.openncp.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.NationalConnectorInterface;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.*;
 import eu.europa.ec.sante.openncp.core.common.exception.NIException;
-import fi.kela.se.epsos.data.model.*;
 
 import java.util.List;
 

@@ -1,10 +1,11 @@
 package eu.europa.ec.sante.openncp.core.server.ihe;
 
-import eu.epsos.protocolterminators.ws.server.common.RegistryErrorSeverity;
-import eu.europa.ec.sante.ehdsi.constant.error.ErrorCode;
-import eu.europa.ec.sante.ehdsi.constant.error.ITMTSAMError;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryErrorList;
+import eu.europa.ec.sante.openncp.common.error.ErrorCode;
+import eu.europa.ec.sante.openncp.core.common.RegistryErrorSeverity;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorList;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -18,7 +19,7 @@ import java.util.Optional;
 public class RegistryErrorUtils {
 
     private static final OMFactory omFactory = OMAbstractFactory.getOMFactory();
-    private static final oasis.names.tc.ebxml_regrep.xsd.rs._3.ObjectFactory ofRs = new oasis.names.tc.ebxml_regrep.xsd.rs._3.ObjectFactory();
+    private static final ObjectFactory ofRs = new ObjectFactory();
 
     public static void addErrorMessage(RegistryErrorList registryErrorList, ErrorCode errorCode, String codeContext, String location, RegistryErrorSeverity severity) {
         registryErrorList.getRegistryError().add(createErrorMessage(errorCode.getCode(), codeContext, location, severity));

@@ -1,18 +1,11 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xdr;
 
-import eu.epsos.protocolterminators.ws.server.common.NationalConnectorInterface;
-import eu.epsos.protocolterminators.ws.server.exception.NIException;
-import eu.europa.ec.sante.ehdsi.openncp.assertionvalidator.exceptions.InsufficientRightsException;
-import eu.europa.ec.sante.ehdsi.openncp.model.DiscardDispenseDetails;
 import eu.europa.ec.sante.openncp.core.common.NationalConnectorInterface;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.datamodel.DiscardDispenseDetails;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.EPSOSDocument;
 import eu.europa.ec.sante.openncp.core.common.exception.DocumentProcessingException;
 import eu.europa.ec.sante.openncp.core.common.exception.NIException;
-import fi.kela.se.epsos.data.model.ConsentDocumentMetaData;
-import fi.kela.se.epsos.data.model.DocumentAssociation;
-import fi.kela.se.epsos.data.model.EPSOSDocument;
 
 /**
  * Interface for XDR document submit service implementation
