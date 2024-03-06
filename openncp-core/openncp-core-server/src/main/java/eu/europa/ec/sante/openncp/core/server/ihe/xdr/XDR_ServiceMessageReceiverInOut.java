@@ -13,7 +13,7 @@ import eu.europa.ec.sante.ehdsi.openncp.audit.AuditServiceFactory;
 import eu.europa.ec.sante.ehdsi.openncp.util.OpenNCPConstants;
 import eu.europa.ec.sante.ehdsi.openncp.util.ServerMode;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.RegistryResponseType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -61,7 +61,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
 
         try {
             jaxbContext = JAXBContext.newInstance(ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.class,
-                    eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.RegistryResponseType.class);
+                    RegistryResponseType.class);
         } catch (JAXBException ex) {
             LOGGER.error("Unable to create JAXBContext: '{}'", ex.getMessage(), ex);
             Runtime.getRuntime().exit(-1);
@@ -308,7 +308,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.RegistryResponseType param,
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, RegistryResponseType param,
                                     boolean optimizeContent) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();

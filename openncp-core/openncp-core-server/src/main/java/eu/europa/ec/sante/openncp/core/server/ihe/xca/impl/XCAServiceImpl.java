@@ -1,21 +1,20 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl;
 
-import Constants.xdr.XDRConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.audit.EventActionCode;
 import eu.europa.ec.sante.openncp.common.audit.EventLog;
 import eu.europa.ec.sante.openncp.common.audit.EventType;
 import eu.europa.ec.sante.openncp.common.audit.TransactionName;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryRequest;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryResponse;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.AssociationType1;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ExternalIdentifierType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ExtrinsicObjectType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.SlotType1;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.RegistryError;
-
-import eu.europa.ec.sante.openncp.common.util.HttpUtil;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.AssociationType1;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExternalIdentifierType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObjectType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -57,9 +56,9 @@ public class XCAServiceImpl implements XCAServiceInterface {
     private final Logger logger = LoggerFactory.getLogger(XCAServiceImpl.class);
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
     private final OMFactory omFactory;
-    private final eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.ObjectFactory ofQuery;
-    private final eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ObjectFactory ofRim;
-    private final eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.ObjectFactory ofRs;
+    private final ObjectFactory ofQuery;
+    private final eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory ofRim;
+    private final eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.ObjectFactory ofRs;
     private final DocumentSearchInterface documentSearchService;
 
     /**
@@ -80,9 +79,9 @@ public class XCAServiceImpl implements XCAServiceInterface {
             throw e;
         }
 
-        ofQuery = new eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.ObjectFactory();
-        ofRs = new eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.ObjectFactory();
-        ofRim = new eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ObjectFactory();
+        ofQuery = new ObjectFactory();
+        ofRs = new eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.ObjectFactory();
+        ofRim = new eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory();
 
         omFactory = OMAbstractFactory.getOMFactory();
     }

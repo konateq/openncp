@@ -3,7 +3,7 @@ package eu.europa.ec.sante.openncp.core.server.ihe.xdr;
 import epsos.ccd.gnomon.auditmanager.EventLog;
 import eu.epsos.protocolterminators.ws.server.xdr.XDRServiceInterface;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.RegistryResponseType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
 import org.apache.axiom.soap.SOAPHeader;
 import tr.com.srdc.epsos.ws.server.xdr.XDRServiceImpl;
 

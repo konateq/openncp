@@ -15,8 +15,8 @@ import eu.europa.ec.sante.ehdsi.openncp.util.OpenNCPConstants;
 import eu.europa.ec.sante.ehdsi.openncp.util.ServerMode;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryRequest;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryResponse;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -61,8 +61,8 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         JAXBContext jc = null;
         try {
             jc = JAXBContext.newInstance(
-                    eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryRequest.class,
-                    eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryResponse.class,
+                    AdhocQueryRequest.class,
+                    AdhocQueryResponse.class,
                     ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.class,
                     ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.class);
         } catch (JAXBException ex) {
@@ -295,7 +295,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         return list;
     }
 
-    private OMElement toOM(eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryRequest param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(AdhocQueryRequest param, boolean optimizeContent) throws AxisFault {
 
         try {
 
@@ -304,7 +304,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
 
             OMFactory factory = OMAbstractFactory.getOMFactory();
 
-            JaxbRIDataSource source = new JaxbRIDataSource(eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryRequest.class,
+            JaxbRIDataSource source = new JaxbRIDataSource(AdhocQueryRequest.class,
                     param, marshaller, "urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "AdhocQueryRequest");
             OMNamespace namespace = factory.createOMNamespace("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", null);
 
@@ -315,7 +315,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryRequest param,
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, AdhocQueryRequest param,
                                     boolean optimizeContent) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();
@@ -324,7 +324,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         return envelope;
     }
 
-    private OMElement toOM(eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryResponse param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(AdhocQueryResponse param, boolean optimizeContent) throws AxisFault {
 
         try {
 
@@ -333,7 +333,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
 
             OMFactory factory = OMAbstractFactory.getOMFactory();
 
-            JaxbRIDataSource source = new JaxbRIDataSource(eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryResponse.class,
+            JaxbRIDataSource source = new JaxbRIDataSource(AdhocQueryResponse.class,
                     param, marshaller, "urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "AdhocQueryResponse");
             OMNamespace namespace = factory.createOMNamespace("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", null);
 

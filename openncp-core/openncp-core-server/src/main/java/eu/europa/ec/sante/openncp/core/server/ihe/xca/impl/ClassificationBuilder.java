@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl;
 
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ClassificationType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ClassificationType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory;
 import tr.com.srdc.epsos.util.Constants;
 
 import java.util.UUID;

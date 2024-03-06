@@ -32,14 +32,15 @@ import eu.europa.ec.sante.ehdsi.openncp.tm.domain.TMResponseStructure;
 import eu.europa.ec.sante.ehdsi.openncp.tm.util.Base64Util;
 import eu.europa.ec.sante.ehdsi.openncp.util.OpenNCPConstants;
 import eu.europa.ec.sante.ehdsi.openncp.util.ServerMode;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.*;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.ObjectFactory;
 import fi.kela.se.epsos.data.model.DocumentFactory;
 import fi.kela.se.epsos.data.model.EPSOSDocument;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.*;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.RegistryError;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.RegistryErrorList;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.RegistryResponseType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorList;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +80,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
 
     private final Logger logger = LoggerFactory.getLogger(XDRServiceImpl.class);
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
-    private final eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.ObjectFactory ofRs;
+    private final ObjectFactory ofRs;
     private final DocumentSubmitInterface documentSubmitService;
 
     public XDRServiceImpl() {
@@ -93,10 +94,10 @@ public class XDRServiceImpl implements XDRServiceInterface {
             logger.error("Failed to load implementation of documentSubmitService: " + e.getMessage(), e);
             throw e;
         }
-        ofRs = new eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.ObjectFactory();
+        ofRs = new ObjectFactory();
     }
 
-    protected XDRServiceImpl(DocumentSubmitInterface dsi, eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rs._3.ObjectFactory ofRs) {
+    protected XDRServiceImpl(DocumentSubmitInterface dsi, ObjectFactory ofRs) {
         this.documentSubmitService = dsi;
         this.ofRs = ofRs;
     }

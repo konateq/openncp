@@ -3,11 +3,12 @@ package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuild
 import eu.epsos.util.IheConstants;
 import eu.epsos.util.xca.XCAConstants;
 import eu.europa.ec.sante.ehdsi.constant.ihe.ClassificationScheme;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory;
 import fi.kela.se.epsos.data.model.OrCDDocumentMetaData;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryRequest;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ClassificationType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ExtrinsicObjectType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.SlotType1;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ClassificationType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObjectType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tr.com.srdc.epsos.util.Constants;
@@ -34,7 +35,7 @@ public class OrCDExtrinsicObjectBuilder extends AbstractExtrinsicObjectBuilder {
                                ExtrinsicObjectType eot,
                                OrCDDocumentMetaData orCDDocumentMetaData) {
 
-        var ofRim = new eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ObjectFactory();
+        var ofRim = new ObjectFactory();
         var uuid = Constants.UUID_PREFIX + UUID.randomUUID();
 
         final String title;

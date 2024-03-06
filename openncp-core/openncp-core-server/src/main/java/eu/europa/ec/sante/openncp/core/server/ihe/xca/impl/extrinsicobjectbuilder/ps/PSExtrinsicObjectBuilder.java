@@ -1,9 +1,10 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.ps;
 
-import Constants.xca.XCAConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.xca.XCAConstants;
 
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryRequest;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ExtrinsicObjectType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObjectType;
 import Constant.ihe.ClassificationScheme;
 import fi.kela.se.epsos.data.model.EPSOSDocumentMetaData;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class PSExtrinsicObjectBuilder extends AbstractExtrinsicObjectBuilder {
 
     public static String build(AdhocQueryRequest request, ExtrinsicObjectType eot, EPSOSDocumentMetaData documentMetaData, boolean isPDF) {
 
-        var ofRim = new eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ObjectFactory();
+        var ofRim = new ObjectFactory();
 
         String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
 

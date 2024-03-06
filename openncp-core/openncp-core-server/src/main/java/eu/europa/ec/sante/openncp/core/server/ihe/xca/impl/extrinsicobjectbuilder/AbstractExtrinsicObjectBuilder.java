@@ -6,11 +6,11 @@ import eu.europa.ec.sante.ehdsi.constant.codesystem.CodeSystem;
 import eu.europa.ec.sante.ehdsi.constant.ihe.ClassificationScheme;
 import eu.europa.ec.sante.ehdsi.constant.ihe.XDSMetaData;
 import fi.kela.se.epsos.data.model.EPSOSDocumentMetaData;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3.AdhocQueryRequest;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ExternalIdentifierType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ExtrinsicObjectType;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.SlotType1;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExternalIdentifierType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObjectType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
 import org.springframework.http.MediaType;
 import tr.com.srdc.epsos.util.Constants;
 import tr.com.srdc.epsos.util.DateUtil;
@@ -123,7 +123,7 @@ public abstract class AbstractExtrinsicObjectBuilder {
     protected static ExternalIdentifierType makeExternalIdentifier(String identificationScheme, String registryObject,
                                                                    String value, String name) {
 
-        var ofRim = new eu.europa.ec.sante.openncp.core.server.datamodel.xsd.rim._3.ObjectFactory();
+        var ofRim = new ObjectFactory();
         var uuid = Constants.UUID_PREFIX + UUID.randomUUID();
         var externalIdentifierType = ofRim.createExternalIdentifierType();
         externalIdentifierType.setId(uuid);
