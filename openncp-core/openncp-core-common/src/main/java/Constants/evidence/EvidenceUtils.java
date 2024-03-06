@@ -1,8 +1,9 @@
 package Constants.evidence;
 
-import eu.esens.abb.nonrep.*;
-import eu.europa.ec.sante.ehdsi.openncp.util.OpenNCPConstants;
-import eu.europa.ec.sante.ehdsi.openncp.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
+import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.util.XMLUtil;
+import eu.europa.ec.sante.openncp.core.common.evidence.*;
 import org.apache.commons.lang3.StringUtils;
 import org.herasaf.xacml.core.SyntaxException;
 import org.herasaf.xacml.core.api.PDP;
@@ -16,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-import tr.com.srdc.epsos.util.FileUtil;
-import tr.com.srdc.epsos.util.XMLUtil;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

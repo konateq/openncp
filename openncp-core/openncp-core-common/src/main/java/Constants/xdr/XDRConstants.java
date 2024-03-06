@@ -1,6 +1,7 @@
 package Constants.xdr;
 
-import eu.epsos.util.IheConstants;
+
+import Constants.ihe.IheConstants;
 
 /**
  * Holds all the fixed properties used in the XDR Profile transactions.
