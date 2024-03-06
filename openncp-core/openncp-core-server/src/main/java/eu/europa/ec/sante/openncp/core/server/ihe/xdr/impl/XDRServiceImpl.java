@@ -1,28 +1,37 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xdr.impl;
 
+import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.*;
-import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
+import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.common.RegistryErrorSeverity;
+import eu.europa.ec.sante.openncp.core.common.XDRServiceInterface;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
 import eu.europa.ec.sante.openncp.core.common.constants.xdr.XDRConstants;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xds.EPSOSDocument;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.*;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorList;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
+import eu.europa.ec.sante.openncp.core.common.exception.DocumentProcessingException;
+import eu.europa.ec.sante.openncp.core.common.exception.NoConsentException;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
+import eu.europa.ec.sante.openncp.core.server.ihe.RegistryErrorUtils;
+import eu.europa.ec.sante.openncp.core.server.ihe.xdr.DocumentSubmitInterface;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -884,7 +893,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
          * the consent document.
          */
         for (int i = 0; i < request.getDocument().size(); i++) {
-            Document doc = request.getDocument().get(i);
+            ProvideAndRegisterDocumentSetRequestType.Document doc = request.getDocument().get(i);
 
             try {
                 /* Validate CDA epSOS Pivot */

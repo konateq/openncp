@@ -204,6 +204,12 @@
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-kernel</artifactId>
+            <version>1.8.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,15 +1,18 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xcpd;
 
 import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.audit.AuditService;
+import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
 import eu.europa.ec.sante.openncp.common.audit.EventLog;
+import eu.europa.ec.sante.openncp.common.audit.EventLogUtil;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-
+import eu.europa.ec.sante.openncp.common.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.common.org.hl7.v3.PRPAIN201305UV02;
-import eu.europa.ec.sante.openncp.core.common.org.hl7.v3.PRPAIN201306UV02;
+import net.ihe.gazelle.hl7v3.prpain201305UV02.PRPAIN201305UV02Type;
+import net.ihe.gazelle.hl7v3.prpain201306UV02.PRPAIN201306UV02Type;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -52,7 +55,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
 
         JAXBContext jc = null;
         try {
-            jc = JAXBContext.newInstance(PRPAIN201305UV02.class, PRPAIN201306UV02.class);
+            jc = JAXBContext.newInstance(PRPAIN201305UV02Type.class, PRPAIN201306UV02Type.class);
         } catch (javax.xml.bind.JAXBException ex) {
             LOGGER.error("Unable to create JAXBContext: '{}'", ex.getMessage(), ex);
         } finally {
@@ -125,12 +128,12 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
 
                 if (StringUtils.equals("respondingGateway_PRPA_IN201305UV02", methodName)) {
 
-                    PRPAIN201305UV02 wrappedParam = (PRPAIN201305UV02) fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
-                            PRPAIN201305UV02.class, getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    PRPAIN201305UV02Type wrappedParam = (PRPAIN201305UV02Type) fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
+                            PRPAIN201305UV02Type.class, getEnvelopeNamespaces(msgContext.getEnvelope()));
 
-                    PRPAIN201306UV02 prpain201306UV02 = skeleton.respondingGateway_PRPA_IN201305UV02(wrappedParam, soapHeader, eventLog);
+                    PRPAIN201306UV02Type PRPAIN201306UV02Type = skeleton.respondingGateway_PRPA_IN201305UV02(wrappedParam, soapHeader, eventLog);
 
-                    envelope = toEnvelope(getSOAPFactory(msgContext), prpain201306UV02, false);
+                    envelope = toEnvelope(getSOAPFactory(msgContext), PRPAIN201306UV02Type, false);
 
                     /* Validate response message */
                     if (OpenNCPValidation.isValidationEnable()) {
@@ -179,7 +182,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         }
     }
 
-    private OMElement toOM(PRPAIN201305UV02 param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(PRPAIN201305UV02Type param, boolean optimizeContent) throws AxisFault {
 
         try {
 
@@ -187,7 +190,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 
             OMFactory factory = OMAbstractFactory.getOMFactory();
-            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201305UV02.class, param, marshaller,
+            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201305UV02Type.class, param, marshaller,
                     "urn:hl7-org:v3", "PRPA_IN201305UV02");
             OMNamespace namespace = factory.createOMNamespace("urn:hl7-org:v3", null);
 
@@ -198,7 +201,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201305UV02 param, boolean optimizeContent) throws AxisFault {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201305UV02Type param, boolean optimizeContent) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();
         envelope.getBody().addChild(toOM(param, optimizeContent));
@@ -206,7 +209,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         return envelope;
     }
 
-    private OMElement toOM(PRPAIN201306UV02 param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(PRPAIN201306UV02Type param, boolean optimizeContent) throws AxisFault {
 
         try {
 
@@ -214,7 +217,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 
             OMFactory factory = OMAbstractFactory.getOMFactory();
-            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201306UV02.class, param, marshaller, "urn:hl7-org:v3", "PRPA_IN201306UV02");
+            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201306UV02Type.class, param, marshaller, "urn:hl7-org:v3", "PRPA_IN201306UV02");
             OMNamespace namespace = factory.createOMNamespace("urn:hl7-org:v3", null);
 
             return factory.createOMElement(source, "PRPA_IN201306UV02", namespace);
@@ -224,7 +227,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201306UV02 param, boolean optimizeContent) throws AxisFault {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201306UV02Type param, boolean optimizeContent) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();
         envelope.getBody().addChild(toOM(param, optimizeContent));

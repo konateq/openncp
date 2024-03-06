@@ -4,7 +4,12 @@ package eu.europa.ec.sante.openncp.core.server.ihe.xdr;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.AuditService;
 import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
+import eu.europa.ec.sante.openncp.common.audit.EventLog;
+import eu.europa.ec.sante.openncp.common.audit.EventLogUtil;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
+import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
@@ -23,6 +28,7 @@ import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
@@ -142,7 +148,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
                     }
                     ProvideAndRegisterDocumentSetRequestType wrappedParam = (ProvideAndRegisterDocumentSetRequestType) fromOM(
                             msgContext.getEnvelope().getBody().getFirstElement(),
-                            ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.class,
+                            ProvideAndRegisterDocumentSetRequestType.class,
                             getEnvelopeNamespaces(msgContext.getEnvelope()));
 
                     RegistryResponseType registryResponse = xdrServiceSkeleton.documentRecipient_ProvideAndRegisterDocumentSetB(wrappedParam, soapHeader, eventLog);
