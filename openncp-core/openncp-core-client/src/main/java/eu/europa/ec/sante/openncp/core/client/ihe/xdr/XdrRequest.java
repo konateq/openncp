@@ -1,5 +1,7 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.xdr;
 
+import eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode;
+import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**

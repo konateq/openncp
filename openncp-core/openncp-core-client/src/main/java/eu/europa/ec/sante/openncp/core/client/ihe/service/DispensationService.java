@@ -1,12 +1,15 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
-import epsos.openncp.protocolterminator.clientconnector.EpsosDocument1;
-import epsos.openncp.protocolterminator.clientconnector.PatientDemographics;
-import eu.epsos.exceptions.XDRException;
-import eu.epsos.pt.cc.dts.axis2.XdrRequestDts;
-import eu.epsos.pt.ws.client.xdr.XdrDocumentSource;
-import eu.europa.ec.sante.ehdsi.constant.ClassCode;
-import eu.europa.ec.sante.ehdsi.constant.assertion.AssertionEnum;
+import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.common.util.XMLUtil;
+import eu.europa.ec.sante.openncp.core.client.EpsosDocument1;
+import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrDocumentSource;
+import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequestDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequest;
+import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.exception.XDRException;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +18,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import tr.com.srdc.epsos.data.model.XdrRequest;
-import tr.com.srdc.epsos.data.model.XdrResponse;
-import tr.com.srdc.epsos.util.Constants;
-import tr.com.srdc.epsos.util.XMLUtil;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;

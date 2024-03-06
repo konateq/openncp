@@ -5,8 +5,8 @@ import eu.europa.ec.dynamicdiscovery.core.fetcher.impl.DefaultURLFetcher;
 import eu.europa.ec.dynamicdiscovery.core.security.impl.DefaultProxy;
 import eu.europa.ec.dynamicdiscovery.exception.ConnectionException;
 import eu.europa.ec.sante.openncp.common.configuration.domain.Property;
-import eu.europa.ec.sante.openncp.common.configuration.util.Assert;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -32,13 +32,13 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
      * @param sessionFactory - Hibernate Session Factory
      */
     public ConfigurationManagerImpl(SessionFactory sessionFactory) {
-        Assert.notNull(sessionFactory, "Hibernate SessionFactory must not be null!");
+        Validate.notNull(sessionFactory, "Hibernate SessionFactory must not be null!");
         this.sessionFactory = sessionFactory;
     }
 
     @Override
     public String getProperty(String key) {
-        Assert.notNull(key, "key must not be null!");
+        Validate.notNull(key, "key must not be null!");
         return getProperty(key, true);
     }
 
@@ -48,7 +48,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
      * @return Value of the property requested.
      */
     public String getProperty(String key, boolean checkMap) {
-        Assert.notNull(key, "key must not be null!");
+        Validate.notNull(key, "key must not be null!");
         return findProperty(key, checkMap).orElseThrow(() -> new PropertyNotFoundException("Property '" + key + "' not found!"));
     }
 

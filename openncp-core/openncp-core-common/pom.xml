@@ -71,6 +71,20 @@
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-kernel</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-transport-http</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!-- OpenSAML dependencies -->
         <dependency>
             <groupId>org.opensaml</groupId>
@@ -80,6 +94,16 @@
             <groupId>org.opensaml</groupId>
             <artifactId>opensaml-xacml-saml-impl</artifactId>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>jakarta.servlet</groupId>-->
+<!--            <artifactId>jakarta.servlet-api</artifactId>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>javax.xml.crypto</groupId>-->
+<!--                    <artifactId>xmldsig</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>net.ihe.gazelle</groupId>
             <artifactId>hl7v3-code-jar</artifactId>

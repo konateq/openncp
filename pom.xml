@@ -76,7 +76,7 @@
         <hapi.fhir.version>6.6.0</hapi.fhir.version>
         <herasaf-xacml.version>1.0.4.RELEASE</herasaf-xacml.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
-        <hl7v3.version>1.3.7</hl7v3.version>
+        <hl7v3.version>1.2.0</hl7v3.version>
         <httpclient.version>4.5.14</httpclient.version>
         <ihe.gazelle.version>1.6</ihe.gazelle.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
@@ -511,7 +511,6 @@
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>6.0.0</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.wss</groupId>
@@ -527,6 +526,16 @@
             <dependency>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-xmlbeans</artifactId>
+                <version>${axis2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-kernel</artifactId>
+                <version>${axis2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-transport-http</artifactId>
                 <version>${axis2.version}</version>
             </dependency>
             <!-- HL7 dependencies -->

@@ -1,22 +1,7 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca;
 
-import com.spirit.epsos.cc.adc.EadcEntry;
-import ee.affecto.epsos.util.EventLogUtil;
-import epsos.ccd.gnomon.auditmanager.EventLog;
-import eu.epsos.pt.eadc.EadcUtilWrapper;
-import eu.epsos.pt.eadc.util.EadcUtil;
-import eu.epsos.util.xca.XCAConstants;
-import eu.epsos.validation.datamodel.common.NcpSide;
-import eu.europa.ec.sante.ehdsi.constant.ClassCode;
-import eu.europa.ec.sante.ehdsi.eadc.ServiceType;
-import eu.europa.ec.sante.ehdsi.gazelle.validation.OpenNCPValidation;
-import eu.europa.ec.sante.ehdsi.openncp.audit.AuditServiceFactory;
-import eu.europa.ec.sante.ehdsi.openncp.util.OpenNCPConstants;
-import eu.europa.ec.sante.ehdsi.openncp.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;
 import org.apache.axiom.om.*;
@@ -35,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import tr.com.srdc.epsos.util.XMLUtil;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;

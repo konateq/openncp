@@ -1,15 +1,20 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
+import eu.europa.ec.sante.openncp.common.configuration.RegisteredService;
+import eu.europa.ec.sante.openncp.core.client.ihe.xca.XcaInitGateway;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode;
+import eu.europa.ec.sante.openncp.core.common.datamodel.PatientId;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xds.QueryResponse;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xds.XDSDocument;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import eu.europa.ec.sante.openncp.core.common.exception.XCAException;
 import org.opensaml.saml.saml2.core.Assertion;
 
 
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
- * @author Marcelo Fonseca<code> - marcelo.fonseca@iuz.pt</code>
- */
 public class PatientService {
 
     private PatientService() {
