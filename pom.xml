@@ -78,6 +78,7 @@
         <hibernate.version>5.6.15.Final</hibernate.version>
         <hl7v3.version>1.2.0</hl7v3.version>
         <httpclient.version>4.5.14</httpclient.version>
+        <ibatis-sqlmap.version>2.3.4.726</ibatis-sqlmap.version>
         <ihe.gazelle.version>1.6</ihe.gazelle.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb2-plugin.version>2.3.1</jaxb2-plugin.version>
@@ -185,6 +186,11 @@
                 <groupId>org.dom4j</groupId>
                 <artifactId>dom4j</artifactId>
                 <version>${dom4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ibatis</groupId>
+                <artifactId>ibatis-sqlmap</artifactId>
+                <version>${ibatis-sqlmap.version}</version>
             </dependency>
             <!-- Databases drivers -->
             <dependency>

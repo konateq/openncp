@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.ps;
 
-import eu.europa.ec.sante.openncp.core.common.constants.xca.XCAConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory;

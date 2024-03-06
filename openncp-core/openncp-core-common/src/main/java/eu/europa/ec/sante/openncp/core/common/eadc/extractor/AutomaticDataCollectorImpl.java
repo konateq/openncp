@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.eadc.extractor;
 
+import com.ibatis.common.jdbc.ScriptRunner;
 import eu.europa.ec.sante.openncp.core.common.eadc.EadcFactory;
 import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtil;
 import eu.europa.ec.sante.openncp.core.common.eadc.db.EadcDbConnect;

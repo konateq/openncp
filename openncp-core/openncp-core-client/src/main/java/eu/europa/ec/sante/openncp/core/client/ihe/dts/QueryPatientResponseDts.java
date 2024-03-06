@@ -19,8 +19,8 @@
  */
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import epsos.openncp.protocolterminator.clientconnector.PatientDemographics;
-import epsos.openncp.protocolterminator.clientconnector.QueryPatientResponse;
+import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.QueryPatientResponse;
 
 import java.util.List;
 

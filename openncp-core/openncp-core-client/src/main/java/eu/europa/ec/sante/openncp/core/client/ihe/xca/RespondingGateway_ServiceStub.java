@@ -1,28 +1,30 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.xca;
 
-import com.spirit.epsos.cc.adc.EadcEntry;
-import ee.affecto.epsos.util.EventLogClientUtil;
-import ee.affecto.epsos.util.EventLogUtil;
-import epsos.ccd.gnomon.auditmanager.EventLog;
-import eu.epsos.exceptions.XCAException;
-import eu.epsos.pt.eadc.EadcUtilWrapper;
-import eu.epsos.pt.eadc.util.EadcUtil.Direction;
-import eu.epsos.util.xca.XCAConstants;
-import eu.epsos.validation.datamodel.common.NcpSide;
-import eu.europa.ec.sante.ehdsi.constant.ClassCode;
-import eu.europa.ec.sante.ehdsi.constant.assertion.AssertionEnum;
-import eu.europa.ec.sante.ehdsi.constant.error.OpenNCPErrorCode;
-import eu.europa.ec.sante.ehdsi.eadc.ServiceType;
-import eu.europa.ec.sante.ehdsi.gazelle.validation.OpenNCPValidation;
-import eu.europa.ec.sante.ehdsi.openncp.configmanager.RegisteredService;
-import eu.europa.ec.sante.ehdsi.openncp.pt.common.DynamicDiscoveryService;
-import eu.europa.ec.sante.ehdsi.openncp.ssl.HttpsClientConfiguration;
-import eu.europa.ec.sante.ehdsi.openncp.util.OpenNCPConstants;
-import eu.europa.ec.sante.ehdsi.openncp.util.ServerMode;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.audit.EventLog;
+import eu.europa.ec.sante.openncp.common.configuration.RegisteredService;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
+import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
+import eu.europa.ec.sante.openncp.common.util.XMLUtil;
+import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.common.DynamicDiscoveryService;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcEntry;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtil;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtilWrapper;
+import eu.europa.ec.sante.openncp.core.common.eadc.ServiceType;
+import eu.europa.ec.sante.openncp.core.common.exception.XCAException;
+import eu.europa.ec.sante.openncp.core.common.ssl.HttpsClientConfiguration;
+import eu.europa.ec.sante.openncp.core.common.util.EventLogClientUtil;
+import eu.europa.ec.sante.openncp.core.common.util.EventLogUtil;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
@@ -46,8 +48,6 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import tr.com.srdc.epsos.util.Constants;
-import tr.com.srdc.epsos.util.XMLUtil;
 
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
@@ -492,7 +492,7 @@ public class RespondingGateway_ServiceStub extends Stub {
             if(!EadcUtilWrapper.hasTransactionErrors(_returnEnv)) {
                 EadcUtilWrapper.invokeEadc(_messageContext, _returnMessageContext, this._getServiceClient(), null,
                         transactionStartTime, transactionEndTime, this.countryCode, EadcEntry.DsTypes.EADC,
-                        Direction.OUTBOUND, ServiceType.DOCUMENT_LIST_QUERY);
+                        EadcUtil.Direction.OUTBOUND, ServiceType.DOCUMENT_LIST_QUERY);
             } else {
                 eadcError = EadcUtilWrapper.getTransactionErrorDescription(_returnEnv);
             }
@@ -562,7 +562,7 @@ public class RespondingGateway_ServiceStub extends Stub {
             if(!eadcError.isEmpty()) {
                 EadcUtilWrapper.invokeEadcFailure(_messageContext, _returnMessageContext, this._getServiceClient(), null,
                         transactionStartTime, transactionEndTime, this.countryCode, EadcEntry.DsTypes.EADC,
-                        Direction.OUTBOUND, ServiceType.DOCUMENT_LIST_QUERY, eadcError);
+                        EadcUtil.Direction.OUTBOUND, ServiceType.DOCUMENT_LIST_QUERY, eadcError);
             }
         }
     }
@@ -865,7 +865,7 @@ public class RespondingGateway_ServiceStub extends Stub {
                 }
                 EadcUtilWrapper.invokeEadc(_messageContext, _returnMessageContext, this._getServiceClient(), cda,
                         transactionStartTime, transactionEndTime, this.countryCode, EadcEntry.DsTypes.EADC,
-                        Direction.OUTBOUND, ServiceType.DOCUMENT_EXCHANGED_QUERY);
+                        EadcUtil.Direction.OUTBOUND, ServiceType.DOCUMENT_EXCHANGED_QUERY);
             }
 
             //  Create Audit messages
@@ -911,7 +911,7 @@ public class RespondingGateway_ServiceStub extends Stub {
             if(!eadcError.isEmpty()) {
                 EadcUtilWrapper.invokeEadcFailure(_messageContext, _returnMessageContext, this._getServiceClient(), cda,
                         transactionStartTime, transactionEndTime, this.countryCode, EadcEntry.DsTypes.EADC,
-                        Direction.OUTBOUND, ServiceType.DOCUMENT_EXCHANGED_QUERY, eadcError);
+                        EadcUtil.Direction.OUTBOUND, ServiceType.DOCUMENT_EXCHANGED_QUERY, eadcError);
             }
         }
     }

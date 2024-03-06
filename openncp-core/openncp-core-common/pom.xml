@@ -85,6 +85,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Apache dependencies -->
+        <dependency>
+            <groupId>org.apache.ibatis</groupId>
+            <artifactId>ibatis-sqlmap</artifactId>
+        </dependency>
         <!-- OpenSAML dependencies -->
         <dependency>
             <groupId>org.opensaml</groupId>
@@ -94,16 +99,6 @@
             <groupId>org.opensaml</groupId>
             <artifactId>opensaml-xacml-saml-impl</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>jakarta.servlet</groupId>-->
-<!--            <artifactId>jakarta.servlet-api</artifactId>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>javax.xml.crypto</groupId>-->
-<!--                    <artifactId>xmldsig</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>net.ihe.gazelle</groupId>
             <artifactId>hl7v3-code-jar</artifactId>

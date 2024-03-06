@@ -1,17 +1,15 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
-import eu.epsos.exceptions.NoPatientIdDiscoveredException;
-import eu.epsos.pt.ws.client.xcpd.XcpdInitGateway;
-import eu.europa.ec.sante.ehdsi.constant.assertion.AssertionEnum;
+
+import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.ihe.xcpd.XcpdInitGateway;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.exception.NoPatientIdDiscoveredException;
 import org.opensaml.saml.saml2.core.Assertion;
-import tr.com.srdc.epsos.data.model.PatientDemographics;
 
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
- */
 public final class IdentificationService {
 
     private IdentificationService() {

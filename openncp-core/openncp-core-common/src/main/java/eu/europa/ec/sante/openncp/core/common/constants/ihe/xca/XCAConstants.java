@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.constants.xca;
+package eu.europa.ec.sante.openncp.core.common.constants.ihe.xca;
 
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 

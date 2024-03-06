@@ -26,11 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is an Data Transformation Service. This provide functions to transform
- * data into a epsos.openncp.protocolterminator.clientconnector.GenericDocumentCodeDts object.
- *
- * @author Marcelo Fonseca<code> - marcelo.fonseca@iuz.pt</code>
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
+ * This is a Data Transformation Service. This provides functions to transform
+ * data into an GenericDocumentCodeDts object.
  */
 public class GenericDocumentCodeDts {
 

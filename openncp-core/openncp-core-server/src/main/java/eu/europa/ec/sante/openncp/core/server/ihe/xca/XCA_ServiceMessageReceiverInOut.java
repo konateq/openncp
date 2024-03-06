@@ -5,22 +5,25 @@ import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
 import eu.europa.ec.sante.openncp.common.audit.EventLog;
 import eu.europa.ec.sante.openncp.common.audit.EventLogUtil;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
-import eu.europa.ec.sante.openncp.common.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.common.constants.xca.XCAConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcEntry;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtil;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtilWrapper;
+import eu.europa.ec.sante.openncp.core.common.eadc.ServiceType;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisOperation;
@@ -41,9 +44,6 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.*;
-
-import static eu.europa.ec.sante.openncp.common.configuration.util.Constants.UUID_PREFIX;
-import static eu.europa.ec.sante.openncp.common.configuration.util.Constants.COUNTRY_CODE;
 
 /**
  * XCA_ServiceMessageReceiverInOut message receiver
@@ -82,7 +82,6 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         if (it.hasNext()) {
             return it.next().getText();
         } else {
-            // [Mustafa: May 8, 2012]: Should not be empty string, sch. gives error.
             return Constants.UUID_PREFIX;
         }
     }
@@ -222,7 +221,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
                     }
 
                     Options options = new Options();
-                    options.setProperty(Constants.Configuration.ENABLE_MTOM, Constants.VALUE_TRUE);
+                    options.setProperty(org.apache.axis2.Constants.Configuration.ENABLE_MTOM, org.apache.axis2.Constants.VALUE_TRUE);
                     newMsgContext.setOptions(options);
 
                     /* Validate outgoing retrieve response */
@@ -254,7 +253,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
 
                 if(!EadcUtilWrapper.hasTransactionErrors(envelope)) {
                     EadcUtilWrapper.invokeEadc(msgContext, newMsgContext, null, clinicalDocument, startTime, endTime,
-                            tr.com.srdc.epsos.util.Constants.COUNTRY_CODE, EadcEntry.DsTypes.EADC, EadcUtil.Direction.INBOUND, serviceType);
+                            Constants.COUNTRY_CODE, EadcEntry.DsTypes.EADC, EadcUtil.Direction.INBOUND, serviceType);
                 } else {
                     eadcError = EadcUtilWrapper.getTransactionErrorDescription(envelope);
                 }

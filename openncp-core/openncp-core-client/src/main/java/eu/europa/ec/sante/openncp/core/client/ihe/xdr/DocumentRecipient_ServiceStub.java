@@ -10,11 +10,10 @@ import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.client.util.EventLogClientUtil;
 import eu.europa.ec.sante.openncp.core.common.DynamicDiscoveryService;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
-import eu.europa.ec.sante.openncp.core.common.constants.xca.XCAConstants;
-import eu.europa.ec.sante.openncp.core.common.constants.xdr.XDRConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.lcm._3.SubmitObjectsRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorList;
@@ -25,6 +24,7 @@ import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtilWrapper;
 import eu.europa.ec.sante.openncp.core.common.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.exception.XDRException;
 import eu.europa.ec.sante.openncp.core.common.ssl.HttpsClientConfiguration;
+import eu.europa.ec.sante.openncp.core.common.util.EventLogClientUtil;
 import eu.europa.ec.sante.openncp.core.common.util.EventLogUtil;
 import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.*;
@@ -132,7 +132,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
 
         // Set the SOAP version
         _serviceClient.getOptions().setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
-        _serviceClient.getOptions().setProperty(Constants.Configuration.ENABLE_MTOM, Constants.VALUE_TRUE);
+        _serviceClient.getOptions().setProperty(org.apache.axis2.Constants.Configuration.ENABLE_MTOM, org.apache.axis2.Constants.VALUE_TRUE);
 
         // Enabling Axis2 - SSL 2 ways communication (not active by default).
         try {

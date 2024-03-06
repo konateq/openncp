@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.eadc.extractor;
 
-import eu.epsos.pt.eadc.util.EadcUtil;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

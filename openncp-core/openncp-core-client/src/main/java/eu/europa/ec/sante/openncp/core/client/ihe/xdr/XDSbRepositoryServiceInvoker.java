@@ -13,8 +13,8 @@ import eu.europa.ec.sante.openncp.core.client.transformation.TranslationsAndMapp
 import eu.europa.ec.sante.openncp.core.common.DynamicDiscoveryService;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
-import eu.europa.ec.sante.openncp.core.common.constants.xca.XCAConstants;
-import eu.europa.ec.sante.openncp.core.common.constants.xdr.XDRConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.*;

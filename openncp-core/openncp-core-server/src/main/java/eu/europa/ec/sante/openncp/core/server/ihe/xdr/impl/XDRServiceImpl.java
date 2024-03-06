@@ -1,6 +1,5 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xdr.impl;
 
-import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.*;
@@ -19,7 +18,7 @@ import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.Inva
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.MissingFieldException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
-import eu.europa.ec.sante.openncp.core.common.constants.xdr.XDRConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.datamodel.DiscardDispenseDetails;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.EPSOSDocument;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;

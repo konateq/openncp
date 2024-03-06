@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.constants.xdr;
+package eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr;
 
 
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
