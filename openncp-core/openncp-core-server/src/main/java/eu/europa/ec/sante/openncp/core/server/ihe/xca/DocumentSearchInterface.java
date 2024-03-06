@@ -3,6 +3,10 @@ package eu.europa.ec.sante.openncp.core.server.ihe.xca;
 import eu.epsos.protocolterminators.ws.server.common.NationalConnectorInterface;
 import eu.epsos.protocolterminators.ws.server.exception.NIException;
 import eu.europa.ec.sante.ehdsi.openncp.assertionvalidator.exceptions.InsufficientRightsException;
+import eu.europa.ec.sante.openncp.core.common.NationalConnectorInterface;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xds.*;
+import eu.europa.ec.sante.openncp.core.common.exception.NIException;
 import fi.kela.se.epsos.data.model.*;
 
 import java.util.List;
@@ -20,15 +24,6 @@ public interface DocumentSearchInterface extends NationalConnectorInterface {
      * @return DocumentAssociation<PSDocumentMetaData>
      */
     DocumentAssociation<PSDocumentMetaData> getPSDocumentList(SearchCriteria searchCriteria) throws NIException, InsufficientRightsException;
-
-    /**
-     * This method returns one DocumentAssociation (with MroDocumentMetaData in
-     * XML and/or PDF format) that matches the searchCriteria.
-     *
-     * @param searchCriteria (see SearchCriteria interface for more info)
-     * @return DocumentAssociation<MroDocumentMetaData>
-     */
-    DocumentAssociation<MroDocumentMetaData> getMroDocumentList(SearchCriteria searchCriteria) throws NIException, InsufficientRightsException;
 
     /**
      * This method returns one/several DocumentAssociation(s) (EPDocumentMetaData in XML and/or PDF format) that matches the searchCriteria.
