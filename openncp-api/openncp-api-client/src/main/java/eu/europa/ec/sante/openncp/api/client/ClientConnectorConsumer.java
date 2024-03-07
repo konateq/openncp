@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.api.client;
 
-import epsos.openncp.protocolterminator.clientconnector.*;
+import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.AssertionHelper;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;

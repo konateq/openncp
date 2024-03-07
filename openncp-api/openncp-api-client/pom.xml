@@ -9,7 +9,7 @@
     <artifactId>openncp-api-client</artifactId>
     <name>openncp-api-client</name>
 
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <dependencies>
         <dependency>
@@ -21,7 +21,5 @@
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-xmlbeans</artifactId>
         </dependency>
-        <!-- Logging dependencies -->
-
     </dependencies>
 </project>

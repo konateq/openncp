@@ -1,9 +1,5 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca;
 
-import epsos.ccd.gnomon.auditmanager.EventLog;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPHeader;
 
