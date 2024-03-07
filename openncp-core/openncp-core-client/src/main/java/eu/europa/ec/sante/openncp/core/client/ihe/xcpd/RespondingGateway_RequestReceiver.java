@@ -2,11 +2,9 @@ package eu.europa.ec.sante.openncp.core.client.ihe.xcpd;
 
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.common.datamodel.org.hl7.v3.*;
 import eu.europa.ec.sante.openncp.core.common.exception.NoPatientIdDiscoveredException;
 import eu.europa.ec.sante.openncp.core.common.exception.XCPDErrorCode;
-import net.ihe.gazelle.hl7v3.datatypes.*;
-import net.ihe.gazelle.hl7v3.mcaimt900001UV01.MCAIMT900001UV01DetectedIssueEvent;
-import net.ihe.gazelle.hl7v3.prpain201306UV02.PRPAIN201306UV02Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,12 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * RespondingGateway_RequestReceiver class.
- * <p>
- * Gathers some mechanisms to extract and transform data.
- *
- */
 public class RespondingGateway_RequestReceiver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RespondingGateway_RequestReceiver.class);
@@ -39,10 +31,10 @@ public class RespondingGateway_RequestReceiver {
      * @throws NoPatientIdDiscoveredException This represents the impossibility to transform the
      *                                        input data.
      * @see PatientDemographics
-     * @see PRPAIN201306UV02Type
+     * @see PRPAIN201306UV02
      * @see List
      */
-    public static List<PatientDemographics> respondingGateway_PRPA_IN201306UV02(final PRPAIN201306UV02Type pRPA_IN201306UV02)
+    public static List<PatientDemographics> respondingGateway_PRPA_IN201306UV02(final PRPAIN201306UV02 pRPA_IN201306UV02)
             throws NoPatientIdDiscoveredException {
 
         final List<PatientDemographics> patients = new ArrayList<>(1);
@@ -67,21 +59,21 @@ public class RespondingGateway_RequestReceiver {
                             if (pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient() != null) {
                                 if (pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson() != null) {
                                     // Set pd.administrativeGender
-                                    if (pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getAdministrativeGenderCode() != null) {
-                                        String sAdministrativeGender = pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getAdministrativeGenderCode().getCode();
+                                    if (pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getAdministrativeGenderCode() != null) {
+                                        String sAdministrativeGender = pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getAdministrativeGenderCode().getCode();
                                         if (sAdministrativeGender != null) {
                                             pd.setAdministrativeGender(PatientDemographics.Gender.parseGender(sAdministrativeGender));
                                         }
                                     }
 
                                     // Set pd.birthDate
-                                    if (pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getBirthTime() != null) {
+                                    if (pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getBirthTime() != null) {
                                         SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
                                         Date birthDate;
                                         String sBirthdate;
 
                                         try {
-                                            sBirthdate = pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getBirthTime().getValue().substring(0, 8);
+                                            sBirthdate = pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getBirthTime().getValue().substring(0, 8);
                                             if (sBirthdate != null) {
                                                 birthDate = df.parse(sBirthdate);
                                                 pd.setBirthDate(birthDate);
@@ -92,9 +84,9 @@ public class RespondingGateway_RequestReceiver {
                                     }
 
                                     // Set pd.familyName and pd.givenName
-                                    if (!pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getName().isEmpty()) {
-                                        for (int i = 0; i < pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getName().get(0).getContent().size(); i++) {
-                                            Object o = pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getName().get(0).getContent().get(i);
+                                    if (!pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getName().isEmpty()) {
+                                        for (int i = 0; i < pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getName().get(0).getContent().size(); i++) {
+                                            Object o = pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getName().get(0).getContent().get(i);
                                             if (o instanceof JAXBElement) {
                                                 @SuppressWarnings("unchecked")
                                                 JAXBElement<Object> temp = (JAXBElement<Object>) o;
@@ -110,9 +102,9 @@ public class RespondingGateway_RequestReceiver {
                                     }
 
                                     // Set pd.city , pd.country , pd.postalCode and pd.streetAddress
-                                    if (!pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getAddr().isEmpty()) {
-                                        for (int i = 0; i < pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getAddr().get(0).getContent().size(); i++) {
-                                            Object o = pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getAddr().get(0).getContent().get(i);
+                                    if (!pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getAddr().isEmpty()) {
+                                        for (int i = 0; i < pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getAddr().get(0).getContent().size(); i++) {
+                                            Object o = pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getAddr().get(0).getContent().get(i);
                                             if (o instanceof JAXBElement) {
                                                 @SuppressWarnings("unchecked")
                                                 JAXBElement<Object> temp = (JAXBElement<Object>) pRPA_IN201306UV02.getControlActProcess().getSubject().get(s).getRegistrationEvent().getSubject1().getPatient().getPatientPerson().getValue().getAddr().get(0).getContent().get(i);
@@ -185,7 +177,7 @@ public class RespondingGateway_RequestReceiver {
         return patients;
     }
 
-    private static String getAcknowledgementDetailText(final PRPAIN201306UV02Type pRPA_IN201306UV02) {
+    private static String getAcknowledgementDetailText(final PRPAIN201306UV02 pRPA_IN201306UV02) {
         if (pRPA_IN201306UV02 != null
                 && !pRPA_IN201306UV02.getAcknowledgement().isEmpty()
                 && pRPA_IN201306UV02.getAcknowledgement().get(0).getAcknowledgementDetail() != null
@@ -196,7 +188,7 @@ public class RespondingGateway_RequestReceiver {
         return null;
     }
 
-    private static String getAcknowledgementDetailCode(final PRPAIN201306UV02Type pRPA_IN201306UV02) {
+    private static String getAcknowledgementDetailCode(final PRPAIN201306UV02 pRPA_IN201306UV02) {
         if (pRPA_IN201306UV02 != null
                 && !pRPA_IN201306UV02.getAcknowledgement().isEmpty()
                 && pRPA_IN201306UV02.getAcknowledgement().get(0).getAcknowledgementDetail() != null
@@ -207,19 +199,19 @@ public class RespondingGateway_RequestReceiver {
         return null;
     }
 
-    private static String getAcknowledgementDetailLocation(final PRPAIN201306UV02Type pRPA_IN201306UV02) {
+    private static String getAcknowledgementDetailLocation(final PRPAIN201306UV02 pRPA_IN201306UV02) {
         if (pRPA_IN201306UV02 != null
                 && !pRPA_IN201306UV02.getAcknowledgement().isEmpty()
                 && pRPA_IN201306UV02.getAcknowledgement().get(0).getAcknowledgementDetail() != null
                 && !pRPA_IN201306UV02.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()
                 && pRPA_IN201306UV02.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getLocation() != null
                 && !pRPA_IN201306UV02.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getLocation().isEmpty() ) {
-            return pRPA_IN201306UV02.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getLocation().get(0);
+            return pRPA_IN201306UV02.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getLocation().get(0).getContent();
         }
         return null;
     }
 
-    private static MCAIMT900001UV01DetectedIssueEvent getDetectedIssueEvent(final PRPAIN201306UV02Type pRPA_IN201306UV02) {
+    private static MCAIMT900001UV01DetectedIssueEvent getDetectedIssueEvent(final PRPAIN201306UV02 pRPA_IN201306UV02) {
         if (pRPA_IN201306UV02 != null
                 && pRPA_IN201306UV02.getControlActProcess() != null
                 && pRPA_IN201306UV02.getControlActProcess().getReasonOf() != null

@@ -12,6 +12,8 @@ import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.common.DynamicDiscoveryService;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xcpd.XCPDConstants;
+import eu.europa.ec.sante.openncp.core.common.datamodel.org.hl7.v3.PRPAIN201305UV02;
+import eu.europa.ec.sante.openncp.core.common.datamodel.org.hl7.v3.PRPAIN201306UV02;
 import eu.europa.ec.sante.openncp.core.common.eadc.EadcEntry;
 import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtil;
 import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtilWrapper;
@@ -20,8 +22,6 @@ import eu.europa.ec.sante.openncp.core.common.exception.NoPatientIdDiscoveredExc
 import eu.europa.ec.sante.openncp.core.common.ssl.HttpsClientConfiguration;
 import eu.europa.ec.sante.openncp.core.common.util.EventLogClientUtil;
 import eu.europa.ec.sante.openncp.core.common.util.EventLogUtil;
-import net.ihe.gazelle.hl7v3.prpain201305UV02.PRPAIN201305UV02Type;
-import net.ihe.gazelle.hl7v3.prpain201306UV02.PRPAIN201306UV02Type;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
@@ -40,7 +40,7 @@ import org.apache.axis2.description.WSDL2Constants;
 import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.axis2.wsdl.WSDLConstants;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,10 +63,6 @@ import java.util.*;
 
 /**
  * RespondingGateway_ServiceStub java implementation.
- *
- * @author SRDC<code> - epsos@srdc.com.tr>
- * @author Aarne Roosi<code> - Aarne.Roosi@Affecto.com</code>
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
  */
 public class RespondingGateway_ServiceStub extends Stub {
 
@@ -83,7 +79,7 @@ public class RespondingGateway_ServiceStub extends Stub {
     static {
         JAXBContext jaxbContext = null;
         try {
-            jaxbContext = JAXBContext.newInstance(PRPAIN201305UV02Type.class, PRPAIN201306UV02Type.class);
+            jaxbContext = JAXBContext.newInstance(PRPAIN201305UV02.class, PRPAIN201306UV02.class);
         } catch (JAXBException ex) {
             LOGGER.error("Unable to create JAXBContext: '{}'", ex.getMessage(), ex);
             Runtime.getRuntime().exit(-1);
@@ -186,7 +182,7 @@ public class RespondingGateway_ServiceStub extends Stub {
      * @param assertionMap
      * @return
      */
-    public PRPAIN201306UV02Type respondingGateway_PRPA_IN201305UV02(PRPAIN201305UV02Type prpain201305UV02, Map<AssertionEnum, Assertion> assertionMap) throws NoPatientIdDiscoveredException {
+    public PRPAIN201306UV02 respondingGateway_PRPA_IN201305UV02(PRPAIN201305UV02 prpain201305UV02, Map<AssertionEnum, Assertion> assertionMap) throws NoPatientIdDiscoveredException {
 
         MessageContext _messageContext = null;
         MessageContext _returnMessageContext = null;
@@ -383,7 +379,7 @@ public class RespondingGateway_ServiceStub extends Stub {
             if (OpenNCPValidation.isValidationEnable()) {
                 OpenNCPValidation.validatePatientDemographicResponse(logResponseBody, NcpSide.NCP_B);
             }
-            Object object = fromOM(_returnEnv.getBody().getFirstElement(), PRPAIN201306UV02Type.class, getEnvelopeNamespaces(_returnEnv));
+            Object object = fromOM(_returnEnv.getBody().getFirstElement(), PRPAIN201306UV02.class, getEnvelopeNamespaces(_returnEnv));
 
             // TMP
             // Validation end time
@@ -394,23 +390,6 @@ public class RespondingGateway_ServiceStub extends Stub {
             // eADC start time
             start = System.currentTimeMillis();
 
-            /*
-             * Invoke NRR
-             */
-//            LOGGER.info("XCPD Response received. EVIDENCE NRR");
-//            // NRR
-//            try {
-//                EvidenceUtils.createEvidenceREMNRR(XMLUtil.prettyPrint(XMLUtils.toDOM(env)),
-//                        tr.com.srdc.epsos.util.Constants.NCP_SIG_KEYSTORE_PATH,
-//                        tr.com.srdc.epsos.util.Constants.NCP_SIG_KEYSTORE_PASSWORD,
-//                        tr.com.srdc.epsos.util.Constants.NCP_SIG_PRIVATEKEY_ALIAS,
-//                        EventType.epsosIdentificationServiceFindIdentityByTraits.getCode(),
-//                        new DateTime(),
-//                        EventOutcomeIndicator.FULL_SUCCESS.getCode().toString(),
-//                        "NCPB_XCPD_RES");
-//            } catch (Exception e) {
-//                LOGGER.error(ExceptionUtils.getStackTrace(e));
-//            }
             /*
              * Invoque eADC
              */
@@ -428,7 +407,7 @@ public class RespondingGateway_ServiceStub extends Stub {
             start = System.currentTimeMillis();
 
             // eventLog
-            EventLog eventLog = createAndSendEventLog(prpain201305UV02, (PRPAIN201306UV02Type) object, messageContext,
+            EventLog eventLog = createAndSendEventLog(prpain201305UV02, (PRPAIN201306UV02) object, messageContext,
                     _returnEnv, env, assertionMap.get(AssertionEnum.CLINICIAN), this._getServiceClient().getOptions().getTo().getAddress());
 
             try {
@@ -441,7 +420,7 @@ public class RespondingGateway_ServiceStub extends Stub {
             end = System.currentTimeMillis();
             LOGGER.info("XCPD AUDIT TIME: '{}'", (end - start) / 1000.0);
 
-            return (PRPAIN201306UV02Type) object;
+            return (PRPAIN201306UV02) object;
 
         } catch (AxisFault axisFault) {
 
@@ -493,7 +472,7 @@ public class RespondingGateway_ServiceStub extends Stub {
      */
     private Map getEnvelopeNamespaces(SOAPEnvelope env) {
 
-        Map returnMap = new HashMap();
+        Map returnMap = new java.util.HashMap();
         Iterator namespaceIterator = env.getAllDeclaredNamespaces();
 
         while (namespaceIterator.hasNext()) {
@@ -517,13 +496,13 @@ public class RespondingGateway_ServiceStub extends Stub {
         return false;
     }
 
-    private OMElement toOM(PRPAIN201305UV02Type param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(PRPAIN201305UV02 param, boolean optimizeContent) throws AxisFault {
 
         try {
             var marshaller = wsContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
             var omFactory = OMAbstractFactory.getOMFactory();
-            var jaxbRIDataSource = new JaxbRIDataSource(PRPAIN201305UV02Type.class, param, marshaller,
+            var jaxbRIDataSource = new JaxbRIDataSource(PRPAIN201305UV02.class, param, marshaller,
                     XCPDConstants.HL7_V3_NAMESPACE_URI, XCPDConstants.PATIENT_DISCOVERY_REQUEST);
             var omNamespace = omFactory.createOMNamespace(XCPDConstants.HL7_V3_NAMESPACE_URI, null);
 
@@ -533,21 +512,21 @@ public class RespondingGateway_ServiceStub extends Stub {
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201305UV02Type param, boolean optimizeContent) throws AxisFault {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201305UV02 param, boolean optimizeContent) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();
         envelope.getBody().addChild(toOM(param, optimizeContent));
         return envelope;
     }
 
-    private OMElement toOM(PRPAIN201306UV02Type param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(PRPAIN201306UV02 param, boolean optimizeContent) throws AxisFault {
 
         try {
             Marshaller marshaller = wsContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
             OMFactory factory = OMAbstractFactory.getOMFactory();
 
-            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201306UV02Type.class, param, marshaller,
+            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201306UV02.class, param, marshaller,
                     XCPDConstants.HL7_V3_NAMESPACE_URI, XCPDConstants.PATIENT_DISCOVERY_RESPONSE);
             OMNamespace namespace = factory.createOMNamespace(XCPDConstants.HL7_V3_NAMESPACE_URI, null);
             return factory.createOMElement(source, XCPDConstants.PATIENT_DISCOVERY_RESPONSE, namespace);
@@ -556,7 +535,7 @@ public class RespondingGateway_ServiceStub extends Stub {
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201306UV02Type param, boolean optimizeContent) throws AxisFault {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201306UV02 param, boolean optimizeContent) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();
         envelope.getBody().addChild(toOM(param, optimizeContent));
@@ -584,7 +563,7 @@ public class RespondingGateway_ServiceStub extends Stub {
         }
     }
 
-    private EventLog createAndSendEventLog(PRPAIN201305UV02Type sended, PRPAIN201306UV02Type received, MessageContext msgContext,
+    private EventLog createAndSendEventLog(PRPAIN201305UV02 sended, PRPAIN201306UV02 received, MessageContext msgContext,
                                            SOAPEnvelope _returnEnv, SOAPEnvelope env, Assertion idAssertion, String address) {
 
         EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address);

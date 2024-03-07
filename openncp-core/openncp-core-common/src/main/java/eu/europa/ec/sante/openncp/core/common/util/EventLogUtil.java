@@ -5,6 +5,9 @@ import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
+import eu.europa.ec.sante.openncp.core.common.datamodel.org.hl7.v3.II;
+import eu.europa.ec.sante.openncp.core.common.datamodel.org.hl7.v3.PRPAIN201305UV02;
+import eu.europa.ec.sante.openncp.core.common.datamodel.org.hl7.v3.PRPAIN201306UV02;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
@@ -13,9 +16,6 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryR
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.*;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorList;
-import net.ihe.gazelle.hl7v3.datatypes.II;
-import net.ihe.gazelle.hl7v3.prpain201305UV02.PRPAIN201305UV02Type;
-import net.ihe.gazelle.hl7v3.prpain201306UV02.PRPAIN201306UV02Type;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.context.MessageContext;
@@ -34,6 +34,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+// Common part for client and server logging
+// TODO A.R. Should be moved into openncp-util later to avoid duplication
 public class EventLogUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventLogUtil.class);
@@ -46,7 +48,7 @@ public class EventLogUtil {
      * @param request
      * @param response
      */
-    public static void prepareXCPDCommonLog(EventLog eventLog, MessageContext msgContext, PRPAIN201305UV02Type request, PRPAIN201306UV02Type response) {
+    public static void prepareXCPDCommonLog(EventLog eventLog, MessageContext msgContext, PRPAIN201305UV02 request, PRPAIN201306UV02 response) {
 
         // Set Event Identification
         eventLog.setEventType(EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS);
@@ -55,7 +57,7 @@ public class EventLogUtil {
 
         if (!response.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()) {
 
-            String detail = String.join(" ", response.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getListStringValues());
+            String detail = response.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getContent();
             if (detail.startsWith("(")) {
                 String code = detail.substring(1, 5);
                 if (code.equals("1102")) {
@@ -83,7 +85,7 @@ public class EventLogUtil {
             }
         } else {
             // TODO: To be reviewed - No Patient details return then audit message is reporting Patient search criteria
-            II instanceIdentifier = response.getControlActProcess().getQueryByParameter().getParameterList()
+            II instanceIdentifier = response.getControlActProcess().getQueryByParameter().getValue().getParameterList()
                     .getLivingSubjectId().get(0).getValue().get(0);
             if (instanceIdentifier.getExtension() != null && instanceIdentifier.getRoot() != null) {
                 patientId = instanceIdentifier.getExtension() + "^^^&" + instanceIdentifier.getRoot() + "&ISO";
@@ -94,7 +96,7 @@ public class EventLogUtil {
         // Set Participant Object: Error Message
         if (!response.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()) {
 
-            String error = response.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getRepresentation().value();
+            String error = response.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getContent();
             eventLog.setEM_ParticipantObjectID(error);
             eventLog.setEM_ParticipantObjectDetail(error.getBytes());
         }
@@ -162,7 +164,7 @@ public class EventLogUtil {
 
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.PERMANENT_FAILURE);
             for (SlotType1 slotType1 : request.getAdhocQuery().getSlot()) {
-                if (org.apache.commons.lang.StringUtils.equals(slotType1.getName(), "$XDSDocumentEntryClassCode")) {
+                if (StringUtils.equals(slotType1.getName(), "$XDSDocumentEntryClassCode")) {
                     String documentType = slotType1.getValueList().getValue().get(0);
                     documentType = org.apache.commons.lang3.StringUtils.remove(documentType, "('");
                     documentType = org.apache.commons.lang3.StringUtils.remove(documentType, "')");
@@ -176,7 +178,7 @@ public class EventLogUtil {
 
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.TEMPORAL_FAILURE);
             for (SlotType1 slotType1 : request.getAdhocQuery().getSlot()) {
-                if (org.apache.commons.lang.StringUtils.equals(slotType1.getName(), "$XDSDocumentEntryClassCode")) {
+                if (StringUtils.equals(slotType1.getName(), "$XDSDocumentEntryClassCode")) {
                     String documentType = slotType1.getValueList().getValue().get(0);
                     documentType = org.apache.commons.lang3.StringUtils.remove(documentType, "('");
                     documentType = org.apache.commons.lang3.StringUtils.remove(documentType, "')");

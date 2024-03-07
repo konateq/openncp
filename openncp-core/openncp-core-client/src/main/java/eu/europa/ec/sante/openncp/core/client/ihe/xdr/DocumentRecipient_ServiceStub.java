@@ -46,7 +46,7 @@ import org.apache.axis2.description.WSDL2Constants;
 import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.axis2.wsdl.WSDLConstants;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;

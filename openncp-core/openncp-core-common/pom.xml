@@ -99,10 +99,6 @@
             <groupId>org.opensaml</groupId>
             <artifactId>opensaml-xacml-saml-impl</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.ihe.gazelle</groupId>
-            <artifactId>hl7v3-code-jar</artifactId>
-        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
