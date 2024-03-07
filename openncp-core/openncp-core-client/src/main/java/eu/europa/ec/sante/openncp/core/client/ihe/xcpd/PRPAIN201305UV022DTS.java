@@ -1,8 +1,9 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.xcpd;
 
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xcpd.XCPDConstants;
+import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.datamodel.PatientId;
 import net.ihe.gazelle.hl7v3.coctmt090100UV01.COCTMT090100UV01AssignedPerson;
 import net.ihe.gazelle.hl7v3.datatypes.*;
@@ -78,7 +79,7 @@ public final class PRPAIN201305UV022DTS {
         request.getReceiver().get(0).setDevice(rDevice);
         EntityClassDevice rClassCode = EntityClassDevice.DEV;
         request.getReceiver().get(0).getDevice().setClassCode(rClassCode);
-        request.getReceiver().get(0).getDevice().setDeterminerCode(XCPDConstants.DETERMINER_CODE_INSTANCE);
+        request.getReceiver().get(0).getDevice().setDeterminerCode(EntityDeterminer.valueOf(XCPDConstants.DETERMINER_CODE_INSTANCE));
 
         // Set receiver/device/id
         request.getReceiver().get(0).getDevice().getId().add(of.createII());
@@ -110,7 +111,7 @@ public final class PRPAIN201305UV022DTS {
         request.getSender().setDevice(sDevice);
         EntityClassDevice sClassCode = EntityClassDevice.DEV;
         request.getSender().getDevice().setClassCode(sClassCode);
-        request.getSender().getDevice().setDeterminerCode(XCPDConstants.DETERMINER_CODE_INSTANCE);
+        request.getSender().getDevice().setDeterminerCode(EntityDeterminer.valueOf(XCPDConstants.DETERMINER_CODE_INSTANCE));
 
         // Set sender/device/id
         request.getSender().getDevice().getId().add(of.createII());
@@ -153,52 +154,52 @@ public final class PRPAIN201305UV022DTS {
         // Set controlActProcess/authorOrPerformer/assignedPerson
         COCTMT090100UV01AssignedPerson ap = new COCTMT090100UV01AssignedPerson();
         request.getControlActProcess().getAuthorOrPerformer().get(0).setAssignedPerson(of.createMFMIMT700711UV01AuthorOrPerformerAssignedPerson(ap));
-        request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedPerson().getValue().setClassCode(XCPDConstants.CLASS_CODE_ASSIGNED);
+        request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedPerson().setClassCode(XCPDConstants.CLASS_CODE_ASSIGNED);
 
         // Create controlActProcess/queryByParameter
         PRPAMT201306UV02QueryByParameter queryByParameter = of.createPRPAMT201306UV02QueryByParameter();
         request.getControlActProcess().setQueryByParameter(of.createPRPAIN201306UV02MFMIMT700711UV01ControlActProcessQueryByParameter(queryByParameter));
 
         // Set controlActProcess/queryByParameter/queryId
-        request.getControlActProcess().getQueryByParameter().getValue().setQueryId(of.createII());
-        request.getControlActProcess().getQueryByParameter().getValue().getQueryId().setRoot(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_ID_ROOT);
+        request.getControlActProcess().getQueryByParameter().setQueryId(of.createII());
+        request.getControlActProcess().getQueryByParameter().getQueryId().setRoot(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_ID_ROOT);
 
         // Set controlActProcess/queryByParameter/statusCode
-        request.getControlActProcess().getQueryByParameter().getValue().setStatusCode(of.createCS());
-        request.getControlActProcess().getQueryByParameter().getValue().getStatusCode().setCode(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_STATUS_CODE);
+        request.getControlActProcess().getQueryByParameter().setStatusCode(of.createCS());
+        request.getControlActProcess().getQueryByParameter().getStatusCode().setCode(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_STATUS_CODE);
 
         // Set controlActProcess/queryByParameter/responseModalityCode
-        request.getControlActProcess().getQueryByParameter().getValue().setResponseModalityCode(of.createCS());
-        request.getControlActProcess().getQueryByParameter().getValue().getResponseModalityCode().setCode(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_RESPONSE_MODALITY_CODE);
+        request.getControlActProcess().getQueryByParameter().setResponseModalityCode(of.createCS());
+        request.getControlActProcess().getQueryByParameter().getResponseModalityCode().setCode(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_RESPONSE_MODALITY_CODE);
 
         // Set controlActProcess/queryByParameter/responsePriorityCode
-        request.getControlActProcess().getQueryByParameter().getValue().setResponsePriorityCode(of.createCS());
-        request.getControlActProcess().getQueryByParameter().getValue().getResponsePriorityCode().setCode(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_RESPONSE_PRIORITY_CODE);
+        request.getControlActProcess().getQueryByParameter().setResponsePriorityCode(of.createCS());
+        request.getControlActProcess().getQueryByParameter().getResponsePriorityCode().setCode(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_RESPONSE_PRIORITY_CODE);
 
         // Set controlActProcess/queryByParameter/matchCriterionList
         PRPAMT201306UV02MatchCriterionList matchCriterionList = new PRPAMT201306UV02MatchCriterionList();
-        request.getControlActProcess().getQueryByParameter().getValue().setMatchCriterionList(of.createPRPAMT201306UV02QueryByParameterMatchCriterionList(matchCriterionList));
+        request.getControlActProcess().getQueryByParameter().setMatchCriterionList(of.createPRPAMT201306UV02QueryByParameterMatchCriterionList(matchCriterionList));
 
         // Create controlActProcess/queryByParameter/parameterList
         PRPAMT201306UV02ParameterList parameterList = new PRPAMT201306UV02ParameterList();
-        request.getControlActProcess().getQueryByParameter().getValue().setParameterList(parameterList);
+        request.getControlActProcess().getQueryByParameter().setParameterList(parameterList);
 
         if (patientDemographics.getAdministrativeGender() != null) {
             // Create controlActProcess/queryByParameter/parameterList/livingSubjectAdministrativeGender
             PRPAMT201306UV02LivingSubjectAdministrativeGender administrativeGender = new PRPAMT201306UV02LivingSubjectAdministrativeGender();
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
+            request.getControlActProcess().getQueryByParameter().getParameterList()
                     .getLivingSubjectAdministrativeGender().add(administrativeGender);
 
             // Set controlActProcess/queryByParameter/parameterList/livingSubjectAdministrativeGender/value
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
-                    .getLivingSubjectAdministrativeGender().get(0).getValue().add(of.createCE());
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
-                    .getLivingSubjectAdministrativeGender().get(0).getValue().get(0).setCode(patientDemographics.getAdministrativeGender().toString());
+            request.getControlActProcess().getQueryByParameter().getParameterList()
+                    .getLivingSubjectAdministrativeGender().get(0).add(of.createCE());
+            request.getControlActProcess().getQueryByParameter().getParameterList()
+                    .getLivingSubjectAdministrativeGender().get(0).get(0).setCode(patientDemographics.getAdministrativeGender().toString());
 
             // Set controlActProcess/queryByParameter/parameterList/livingSubjectAdministrativeGender/semanticsText
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
+            request.getControlActProcess().getQueryByParameter().getParameterList()
                     .getLivingSubjectAdministrativeGender().get(0).setSemanticsText(of.createST());
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
+            request.getControlActProcess().getQueryByParameter().getParameterList()
                     .getLivingSubjectAdministrativeGender().get(0).getSemanticsText().setContent(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_ADMINISTRATIVE_GENDER_SEMANTICS);
         }
 
@@ -207,19 +208,19 @@ public final class PRPAIN201305UV022DTS {
             SimpleDateFormat birthTimeFormat = new SimpleDateFormat(DateUtil.DATE_FORMAT);
             // Create controlActProcess/queryByParameter/parameterList/livingSubjectBirthTime
             PRPAMT201306UV02LivingSubjectBirthTime birthTime = new PRPAMT201306UV02LivingSubjectBirthTime();
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
+            request.getControlActProcess().getQueryByParameter().getParameterList()
                     .getLivingSubjectBirthTime().add(birthTime);
 
             // Set controlActProcess/queryByParameter/parameterList/livingSubjectBirthTime/value
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
-                    .getLivingSubjectBirthTime().get(0).getValue().add(of.createIVLTS());
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
-                    .getLivingSubjectBirthTime().get(0).getValue().get(0).setValue(birthTimeFormat.format(patientDemographics.getBirthDate()));
+            request.getControlActProcess().getQueryByParameter().getParameterList()
+                    .getLivingSubjectBirthTime().get(0).add(of.createIVLTS());
+            request.getControlActProcess().getQueryByParameter().getParameterList()
+                    .getLivingSubjectBirthTime().get(0).get(0).setValue(birthTimeFormat.format(patientDemographics.getBirthDate()));
 
             // Set controlActProcess/queryByParameter/parameterList/livingSubjectBirthTime/semanticsText
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
+            request.getControlActProcess().getQueryByParameter().getParameterList()
                     .getLivingSubjectBirthTime().get(0).setSemanticsText(of.createST());
-            request.getControlActProcess().getQueryByParameter().getValue().getParameterList()
+            request.getControlActProcess().getQueryByParameter().getParameterList()
                     .getLivingSubjectBirthTime().get(0).getSemanticsText().setContent(XCPDConstants.CONTROL_ACT_PROCESS.QUERY_BY_PARAMETER_BIRTHDATE_SEMANTICS);
         }
 

@@ -58,14 +58,14 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
 
         try {
             /* Creating request */
-            List<PatientDemographics> xcpdResp;
+            ;
             var queryPatientRequest = queryPatient.getQueryPatient().getArg0();
             var patientDemographics = queryPatientRequest.getPatientDemographics();
-            PatientDemographics request = PatientDemographicsDts.newInstance(patientDemographics);
+            eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics request = PatientDemographicsDts.newInstance(patientDemographics);
             String countryCode = queryPatientRequest.getCountryCode();
 
             // Calling XCPD Client
-            xcpdResp = IdentificationService.findIdentityByTraits(request, assertionMap, countryCode);
+            List<eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics> xcpdResp = IdentificationService.findIdentityByTraits(request, assertionMap, countryCode);
 
             //  Response
             List<PatientDemographics> aux = PatientDemographicsDts.newInstance(xcpdResp);
@@ -103,15 +103,14 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
         String countryCode = queryDocumentRequest.getCountryCode();
 
         List<GenericDocumentCode> classCodes = Arrays.asList(queryDocumentRequest.getClassCodeArray());
-        List<GenericDocumentCode> documentCodes =
-                GenericDocumentCodeDts.newInstance(classCodes);
+        List<eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode> documentCodes = GenericDocumentCodeDts.newInstance(classCodes);
 
         var filterParamsReceived = queryDocumentRequest.getFilterParams();
         var patientId = PatientIdDts.newInstance(queryDocumentRequest.getPatientId());
 
-        var filterParams = FilterParamsDts.newInstance(filterParamsReceived);
+        eu.europa.ec.sante.openncp.core.common.datamodel.FilterParams filterParams = FilterParamsDts.newInstance(filterParamsReceived);
 
-        for (GenericDocumentCode documentCode : documentCodes) {
+        for (eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode documentCode : documentCodes) {
             if (!documentCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {
                 throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION + documentCode.getSchema());
             }
@@ -195,7 +194,7 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
         String targetLanguage = retrieveDocumentRequest.getTargetLanguage();
 
         GenericDocumentCode tmpCode = retrieveDocumentRequest.getClassCode();
-        GenericDocumentCode documentCode = GenericDocumentCodeDts.newInstance(tmpCode);
+        eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode documentCode = GenericDocumentCodeDts.newInstance(tmpCode);
 
         if (!documentCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {
             throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION + documentCode.getSchema());

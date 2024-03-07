@@ -43,4 +43,29 @@ public final class PatientIdDts {
 
         return result;
     }
+
+    public static eu.europa.ec.sante.openncp.core.client.PatientId[] newInstance(final List<PatientId> patientId) {
+        if (patientId == null) {
+            return null;
+        }
+
+        eu.europa.ec.sante.openncp.core.client.PatientId[] result = new eu.europa.ec.sante.openncp.core.client.PatientId[patientId.size()];
+        for(int i = 0; i < patientId.size(); i++) {
+            result[i] = newInstance(patientId.get(i));
+        }
+
+        return result;
+    }
+
+    public static eu.europa.ec.sante.openncp.core.client.PatientId newInstance(final PatientId patientId) {
+        if (patientId == null) {
+            return null;
+        }
+
+        eu.europa.ec.sante.openncp.core.client.PatientId result = eu.europa.ec.sante.openncp.core.client.PatientId.Factory.newInstance();
+        result.setRoot(patientId.getRoot());
+        result.setExtension(patientId.getExtension());
+
+        return result;
+    }
 }

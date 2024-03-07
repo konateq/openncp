@@ -1,9 +1,9 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
 
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.client.ihe.xcpd.XcpdInitGateway;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.exception.NoPatientIdDiscoveredException;
 import org.opensaml.saml.saml2.core.Assertion;
 

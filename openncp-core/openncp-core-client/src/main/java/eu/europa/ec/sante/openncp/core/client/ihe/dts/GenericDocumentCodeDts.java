@@ -1,26 +1,6 @@
-/*
- * This file is part of epSOS OpenNCP implementation
- * Copyright (C) 2012  SPMS (Serviços Partilhados do Ministério da Saúde - Portugal)
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * Contact email: epsos@iuz.pt
- */
-
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode;
+import eu.europa.ec.sante.openncp.core.client.GenericDocumentCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +11,19 @@ import java.util.List;
  */
 public class GenericDocumentCodeDts {
 
-    public static List<GenericDocumentCode> newInstance(List<eu.europa.ec.sante.openncp.core.client.GenericDocumentCode> documentCodes) {
-        final List<GenericDocumentCode> result = new ArrayList<>();
+    public static GenericDocumentCode newInstance(eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode genericDocCode) {
+        final GenericDocumentCode result = GenericDocumentCode.Factory.newInstance();
+        result.setSchema(genericDocCode.getSchema());
+        result.setValue(genericDocCode.getValue());
+        result.setNodeRepresentation(genericDocCode.getValue());
+        return result;
+    }
 
-        for (eu.europa.ec.sante.openncp.core.client.GenericDocumentCode documentCode: documentCodes) {
-            GenericDocumentCode genericDocumentCode = new GenericDocumentCode();
+    public static List<eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode> newInstance(List<GenericDocumentCode> documentCodes) {
+        final List<eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode> result = new ArrayList<>();
+
+        for (GenericDocumentCode documentCode: documentCodes) {
+            eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode genericDocumentCode = new eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode();
             genericDocumentCode.setSchema(documentCode.getSchema());
             genericDocumentCode.setValue(documentCode.getNodeRepresentation());
             result.add(genericDocumentCode);
@@ -43,19 +31,18 @@ public class GenericDocumentCodeDts {
         return result;
     }
 
-    public static GenericDocumentCode newInstance(eu.europa.ec.sante.openncp.core.client.GenericDocumentCode documentCode) {
-        final GenericDocumentCode result = new GenericDocumentCode();
+    public static eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode newInstance(GenericDocumentCode documentCode) {
+        final eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode result = new eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode();
 
         result.setSchema(documentCode.getSchema());
         result.setValue(documentCode.getNodeRepresentation());
-
         return result;
     }
 
     /**
 
     /**
-     *Private constructor to disable class instantiation.
+     * Private constructor to disable class instantiation.
      */
     private GenericDocumentCodeDts(){}
 }

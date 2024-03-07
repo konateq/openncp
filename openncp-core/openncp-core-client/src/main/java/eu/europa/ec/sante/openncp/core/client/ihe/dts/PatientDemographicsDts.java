@@ -4,6 +4,7 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
+import java.util.*;
 
 /**
  * This is an Data Transformation Service. This provide functions to transform data into a PatientDemographics object.
@@ -68,6 +69,51 @@ public final class PatientDemographicsDts {
         }
         if (StringUtils.isNotBlank(patientDemographics.getTelephone())) {
             result.setTelephone(StringUtils.trim(patientDemographics.getTelephone()));
+        }
+
+        return result;
+    }
+
+    public static eu.europa.ec.sante.openncp.core.client.PatientDemographics newInstance(final PatientDemographics patientDemographics) {
+
+        if (patientDemographics == null) {
+            return null;
+        }
+
+        final eu.europa.ec.sante.openncp.core.client.PatientDemographics result = eu.europa.ec.sante.openncp.core.client.PatientDemographics.Factory.newInstance();
+
+        if (patientDemographics.getAdministrativeGender() != null) {
+            result.setAdministrativeGender(patientDemographics.getAdministrativeGender().toString());
+        }
+
+        if (patientDemographics.getBirthDate() != null) {
+            final Calendar calendar = new GregorianCalendar();
+            calendar.setTime(patientDemographics.getBirthDate());
+            result.setBirthDate(calendar);
+        }
+        result.setCity(patientDemographics.getCity());
+        result.setCountry(patientDemographics.getCountry());
+        result.setEmail(patientDemographics.getEmail());
+        result.setFamilyName(patientDemographics.getFamilyName());
+        result.setGivenName(patientDemographics.getGivenName());
+        result.setPatientIdArray(PatientIdDts.newInstance(patientDemographics.getIdList()));
+        result.setPostalCode(patientDemographics.getPostalCode());
+        result.setStreetAddress(patientDemographics.getStreetAddress());
+        result.setTelephone(patientDemographics.getTelephone());
+
+        return result;
+    }
+
+    public static List<eu.europa.ec.sante.openncp.core.client.PatientDemographics> newInstance(final List<PatientDemographics> patientDemList) {
+
+        if (patientDemList == null) {
+            return Collections.emptyList();
+        }
+
+        final List<eu.europa.ec.sante.openncp.core.client.PatientDemographics> result = new ArrayList<>(patientDemList.size());
+
+        for (PatientDemographics pd : patientDemList) {
+            result.add(newInstance(pd));
         }
 
         return result;

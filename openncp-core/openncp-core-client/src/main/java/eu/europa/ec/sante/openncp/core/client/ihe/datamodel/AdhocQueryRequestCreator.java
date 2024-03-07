@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.datamodel;
 
-import eu.europa.ec.sante.openncp.core.client.FilterParams;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
+import eu.europa.ec.sante.openncp.core.common.datamodel.FilterParams;
 import eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.ResponseOptionType;

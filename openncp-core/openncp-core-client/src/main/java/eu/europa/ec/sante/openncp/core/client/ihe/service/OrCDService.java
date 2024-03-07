@@ -1,9 +1,9 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
 import eu.europa.ec.sante.openncp.common.configuration.RegisteredService;
-import eu.europa.ec.sante.openncp.core.client.FilterParams;
 import eu.europa.ec.sante.openncp.core.client.ihe.xca.XcaInitGateway;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.datamodel.FilterParams;
 import eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode;
 import eu.europa.ec.sante.openncp.core.common.datamodel.PatientId;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.QueryResponse;
