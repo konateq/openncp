@@ -108,6 +108,16 @@ public class EvidenceEmitterHandlerUtils {
         return clientConnectorOperations.contains(operation);
     }
 
+    public String getServerSideTitle(SOAPBody soapBody) {
+
+        String operation = soapBody.getFirstElementLocalName();
+        String title = transactionNames.get(operation);
+        if (!this.isClientConnectorOperation(operation)) {
+            title = "NCPA_" + title;
+        }
+        return title;
+    }
+
     public String getMsgUUID(SOAPHeader soapHeader, SOAPBody soapBody) throws Exception {
 
         String msguuid = null;

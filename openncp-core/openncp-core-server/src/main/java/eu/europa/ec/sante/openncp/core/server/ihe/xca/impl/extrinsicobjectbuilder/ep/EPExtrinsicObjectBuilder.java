@@ -9,7 +9,7 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ClassificationType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObjectType;
-import eu.europa.ec.sante.openncp.core.common.org.hl7.v3.CodeSystem;
+import eu.europa.ec.sante.openncp.core.server.CodeSystem;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.ClassificationBuilder;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.SlotBuilder;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.AbstractExtrinsicObjectBuilder;

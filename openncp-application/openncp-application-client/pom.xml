@@ -9,11 +9,17 @@
     <artifactId>openncp-application-client</artifactId>
     <name>openncp-application-client</name>
 
+    <packaging>war</packaging>
+
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.sante</groupId>
             <artifactId>openncp-api-client</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.bull.javamelody</groupId>
+            <artifactId>javamelody-core</artifactId>
         </dependency>
     </dependencies>
 </project>

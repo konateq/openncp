@@ -9,8 +9,6 @@
     <artifactId>openncp-core-client</artifactId>
     <name>openncp-core-client</name>
 
-    <packaging>jar</packaging>
-
     <dependencies>
         <!-- OpenNCP dependencies -->
         <dependency>
@@ -30,6 +28,11 @@
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-xmlbeans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <scope>compile</scope>
         </dependency>
         <!-- Test dependencies -->
         <dependency>
@@ -55,6 +58,15 @@
                 <artifactId>axis2-aar-maven-plugin</artifactId>
                 <version>${axis2.version}</version>
                 <extensions>true</extensions>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>package-aar</id>-->
+<!--                        <phase>prepare-package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>aar</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
                 <configuration>
                     <wsdlFileName>ClientConnectorService.wsdl</wsdlFileName>
                     <fileSets>
