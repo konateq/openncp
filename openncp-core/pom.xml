@@ -11,9 +11,9 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>openncp-core-common</module>
         <module>openncp-core-client</module>
         <module>openncp-core-server</module>
-        <module>openncp-core-common</module>
         <module>openncp-core-trc-sts</module>
     </modules>
 

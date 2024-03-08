@@ -1,10 +1,42 @@
 package eu.europa.ec.sante.openncp.core.client.ihe;
 
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import eu.europa.ec.sante.openncp.common.ClassCode;
-import eu.europa.ec.sante.openncp.core.client.*;
+import eu.europa.ec.sante.openncp.core.client.EpsosDocument1;
+import eu.europa.ec.sante.openncp.core.client.GenericDocumentCode;
+import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.QueryDocumentsDocument;
+import eu.europa.ec.sante.openncp.core.client.QueryDocumentsResponse;
+import eu.europa.ec.sante.openncp.core.client.QueryDocumentsResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.QueryPatientDocument;
+import eu.europa.ec.sante.openncp.core.client.QueryPatientResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentDocument1;
+import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponse;
+import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.SayHelloDocument;
+import eu.europa.ec.sante.openncp.core.client.SayHelloResponse;
+import eu.europa.ec.sante.openncp.core.client.SayHelloResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.SubmitDocumentDocument1;
+import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponseDocument;
 import eu.europa.ec.sante.openncp.core.client.exception.ClientConnectorException;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.*;
-import eu.europa.ec.sante.openncp.core.client.ihe.service.*;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.DocumentDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.FilterParamsDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.GenericDocumentCodeDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.PatientDemographicsDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.PatientIdDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.QueryPatientResponseDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.RetrieveDocumentResponseDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.SubmitDocumentResponseDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.XdsDocumentDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.service.DispensationService;
+import eu.europa.ec.sante.openncp.core.client.ihe.service.IdentificationService;
+import eu.europa.ec.sante.openncp.core.client.ihe.service.OrCDService;
+import eu.europa.ec.sante.openncp.core.client.ihe.service.OrderService;
+import eu.europa.ec.sante.openncp.core.client.ihe.service.PatientService;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
 import eu.europa.ec.sante.openncp.core.client.logging.LoggingSlf4j;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
@@ -18,11 +50,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 /**
  * ClientConnectorServiceSkeleton java skeleton for the axisService.
@@ -264,7 +291,7 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
             var submitDocument1 = submitDocument.getSubmitDocument();
             var submitDocumentRequest = submitDocument1.getArg0();
             String countryCode = submitDocumentRequest.getCountryCode();
-            EpsosDocument document = submitDocumentRequest.getDocument();
+            EpsosDocument1 document = submitDocumentRequest.getDocument();
             var patientDemographics = submitDocumentRequest.getPatientDemographics();
             GenericDocumentCode classCode = document.getClassCode();
             if (!classCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {

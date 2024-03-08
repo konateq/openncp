@@ -45,23 +45,28 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.5.0</version>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-wsdl2code-maven-plugin</artifactId>
+                <version>${axis2.version}</version>
                 <executions>
                     <execution>
-                        <id>xjc</id>
+                        <id>Generate_Server_Code</id>
                         <goals>
-                            <goal>xjc</goal>
+                            <goal>wsdl2code</goal>
                         </goals>
+                        <configuration>
+                            <packageName>eu.europa.ec.sante.openncp.core.client</packageName>
+                            <wsdlFile>src/main/resources/wsdl/ClientConnectorService.wsdl</wsdlFile>
+                            <databindingName>xmlbeans</databindingName>
+                            <generateAllClasses>false</generateAllClasses>
+                            <generateServerSide>false</generateServerSide>
+                            <generateServerSideInterface>true</generateServerSideInterface>
+                            <generateServicesXml>true</generateServicesXml>
+                            <generateTestcase>false</generateTestcase>
+                            <outputDirectory>target/generated-sources/</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <sources>
-                        <source>src/main/resources/xsd/ClientConnectorService.xsd</source>
-                    </sources>
-                    <clearOutputDir>false</clearOutputDir>
-                </configuration>
             </plugin>
         </plugins>
     </build>

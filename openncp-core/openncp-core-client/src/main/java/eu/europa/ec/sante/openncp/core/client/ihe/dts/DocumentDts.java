@@ -3,7 +3,7 @@ package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.Author;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
+import eu.europa.ec.sante.openncp.core.client.EpsosDocument1;
 import eu.europa.ec.sante.openncp.core.client.ReasonOfHospitalisation;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.OrCDDocumentMetaData;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.XDSDocument;
@@ -38,12 +38,12 @@ public class DocumentDts {
      * @param document the document to be converted.
      * @return the result of the conversion, as a Document.
      */
-    public static EpsosDocument newInstance(XDSDocument document) {
+    public static EpsosDocument1 newInstance(XDSDocument document) {
 
         if (document == null) {
             return null;
         }
-        final EpsosDocument result = EpsosDocument.Factory.newInstance();
+        final EpsosDocument1 result = EpsosDocument1.Factory.newInstance();
         result.setUuid(document.getDocumentUniqueId());
         result.setDescription(document.getDescription());
         result.setCreationDate(convertDate(document.getCreationTime()));
@@ -145,22 +145,22 @@ public class DocumentDts {
      * @param documentAssociation the list of XDSDocument.
      * @return the result of the conversion, as a list of Document.
      */
-    public static EpsosDocument[] newInstance(List<XDSDocumentAssociation> documentAssociation) {
+    public static EpsosDocument1[] newInstance(List<XDSDocumentAssociation> documentAssociation) {
 
         if (documentAssociation == null || documentAssociation.isEmpty()) {
-            return new EpsosDocument[0];
+            return new EpsosDocument1[0];
         }
 
-        List<EpsosDocument> resultList = new ArrayList<>();
+        List<EpsosDocument1> resultList = new ArrayList<>();
 
         for (XDSDocumentAssociation doc : documentAssociation) {
-            EpsosDocument xmlDoc = DocumentDts.newInstance(doc.getCdaXML());
-            EpsosDocument pdfDoc = DocumentDts.newInstance(doc.getCdaPDF());
+            EpsosDocument1 xmlDoc = DocumentDts.newInstance(doc.getCdaXML());
+            EpsosDocument1 pdfDoc = DocumentDts.newInstance(doc.getCdaPDF());
 
             //  If CDA L1 and L3 are existing then we shall create an association between the 2 documents.
             if (xmlDoc != null && pdfDoc != null) {
-                pdfDoc.setAssociatedDocumentsArray(new EpsosDocument[]{xmlDoc});
-                xmlDoc.setAssociatedDocumentsArray(new EpsosDocument[]{pdfDoc});
+                pdfDoc.setAssociatedDocumentsArray(new EpsosDocument1[]{xmlDoc});
+                xmlDoc.setAssociatedDocumentsArray(new EpsosDocument1[]{pdfDoc});
             }
 
             // Adding the reference to the L1 CDA document
@@ -173,7 +173,7 @@ public class DocumentDts {
                 resultList.add(xmlDoc);
             }
         }
-        return resultList.toArray(new EpsosDocument[resultList.size()]);
+        return resultList.toArray(new EpsosDocument1[resultList.size()]);
     }
 
     /**
@@ -182,12 +182,12 @@ public class DocumentDts {
      * @param documentResponse the document to be converted.
      * @return the result of the conversion, as a Document.
      */
-    public static EpsosDocument newInstance(RetrieveDocumentSetResponseType.DocumentResponse documentResponse) {
+    public static EpsosDocument1 newInstance(RetrieveDocumentSetResponseType.DocumentResponse documentResponse) {
 
         if (documentResponse == null) {
             return null;
         }
-        final EpsosDocument result = EpsosDocument.Factory.newInstance();
+        final EpsosDocument1 result = EpsosDocument1.Factory.newInstance();
         result.setHcid(documentResponse.getHomeCommunityId());
         result.setUuid(documentResponse.getDocumentUniqueId());
         result.setMimeType(documentResponse.getMimeType());

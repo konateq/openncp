@@ -11,7 +11,7 @@
                   name="ClientConnectorService">
     <wsdl:types>
         <xsd:schema>
-            <xsd:import namespace="http://client.core.openncp.sante.ec.europa.eu" schemaLocation="../../../../../../openncp-core/openncp-core-client/src/main/resources/xsd/ClientConnectorService.xsd" />
+            <xsd:import namespace="http://client.core.openncp.sante.ec.europa.eu" schemaLocation="ClientConnectorService.xsd" />
         </xsd:schema>
     </wsdl:types>
     <wsdl:message name="sayHello">

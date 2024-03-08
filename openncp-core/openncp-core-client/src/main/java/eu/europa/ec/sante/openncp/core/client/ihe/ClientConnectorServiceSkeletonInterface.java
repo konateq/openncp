@@ -1,13 +1,23 @@
 package eu.europa.ec.sante.openncp.core.client.ihe;
 
+import java.text.ParseException;
+import java.util.Map;
+
+import eu.europa.ec.sante.openncp.core.client.QueryDocumentsDocument;
+import eu.europa.ec.sante.openncp.core.client.QueryDocumentsResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.QueryPatientDocument;
+import eu.europa.ec.sante.openncp.core.client.QueryPatientResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentDocument1;
+import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.SayHelloDocument;
+import eu.europa.ec.sante.openncp.core.client.SayHelloResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.SubmitDocumentDocument1;
+import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponseDocument;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.exception.NoPatientIdDiscoveredException;
 import eu.europa.ec.sante.openncp.core.common.exception.XCAException;
 import eu.europa.ec.sante.openncp.core.common.exception.XDRException;
 import org.opensaml.saml.saml2.core.Assertion;
-
-import java.text.ParseException;
-import java.util.Map;
 
 /**
  * ClientConnectorServiceSkeletonInterface java skeleton interface for the Axis Service

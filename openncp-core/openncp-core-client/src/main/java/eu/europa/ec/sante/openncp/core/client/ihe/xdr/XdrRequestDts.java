@@ -1,21 +1,19 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.xdr;
 
-
-import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.PatientDemographicsDts;
-import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequest;
-
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.core.client.EpsosDocument1;
+import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.PatientDemographicsDts;
 
 public class XdrRequestDts {
 
     private XdrRequestDts() {
     }
 
-    public static XdrRequest newInstance(final EpsosDocument document, final PatientDemographics patient) throws ParseException {
+    public static XdrRequest newInstance(final EpsosDocument1 document, final PatientDemographics patient) throws ParseException {
 
         if (document == null) {
             return null;
