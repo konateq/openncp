@@ -25,35 +25,35 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-aar-maven-plugin</artifactId>
-                <version>${axis2.version}</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>package-aar</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>aar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <wsdlFileName>ClientConnectorService.wsdl</wsdlFileName>
-                    <fileSets>
-                        <fileSet>
-                            <directory>${project.basedir}/src/main/resources/wsdl</directory>
-                            <outputDirectory>META-INF</outputDirectory>
-                            <includes>
-                                <include>**/*.xsd</include>
-                            </includes>
-                        </fileSet>
-                    </fileSets>
-                    <servicesXmlFile>${project.build.outputDirectory}/axis2/services.xml</servicesXmlFile>
-                    <wsdlFile>${project.build.outputDirectory}/wsdl/ClientConnectorService.wsdl</wsdlFile>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.axis2</groupId>-->
+<!--                <artifactId>axis2-aar-maven-plugin</artifactId>-->
+<!--                <version>${axis2.version}</version>-->
+<!--                <extensions>true</extensions>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>package-aar</id>-->
+<!--                        <phase>prepare-package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>aar</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <wsdlFileName>ClientConnectorService.wsdl</wsdlFileName>-->
+<!--                    <fileSets>-->
+<!--                        <fileSet>-->
+<!--                            <directory>${project.basedir}/src/main/resources/wsdl</directory>-->
+<!--                            <outputDirectory>META-INF</outputDirectory>-->
+<!--                            <includes>-->
+<!--                                <include>**/*.xsd</include>-->
+<!--                            </includes>-->
+<!--                        </fileSet>-->
+<!--                    </fileSets>-->
+<!--                    <servicesXmlFile>${project.build.outputDirectory}/axis2/services.xml</servicesXmlFile>-->
+<!--                    <wsdlFile>${project.build.outputDirectory}/wsdl/ClientConnectorService.wsdl</wsdlFile>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>

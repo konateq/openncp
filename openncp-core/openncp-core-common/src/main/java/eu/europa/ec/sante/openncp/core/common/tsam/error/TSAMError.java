@@ -1,5 +1,7 @@
 package eu.europa.ec.sante.openncp.core.common.tsam.error;
 
+import eu.europa.ec.sante.openncp.common.error.ErrorCode;
+
 /**
  * Enumeration for TSAM Errors & Warnings codes
  * <p>
