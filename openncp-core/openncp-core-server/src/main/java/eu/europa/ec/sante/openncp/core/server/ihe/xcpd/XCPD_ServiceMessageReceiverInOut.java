@@ -9,6 +9,8 @@ import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.common.datamodel.org.hl7.v3.PRPAIN201305UV02;
+import eu.europa.ec.sante.openncp.core.common.datamodel.org.hl7.v3.PRPAIN201306UV02;
 import eu.europa.ec.sante.openncp.core.common.eadc.EadcEntry;
 import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtil;
 import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtilWrapper;
@@ -131,12 +133,12 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
 
                 if (StringUtils.equals("respondingGateway_PRPA_IN201305UV02", methodName)) {
 
-                    PRPAIN201305UV02Type wrappedParam = (PRPAIN201305UV02Type) fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
-                            PRPAIN201305UV02Type.class, getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    PRPAIN201305UV02 wrappedParam = (PRPAIN201305UV02) fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
+                            PRPAIN201305UV02.class, getEnvelopeNamespaces(msgContext.getEnvelope()));
 
-                    PRPAIN201306UV02Type PRPAIN201306UV02Type = skeleton.respondingGateway_PRPA_IN201305UV02(wrappedParam, soapHeader, eventLog);
+                    PRPAIN201306UV02 PRPAIN201306UV02 = skeleton.respondingGateway_PRPA_IN201305UV02(wrappedParam, soapHeader, eventLog);
 
-                    envelope = toEnvelope(getSOAPFactory(msgContext), PRPAIN201306UV02Type, false);
+                    envelope = toEnvelope(getSOAPFactory(msgContext), PRPAIN201306UV02, false);
 
                     /* Validate response message */
                     if (OpenNCPValidation.isValidationEnable()) {
@@ -185,7 +187,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         }
     }
 
-    private OMElement toOM(PRPAIN201305UV02Type param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(PRPAIN201305UV02 param, boolean optimizeContent) throws AxisFault {
 
         try {
 
@@ -204,7 +206,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201305UV02Type param, boolean optimizeContent) throws AxisFault {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201305UV02 param, boolean optimizeContent) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();
         envelope.getBody().addChild(toOM(param, optimizeContent));
@@ -212,7 +214,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         return envelope;
     }
 
-    private OMElement toOM(PRPAIN201306UV02Type param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(PRPAIN201306UV02 param, boolean optimizeContent) throws AxisFault {
 
         try {
 
@@ -230,7 +232,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201306UV02Type param, boolean optimizeContent) throws AxisFault {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201306UV02 param, boolean optimizeContent) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();
         envelope.getBody().addChild(toOM(param, optimizeContent));

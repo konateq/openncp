@@ -139,7 +139,7 @@ public class PRPAIN201305UV02QUQIMT021001UV01ControlActProcess {
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
+            realmCode = new ArrayList<>();
         }
         return this.realmCode;
     }

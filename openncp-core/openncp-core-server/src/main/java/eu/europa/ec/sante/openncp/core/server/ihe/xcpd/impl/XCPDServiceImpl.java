@@ -1,6 +1,5 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xcpd.impl;
 
-
 import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
@@ -8,7 +7,6 @@ import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
-import eu.europa.ec.sante.openncp.core.common.IHEEventType;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
@@ -19,13 +17,14 @@ import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.exception.XCPDErrorCode;
 import eu.europa.ec.sante.openncp.core.server.ihe.xcpd.PatientSearchInterface;
 import eu.europa.ec.sante.openncp.core.server.ihe.xcpd.PatientSearchInterfaceWithDemographics;
+import eu.europa.ec.sante.openncp.core.server.ihe.xcpd.XCPDNIException;
 import eu.europa.ec.sante.openncp.core.server.ihe.xcpd.XCPDServiceInterface;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,9 +98,9 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         //TODO: Update audit with Patient ID returned
         II sourceII;
         II targetII;
-        if (!inputMessage.getControlActProcess().getQueryByParameter().getParameterList().getLivingSubjectId().isEmpty()) {
+        if (!inputMessage.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().isEmpty()) {
 
-            sourceII = inputMessage.getControlActProcess().getQueryByParameter().getParameterList()
+            sourceII = inputMessage.getControlActProcess().getQueryByParameter().getValue().getParameterList()
                     .getLivingSubjectId().get(0).getValue().get(0);
             if (!CollectionUtils.isEmpty(outputMessage.getControlActProcess().getSubject())) {
                 targetII = outputMessage.getControlActProcess().getSubject().get(0).getRegistrationEvent().getSubject1()
@@ -123,7 +122,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         }
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
         if (!outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()) {
-            String detail = String.join(StringUtils.SPACE, outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getListStringValues());
+            String detail = outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getContent();
             if (detail.startsWith("(")) {
                 var code = detail.substring(1, 5);
                 eventLog.setEM_ParticipantObjectID(code);
@@ -144,18 +143,18 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
 
     public PRPAIN201306UV02 queryPatient(PRPAIN201305UV02 request, SOAPHeader soapHeader, EventLog eventLog) throws Exception {
 
-        var response = objectFactory.createPRPAIN201306UV02Type();
-        PRPAIN201306UV02TypeBuilder(request, response, soapHeader, eventLog);
+        var response = objectFactory.createPRPAIN201306UV02();
+        pRPAIN201306UV02Builder(request, response, soapHeader, eventLog);
         return response;
     }
 
-    private PRPAIN201306UV02TypeMFMIMT700711UV01Subject1 getSubjectByPatientDemographic(PatientDemographics patientDemographics) {
+    private PRPAIN201306UV02MFMIMT700711UV01Subject1 getSubjectByPatientDemographic(PatientDemographics patientDemographics) {
 
-        var response = objectFactory.createPRPAIN201306UV02TypeMFMIMT700711UV01Subject1();
+        var response = objectFactory.createPRPAIN201306UV02MFMIMT700711UV01Subject1();
         response.getTypeCode().add("SUBJ");
 
         // Set registrationEvent
-        response.setRegistrationEvent(objectFactory.createPRPAIN201306UV02TypeMFMIMT700711UV01RegistrationEvent());
+        response.setRegistrationEvent(objectFactory.createPRPAIN201306UV02MFMIMT700711UV01RegistrationEvent());
         response.getRegistrationEvent().getClassCode().add("REG");
         response.getRegistrationEvent().getMoodCode().add("EVN");
 
@@ -168,7 +167,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         response.getRegistrationEvent().getStatusCode().setCode("active");
 
         // Create registrationEvent/Subject
-        response.getRegistrationEvent().setSubject1(objectFactory.createPRPAIN201306UV02TypeMFMIMT700711UV01Subject2());
+        response.getRegistrationEvent().setSubject1(objectFactory.createPRPAIN201306UV02MFMIMT700711UV01Subject2());
         response.getRegistrationEvent().getSubject1().setTypeCode(ParticipationTargetSubject.SBJ);
 
         // Create registrationEvent/Subject/Patient
@@ -354,15 +353,15 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         return mfmimt700711UV01Reason;
     }
 
-    private void fillOutputMessage(PRPAIN201306UV02Type outputMessage, XCPDErrorCode xcpdErrorCode, OpenNCPErrorCode openncpErrorCode, String context) {
+    private void fillOutputMessage(PRPAIN201306UV02 outputMessage, XCPDErrorCode xcpdErrorCode, OpenNCPErrorCode openncpErrorCode, String context) {
         fillOutputMessage(outputMessage, xcpdErrorCode, openncpErrorCode, context, "AE", "");
     }
 
-    private void fillOutputMessage(PRPAIN201306UV02Type outputMessage, XCPDErrorCode xcpdErrorCode, OpenNCPErrorCode openncpErrorCode, String context, String location) {
+    private void fillOutputMessage(PRPAIN201306UV02 outputMessage, XCPDErrorCode xcpdErrorCode, OpenNCPErrorCode openncpErrorCode, String context, String location) {
         fillOutputMessage(outputMessage, xcpdErrorCode, openncpErrorCode, context, "AE", location);
     }
 
-    private void fillOutputMessage(PRPAIN201306UV02Type outputMessage, XCPDErrorCode xcpdErrorCode, OpenNCPErrorCode openncpErrorCode, String context, String code, String locationText) {
+    private void fillOutputMessage(PRPAIN201306UV02 outputMessage, XCPDErrorCode xcpdErrorCode, OpenNCPErrorCode openncpErrorCode, String context, String code, String locationText) {
 
         // Set queryAck/statusCode and queryAck/queryResponseCode
         outputMessage.getControlActProcess().getQueryAck().setStatusCode(objectFactory.createCS());
@@ -398,10 +397,10 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         }
     }
 
-    private PatientDemographics parsePRPAIN201305UV02TypetoPatientDemographics(PRPAIN201305UV02Type inputMessage) {
+    private PatientDemographics parsePRPAIN201305UV02toPatientDemographics(PRPAIN201305UV02 inputMessage) {
 
         var patientDemographics = new PatientDemographics();
-        PRPAIN201305UV02TypeQUQIMT021001UV01ControlActProcess cap = inputMessage.getControlActProcess();
+        PRPAIN201305UV02QUQIMT021001UV01ControlActProcess cap = inputMessage.getControlActProcess();
 
         if (cap != null) {
             PRPAMT201306UV02QueryByParameter queryByParameter = cap.getQueryByParameter().getValue();
@@ -504,14 +503,14 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         return patientDemographics;
     }
 
-    private void PRPAIN201306UV02TypeBuilder(PRPAIN201305UV02 inputMessage, PRPAIN201306UV02 outputMessage, SOAPHeader soapHeader,
+    private void pRPAIN201306UV02Builder(PRPAIN201305UV02 inputMessage, PRPAIN201306UV02 outputMessage, SOAPHeader soapHeader,
                                          EventLog eventLog) throws Exception {
 
         String sigCountryCode;
 
         if (patientSearchService instanceof PatientSearchInterfaceWithDemographics) {
             var patientSearchInterfaceWithDemographics = (PatientSearchInterfaceWithDemographics) patientSearchService;
-            var patientDemographics = parsePRPAIN201305UV02TypetoPatientDemographics(inputMessage);
+            var patientDemographics = parsePRPAIN201305UV02toPatientDemographics(inputMessage);
             patientSearchInterfaceWithDemographics.setPatientDemographics(patientDemographics);
         }
 
@@ -566,7 +565,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         PRPAMT201306UV02QueryByParameter inputQBP = inputMessage.getControlActProcess().getQueryByParameter().getValue();
 
         // Create controlActProcess
-        outputMessage.setControlActProcess(objectFactory.createPRPAIN201306UV02TypeMFMIMT700711UV01ControlActProcess());
+        outputMessage.setControlActProcess(objectFactory.createPRPAIN201306UV02MFMIMT700711UV01ControlActProcess());
         outputMessage.getControlActProcess().setClassCode(ActClassControlAct.CACT);
         outputMessage.getControlActProcess().setMoodCode(XActMoodIntentEvent.EVN);
 
@@ -657,7 +656,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                     EvidenceUtils.createEvidenceREMNRO(doc, Constants.NCP_SIG_KEYSTORE_PATH, Constants.NCP_SIG_KEYSTORE_PASSWORD,
                             Constants.NCP_SIG_PRIVATEKEY_ALIAS, Constants.SP_KEYSTORE_PATH, Constants.SP_KEYSTORE_PASSWORD,
                             Constants.SP_PRIVATEKEY_ALIAS, Constants.NCP_SIG_KEYSTORE_PATH, Constants.NCP_SIG_KEYSTORE_PASSWORD,
-                            Constants.NCP_SIG_PRIVATEKEY_ALIAS, IHEEventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS.getCode(),
+                            Constants.NCP_SIG_PRIVATEKEY_ALIAS, EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS.getIheCode(),
                             new DateTime(), EventOutcomeIndicator.FULL_SUCCESS.getCode().toString(), "NI_XCPD_REQ",
                             Helper.getHCPAssertion(shElement).getID() + "__" + DateUtil.getCurrentTimeGMT());
                 } catch (Exception e) {
@@ -749,7 +748,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         } catch (XCPDNIException e) {
             logger.error(e.getMessage(), e);
             var codeContext = e.getOpenncpErrorCode().getDescription() + "^" + e.getMessage();
-            fillOutputMessage(outputMessage, e.getXcpdErrorCode(), e.getOpenncpErrorCode(), codeContext, Arrays.stream(ExceptionUtils.getRootCauseStackTrace(e)).findFirst().orElse(org.apache.commons.lang.StringUtils.EMPTY));
+            fillOutputMessage(outputMessage, e.getXcpdErrorCode(), e.getOpenncpErrorCode(), codeContext, Arrays.stream(ExceptionUtils.getRootCauseStackTrace(e)).findFirst().orElse(StringUtils.EMPTY));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             fillOutputMessage(outputMessage, XCPDErrorCode.InternalError, OpenNCPErrorCode.ERROR_PI_GENERIC, e.getMessage());
@@ -760,7 +759,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         prpamt201306UV02QueryByParameter.setStatusCode(inputQBP.getStatusCode());
         prpamt201306UV02QueryByParameter.setParameterList(inputQBP.getParameterList());
         outputMessage.getControlActProcess().setQueryByParameter(
-                objectFactory.createPRPAIN201306UV02TypeMFMIMT700711UV01ControlActProcessQueryByParameter(prpamt201306UV02QueryByParameter));
+                objectFactory.createPRPAIN201306UV02MFMIMT700711UV01ControlActProcessQueryByParameter(prpamt201306UV02QueryByParameter));
 
         // Set sender of the input to receiver of the output
         var mccimt000300UV01Receiver = objectFactory.createMCCIMT000300UV01Receiver();
