@@ -102,7 +102,7 @@
     <!-- Deployers -->
     <!-- ================================================= -->
 
-    <!--Service deployer , this will alow users to deploy AAR or exploded AAR as axis2 services-->
+    <!--Service deployer , this will allow users to deploy AAR or exploded AAR as axis2 services-->
     <deployer extension=".aar" directory="services" class="org.apache.axis2.deployment.ServiceDeployer">
         <serviceBuilderExtension name ="jwsbuilderExt" class="org.apache.axis2.jaxws.framework.JAXWSServiceBuilderExtension"/>
         <serviceBuilderExtension name ="wsdlbuilderExt" class="org.apache.axis2.deployment.WSDLServiceBuilderExtension"/>
@@ -117,7 +117,7 @@
     <deployer extension=".jar" directory="transports"
               class="org.apache.axis2.deployment.TransportDeployer"/>
 
-    <!--CORBA deployer , this will alow users to invoke remote CORBA services through Axis2-->
+    <!--CORBA deployer , this will allow users to invoke remote CORBA services through Axis2-->
     <!--<deployer extension=".xml" directory="corba" class="org.apache.axis2.corba.deployer.CorbaDeployer"/>-->
 
     <!--<deployer extension=".jsa" directory="rmiservices" class="org.apache.axis2.rmi.deploy.RMIServiceDeployer"/>-->

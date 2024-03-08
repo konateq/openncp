@@ -12,7 +12,8 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObje
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
 
-import eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystem;
+import eu.europa.ec.sante.openncp.core.server.CodeSystem;
+import eu.europa.ec.sante.openncp.core.server.ihe.XDSMetaData;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.ClassificationBuilder;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.SlotBuilder;
 import org.springframework.http.MediaType;

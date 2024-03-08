@@ -5,15 +5,18 @@ import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.AuditService;
 import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
 import eu.europa.ec.sante.openncp.common.audit.EventLog;
-import eu.europa.ec.sante.openncp.common.audit.EventLogUtil;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
-import eu.europa.ec.sante.openncp.common.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcEntry;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtil;
+import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtilWrapper;
+import eu.europa.ec.sante.openncp.core.common.eadc.ServiceType;
+import eu.europa.ec.sante.openncp.core.common.util.EventLogUtil;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -58,7 +61,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         JAXBContext jaxbContext = null;
 
         try {
-            jaxbContext = JAXBContext.newInstance(ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.class,
+            jaxbContext = JAXBContext.newInstance(ProvideAndRegisterDocumentSetRequestType.class,
                     RegistryResponseType.class);
         } catch (JAXBException ex) {
             LOGGER.error("Unable to create JAXBContext: '{}'", ex.getMessage(), ex);
@@ -211,7 +214,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         } finally {
             if(!eadcError.isEmpty()) {
                 EadcUtilWrapper.invokeEadcFailure(msgContext, newMsgContext, null, eDispenseCda, startTime, endTime,
-                        tr.com.srdc.epsos.util.Constants.COUNTRY_CODE, EadcEntry.DsTypes.EADC, EadcUtil.Direction.INBOUND,
+                        Constants.COUNTRY_CODE, EadcEntry.DsTypes.EADC, EadcUtil.Direction.INBOUND,
                         ServiceType.DOCUMENT_EXCHANGED_RESPONSE, eadcError);
                 eadcError = "";
             }

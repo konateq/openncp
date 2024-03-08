@@ -9,7 +9,7 @@
     <artifactId>openncp-api-client</artifactId>
     <name>openncp-api-client</name>
 
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>

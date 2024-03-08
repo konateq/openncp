@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xcpd;
 
-import tr.com.srdc.epsos.data.model.PatientDemographics;
+
+import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
 
 public interface PatientSearchInterfaceWithDemographics extends PatientSearchInterface {
 
