@@ -1,12 +1,18 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.orcd;
 
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.common.util.DateUtil;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.ClassificationScheme;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.OrCDDocumentMetaData;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ClassificationType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObjectType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
+import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.ClassificationBuilder;
+import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.SlotBuilder;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.AbstractExtrinsicObjectBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

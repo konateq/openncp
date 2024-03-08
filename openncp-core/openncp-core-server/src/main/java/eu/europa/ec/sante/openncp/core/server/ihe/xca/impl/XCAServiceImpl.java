@@ -9,6 +9,7 @@ import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.common.IHEEventType;
 import eu.europa.ec.sante.openncp.core.common.RegistryErrorSeverity;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
@@ -33,6 +34,7 @@ import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.exception.DocumentTransformationException;
 import eu.europa.ec.sante.openncp.core.common.exception.NIException;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.core.common.transformation.client.TranslationsAndMappingsClient;
 import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
@@ -609,13 +611,13 @@ public class XCAServiceImpl implements XCAServiceInterface {
                         var searchCriteria = DocumentFactory.createSearchCriteria().addPatientId(fullPatientId);
                         var filterParams = getFilterParams(request);
                         if (filterParams.getMaximumSize() != null) {
-                            searchCriteria.add(Criteria.MAXIMUM_SIZE, filterParams.getMaximumSize().toString());
+                            searchCriteria.add(SearchCriteria.Criteria.MAXIMUM_SIZE, filterParams.getMaximumSize().toString());
                         }
                         if (filterParams.getCreatedBefore() != null) {
-                            searchCriteria.add(Criteria.CREATED_BEFORE, filterParams.getCreatedBefore().toString());
+                            searchCriteria.add(SearchCriteria.Criteria.CREATED_BEFORE, filterParams.getCreatedBefore().toString());
                         }
                         if (filterParams.getCreatedAfter() != null) {
-                            searchCriteria.add(Criteria.CREATED_AFTER, filterParams.getCreatedAfter().toString());
+                            searchCriteria.add(SearchCriteria.Criteria.CREATED_AFTER, filterParams.getCreatedAfter().toString());
                         }
 
                         List<OrCDDocumentMetaData> orCDDocumentMetaDataList = getOrCDDocumentMetaDataList(classCodeValue, searchCriteria);

@@ -7,39 +7,25 @@ import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
+import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.core.common.IHEEventType;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
 import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.datamodel.PatientId;
+import eu.europa.ec.sante.openncp.core.common.datamodel.org.hl7.v3.*;
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.exception.XCPDErrorCode;
 import eu.europa.ec.sante.openncp.core.server.ihe.xcpd.PatientSearchInterface;
 import eu.europa.ec.sante.openncp.core.server.ihe.xcpd.PatientSearchInterfaceWithDemographics;
 import eu.europa.ec.sante.openncp.core.server.ihe.xcpd.XCPDServiceInterface;
-import net.ihe.gazelle.hl7v3.datatypes.*;
-import net.ihe.gazelle.hl7v3.datatypes.ObjectFactory;
-import net.ihe.gazelle.hl7v3.mcaimt900001UV01.MCAIMT900001UV01ActOrderRequired;
-import net.ihe.gazelle.hl7v3.mcaimt900001UV01.MCAIMT900001UV01DetectedIssueManagement;
-import net.ihe.gazelle.hl7v3.mcaimt900001UV01.MCAIMT900001UV01Requires;
-import net.ihe.gazelle.hl7v3.mcaimt900001UV01.MCAIMT900001UV01SourceOf;
-import net.ihe.gazelle.hl7v3.mccimt000100UV01.MCCIMT000100UV01Organization;
-import net.ihe.gazelle.hl7v3.mccimt000300UV01.MCCIMT000300UV01Acknowledgement;
-import net.ihe.gazelle.hl7v3.mccimt000300UV01.MCCIMT000300UV01AcknowledgementDetail;
-import net.ihe.gazelle.hl7v3.mfmimt700711UV01.MFMIMT700711UV01Reason;
-import net.ihe.gazelle.hl7v3.prpain201305UV02.PRPAIN201305UV02Type;
-import net.ihe.gazelle.hl7v3.prpain201306UV02.PRPAIN201306UV02Type;
-import net.ihe.gazelle.hl7v3.prpamt201306UV02.*;
-import net.ihe.gazelle.hl7v3.voc.ActClassControlAct;
-import net.ihe.gazelle.hl7v3.voc.XActMoodIntentEvent;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +79,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         return id.getExtension() + "^^^&" + id.getRoot() + "&ISO";
     }
 
-    public void prepareEventLog(EventLog eventLog, PRPAIN201305UV02Type inputMessage, PRPAIN201306UV02Type outputMessage, Element soapHeader) {
+    public void prepareEventLog(EventLog eventLog, PRPAIN201305UV02 inputMessage, PRPAIN201306UV02 outputMessage, Element soapHeader) {
 
         logger.info("[XCPD Service] Preparing Event Log: '{}'", eventLog.getEventType());
         eventLog.setEventType(EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS);
@@ -108,7 +94,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         // Add point of care to the event log for assertion purposes
         eventLog.setPC_UserID(Helper.getPointOfCareUserId(soapHeader));
         eventLog.setPC_RoleID(Helper.getPC_RoleID(soapHeader));
-        eventLog.setSP_UserID(HTTPUtil.getSubjectDN(true));
+        eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
 
         //TODO: Update audit with Patient ID returned
         II sourceII;
@@ -156,7 +142,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         }
     }
 
-    public PRPAIN201306UV02Type queryPatient(PRPAIN201305UV02Type request, SOAPHeader soapHeader, EventLog eventLog) throws Exception {
+    public PRPAIN201306UV02 queryPatient(PRPAIN201305UV02 request, SOAPHeader soapHeader, EventLog eventLog) throws Exception {
 
         var response = objectFactory.createPRPAIN201306UV02Type();
         PRPAIN201306UV02TypeBuilder(request, response, soapHeader, eventLog);

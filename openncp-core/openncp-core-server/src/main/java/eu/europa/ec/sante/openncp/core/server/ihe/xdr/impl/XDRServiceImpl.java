@@ -35,17 +35,16 @@ import eu.europa.ec.sante.openncp.core.common.exception.NoConsentException;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
+import eu.europa.ec.sante.openncp.core.common.transformation.util.DomUtils;
 import eu.europa.ec.sante.openncp.core.server.ihe.RegistryErrorUtils;
 import eu.europa.ec.sante.openncp.core.server.ihe.xdr.DocumentSubmitInterface;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.dom4j.DocumentFactory;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
