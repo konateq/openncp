@@ -504,7 +504,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         return patientDemographics;
     }
 
-    private void PRPAIN201306UV02TypeBuilder(PRPAIN201305UV02Type inputMessage, PRPAIN201306UV02Type outputMessage, SOAPHeader soapHeader,
+    private void PRPAIN201306UV02TypeBuilder(PRPAIN201305UV02 inputMessage, PRPAIN201306UV02 outputMessage, SOAPHeader soapHeader,
                                          EventLog eventLog) throws Exception {
 
         String sigCountryCode;

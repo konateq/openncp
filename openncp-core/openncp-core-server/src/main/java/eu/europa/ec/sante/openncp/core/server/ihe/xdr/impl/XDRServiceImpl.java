@@ -20,8 +20,10 @@ import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.Inva
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.MissingFieldException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.datamodel.DiscardDispenseDetails;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xds.DocumentFactory;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.EPSOSDocument;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.*;
@@ -31,12 +33,17 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorL
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.exception.DocumentProcessingException;
+import eu.europa.ec.sante.openncp.core.common.exception.DocumentTransformationException;
+import eu.europa.ec.sante.openncp.core.common.exception.NIException;
 import eu.europa.ec.sante.openncp.core.common.exception.NoConsentException;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.core.common.transformation.client.TranslationsAndMappingsClient;
 import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.transformation.util.DomUtils;
+import eu.europa.ec.sante.openncp.core.server.ihe.AdhocQueryResponseStatus;
 import eu.europa.ec.sante.openncp.core.server.ihe.RegistryErrorUtils;
+import eu.europa.ec.sante.openncp.core.server.ihe.exception.NationalInfrastructureException;
 import eu.europa.ec.sante.openncp.core.server.ihe.xdr.DocumentSubmitInterface;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
@@ -495,7 +502,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
 
             for (int i = 0; i < request.getDocument().size(); i++) {
 
-                Document doc = request.getDocument().get(i);
+                ProvideAndRegisterDocumentSetRequestType.Document doc = request.getDocument().get(i);
                 String documentId = "";
                 byte[] docBytes = doc.getValue();
                 org.w3c.dom.Document domDocument = null;
