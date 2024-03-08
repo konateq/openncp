@@ -29,8 +29,6 @@ import java.util.Map;
  * <p>
  * This class implements the contact point into the NCP-B, allowing the Portal-B to contact and perform requests in NCP-B.
  *
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
- * @author Marcelo Fonseca<code> - marcelo.fonseca@iuz.pt</code>
  */
 public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSkeletonInterface {
 
@@ -266,7 +264,7 @@ public class ClientConnectorServiceSkeleton implements ClientConnectorServiceSke
             var submitDocument1 = submitDocument.getSubmitDocument();
             var submitDocumentRequest = submitDocument1.getArg0();
             String countryCode = submitDocumentRequest.getCountryCode();
-            EpsosDocument1 document = submitDocumentRequest.getDocument();
+            EpsosDocument document = submitDocumentRequest.getDocument();
             var patientDemographics = submitDocumentRequest.getPatientDemographics();
             GenericDocumentCode classCode = document.getClassCode();
             if (!classCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {

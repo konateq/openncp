@@ -43,68 +43,25 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>${project.build.directory}/generated-sources/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-aar-maven-plugin</artifactId>
-                <version>${axis2.version}</version>
-                <extensions>true</extensions>
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>package-aar</id>-->
-<!--                        <phase>prepare-package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>aar</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-                <configuration>
-                    <wsdlFileName>ClientConnectorService.wsdl</wsdlFileName>
-                    <fileSets>
-                        <fileSet>
-                            <directory>${project.basedir}/src/main/resources/wsdl</directory>
-                            <outputDirectory>META-INF</outputDirectory>
-                            <includes>
-                                <include>**/*.xsd</include>
-                            </includes>
-                        </fileSet>
-                    </fileSets>
-                    <servicesXmlFile>${project.build.outputDirectory}/axis2/services.xml</servicesXmlFile>
-                    <wsdlFile>${project.build.outputDirectory}/wsdl/ClientConnectorService.wsdl</wsdlFile>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-wsdl2code-maven-plugin</artifactId>
-                <version>${axis2.version}</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>2.5.0</version>
                 <executions>
                     <execution>
-                        <id>Generate_Server_Code</id>
+                        <id>xjc</id>
                         <goals>
-                            <goal>wsdl2code</goal>
+                            <goal>xjc</goal>
                         </goals>
-                        <configuration>
-                            <packageName>eu.europa.ec.sante.openncp.core.client</packageName>
-                            <wsdlFile>src/main/resources/wsdl/ClientConnectorService.wsdl</wsdlFile>
-                            <databindingName>xmlbeans</databindingName>
-                            <generateAllClasses>false</generateAllClasses>
-                            <generateServerSide>false</generateServerSide>
-                            <generateServerSideInterface>true</generateServerSideInterface>
-                            <generateServicesXml>false</generateServicesXml>
-                            <generateTestcase>false</generateTestcase>
-                            <outputDirectory>target/generated-sources/</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <sources>
+                        <source>src/main/resources/xsd/ClientConnectorService.xsd</source>
+                    </sources>
+                    <clearOutputDir>false</clearOutputDir>
+                </configuration>
             </plugin>
         </plugins>
     </build>

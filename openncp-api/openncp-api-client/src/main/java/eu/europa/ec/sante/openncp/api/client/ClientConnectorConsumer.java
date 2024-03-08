@@ -69,7 +69,7 @@ public class ClientConnectorConsumer {
      * @param filterParams - Extra parameters for search filtering.
      * @return List of clinical documents and metadata searched by the clinician.
      */
-    public List<EpsosDocument1> queryDocuments(Map<AssertionEnum, Assertion> assertions,
+    public List<EpsosDocument> queryDocuments(Map<AssertionEnum, Assertion> assertions,
                                                String countryCode, PatientId patientId,
                                                List<GenericDocumentCode> classCodes, FilterParams filterParams)
             throws ClientConnectorConsumerException {
@@ -94,7 +94,7 @@ public class ClientConnectorConsumer {
 
             QueryDocumentsResponseDocument queryDocumentsResponseDocument;
             queryDocumentsResponseDocument = clientConnectorServiceStub.queryDocuments(queryDocumentsDocument);
-            EpsosDocument1[] docArray = queryDocumentsResponseDocument.getQueryDocumentsResponse().getReturnArray();
+            EpsosDocument[] docArray = queryDocumentsResponseDocument.getQueryDocumentsResponse().getReturnArray();
 
             return Arrays.asList(docArray);
         } catch (AxisFault axisFault) {
@@ -153,7 +153,7 @@ public class ClientConnectorConsumer {
      * @param targetLanguage  - Expected target language of the CDA translation.
      * @return Clinical Document and metadata returned by the Country of Origin.
      */
-    public EpsosDocument1 retrieveDocument(Map<AssertionEnum, Assertion> assertions, String countryCode,
+    public EpsosDocument retrieveDocument(Map<AssertionEnum, Assertion> assertions, String countryCode,
                                            DocumentId documentId, String homeCommunityId, GenericDocumentCode classCode,
                                            String targetLanguage) throws ClientConnectorConsumerException {
 
@@ -190,7 +190,7 @@ public class ClientConnectorConsumer {
      * @deprecated Method has been deprecated in favor of the implementation of retrieveDocument() with language parameter.
      */
     @Deprecated(since = "2.5.0", forRemoval = true)
-    public EpsosDocument1 retrieveDocument(Map<AssertionEnum, Assertion> assertions, String countryCode,
+    public EpsosDocument retrieveDocument(Map<AssertionEnum, Assertion> assertions, String countryCode,
                                            DocumentId documentId, String homeCommunityId, GenericDocumentCode classCode)
             throws ClientConnectorConsumerException {
 
@@ -208,7 +208,7 @@ public class ClientConnectorConsumer {
      * @return Acknowledge and status of the document submission.
      */
     public SubmitDocumentResponse submitDocument(Map<AssertionEnum, Assertion> assertions, String countryCode,
-                                                 EpsosDocument1 document, PatientDemographics patientDemographics)
+                                                 EpsosDocument document, PatientDemographics patientDemographics)
             throws ClientConnectorConsumerException {
 
         logger.info("[National Connector] submitDocument(countryCode:'{}')", countryCode);
