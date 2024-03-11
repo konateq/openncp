@@ -33,10 +33,10 @@ public class FilterParamsDts {
         final FilterParams result = new FilterParams();
 
         if(filterParams.getCreatedBefore() != null) {
-            result.setCreatedBefore(filterParams.getCreatedBefore().getTime().toInstant());
+            result.setCreatedBefore(filterParams.getCreatedBefore().toGregorianCalendar().toInstant());
         }
         if(filterParams.getCreatedAfter() != null) {
-            result.setCreatedAfter(filterParams.getCreatedAfter().getTime().toInstant());
+            result.setCreatedAfter(filterParams.getCreatedAfter().toGregorianCalendar().toInstant());
         }
 
         if(filterParams.getMaximumSize() != null) {

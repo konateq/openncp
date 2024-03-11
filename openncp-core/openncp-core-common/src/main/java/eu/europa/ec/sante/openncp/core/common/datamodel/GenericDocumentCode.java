@@ -5,8 +5,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 /**
  * This class represents a Generic Document Code, which holds a code Value and a code Schema.
  *
- * @author Marcelo Fonseca <marcelo.fonseca@iuz.pt>
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
  */
 public class GenericDocumentCode {
 

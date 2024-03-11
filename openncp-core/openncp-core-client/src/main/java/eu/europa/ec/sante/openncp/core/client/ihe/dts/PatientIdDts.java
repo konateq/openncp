@@ -8,9 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This is an Data Transformation Service. This provide functions to transform data into a PatientDemographics object.
- *
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
+ * This is a Data Transformation Service. This provides functions to transform data into a PatientDemographics object.
  */
 public final class PatientIdDts {
 
