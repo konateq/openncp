@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.xml.bind.JAXBContext;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.sax.SAXSource;
 
@@ -15,14 +16,16 @@ import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.client.QueryDocumentsDocument;
-import eu.europa.ec.sante.openncp.core.client.QueryDocumentsResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.client.QueryDocuments;
+import eu.europa.ec.sante.openncp.core.client.QueryDocumentsResponse;
 import eu.europa.ec.sante.openncp.core.client.QueryPatientDocument;
 import eu.europa.ec.sante.openncp.core.client.QueryPatientResponseDocument;
 import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentDocument1;
 import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponseDocument;
 import eu.europa.ec.sante.openncp.core.client.SayHelloDocument;
 import eu.europa.ec.sante.openncp.core.client.SayHelloResponseDocument;
+import eu.europa.ec.sante.openncp.core.client.SubmitDocument;
 import eu.europa.ec.sante.openncp.core.client.SubmitDocumentDocument1;
 import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponseDocument;
 import eu.europa.ec.sante.openncp.core.client.exception.ClientConnectorException;
@@ -170,14 +173,13 @@ public class ClientConnectorServiceMessageReceiverInOut extends AbstractInOutMes
 
         try {
 
-            if (SubmitDocumentDocument1.class.equals(type)) {
+            if (SubmitDocument.class.equals(type)) {
 
                 if (extraNamespaces != null) {
-                    return SubmitDocumentDocument1.Factory.parse(param.getXMLStreamReaderWithoutCaching(),
+                    return JAXBContext.newInstance(SubmitDocument.class).createUnmarshaller().unmarshal(param.getXMLStreamReaderWithoutCaching(),
                             new XmlOptions().setLoadAdditionalNamespaces(extraNamespaces));
-
                 } else {
-                    return SubmitDocumentDocument1.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+                    return JAXBContext.newInstance(SubmitDocument.class).createUnmarshaller().unmarshal(param.getXMLStreamReaderWithoutCaching());
                 }
             }
 

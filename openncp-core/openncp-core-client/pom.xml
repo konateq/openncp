@@ -9,6 +9,10 @@
     <artifactId>openncp-core-client</artifactId>
     <name>openncp-core-client</name>
 
+    <properties>
+        <cxf.version>3.3.6</cxf.version>
+    </properties>
+
     <dependencies>
         <!-- OpenNCP dependencies -->
         <dependency>
@@ -24,15 +28,27 @@
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
         </dependency>
-        <!-- Axis2 dependencies -->
+        <!-- Jakarta dependencies -->
         <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-xmlbeans</artifactId>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>2.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <!-- cxf -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+            <version>${cxf.version}</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>
@@ -43,31 +59,36 @@
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-wsdl2code-maven-plugin</artifactId>
-                <version>${axis2.version}</version>
-                <executions>
-                    <execution>
-                        <id>Generate_Server_Code</id>
-                        <goals>
-                            <goal>wsdl2code</goal>
-                        </goals>
-                        <configuration>
-                            <packageName>eu.europa.ec.sante.openncp.core.client</packageName>
-                            <wsdlFile>src/main/resources/wsdl/ClientConnectorService.wsdl</wsdlFile>
-                            <databindingName>xmlbeans</databindingName>
-                            <generateAllClasses>false</generateAllClasses>
-                            <generateServerSide>false</generateServerSide>
-                            <generateServerSideInterface>true</generateServerSideInterface>
-                            <generateServicesXml>true</generateServicesXml>
-                            <generateTestcase>false</generateTestcase>
-                            <outputDirectory>target/generated-sources/</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <plugins>
+                <!-- spring-boot-maven-plugin -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-codegen-plugin</artifactId>
+                    <version>${cxf.version}</version>
+                    <executions>
+                        <execution>
+                            <id>generate-sources</id>
+                            <phase>generate-sources</phase>
+                            <configuration>
+                                <sourceRoot>${project.build.directory}/generated/cxf</sourceRoot>
+                                <wsdlOptions>
+                                    <wsdlOption>
+                                        <wsdl>${basedir}/src/main/resources/wsdl/ClientConnectorService.wsdl</wsdl>
+                                        <wsdlLocation>classpath:wsdl/ClientConnectorService.wsdl</wsdlLocation>
+                                        <extendedSoapHeaders>true</extendedSoapHeaders>
+                                    </wsdlOption>
+                                </wsdlOptions>
+                            </configuration>
+                            <goals>
+                                <goal>wsdl2java</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
         </plugins>
     </build>
 </project>
