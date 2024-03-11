@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.client.ihe;
+package eu.europa.ec.sante.openncp.core.client.ihe.cxf;
 
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
 import org.apache.cxf.binding.soap.SoapMessage;
