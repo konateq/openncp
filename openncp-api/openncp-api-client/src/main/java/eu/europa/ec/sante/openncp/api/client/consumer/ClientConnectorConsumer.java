@@ -102,6 +102,7 @@ public class ClientConnectorConsumer {
         queryDocumentRequest.setCountryCode(countryCode);
         queryDocumentRequest.setFilterParams(filterParams);
 
+        //set assertions to soap call
         return clientConnectorServicePort.queryDocuments(queryDocumentRequest);
     }
 //

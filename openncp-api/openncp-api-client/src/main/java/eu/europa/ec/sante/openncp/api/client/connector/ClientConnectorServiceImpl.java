@@ -62,6 +62,7 @@ public class ClientConnectorServiceImpl  implements ClientConnectorServicePortTy
 
     @Override
     public String submitDocument(SubmitDocumentRequest arg0) {
+        //assertions already validated but how?
         final String methodName = "submitDocument";
         LoggingSlf4j.start(logger, methodName);
         SubmitDocumentResponse submitDocumentResponse = objectFactory.createSubmitDocumentResponse();
