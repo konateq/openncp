@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.client.ihe.cxf;
+package eu.europa.ec.sante.openncp.api.client;
 
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
