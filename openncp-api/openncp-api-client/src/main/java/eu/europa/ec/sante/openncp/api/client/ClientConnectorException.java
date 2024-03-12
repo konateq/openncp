@@ -3,19 +3,19 @@ package eu.europa.ec.sante.openncp.api.client;
 
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 
-public class ClientConnectorConsumerException extends Exception {
+public class ClientConnectorException extends Exception {
 
 
     private OpenNCPErrorCode openncpErrorCode;
     String context;
 
-    public ClientConnectorConsumerException(OpenNCPErrorCode openncpErrorCode, String message, String context) {
+    public ClientConnectorException(OpenNCPErrorCode openncpErrorCode, String message, String context) {
         super(message);
         this.openncpErrorCode = openncpErrorCode;
         this.context = context;
     }
 
-    public ClientConnectorConsumerException(OpenNCPErrorCode openncpErrorCode, String message, String context, Throwable cause) {
+    public ClientConnectorException(OpenNCPErrorCode openncpErrorCode, String message, String context, Throwable cause) {
         super(message, cause);
         this.openncpErrorCode = openncpErrorCode;
         this.context = context;

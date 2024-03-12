@@ -3,23 +3,7 @@ package eu.europa.ec.sante.openncp.api.client;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.client.ClientConnectorService;
-import eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType;
-import eu.europa.ec.sante.openncp.core.client.DocumentId;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.FilterParams;
-import eu.europa.ec.sante.openncp.core.client.GenericDocumentCode;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.client.PatientId;
-import eu.europa.ec.sante.openncp.core.client.QueryDocumentRequest;
-import eu.europa.ec.sante.openncp.core.client.QueryDocumentsResponse;
-import eu.europa.ec.sante.openncp.core.client.QueryPatientRequest;
-import eu.europa.ec.sante.openncp.core.client.QueryPatientResponse;
-import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentRequest;
-import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponse;
-import eu.europa.ec.sante.openncp.core.client.SubmitDocumentRequest;
-import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponse;
-import eu.europa.ec.sante.openncp.core.client.exception.ClientConnectorException;
+import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.client.ihe.cxf.interceptor.AssertionsInInterceptor;
 import eu.europa.ec.sante.openncp.core.client.ihe.dts.*;
 import eu.europa.ec.sante.openncp.core.client.ihe.service.*;
@@ -57,6 +41,8 @@ public class ClientConnectorServiceImpl  implements ClientConnectorServicePortTy
 
     private final Logger logger = LoggerFactory.getLogger(ClientConnectorServiceImpl.class);
 
+    private ObjectFactory objectFactory = new ObjectFactory();
+
     final ClientConnectorServicePortType port;
 
     final Client client;
@@ -76,7 +62,7 @@ public class ClientConnectorServiceImpl  implements ClientConnectorServicePortTy
     public String submitDocument(SubmitDocumentRequest arg0) {
         final String methodName = "submitDocument";
         LoggingSlf4j.start(logger, methodName);
-        SubmitDocumentResponse submitDocumentResponse = new SubmitDocumentResponse();
+        SubmitDocumentResponse submitDocumentResponse = objectFactory.createSubmitDocumentResponse();
         try {
             /*  create XDR request */
             final EpsosDocument submitDocument = arg0.getDocument();
@@ -122,7 +108,7 @@ public class ClientConnectorServiceImpl  implements ClientConnectorServicePortTy
     public List<EpsosDocument> queryDocuments(QueryDocumentRequest arg0) {
         final String methodName = "queryDocuments";
         LoggingSlf4j.start(logger, methodName);
-        QueryDocumentsResponse queryDocumentsResponse = new QueryDocumentsResponse();
+        QueryDocumentsResponse queryDocumentsResponse = objectFactory.createQueryDocumentsResponse();
         try {
             final PatientId patientId = arg0.getPatientId();
             final String countryCode = arg0.getCountryCode();
@@ -179,13 +165,12 @@ public class ClientConnectorServiceImpl  implements ClientConnectorServicePortTy
 
         final String methodName = "retrieveDocument";
         LoggingSlf4j.start(logger, methodName);
-        RetrieveDocumentResponse retrieveDocumentResponse = new RetrieveDocumentResponse();
+        RetrieveDocumentResponse retrieveDocumentResponse;
         try {
             final String countryCode = arg0.getCountryCode();
             final DocumentId documentId = arg0.getDocumentId();
             final String homeCommunityId = arg0.getHomeCommunityId();
             final String targetLanguage = arg0.getTargetLanguage();
-            final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage().getExchange().get("assertionMap");
 
             GenericDocumentCode genericDocumentCode = arg0.getClassCode();
             eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode documentCode = GenericDocumentCodeDts.newInstance(genericDocumentCode);
@@ -194,26 +179,27 @@ public class ClientConnectorServiceImpl  implements ClientConnectorServicePortTy
                 throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION + documentCode.getSchema());
             }
 
-            RetrieveDocumentSetResponseType.DocumentResponse response;
             var xdsDocument = XdsDocumentDts.newInstance(documentId);
             xdsDocument.setClassCode(documentCode);
 
             logger.info("[ClientConnector retrieveDocument()] homeCommunityId: '{}' targetLanguage: '{}'", homeCommunityId, targetLanguage);
             ClassCode classCode = ClassCode.getByCode(documentCode.getValue());
+            final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage().getExchange().get("assertionMap");
+            RetrieveDocumentSetResponseType.DocumentResponse documentResponse;
             switch (classCode) {
                 case PS_CLASSCODE:
-                    response = PatientService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
+                    documentResponse = PatientService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
                             assertionMap);
                     break;
                 case EP_CLASSCODE:
-                    response = OrderService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
+                    documentResponse = OrderService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
                             assertionMap);
                     break;
                 case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
                 case ORCD_LABORATORY_RESULTS_CLASSCODE:
                 case ORCD_MEDICAL_IMAGING_REPORTS_CLASSCODE:
                 case ORCD_MEDICAL_IMAGES_CLASSCODE:
-                    response = OrCDService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
+                    documentResponse = OrCDService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
                             assertionMap);
                     break;
                 default:
@@ -221,7 +207,7 @@ public class ClientConnectorServiceImpl  implements ClientConnectorServicePortTy
             }
 
 
-            retrieveDocumentResponse = RetrieveDocumentResponseDts.newInstance(response);
+            retrieveDocumentResponse = RetrieveDocumentResponseDts.newInstance(documentResponse);
 
         } catch (XCAException | RuntimeException ex) {
             LoggingSlf4j.error(logger, methodName, ex);
@@ -234,7 +220,7 @@ public class ClientConnectorServiceImpl  implements ClientConnectorServicePortTy
     public List<PatientDemographics> queryPatient(QueryPatientRequest arg0) {
         final var methodName = "queryPatient";
         LoggingSlf4j.start(logger, methodName);
-        QueryPatientResponse queryPatientResponse = new QueryPatientResponse();
+        QueryPatientResponse queryPatientResponse = objectFactory.createQueryPatientResponse();
 
         try {
             final PatientDemographics patientDemographics = arg0.getPatientDemographics();

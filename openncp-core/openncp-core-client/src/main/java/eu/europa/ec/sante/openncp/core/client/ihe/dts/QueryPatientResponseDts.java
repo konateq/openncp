@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
+import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.client.QueryPatientResponse;
 
@@ -16,6 +17,8 @@ public class QueryPatientResponseDts {
      */
     private QueryPatientResponseDts() {
     }
+
+    static final ObjectFactory objectFactory = new ObjectFactory();
 
     /**
      * Converts a list of {@link PatientDemographics} object into a
@@ -34,7 +37,7 @@ public class QueryPatientResponseDts {
         if (patientDemographics == null) {
             return null;
         }
-        final QueryPatientResponse result = new QueryPatientResponse();
+        final QueryPatientResponse result = objectFactory.createQueryPatientResponse();
         result.getReturn().addAll(patientDemographics);
         return result;
     }
