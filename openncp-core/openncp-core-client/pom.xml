@@ -74,7 +74,7 @@
                             <id>generate-sources</id>
                             <phase>generate-sources</phase>
                             <configuration>
-                                <sourceRoot>${project.build.directory}/generated/cxf</sourceRoot>
+                                <sourceRoot>${project.build.directory}/generated-sources</sourceRoot>
                                 <wsdlOptions>
                                     <wsdlOption>
                                         <wsdl>${basedir}/src/main/resources/wsdl/ClientConnectorService.wsdl</wsdl>
@@ -86,6 +86,25 @@
                             <goals>
                                 <goal>wsdl2java</goal>
                             </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.4</version>
+                    <executions>
+                        <execution>
+                            <id>add-wsdl-source</id>
+                            <phase>process-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>${project.build.directory}/generated-sources/</source>
+                                </sources>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

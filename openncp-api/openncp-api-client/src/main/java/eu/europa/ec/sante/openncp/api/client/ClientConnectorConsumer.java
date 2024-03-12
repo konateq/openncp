@@ -54,6 +54,8 @@ public class ClientConnectorConsumer {
     // URL of the targeted NCP-B - ClientConnectorService.wsdl
     private final String endpointReference;
 
+    private final ObjectFactory objectFactory = new ObjectFactory();
+
     public ClientConnectorConsumer(String endpointReference) {
 
         this.endpointReference = endpointReference;
@@ -69,7 +71,7 @@ public class ClientConnectorConsumer {
      * @param filterParams - Extra parameters for search filtering.
      * @return List of clinical documents and metadata searched by the clinician.
      */
-    public List<EpsosDocument1> queryDocuments(Map<AssertionEnum, Assertion> assertions,
+    public List<EpsosDocument> queryDocuments(Map<AssertionEnum, Assertion> assertions,
                                                String countryCode, PatientId patientId,
                                                List<GenericDocumentCode> classCodes, FilterParams filterParams)
             throws ClientConnectorConsumerException {
@@ -80,21 +82,17 @@ public class ClientConnectorConsumer {
         try {
             addAssertions(clientConnectorServiceStub, assertions);
 
-            var queryDocumentsDocument = QueryDocumentsDocument.Factory.newInstance();
-            var queryDocuments = queryDocumentsDocument.addNewQueryDocuments();
-            var queryDocumentRequest = queryDocuments.addNewArg0();
-            GenericDocumentCode[] array = new GenericDocumentCode[classCodes.size()];
-            for (int i = 0; i < classCodes.size(); i++) {
-                array[i] = classCodes.get(i);
-            }
-            queryDocumentRequest.setClassCodeArray(array);
+            var queryDocuments = objectFactory.createQueryDocuments();
+            var queryDocumentRequest = queryDocuments.getArg0();
+            classCodes.forEach(genericDocumentCode -> queryDocumentRequest.getClassCode().add(genericDocumentCode));
+
             queryDocumentRequest.setPatientId(patientId);
             queryDocumentRequest.setCountryCode(countryCode);
             queryDocumentRequest.setFilterParams(filterParams);
 
             QueryDocumentsResponseDocument queryDocumentsResponseDocument;
             queryDocumentsResponseDocument = clientConnectorServiceStub.queryDocuments(queryDocumentsDocument);
-            EpsosDocument1[] docArray = queryDocumentsResponseDocument.getQueryDocumentsResponse().getReturnArray();
+            EpsosDocument[] docArray = queryDocumentsResponseDocument.getQueryDocumentsResponse().getReturnArray();
 
             return Arrays.asList(docArray);
         } catch (AxisFault axisFault) {

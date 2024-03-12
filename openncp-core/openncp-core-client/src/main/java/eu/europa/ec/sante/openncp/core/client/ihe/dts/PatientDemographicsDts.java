@@ -91,7 +91,7 @@ public final class PatientDemographicsDts {
         result.setEmail(patientDemographics.getEmail());
         result.setFamilyName(patientDemographics.getFamilyName());
         result.setGivenName(patientDemographics.getGivenName());
-        result.getPatientId().addAll(patientDemographics.getIdList());
+        result.getPatientId().addAll(PatientIdDts.fromDataModel(patientDemographics.getIdList()));
         result.setPostalCode(patientDemographics.getPostalCode());
         result.setStreetAddress(patientDemographics.getStreetAddress());
         result.setTelephone(patientDemographics.getTelephone());
