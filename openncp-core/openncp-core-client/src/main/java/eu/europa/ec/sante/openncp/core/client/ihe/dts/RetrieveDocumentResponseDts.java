@@ -6,7 +6,6 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.
 
 /**
  * This is a Data Transformation Service providing functions to transform data into a RetrieveDocumentResponseDTS object.
-
  */
 public class RetrieveDocumentResponseDts {
 
@@ -19,9 +18,8 @@ public class RetrieveDocumentResponseDts {
             return null;
         }
 
-        final RetrieveDocumentResponse result = RetrieveDocumentResponse.Factory.newInstance();
+        final RetrieveDocumentResponse result = new RetrieveDocumentResponse();
         result.setReturn(DocumentDts.newInstance(documentResponse));
-
         return result;
     }
 }

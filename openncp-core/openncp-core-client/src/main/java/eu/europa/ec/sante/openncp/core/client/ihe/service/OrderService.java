@@ -17,9 +17,6 @@ import java.util.Map;
 
 /**
  * TODO: Insert description for OrderService class.
- *
- * @author Marcelo Fonseca <marcelo.fonseca@iuz.pt>
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
  */
 public class OrderService {
 

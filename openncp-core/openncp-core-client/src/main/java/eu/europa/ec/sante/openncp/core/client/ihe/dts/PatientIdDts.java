@@ -12,24 +12,7 @@ import java.util.List;
  */
 public final class PatientIdDts {
 
-    private PatientIdDts() {
-    }
-
-    public static List<PatientId> newInstance(final eu.europa.ec.sante.openncp.core.client.PatientId[] patientIdList) {
-
-        if (patientIdList == null) {
-            return Collections.emptyList();
-        }
-
-        List<PatientId> result = new ArrayList<>(patientIdList.length);
-        for (eu.europa.ec.sante.openncp.core.client.PatientId patientId : patientIdList) {
-            result.add(newInstance(patientId));
-        }
-
-        return result;
-    }
-
-    public static PatientId newInstance(final eu.europa.ec.sante.openncp.core.client.PatientId patientId) {
+    public static PatientId toDataModel(final eu.europa.ec.sante.openncp.core.client.PatientId patientId) {
 
         if (patientId == null) {
             return null;
@@ -38,32 +21,42 @@ public final class PatientIdDts {
         PatientId result = new PatientId();
         result.setRoot(StringUtils.trim(patientId.getRoot()));
         result.setExtension(StringUtils.trim(patientId.getExtension()));
-
         return result;
     }
 
-    public static eu.europa.ec.sante.openncp.core.client.PatientId[] newInstance(final List<PatientId> patientId) {
+    public static eu.europa.ec.sante.openncp.core.client.PatientId fromDataModel(final PatientId patientId) {
+
         if (patientId == null) {
             return null;
         }
 
-        eu.europa.ec.sante.openncp.core.client.PatientId[] result = new eu.europa.ec.sante.openncp.core.client.PatientId[patientId.size()];
-        for(int i = 0; i < patientId.size(); i++) {
-            result[i] = newInstance(patientId.get(i));
-        }
-
-        return result;
-    }
-
-    public static eu.europa.ec.sante.openncp.core.client.PatientId newInstance(final PatientId patientId) {
-        if (patientId == null) {
-            return null;
-        }
-
-        eu.europa.ec.sante.openncp.core.client.PatientId result = eu.europa.ec.sante.openncp.core.client.PatientId.Factory.newInstance();
+        eu.europa.ec.sante.openncp.core.client.PatientId result = new eu.europa.ec.sante.openncp.core.client.PatientId();
         result.setRoot(patientId.getRoot());
         result.setExtension(patientId.getExtension());
+        return result;
+    }
 
+    public static List<PatientId> toDataModel(final List<eu.europa.ec.sante.openncp.core.client.PatientId> patientIds) {
+
+        if (patientIds == null) {
+            return Collections.emptyList();
+        }
+        List<PatientId> result = new ArrayList<>();
+        for (eu.europa.ec.sante.openncp.core.client.PatientId patientId : patientIds) {
+            result.add(toDataModel(patientId));
+        }
+        return result;
+    }
+
+    public static List<eu.europa.ec.sante.openncp.core.client.PatientId> fromDataModel(final List<PatientId> patientIds) {
+
+        if (patientIds == null) {
+            return Collections.emptyList();
+        }
+        List<eu.europa.ec.sante.openncp.core.client.PatientId> result = new ArrayList<>();
+        for(PatientId patientId: patientIds) {
+            result.add(fromDataModel(patientId));
+        }
         return result;
     }
 }

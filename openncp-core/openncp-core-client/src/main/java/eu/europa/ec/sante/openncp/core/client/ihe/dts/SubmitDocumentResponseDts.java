@@ -16,10 +16,8 @@ public class SubmitDocumentResponseDts {
 
     public static SubmitDocumentResponse newInstance(XdrResponse xdrResponse) {
 
-        final SubmitDocumentResponse result = SubmitDocumentResponse.Factory.newInstance();
-
+        final SubmitDocumentResponse result = new SubmitDocumentResponse();
         result.setResponseStatus(xdrResponse.getResponseStatus());
-
         return result;
     }
 }
