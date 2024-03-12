@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.api.client;
+package eu.europa.ec.sante.openncp.api.client.connector;
 
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
