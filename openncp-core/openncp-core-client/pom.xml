@@ -80,6 +80,10 @@
                                         <wsdl>${basedir}/src/main/resources/wsdl/ClientConnectorService.wsdl</wsdl>
                                         <wsdlLocation>classpath:wsdl/ClientConnectorService.wsdl</wsdlLocation>
                                         <extendedSoapHeaders>true</extendedSoapHeaders>
+<!--                                        <extraargs>-->
+<!--                                            <extraarg>-impl</extraarg>-->
+<!--                                            <extraarg>-server</extraarg>-->
+<!--                                        </extraargs>-->
                                     </wsdlOption>
                                 </wsdlOptions>
                             </configuration>
