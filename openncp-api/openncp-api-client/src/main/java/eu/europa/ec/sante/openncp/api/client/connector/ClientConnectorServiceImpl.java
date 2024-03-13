@@ -5,6 +5,7 @@ import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.client.ihe.ClientService;
+import eu.europa.ec.sante.openncp.core.client.ihe.ClientServiceImpl;
 import eu.europa.ec.sante.openncp.core.client.ihe.cxf.interceptor.AssertionsInInterceptor;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.ImmutableSubmitDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.SubmitDocumentOperation;
@@ -20,6 +21,7 @@ import eu.europa.ec.sante.openncp.core.common.exception.NoPatientIdDiscoveredExc
 import eu.europa.ec.sante.openncp.core.common.exception.XCAException;
 import eu.europa.ec.sante.openncp.core.common.exception.XDRException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.frontend.ClientProxy;
@@ -29,6 +31,7 @@ import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jws.HandlerChain;
 import javax.xml.ws.Service;
@@ -49,20 +52,14 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
     private ClientService clientService;
 
 
-    public ClientConnectorServiceImpl() {
-//        Service service = ClientConnectorService.create(ClientConnectorService.SERVICE);
-//        port = service.getPort(ClientConnectorServicePortType.class);
-//        client = ClientProxy.getClient(port);
-//        Endpoint endpoint = client.getEndpoint();
-//        List<Interceptor<? extends Message>> inInterceptors = endpoint.getInInterceptors();
-//        AssertionsInInterceptor assertionsInInterceptor = new AssertionsInInterceptor();
-//        inInterceptors.add(assertionsInInterceptor);
+    public ClientConnectorServiceImpl(final ClientService clientService) {
+        this.clientService = Validate.notNull(clientService);
     }
 
 
     @Override
     public String submitDocument(final SubmitDocumentRequest submitDocumentRequest) {
-        final Map<AssertionEnum, Assertion> assertionMap =  (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage().getExchange().get("assertionMap");
+        final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage().getExchange().get("assertionMap");
         final SubmitDocumentOperation submitDocumentOperation = ImmutableSubmitDocumentOperation.builder()
                 .assertions(assertionMap)
                 .request(submitDocumentRequest)
