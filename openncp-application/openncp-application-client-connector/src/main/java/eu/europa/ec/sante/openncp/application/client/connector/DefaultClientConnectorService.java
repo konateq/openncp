@@ -1,55 +1,29 @@
-package eu.europa.ec.sante.openncp.api.client.consumer;
+package eu.europa.ec.sante.openncp.application.client.connector;
 
-import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.core.client.*;
-import eu.europa.ec.sante.openncp.core.client.ihe.cxf.interceptor.AssertionsInInterceptor;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.configuration.jsse.TLSClientParameters;
-import org.apache.cxf.configuration.security.AuthorizationPolicy;
 import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.interceptor.Interceptor;
-import org.apache.cxf.message.Message;
-import org.apache.cxf.transport.Conduit;
 import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustAllStrategy;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
+import org.springframework.stereotype.Service;
 
-import javax.net.ssl.SSLContext;
-import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 /*
  *  Client Service class providing access to the MyHealth@EU workflows (Patient Summary, ePrescription, OrCD etc.).
  */
-public class ClientConnectorConsumer {
+@Service
+public class DefaultClientConnectorService implements ClientConnectorService {
 
     // Default timeout set to Three minutes.
     private static final Integer TIMEOUT = 180000;
     private static final String WSSE_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
     // Logger
-    private final Logger logger = LoggerFactory.getLogger(ClientConnectorConsumer.class);
+    private final Logger logger = LoggerFactory.getLogger(DefaultClientConnectorService.class);
     // URL of the targeted NCP-B - ClientConnectorService.wsdl
     private final String endpointReference;
 
@@ -57,10 +31,10 @@ public class ClientConnectorConsumer {
 
     final ClientConnectorServicePortType clientConnectorServicePort;
 
-    public ClientConnectorConsumer(String endpointReference) {
+    public DefaultClientConnectorService(String endpointReference) {
         this.endpointReference = endpointReference;
 
-        ClientConnectorService ss = new ClientConnectorService();
+        eu.europa.ec.sante.openncp.core.client.ClientConnectorService ss = new eu.europa.ec.sante.openncp.core.client.ClientConnectorService();
         clientConnectorServicePort = ss.getClientConnectorServicePort();
 
         final Client client = ClientProxy.getClient(clientConnectorServicePort);
@@ -91,6 +65,7 @@ public class ClientConnectorConsumer {
      * @param filterParams - Extra parameters for search filtering.
      * @return List of clinical documents and metadata searched by the clinician.
      */
+    @Override
     public List<EpsosDocument> queryDocuments(Map<AssertionEnum, Assertion> assertions, String countryCode, PatientId patientId,
                                               List<GenericDocumentCode> classCodes, FilterParams filterParams) throws ClientConnectorConsumerException {
 

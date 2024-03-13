@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.api.client.consumer;
+package eu.europa.ec.sante.openncp.application.client.connector;
 
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicConstant;

@@ -13,5 +13,6 @@
         <module>openncp-application-client</module>
         <module>openncp-application-server</module>
         <module>openncp-application-trc-sts</module>
+        <module>openncp-application-client-connector</module>
     </modules>
 </project>
