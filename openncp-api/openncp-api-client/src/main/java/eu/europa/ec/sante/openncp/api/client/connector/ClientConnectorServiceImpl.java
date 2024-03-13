@@ -13,6 +13,7 @@ import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,11 @@ import java.util.Map;
         targetNamespace = "http://client.core.openncp.sante.ec.europa.eu",
         wsdlLocation = "classpath:wsdl/ClientConnectorService.wsdl",
         endpointInterface = "eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType")
+@Service
 public class ClientConnectorServiceImpl implements ClientConnectorServicePortType {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientConnectorServiceImpl.class);
 
     private ClientService clientService;
-
 
     public ClientConnectorServiceImpl(final ClientService clientService) {
         this.clientService = Validate.notNull(clientService);

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="epsos.ccd.posam.tsam.model.ValueSetVersion" table="value_set_version">
+        <id name="id" type="long">
+            <column name="id"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="versionName" type="java.lang.String">
+            <column name="version_name"/>
+        </property>
+        <property name="effectiveDate" type="java.util.Date">
+            <column name="effective_date"/>
+        </property>
+        <property name="releaseDate" type="java.util.Date">
+            <column name="release_date"/>
+        </property>
+        <property name="status" type="java.lang.String">
+            <column name="status"/>
+        </property>
+        <property name="statusDate" type="java.util.Date">
+            <column name="status_date"/>
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="description"/>
+        </property>
+        <many-to-one name="previousVersion" class="epsos.ccd.posam.tsam.model.ValueSetVersion">
+            <column name="previous_version_id"></column>
+        </many-to-one>
+        <many-to-one name="valueSet" class="epsos.ccd.posam.tsam.model.ValueSet" fetch="join">
+            <column name="value_set_id"/>
+        </many-to-one>
+        <bag name="concepts" inverse="false" table="x_concept_value_set" lazy="true">
+            <key>
+                <column name="value_set_version_id"/>
+            </key>
+            <many-to-many class="epsos.ccd.posam.tsam.model.CodeSystemConcept" column="code_system_concept_id"/>
+        </bag>
+    </class>
+</hibernate-mapping>

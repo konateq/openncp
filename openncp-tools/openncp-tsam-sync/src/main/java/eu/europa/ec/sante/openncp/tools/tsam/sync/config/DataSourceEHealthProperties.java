@@ -90,7 +90,7 @@ public class DataSourceEHealthProperties {
     public LocalContainerEntityManagerFactoryBean secondEntityManager(){
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(secondDataSource());
-        em.setPackagesToScan(new String[]{"eu.europa.ec.sante.openncp.tsam.sync.domainehealthproperty.model"});
+        em.setPackagesToScan("eu.europa.ec.sante.openncp.tools.tsam.sync.domainehealthproperty.model");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

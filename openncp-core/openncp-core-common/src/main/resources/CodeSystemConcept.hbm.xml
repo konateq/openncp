@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="epsos.ccd.posam.tsam.model.CodeSystemConcept" table="code_system_concept">
+        <id name="id" type="long">
+            <column name="id"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="code" type="java.lang.String">
+            <column name="code"/>
+        </property>
+        <property name="status" type="java.lang.String">
+            <column name="status"/>
+        </property>
+        <property name="statusDate" type="java.util.Date">
+            <column name="status_date"/>
+        </property>
+        <property name="definition" type="java.lang.String">
+            <column name="definition"/>
+        </property>
+        <many-to-one name="codeSystemVersion" class="epsos.ccd.posam.tsam.model.CodeSystemVersion">
+            <column name="code_system_version_id"></column>
+        </many-to-one>
+        <bag name="valueSetVersions" inverse="false" table="x_concept_value_set" lazy="true">
+            <key>
+                <column name="code_system_concept_id"/>
+            </key>
+            <many-to-many class="epsos.ccd.posam.tsam.model.ValueSetVersion" column="value_set_version_id"/>
+        </bag>
+        <bag name="designations" inverse="false" table="designation" lazy="true">
+            <key>
+                <column name="code_system_concept_id"/>
+            </key>
+            <one-to-many class="epsos.ccd.posam.tsam.model.Designation"/>
+        </bag>
+    </class>
+</hibernate-mapping>
