@@ -26,6 +26,9 @@ import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponse;
 import eu.europa.ec.sante.openncp.core.client.SubmitDocumentRequest;
 import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponse;
 import eu.europa.ec.sante.openncp.core.client.ihe.cxf.interceptor.AssertionsInInterceptor;
+import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryDocumentOperation;
+import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryPatientOperation;
+import eu.europa.ec.sante.openncp.core.client.ihe.dto.RetrieveDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.SubmitDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dts.DocumentDts;
 import eu.europa.ec.sante.openncp.core.client.ihe.dts.FilterParamsDts;
@@ -92,7 +95,9 @@ public class ClientServiceImpl implements ClientService {
             final String countryCode = submitDocumentRequest.getCountryCode();
             final GenericDocumentCode classCode = submitDocument.getClassCode();
             final Map<AssertionEnum, Assertion> assertionMap = submitDocumentOperation.getAssertions();
-            if (!classCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {
+            if (OpenNCPValidation.isValidationEnable()) {
+                OpenNCPValidation.validateHCPAssertion(assertionMap.get(AssertionEnum.CLINICIAN), NcpSide.NCP_B);
+            }            if (!classCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {
                 throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION + classCode.getSchema());
             }
             String classCodeNode = classCode.getNodeRepresentation();
@@ -125,154 +130,150 @@ public class ClientServiceImpl implements ClientService {
         LoggingSlf4j.end(logger, methodName);
         return submitDocumentResponse.getResponseStatus();
     }
-//
-//    @Override
-//    public List<EpsosDocument> queryDocuments(QueryDocumentRequest submitDocumentOperation.getRequest())
-//
-//    {
-//        final String methodName = "queryDocuments";
-//        LoggingSlf4j.start(logger, methodName);
-//        QueryDocumentsResponse queryDocumentsResponse = objectFactory.createQueryDocumentsResponse();
-//        try {
-//            final PatientId patientId = submitDocumentOperation.getRequest().getPatientId();
-//            final String countryCode = submitDocumentOperation.getRequest().getCountryCode();
-//            final List<GenericDocumentCode> documentCodes = submitDocumentOperation.getRequest().getClassCode();
-//            final FilterParams filterParams = submitDocumentOperation.getRequest().getFilterParams();
-//            final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage().getExchange().get("assertionMap");
-//
-//            if (OpenNCPValidation.isValidationEnable()) {
-//                OpenNCPValidation.validateHCPAssertion(assertionMap.get(AssertionEnum.CLINICIAN), NcpSide.NCP_B);
-//            }
-//
-//            QueryResponse response;
-//            if (documentCodes.size() == 1) {
-//                String classCode = documentCodes.get(0).getValue();
-//                switch (ClassCode.getByCode(classCode)) {
-//                    case PS_CLASSCODE:
-//                        response = PatientService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes.get(0)), assertionMap);
-//                        break;
-//                    case EP_CLASSCODE:
-//                        response = OrderService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes.get(0)), assertionMap);
-//                        break;
-//                    case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
-//                    case ORCD_LABORATORY_RESULTS_CLASSCODE:
-//                    case ORCD_MEDICAL_IMAGING_REPORTS_CLASSCODE:
-//                    case ORCD_MEDICAL_IMAGES_CLASSCODE:
-//                        response = OrCDService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes), FilterParamsDts.newInstance(filterParams), assertionMap);
-//                        break;
-//                    default:
-//                        throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_EXCEPTION + Arrays.toString(documentCodes.toArray()));
-//                }
-//            } else {
-//                if (!documentCodes.contains(ClassCode.EP_CLASSCODE.getCode())
-//                        && !documentCodes.contains(ClassCode.PS_CLASSCODE.getCode())) {
-//                    response = OrCDService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes), FilterParamsDts.newInstance(filterParams), assertionMap);
-//                } else {
-//                    throw new ClientConnectorException("Invalid combination of document codes provided: only OrCD document codes can be combined.");
-//                }
-//            }
-//
-//
-//            if (response.getDocumentAssociations() != null && !response.getDocumentAssociations().isEmpty()) {
-//                queryDocumentsResponse.getReturn().addAll(Arrays.asList(DocumentDts.newInstance(response.getDocumentAssociations())));
-//            }
-//        } catch (XCAException | RuntimeException ex) {
-//            LoggingSlf4j.error(logger, methodName, ex);
-//            throw new ClientConnectorException(ex);
-//        }
-//        LoggingSlf4j.end(logger, methodName);
-//        return queryDocumentsResponse.getReturn();
-//    }
-//
-//    @Override
-//    public EpsosDocument retrieveDocument(RetrieveDocumentRequest submitDocumentOperation.getRequest())
-//
-//    {
-//
-//        final String methodName = "retrieveDocument";
-//        LoggingSlf4j.start(logger, methodName);
-//        RetrieveDocumentResponse retrieveDocumentResponse;
-//        try {
-//            final String countryCode = submitDocumentOperation.getRequest().getCountryCode();
-//            final DocumentId documentId = submitDocumentOperation.getRequest().getDocumentId();
-//            final String homeCommunityId = submitDocumentOperation.getRequest().getHomeCommunityId();
-//            final String targetLanguage = submitDocumentOperation.getRequest().getTargetLanguage();
-//
-//            GenericDocumentCode genericDocumentCode = submitDocumentOperation.getRequest().getClassCode();
-//            eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode documentCode = GenericDocumentCodeDts.newInstance(genericDocumentCode);
-//
-//            if (!documentCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {
-//                throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION + documentCode.getSchema());
-//            }
-//
-//            var xdsDocument = XdsDocumentDts.newInstance(documentId);
-//            xdsDocument.setClassCode(documentCode);
-//
-//            logger.info("[ClientConnector retrieveDocument()] homeCommunityId: '{}' targetLanguage: '{}'", homeCommunityId, targetLanguage);
-//            ClassCode classCode = ClassCode.getByCode(documentCode.getValue());
-//            final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage().getExchange().get("assertionMap");
-//            RetrieveDocumentSetResponseType.DocumentResponse documentResponse;
-//            switch (classCode) {
-//                case PS_CLASSCODE:
-//                    documentResponse = PatientService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
-//                            assertionMap);
-//                    break;
-//                case EP_CLASSCODE:
-//                    documentResponse = OrderService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
-//                            assertionMap);
-//                    break;
-//                case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
-//                case ORCD_LABORATORY_RESULTS_CLASSCODE:
-//                case ORCD_MEDICAL_IMAGING_REPORTS_CLASSCODE:
-//                case ORCD_MEDICAL_IMAGES_CLASSCODE:
-//                    documentResponse = OrCDService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
-//                            assertionMap);
-//                    break;
-//                default:
-//                    throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_EXCEPTION + documentCode.getValue());
-//            }
-//
-//
-//            retrieveDocumentResponse = RetrieveDocumentResponseDts.newInstance(documentResponse);
-//
-//        } catch (XCAException | RuntimeException ex) {
-//            LoggingSlf4j.error(logger, methodName, ex);
-//            throw new ClientConnectorException(ex);
-//        }
-//        return retrieveDocumentResponse.getReturn();
-//    }
-//
-//    @Override
-//    public List<PatientDemographics> queryPatient(QueryPatientRequest submitDocumentOperation.getRequest())
-//
-//    {
-//        final var methodName = "queryPatient";
-//        LoggingSlf4j.start(logger, methodName);
-//        QueryPatientResponse queryPatientResponse = objectFactory.createQueryPatientResponse();
-//
-//        try {
-//            final PatientDemographics patientDemographics = submitDocumentOperation.getRequest().getPatientDemographics();
-//            final String countryCode = submitDocumentOperation.getRequest().getCountryCode();
-//            final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage().getExchange().get("assertionMap");
-//
-//            List<eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics> patientDemographicsList = IdentificationService.findIdentityByTraits(PatientDemographicsDts.toDataModel(patientDemographics), assertionMap, countryCode);
-//
-//            //  Response
-//            List<PatientDemographics> returnedPatientDemographics = PatientDemographicsDts.fromDataModel(patientDemographicsList);
-//            queryPatientResponse.getReturn().addAll(returnedPatientDemographics);
-//
-//        } catch (NoPatientIdDiscoveredException | ParseException | RuntimeException ex) {
-//            LoggingSlf4j.error(logger, methodName, ex);
-//            throw new ClientConnectorException(ex);
-//        }
-//        LoggingSlf4j.end(logger, methodName);
-//        return queryPatientResponse.getReturn();
-//    }
-//
-//    @Override
-//    public String sayHello(String submitDocumentOperation.getRequest())
-//
-//    {
-//        return "sayHello";
-//    }
+
+    @Override
+    public List<EpsosDocument> queryDocuments(QueryDocumentOperation queryDocumentOperation)
+
+    {
+        final String methodName = "queryDocuments";
+        LoggingSlf4j.start(logger, methodName);
+        QueryDocumentsResponse queryDocumentsResponse = objectFactory.createQueryDocumentsResponse();
+        try {
+            final PatientId patientId = queryDocumentOperation.getRequest().getPatientId();
+            final String countryCode = queryDocumentOperation.getRequest().getCountryCode();
+            final List<GenericDocumentCode> documentCodes = queryDocumentOperation.getRequest().getClassCode();
+            final FilterParams filterParams = queryDocumentOperation.getRequest().getFilterParams();
+            final Map<AssertionEnum, Assertion> assertionMap = queryDocumentOperation.getAssertions();
+            if (OpenNCPValidation.isValidationEnable()) {
+                OpenNCPValidation.validateHCPAssertion(assertionMap.get(AssertionEnum.CLINICIAN), NcpSide.NCP_B);
+            }
+
+            QueryResponse response;
+            if (documentCodes.size() == 1) {
+                String classCode = documentCodes.get(0).getValue();
+                switch (ClassCode.getByCode(classCode)) {
+                    case PS_CLASSCODE:
+                        response = PatientService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes.get(0)), assertionMap);
+                        break;
+                    case EP_CLASSCODE:
+                        response = OrderService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes.get(0)), assertionMap);
+                        break;
+                    case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
+                    case ORCD_LABORATORY_RESULTS_CLASSCODE:
+                    case ORCD_MEDICAL_IMAGING_REPORTS_CLASSCODE:
+                    case ORCD_MEDICAL_IMAGES_CLASSCODE:
+                        response = OrCDService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes), FilterParamsDts.newInstance(filterParams), assertionMap);
+                        break;
+                    default:
+                        throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_EXCEPTION + Arrays.toString(documentCodes.toArray()));
+                }
+            } else {
+                if (!documentCodes.contains(ClassCode.EP_CLASSCODE.getCode())
+                        && !documentCodes.contains(ClassCode.PS_CLASSCODE.getCode())) {
+                    response = OrCDService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes), FilterParamsDts.newInstance(filterParams), assertionMap);
+                } else {
+                    throw new ClientConnectorException("Invalid combination of document codes provided: only OrCD document codes can be combined.");
+                }
+            }
+
+
+            if (response.getDocumentAssociations() != null && !response.getDocumentAssociations().isEmpty()) {
+                queryDocumentsResponse.getReturn().addAll(Arrays.asList(DocumentDts.newInstance(response.getDocumentAssociations())));
+            }
+        } catch (XCAException | RuntimeException ex) {
+            LoggingSlf4j.error(logger, methodName, ex);
+            throw new ClientConnectorException(ex);
+        }
+        LoggingSlf4j.end(logger, methodName);
+        return queryDocumentsResponse.getReturn();
+    }
+
+    @Override
+    public EpsosDocument retrieveDocument(RetrieveDocumentOperation retrieveDocumentOperation) {
+
+        final String methodName = "retrieveDocument";
+        LoggingSlf4j.start(logger, methodName);
+        RetrieveDocumentResponse retrieveDocumentResponse;
+        try {
+            RetrieveDocumentRequest retrieveDocumentRequest = retrieveDocumentOperation.getRequest();
+            final String countryCode = retrieveDocumentRequest.getCountryCode();
+            final DocumentId documentId = retrieveDocumentRequest.getDocumentId();
+            final String homeCommunityId = retrieveDocumentRequest.getHomeCommunityId();
+            final String targetLanguage = retrieveDocumentRequest.getTargetLanguage();
+
+            GenericDocumentCode genericDocumentCode = retrieveDocumentRequest.getClassCode();
+            eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode documentCode = GenericDocumentCodeDts.newInstance(genericDocumentCode);
+            final Map<AssertionEnum, Assertion> assertionMap = retrieveDocumentOperation.getAssertions();
+            if (OpenNCPValidation.isValidationEnable()) {
+                OpenNCPValidation.validateHCPAssertion(assertionMap.get(AssertionEnum.CLINICIAN), NcpSide.NCP_B);
+            }
+
+            if (!documentCode.getSchema().equals(IheConstants.CLASSCODE_SCHEME)) {
+                throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION + documentCode.getSchema());
+            }
+
+            var xdsDocument = XdsDocumentDts.newInstance(documentId);
+            xdsDocument.setClassCode(documentCode);
+
+            logger.info("[ClientConnector retrieveDocument()] homeCommunityId: '{}' targetLanguage: '{}'", homeCommunityId, targetLanguage);
+            ClassCode classCode = ClassCode.getByCode(documentCode.getValue());
+            RetrieveDocumentSetResponseType.DocumentResponse documentResponse;
+            switch (classCode) {
+                case PS_CLASSCODE:
+                    documentResponse = PatientService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
+                            assertionMap);
+                    break;
+                case EP_CLASSCODE:
+                    documentResponse = OrderService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
+                            assertionMap);
+                    break;
+                case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
+                case ORCD_LABORATORY_RESULTS_CLASSCODE:
+                case ORCD_MEDICAL_IMAGING_REPORTS_CLASSCODE:
+                case ORCD_MEDICAL_IMAGES_CLASSCODE:
+                    documentResponse = OrCDService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage,
+                            assertionMap);
+                    break;
+                default:
+                    throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_EXCEPTION + documentCode.getValue());
+            }
+
+
+            retrieveDocumentResponse = RetrieveDocumentResponseDts.newInstance(documentResponse);
+
+        } catch (XCAException | RuntimeException ex) {
+            LoggingSlf4j.error(logger, methodName, ex);
+            throw new ClientConnectorException(ex);
+        }
+        return retrieveDocumentResponse.getReturn();
+    }
+
+    @Override
+    public List<PatientDemographics> queryPatient(final QueryPatientOperation queryPatientOperation) {
+        final var methodName = "queryPatient";
+        LoggingSlf4j.start(logger, methodName);
+        QueryPatientResponse queryPatientResponse = objectFactory.createQueryPatientResponse();
+
+        try {
+            final PatientDemographics patientDemographics = queryPatientOperation.getRequest().getPatientDemographics();
+            final String countryCode = queryPatientOperation.getRequest().getCountryCode();
+            final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage().getExchange().get("assertionMap");
+
+            List<eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics> patientDemographicsList = IdentificationService.findIdentityByTraits(PatientDemographicsDts.toDataModel(patientDemographics), assertionMap, countryCode);
+
+            List<PatientDemographics> returnedPatientDemographics = PatientDemographicsDts.fromDataModel(patientDemographicsList);
+            queryPatientResponse.getReturn().addAll(returnedPatientDemographics);
+
+        } catch (NoPatientIdDiscoveredException | ParseException | RuntimeException ex) {
+            LoggingSlf4j.error(logger, methodName, ex);
+            throw new ClientConnectorException(ex);
+        }
+        LoggingSlf4j.end(logger, methodName);
+        return queryPatientResponse.getReturn();
+    }
+
+    @Override
+    public String sayHello(String who) {
+        return "Hello " + who;
+    }
 }

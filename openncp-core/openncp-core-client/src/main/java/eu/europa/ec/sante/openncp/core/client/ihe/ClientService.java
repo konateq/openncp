@@ -5,6 +5,9 @@ import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.client.ihe.cxf.interceptor.AssertionsInInterceptor;
+import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryDocumentOperation;
+import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryPatientOperation;
+import eu.europa.ec.sante.openncp.core.client.ihe.dto.RetrieveDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.SubmitDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dts.*;
 import eu.europa.ec.sante.openncp.core.client.ihe.service.*;
@@ -37,4 +40,12 @@ import java.util.Map;
 
 public interface ClientService {
     String submitDocument(SubmitDocumentOperation submitDocumentOperation);
+
+    List<PatientDemographics> queryPatient(QueryPatientOperation queryPatientOperation);
+
+    List<EpsosDocument> queryDocuments(QueryDocumentOperation queryDocumentsOperation);
+
+    EpsosDocument retrieveDocument(RetrieveDocumentOperation retrieveDocumentOperation);
+
+    String sayHello(String who);
 }
