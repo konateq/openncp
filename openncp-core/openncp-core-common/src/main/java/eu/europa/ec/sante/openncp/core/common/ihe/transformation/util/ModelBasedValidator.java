@@ -6,11 +6,11 @@ import net.ihe.gazelle.epsos.validator.GazelleValidatorCore;
 import net.ihe.gazelle.epsos.validator.Validators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,19 +25,13 @@ public class ModelBasedValidator implements TMConstants {
     private static final String ERRORS = "//Error";
     private static final String PASSED = "PASSED";
 
-    private static ModelBasedValidator instance;
+    private final TMConfiguration tmConfiguration;
 
-    @Autowired
-    private TMConfiguration config;
+    private final HashMap<String, String> friendlyTypes = new HashMap<>();
+    private final HashMap<String, String> pivotTypes = new HashMap<>();
 
-    private HashMap<String, String> friendlyTypes;
-    private HashMap<String, String> pivotTypes;
-
-    public static ModelBasedValidator getInstance() {
-        if (instance == null) {
-            instance = new ModelBasedValidator();
-        }
-        return instance;
+    public ModelBasedValidator(TMConfiguration tmConfiguration) {
+        this.tmConfiguration = tmConfiguration;
     }
 
     public ModelValidatorResult validate(String document, String docType, boolean friendly) {
@@ -110,18 +104,14 @@ public class ModelBasedValidator implements TMConstants {
         return result;
     }
 
-    public void setConfig(TMConfiguration config) {
-        this.config = config;
-    }
-
+    @PostConstruct
     public void afterPropertiesSet() {
 
-        ProjectDependencies.CDA_XSD = config.getMdaCdaXsdPath();
-        ProjectDependencies.CDA_EPSOS_XSD = config.getMdaCdaEpsosXsdPath();
-        ProjectDependencies.CDA_XSL_TRANSFORMER = config.getMdaCdaXslTransformerPath();
-        ProjectDependencies.VALUE_SET_REPOSITORY = config.getMdaValuesetRepositoryPath();
+        ProjectDependencies.CDA_XSD = tmConfiguration.getMdaCdaXsdPath();
+        ProjectDependencies.CDA_EPSOS_XSD = tmConfiguration.getMdaCdaEpsosXsdPath();
+        ProjectDependencies.CDA_XSL_TRANSFORMER = tmConfiguration.getMdaCdaXslTransformerPath();
+        ProjectDependencies.VALUE_SET_REPOSITORY = tmConfiguration.getMdaValuesetRepositoryPath();
 
-        friendlyTypes = new HashMap<>();
         friendlyTypes.put(PATIENT_SUMMARY3, Validators.EPSOS_PS_FRIENDLY.getValue());
         friendlyTypes.put(PATIENT_SUMMARY1, Validators.EPSOS_PS_FRIENDLY.getValue());
         friendlyTypes.put(EDISPENSATION3, Validators.EPSOS_ED_FRIENDLY.getValue());
@@ -132,7 +122,6 @@ public class ModelBasedValidator implements TMConstants {
         friendlyTypes.put(MRO3, Validators.EPSOS_MRO.getValue());
         friendlyTypes.put(MRO1, Validators.EPSOS_MRO.getValue());
 
-        pivotTypes = new HashMap<>();
         pivotTypes.put(PATIENT_SUMMARY3, Validators.EPSOS_PS_PIVOT.getValue());
         pivotTypes.put(PATIENT_SUMMARY1, Validators.EPSOS_PS_PIVOT.getValue());
         pivotTypes.put(EDISPENSATION3, Validators.EPSOS_ED_PIVOT.getValue());

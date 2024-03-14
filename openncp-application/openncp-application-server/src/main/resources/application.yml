@@ -23,7 +23,7 @@ logging:
   level:
     ca.uhn.fhir.jaxrs: debug
 fhirserver:
-  url: http://localhost:8081/fhir/
+  url: http://localhost:9081/fhir/
 fhir:
   server:
     inclusion: true

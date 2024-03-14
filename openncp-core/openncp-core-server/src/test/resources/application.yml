@@ -22,6 +22,9 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password:
+    jndi:
+      tsam:
+        jndiName: java:comp/env/jdbc/TSAM
   jpa:
     hibernate:
       ddl-auto: create

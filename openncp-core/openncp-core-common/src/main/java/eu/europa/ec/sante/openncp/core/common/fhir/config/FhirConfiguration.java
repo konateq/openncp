@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -87,7 +88,6 @@ public class FhirConfiguration {
     }
 
     @Bean
-    @ConditionalOnExpression("${hapi.fhir.openapi.enabled:false} == true && ${hapi.fhir.openapi.secured:false} == false")
     public OpenApiInterceptor getUnSecuredOpenApiInterceptor() {
         return new UnsecuredOpenApiInterceptor();
     }
@@ -107,6 +107,7 @@ public class FhirConfiguration {
     //This configuration sets up the HAPI RestfulServer through Spring boot.
     @Configuration
     @EnableConfigurationProperties(FhirProperties.class)
+    @ConditionalOnProperty(value = "fhir.server.inclusion", havingValue = "true")
     @ConfigurationProperties("hapi.fhir.rest")
     @SuppressWarnings("serial")
     static class FhirRestfulServerConfiguration extends RestfulServer {
