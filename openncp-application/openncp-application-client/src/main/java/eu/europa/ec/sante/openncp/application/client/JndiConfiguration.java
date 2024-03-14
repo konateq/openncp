@@ -36,9 +36,19 @@ public class JndiConfiguration {
     }
 
     @Bean(destroyMethod = "")
-    public DataSource jndiDataSource() throws IllegalArgumentException, NamingException {
+    public DataSource jndiConfMgrDataSource() throws IllegalArgumentException, NamingException {
         JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
         bean.setJndiName("java:comp/env/jdbc/ConfMgr");
+        bean.setProxyInterface(DataSource.class);
+        bean.setLookupOnStartup(false);
+        bean.afterPropertiesSet();
+        return (DataSource) bean.getObject();
+    }
+
+    @Bean(destroyMethod = "")
+    public DataSource jndiDataTsamSource() throws IllegalArgumentException, NamingException {
+        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
+        bean.setJndiName("java:comp/env/jdbc/TSAM");
         bean.setProxyInterface(DataSource.class);
         bean.setLookupOnStartup(false);
         bean.afterPropertiesSet();
