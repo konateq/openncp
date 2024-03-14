@@ -110,11 +110,4 @@
     <bean class="eu.europa.ec.sante.openncp.core.common.transformation.util.ModelBasedValidator" factory-method="getInstance">
         <property name="config" ref="tmConfiguration"/>
     </bean>
-
-    <!--  [KJW] This can be deleted i think, the service is autowired -->
-    <bean class="eu.europa.ec.sante.openncp.core.common.transformation.service.impl.TransformationService"
-          id="eu.europa.ec.sante.openncp.core.common.tsam.service.ITransformationService">
-        <property name="tsamApi" ref="eu.europa.ec.sante.openncp.core.common.tsam.service.ITerminologyService"/>
-        <property name="config" ref="tmConfiguration"/>
-    </bean>
 </beans>
