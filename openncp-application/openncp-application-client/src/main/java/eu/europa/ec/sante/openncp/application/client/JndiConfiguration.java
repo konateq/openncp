@@ -53,11 +53,11 @@ public class JndiConfiguration {
 //        return (DataSource) bean.getObject();
 //    }
 
-//    @Bean(destroyMethod="")
-//    @ConfigurationProperties(prefix="spring.datasource.tsam")
-//    public JndiObjectFactoryBean tsamDataSource() {
-//        return new JndiObjectFactoryBean();
-//    }
+    @Bean(destroyMethod="")
+    @ConfigurationProperties(prefix="spring.datasource.default")
+    public JndiObjectFactoryBean confMgrDataSource() {
+        return new JndiObjectFactoryBean();
+    }
 
 
 //    @Bean(destroyMethod = "")
