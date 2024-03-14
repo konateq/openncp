@@ -16,7 +16,7 @@
         <property name="type" type="java.lang.String">
             <column name="type"/>
         </property>
-        <property name="preffered" type="java.lang.Boolean">
+        <property name="preferred" type="java.lang.Boolean">
             <column name="is_preferred"/>
         </property>
         <property name="status" type="java.lang.String">

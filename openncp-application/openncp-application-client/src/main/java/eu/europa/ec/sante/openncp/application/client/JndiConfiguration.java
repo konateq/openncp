@@ -59,8 +59,15 @@ public class JndiConfiguration {
         return new JndiObjectFactoryBean();
     }
 
+    @Bean(destroyMethod="")
+    @ConfigurationProperties(prefix="spring.datasource.tsam")
+    public JndiObjectFactoryBean tsamDataSource() {
+        return new JndiObjectFactoryBean();
+    }
 
-//    @Bean(destroyMethod = "")
+
+
+    //    @Bean(destroyMethod = "")
 //    public DataSource jndiDataTsamSource() throws IllegalArgumentException, NamingException {
 //        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
 //        bean.setJndiName("java:comp/env/jdbc/TSAM");

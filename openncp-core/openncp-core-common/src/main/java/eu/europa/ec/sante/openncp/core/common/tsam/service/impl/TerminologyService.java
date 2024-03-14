@@ -230,7 +230,7 @@ public class TerminologyService implements ITerminologyService {
         if (designations.size() > 1) {
             int preferred = 0;
             for (Designation designation : designations) {
-                if (Boolean.TRUE.equals(designation.isPreffered())) {
+                if (Boolean.TRUE.equals(designation.getPreferred())) {
                     preferred++;
                 }
             }
