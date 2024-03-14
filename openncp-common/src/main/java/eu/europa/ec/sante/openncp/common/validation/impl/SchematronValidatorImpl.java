@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+
 public class SchematronValidatorImpl extends AbstractValidator implements SchematronValidator {
 
     private final Logger logger = LoggerFactory.getLogger(SchematronValidatorImpl.class);

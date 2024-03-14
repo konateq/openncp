@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.transformation.config;
 
+import eu.europa.ec.sante.openncp.core.common.transformation.util.CodedElementList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -8,6 +9,8 @@ import org.springframework.context.annotation.PropertySource;
 //@PropertySource("classpath:tm.properties")
 @PropertySource("file:${EPSOS_PROPS_PATH}tm.properties")
 public class TMConfiguration {
+
+    private static TMConfiguration instance;
 
     @Value("${tm.audittrail.facility}")
     private String auditTrailFacility;
@@ -92,6 +95,13 @@ public class TMConfiguration {
 
     @Value( "${tm.documenttype.mro}" ) // LOINC codes could also be hardcoded as it is unlikely they will change - 56445-0
     private String mroCode;
+
+    public static TMConfiguration getInstance() {
+        if (instance == null) {
+            instance = new TMConfiguration();
+        }
+        return instance;
+    }
 
     public boolean isSchematronValidationEnabled() {
         return schematronValidationEnabled;

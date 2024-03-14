@@ -100,7 +100,7 @@
         </property>
     </bean>
 
-    <bean id="schematronValidator" class="eu.europa.ec.sante.openncp.common.validation.SchematronValidator" factory-method="getInstance">
+    <bean id="schematronValidator" class="eu.europa.ec.sante.openncp.core.common.transformation.util.SchematronValidator" factory-method="getInstance">
         <property name="xslDirectoryPath">
             <value>${EPSOS_PROPS_PATH}${tm.schematron.path.xsldir}</value>
         </property>
