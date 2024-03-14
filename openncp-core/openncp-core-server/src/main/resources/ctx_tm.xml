@@ -16,7 +16,7 @@
         </property>
     </bean>
 
-    <bean id="tmConfiguration" class="epsos.ccd.posam.tm.util.TMConfiguration" factory-method="getInstance">
+    <bean id="tmConfiguration" class="eu.europa.ec.sante.openncp.core.common.tm.util.TMConfiguration" factory-method="getInstance">
         <property name="patientSummaryCode">
             <value>${tm.documenttype.patientsummary}</value>
         </property>
@@ -88,7 +88,7 @@
         </property>
     </bean>
 
-    <bean id="codedElementList" class="epsos.ccd.posam.tm.util.CodedElementList" factory-method="getInstance">
+    <bean id="codedElementList" class="eu.europa.ec.sante.openncp.core.common.tm.util.CodedElementList" factory-method="getInstance">
         <property name="configurableElementIdentification">
             <value>${tm.codedelementlist.enabled}</value>
         </property>
@@ -100,20 +100,20 @@
         </property>
     </bean>
 
-    <bean id="schematronValidator" class="epsos.ccd.posam.tm.util.SchematronValidator" factory-method="getInstance">
+    <bean id="schematronValidator" class="eu.europa.ec.sante.openncp.core.common.tm.util.SchematronValidator" factory-method="getInstance">
         <property name="xslDirectoryPath">
             <value>${EPSOS_PROPS_PATH}${tm.schematron.path.xsldir}</value>
         </property>
         <property name="config" ref="tmConfiguration"/>
     </bean>
 
-    <bean class="epsos.ccd.posam.tm.util.ModelBasedValidator" factory-method="getInstance">
+    <bean class="eu.europa.ec.sante.openncp.core.common.tm.util.ModelBasedValidator" factory-method="getInstance">
         <property name="config" ref="tmConfiguration"/>
     </bean>
 
-    <bean class="epsos.ccd.posam.tm.service.impl.TransformationService"
-          id="epsos.ccd.posam.tm.service.ITransformationService">
-        <property name="tsamApi" ref="epsos.ccd.posam.tsam.service.ITerminologyService"/>
+    <bean class="eu.europa.ec.sante.openncp.core.common.tm.service.impl.TransformationService"
+          id="eu.europa.ec.sante.openncp.core.common.tm.service.ITransformationService">
+        <property name="tsamApi" ref="eu.europa.ec.sante.openncp.core.common.tsam.service.ITerminologyService"/>
         <property name="config" ref="tmConfiguration"/>
     </bean>
 </beans>

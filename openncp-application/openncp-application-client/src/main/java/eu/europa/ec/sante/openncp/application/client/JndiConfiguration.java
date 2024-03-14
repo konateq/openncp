@@ -1,20 +1,23 @@
 package eu.europa.ec.sante.openncp.application.client;
 
+import javax.sql.DataSource;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.ContextResource;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jndi.JndiObjectFactoryBean;
 
-
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 @Configuration
-//TODO only enable it with a dev or a local profile
+@EnableConfigurationProperties
+@Profile("local")
 public class JndiConfiguration {
     @Bean
     public TomcatServletWebServerFactory tomcatFactory() {
@@ -27,31 +30,43 @@ public class JndiConfiguration {
 
             @Override
             protected void postProcessContext(Context context) {
-                ContextResource resource = new ContextResource();
-                resource.setName("jdbc/ConfMgr");
-                resource.setType(DataSource.class.getName());
-                context.getNamingResources().addResource(resource);
+                context.getNamingResources().addResource(createJNDIResource("jdbc/ConfMgr"));
+                context.getNamingResources().addResource(createJNDIResource("jdbc/TSAM"));
             }
         };
     }
 
-    @Bean(destroyMethod = "")
-    public DataSource jndiConfMgrDataSource() throws IllegalArgumentException, NamingException {
-        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-        bean.setJndiName("java:comp/env/jdbc/ConfMgr");
-        bean.setProxyInterface(DataSource.class);
-        bean.setLookupOnStartup(false);
-        bean.afterPropertiesSet();
-        return (DataSource) bean.getObject();
+    private ContextResource createJNDIResource(String jndiName) {
+        final ContextResource resource = new ContextResource();
+        resource.setName(jndiName);
+        resource.setType(DataSource.class.getName());
+       return resource;
     }
 
-    @Bean(destroyMethod = "")
-    public DataSource jndiDataTsamSource() throws IllegalArgumentException, NamingException {
-        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-        bean.setJndiName("java:comp/env/jdbc/TSAM");
-        bean.setProxyInterface(DataSource.class);
-        bean.setLookupOnStartup(false);
-        bean.afterPropertiesSet();
-        return (DataSource) bean.getObject();
-    }
+//    @Bean(destroyMethod = "")
+//    public DataSource jndiConfMgrDataSource() throws IllegalArgumentException, NamingException {
+//        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
+//        bean.setJndiName("java:comp/env/jdbc/ConfMgr");
+//        bean.setProxyInterface(DataSource.class);
+//        bean.setLookupOnStartup(false);
+//        bean.afterPropertiesSet();
+//        return (DataSource) bean.getObject();
+//    }
+
+//    @Bean(destroyMethod="")
+//    @ConfigurationProperties(prefix="spring.datasource.tsam")
+//    public JndiObjectFactoryBean tsamDataSource() {
+//        return new JndiObjectFactoryBean();
+//    }
+
+
+//    @Bean(destroyMethod = "")
+//    public DataSource jndiDataTsamSource() throws IllegalArgumentException, NamingException {
+//        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
+//        bean.setJndiName("java:comp/env/jdbc/TSAM");
+//        bean.setProxyInterface(DataSource.class);
+//        bean.setLookupOnStartup(false);
+//        bean.afterPropertiesSet();
+//        return (DataSource) bean.getObject();
+//    }
 }

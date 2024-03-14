@@ -113,7 +113,7 @@
 
     <bean class="eu.europa.ec.sante.openncp.core.common.transformation.service.impl.TransformationService"
           id="eu.europa.ec.sante.openncp.core.common.tsam.service.ITransformationService">
-        <property name="tsamApi" ref="epsos.ccd.posam.tsam.service.ITerminologyService"/>
+        <property name="tsamApi" ref="eu.europa.ec.sante.openncp.core.common.tsam.service.ITerminologyService"/>
         <property name="config" ref="tmConfiguration"/>
     </bean>
 </beans>

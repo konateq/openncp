@@ -2,15 +2,15 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="epsos.ccd.posam.tsam.model.TranscodingAssociation" table="transcoding_association">
+    <class name="eu.europa.ec.sante.openncp.core.common.tsam.model.TranscodingAssociation" table="transcoding_association">
         <id name="id" type="long">
             <column name="id"/>
             <generator class="assigned"/>
         </id>
-        <many-to-one name="targedConcept" class="epsos.ccd.posam.tsam.model.CodeSystemConcept" fetch="join">
+        <many-to-one name="targedConcept" class="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystemConcept" fetch="join">
             <column name="target_concept_id"/>
         </many-to-one>
-        <many-to-one name="sourceConcept" class="epsos.ccd.posam.tsam.model.CodeSystemConcept" fetch="join">
+        <many-to-one name="sourceConcept" class="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystemConcept" fetch="join">
             <column name="source_concept_id"/>
         </many-to-one>
         <property name="quality" type="java.lang.String">

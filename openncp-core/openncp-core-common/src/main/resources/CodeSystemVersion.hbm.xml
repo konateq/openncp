@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="epsos.ccd.posam.tsam.model.CodeSystemVersion" table="code_system_version">
+    <class name="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystemVersion" table="code_system_version">
         <cache usage="read-only"/>
         <id name="id" type="long">
             <column name="id"/>
@@ -35,15 +35,15 @@
         <property name="source" type="java.lang.String">
             <column name="source"/>
         </property>
-        <many-to-one name="previousVersion" class="epsos.ccd.posam.tsam.model.CodeSystemVersion" lazy="proxy">
+        <many-to-one name="previousVersion" class="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystemVersion" lazy="proxy">
             <column name="previous_version_id"></column>
         </many-to-one>
-        <many-to-one name="codeSystem" class="epsos.ccd.posam.tsam.model.CodeSystem" foreign-key="FK_CODE_SYSTEM_ID">
+        <many-to-one name="codeSystem" class="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystem" foreign-key="FK_CODE_SYSTEM_ID">
             <column name="code_system_id"/>
         </many-to-one>
         <bag name="concepts" table="code_system_concept">
             <key column="code_system_version_id"/>
-            <one-to-many class="epsos.ccd.posam.tsam.model.CodeSystemConcept"/>
+            <one-to-many class="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystemConcept"/>
         </bag>
     </class>
 </hibernate-mapping>

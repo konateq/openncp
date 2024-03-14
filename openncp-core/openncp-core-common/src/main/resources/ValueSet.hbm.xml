@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="epsos.ccd.posam.tsam.model.ValueSet" table="value_set">
+    <class name="eu.europa.ec.sante.openncp.core.common.tsam.model.ValueSet" table="value_set">
         <id name="id" type="long">
             <column name="id"/>
             <generator class="assigned"/>
@@ -20,9 +20,9 @@
             <key>
                 <column name="id"/>
             </key>
-            <one-to-many class="epsos.ccd.posam.tsam.model.ValueSetVersion"/>
+            <one-to-many class="eu.europa.ec.sante.openncp.core.common.tsam.model.ValueSetVersion"/>
         </bag>
-        <many-to-one name="codeSystem" class="epsos.ccd.posam.tsam.model.CodeSystem">
+        <many-to-one name="codeSystem" class="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystem">
             <column name="parent_code_system_id"/>
         </many-to-one>
     </class>

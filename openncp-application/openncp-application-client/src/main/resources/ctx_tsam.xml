@@ -50,7 +50,7 @@
         <property name="config" ref="tsamConfig"/>
     </bean>
 
-    <bean id="epsos.ccd.posam.tsam.service.ITerminologyService"
+    <bean id="eu.europa.ec.sante.openncp.core.common.tsam.service.ITerminologyService"
           class="eu.europa.ec.sante.openncp.core.common.tsam.service.impl.TerminologyService">
         <property name="dao" ref="eu.europa.ec.sante.openncp.core.common.tsam.dao.ITsamDao"/>
         <property name="config" ref="tsamConfig"/>

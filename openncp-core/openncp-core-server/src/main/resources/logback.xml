@@ -116,11 +116,11 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="epsos.ccd.posam.tm.service" level="INFO" additivity="false">
+    <logger name="eu.europa.ec.sante.openncp.core.common.tm.service" level="INFO" additivity="false">
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="epsos.ccd.posam.tsam.service" level="INFO" additivity="false">
+    <logger name="eu.europa.ec.sante.openncp.core.common.tsam.service" level="INFO" additivity="false">
         <appender-ref ref="FILE"/>
     </logger>
 
@@ -128,7 +128,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="epsos.ccd.posam.tsam.dao" level="INFO" additivity="false">
+    <logger name="eu.europa.ec.sante.openncp.core.common.tsam.dao" level="INFO" additivity="false">
         <appender-ref ref="FILE"/>
     </logger>
 
