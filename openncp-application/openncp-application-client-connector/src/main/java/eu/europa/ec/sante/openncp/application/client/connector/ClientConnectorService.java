@@ -1,9 +1,6 @@
 package eu.europa.ec.sante.openncp.application.client.connector;
 
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.FilterParams;
-import eu.europa.ec.sante.openncp.core.client.GenericDocumentCode;
-import eu.europa.ec.sante.openncp.core.client.PatientId;
+import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import org.opensaml.saml.saml2.core.Assertion;
 
@@ -23,5 +20,7 @@ public interface ClientConnectorService {
      * @return List of clinical documents and metadata searched by the clinician.
      */
     List<EpsosDocument> queryDocuments(Map<AssertionEnum, Assertion> assertions, String countryCode, PatientId patientId,
-                                       List<GenericDocumentCode> classCodes, FilterParams filterParams) throws ClientConnectorConsumerException;
+                                       List<GenericDocumentCode> classCodes, FilterParams filterParams) throws ClientConnectorException;
+
+    List<PatientDemographics> queryPatient(Map<AssertionEnum, Assertion> assertions, String countryCode, PatientDemographics patientDemographics) throws ClientConnectorException;
 }

@@ -75,7 +75,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
      */
     @Override
     public List<EpsosDocument> queryDocuments(Map<AssertionEnum, Assertion> assertions, String countryCode, PatientId patientId,
-                                              List<GenericDocumentCode> classCodes, FilterParams filterParams) throws ClientConnectorConsumerException {
+                                              List<GenericDocumentCode> classCodes, FilterParams filterParams) throws ClientConnectorException {
 
         logger.info("[National Connector] queryDocuments(countryCode:'{}')", countryCode);
 
@@ -88,157 +88,90 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         //set assertions to soap call
         return clientConnectorServicePort.queryDocuments(queryDocumentRequest);
     }
-//
-//    /**
-//     * Returns demographics of the patient corresponding to the identity traits provided.
-//     *
-//     * @param assertions          - Map of assertions required by the transaction (HCP, TRC and NoK optional)
-//     * @param countryCode         - ISO Country code of the patient country of origin.
-//     * @param patientDemographics - Identifiers of the requested patient
-//     * @return List of patients found (only 1 patient is expected in MyHealth@EU)
-//     */
-//    public List<PatientDemographics> queryPatient(Map<AssertionEnum, Assertion> assertions, String countryCode,
-//                                                  PatientDemographics patientDemographics) throws ClientConnectorConsumerException {
-//
-//        logger.info("[National Connector] queryPatient(countryCode:'{}')", countryCode);
-//        var clientConnectorServiceStub = initializeServiceStub();
-//
-//        try {
-//            trimPatientDemographics(patientDemographics);
-//            addAssertions(clientConnectorServiceStub, assertions);
-//            var queryPatientRequest = objectFactory.createQueryPatientRequest();
-//            queryPatientRequest.setPatientDemographics(patientDemographics);
-//            queryPatientRequest.setCountryCode(countryCode);
-//
-//            var queryPatient = objectFactory.createQueryPatient();
-//            queryPatient.setArg0(queryPatientRequest);
-//
-//            QueryPatientResponse queryPatientResponse = clientConnectorServiceStub.queryPatient(queryPatient);
-//            return queryPatientResponse.getReturn();
-//        } catch (AxisFault axisFault) {
-//            throw createClientConnectorConsumerException(axisFault);
-//        } catch (ClientConnectorConsumerException ex) {
-//            throw ex;
-//        } catch (Exception ex) {
-//            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_PI_GENERIC, ex.getMessage(), null, ex);
-//        }
-//    }
-//
-//    /**
-//     * Default Webservice test method available mainly for configuration and testing purpose.
-//     *
-//     * @param assertions - Map of assertions required by the transaction (HCP, TRC and NoK optional).
-//     * @param name       - Token sent for testing.
-//     * @return Hello message concatenated with the token passed as parameter.
-//     */
-//    public String sayHello(Map<AssertionEnum, Assertion> assertions, String name) throws ClientConnectorConsumerException {
-//
-//        logger.info("[National Connector] sayHello(name:'{}')", name);
-//        var clientConnectorServiceStub = initializeServiceStub();
-//        try {
-//            addAssertions(clientConnectorServiceStub, assertions);
-//            var sayHelloDocument = SayHelloDocument.Factory.newInstance();
-//            sayHelloDocument.addNewSayHello().setArg0(name);
-//
-//            var sayHelloResponseDocument = clientConnectorServiceStub.sayHello(sayHelloDocument);
-//            return sayHelloResponseDocument.getSayHelloResponse().getReturn();
-//        } catch (AxisFault axisFault) {
-//            throw createClientConnectorConsumerException(axisFault);
-//        } catch (ClientConnectorConsumerException ex) {
-//            throw ex;
-//        } catch (Exception ex) {
-//            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_GENERIC, ex.getMessage(), null, ex);
-//        }
-//    }
-//
-//    /**
-//     * Retrieves the clinical document of an identified patient (prescription, patient summary or original clinical document).
-//     *
-//     * @param assertions      - Map of assertions required by the transaction (HCP, TRC and NoK optional).
-//     * @param countryCode     - ISO Country code of the patient country of origin.
-//     * @param documentId      - Unique identifier of the CDA document.
-//     * @param homeCommunityId - HL7 Home Community ID of the country of origin.
-//     * @param classCode       - HL7 ClassCode of the document type to be retrieved.
-//     * @param targetLanguage  - Expected target language of the CDA translation.
-//     * @return Clinical Document and metadata returned by the Country of Origin.
-//     */
-//    public EpsosDocument retrieveDocument(Map<AssertionEnum, Assertion> assertions, String countryCode, DocumentId documentId, String homeCommunityId,
-//                                          GenericDocumentCode classCode, String targetLanguage) throws ClientConnectorConsumerException {
-//
-//        logger.info("[National Connector] retrieveDocument(countryCode:'{}', homeCommunityId:'{}', targetLanguage:'{}')", countryCode,
-//                    homeCommunityId, targetLanguage);
-//        var clientConnectorServiceStub = initializeServiceStub();
-//
-//        try {
-//            addAssertions(clientConnectorServiceStub, assertions);
-//            RetrieveDocumentDocument1 retrieveDocumentDocument = RetrieveDocumentDocument1.Factory.newInstance();
-//            RetrieveDocument1 retrieveDocument = retrieveDocumentDocument.addNewRetrieveDocument();
-//
-//            var retrieveDocumentRequest = retrieveDocument.addNewArg0();
-//            retrieveDocumentRequest.setDocumentId(documentId);
-//            retrieveDocumentRequest.setHomeCommunityId(homeCommunityId);
-//            retrieveDocumentRequest.setCountryCode(countryCode);
-//            retrieveDocumentRequest.setClassCode(classCode);
-//            retrieveDocumentRequest.setTargetLanguage(targetLanguage);
-//
-//            var retrieveDocumentResponseDocument = clientConnectorServiceStub.retrieveDocument(retrieveDocumentDocument);
-//            return retrieveDocumentResponseDocument.getRetrieveDocumentResponse().getReturn();
-//        } catch (AxisFault axisFault) {
-//            throw createClientConnectorConsumerException(axisFault);
-//        } catch (ClientConnectorConsumerException ex) {
-//            throw ex;
-//        } catch (Exception ex) {
-//            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_GENERIC, ex.getMessage(), null, ex);
-//        }
-//    }
-//
-//    /**
-//     * @deprecated Method has been deprecated in favor of the implementation of retrieveDocument() with language parameter.
-//     */
-//    @Deprecated(since = "2.5.0", forRemoval = true)
-//    public EpsosDocument1 retrieveDocument(Map<AssertionEnum, Assertion> assertions, String countryCode, DocumentId documentId,
-//                                           String homeCommunityId, GenericDocumentCode classCode) throws ClientConnectorConsumerException {
-//
-//        logger.info("[National Connector] retrieveDocument(countryCode:'{}', homeCommunityId:'{}')", countryCode, homeCommunityId);
-//        return retrieveDocument(assertions, countryCode, documentId, homeCommunityId, classCode, null);
-//    }
-//
-//    /**
-//     * Submits Clinical Document to the patient country of origin (dispense and discard).
-//     *
-//     * @param assertions          - Map of assertions required by the transaction (HCP, TRC and NoK optional).
-//     * @param countryCode         - ISO Country code of the patient country of origin.
-//     * @param document            - Clinical document and metadata to be submitted to the patient country of origin.
-//     * @param patientDemographics - Demographics of the patient linked to the document submission.
-//     * @return Acknowledge and status of the document submission.
-//     */
-//    public SubmitDocumentResponse submitDocument(Map<AssertionEnum, Assertion> assertions, String countryCode, EpsosDocument1 document,
-//                                                 PatientDemographics patientDemographics) throws ClientConnectorConsumerException {
-//
-//        logger.info("[National Connector] submitDocument(countryCode:'{}')", countryCode);
-//        var clientConnectorServiceStub = initializeServiceStub();
-//
-//        try {
-//            trimPatientDemographics(patientDemographics);
-//            addAssertions(clientConnectorServiceStub, assertions);
-//            SubmitDocumentDocument1 submitDocumentDoc = SubmitDocumentDocument1.Factory.newInstance();
-//            SubmitDocument1 submitDocument = SubmitDocument1.Factory.newInstance();
-//            SubmitDocumentRequest submitDocRequest = SubmitDocumentRequest.Factory.newInstance();
-//            submitDocRequest.setPatientDemographics(patientDemographics);
-//            submitDocRequest.setDocument(document);
-//            submitDocRequest.setCountryCode(countryCode);
-//            submitDocument.setArg0(submitDocRequest);
-//            submitDocumentDoc.setSubmitDocument(submitDocument);
-//
-//            return clientConnectorServiceStub.submitDocument(submitDocumentDoc).getSubmitDocumentResponse();
-//        } catch (AxisFault axisFault) {
-//            throw createClientConnectorConsumerException(axisFault);
-//        } catch (ClientConnectorConsumerException ex) {
-//            throw ex;
-//        } catch (Exception ex) {
-//            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_ED_GENERIC, ex.getMessage(), null, ex);
-//        }
-//    }
+
+    /**
+     * Returns demographics of the patient corresponding to the identity traits provided.
+     *
+     * @param assertions          - Map of assertions required by the transaction (HCP, TRC and NoK optional)
+     * @param countryCode         - ISO Country code of the patient country of origin.
+     * @param patientDemographics - Identifiers of the requested patient
+     * @return List of patients found (only 1 patient is expected in MyHealth@EU)
+     */
+    public List<PatientDemographics> queryPatient(Map<AssertionEnum, Assertion> assertions, String countryCode,
+                                                  PatientDemographics patientDemographics) throws ClientConnectorException {
+
+        logger.info("[National Connector] queryPatient(countryCode:'{}')", countryCode);
+
+        var queryPatientRequest = objectFactory.createQueryPatientRequest();
+        queryPatientRequest.setPatientDemographics(patientDemographics);
+        queryPatientRequest.setCountryCode(countryCode);
+
+        //set assertions to soap call
+        return clientConnectorServicePort.queryPatient(queryPatientRequest);
+    }
+
+    /**
+     * Default Webservice test method available mainly for configuration and testing purpose.
+     *
+     * @param assertions - Map of assertions required by the transaction (HCP, TRC and NoK optional).
+     * @param name       - Token sent for testing.
+     * @return Hello message concatenated with the token passed as parameter.
+     */
+    public String sayHello(Map<AssertionEnum, Assertion> assertions, String name) throws ClientConnectorException {
+
+        logger.info("[National Connector] sayHello(name:'{}')", name);
+        //set assertions to soap call
+        return clientConnectorServicePort.sayHello(name);
+    }
+
+    /**
+     * Retrieves the clinical document of an identified patient (prescription, patient summary or original clinical document).
+     *
+     * @param assertions      - Map of assertions required by the transaction (HCP, TRC and NoK optional).
+     * @param countryCode     - ISO Country code of the patient country of origin.
+     * @param documentId      - Unique identifier of the CDA document.
+     * @param homeCommunityId - HL7 Home Community ID of the country of origin.
+     * @param classCode       - HL7 ClassCode of the document type to be retrieved.
+     * @param targetLanguage  - Expected target language of the CDA translation.
+     * @return Clinical Document and metadata returned by the Country of Origin.
+     */
+    public EpsosDocument retrieveDocument(Map<AssertionEnum, Assertion> assertions, String countryCode, DocumentId documentId, String homeCommunityId,
+                                          GenericDocumentCode classCode, String targetLanguage) throws ClientConnectorException {
+
+        logger.info("[National Connector] retrieveDocument(countryCode:'{}', homeCommunityId:'{}', targetLanguage:'{}')", countryCode,
+                    homeCommunityId, targetLanguage);
+        var retrieveDocumentRequest = objectFactory.createRetrieveDocumentRequest();
+        retrieveDocumentRequest.setDocumentId(documentId);
+        retrieveDocumentRequest.setClassCode(classCode);
+        retrieveDocumentRequest.setCountryCode(countryCode);
+        retrieveDocumentRequest.setHomeCommunityId(homeCommunityId);
+        retrieveDocumentRequest.setTargetLanguage(targetLanguage);
+
+        //set assertions to soap call
+        return clientConnectorServicePort.retrieveDocument(retrieveDocumentRequest);
+    }
+
+    /**
+     * Submits Clinical Document to the patient country of origin (dispense and discard).
+     *
+     * @param assertions          - Map of assertions required by the transaction (HCP, TRC and NoK optional).
+     * @param countryCode         - ISO Country code of the patient country of origin.
+     * @param document            - Clinical document and metadata to be submitted to the patient country of origin.
+     * @param patientDemographics - Demographics of the patient linked to the document submission.
+     * @return Acknowledge and status of the document submission.
+     */
+    public String submitDocument(Map<AssertionEnum, Assertion> assertions, String countryCode, EpsosDocument document,
+                                                 PatientDemographics patientDemographics) throws ClientConnectorException {
+
+        logger.info("[National Connector] submitDocument(countryCode:'{}')", countryCode);
+        var submitDocumentRequest = objectFactory.createSubmitDocumentRequest();
+        submitDocumentRequest.setDocument(document);
+        submitDocumentRequest.setCountryCode(countryCode);
+        submitDocumentRequest.setPatientDemographics(patientDemographics);
+
+        //set assertions to soap call
+        return clientConnectorServicePort.submitDocument(submitDocumentRequest);
+    }
 //
 //    /**
 //     * Adds the different types of Assertions to the SOAP Header.
