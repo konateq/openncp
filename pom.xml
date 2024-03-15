@@ -38,7 +38,7 @@
         <module>openncp-core</module>
         <module>openncp-web-manager</module>
         <module>openncp-tools</module>
-        <module>openncp-docker</module>
+<!--        <module>openncp-docker</module>-->
     </modules>
 
     <scm>
@@ -126,6 +126,7 @@
         <axis2.version>1.8.1</axis2.version>
         <axiom-api.version>1.4.0</axiom-api.version>
         <hapi.fhir.version>6.6.0</hapi.fhir.version>
+        <cxf.version>3.6.3</cxf.version>
     </properties>
 
     <dependencyManagement>

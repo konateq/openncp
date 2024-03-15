@@ -8,8 +8,6 @@ import java.util.Map;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.client.ClientConnectorService;
-import eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType;
 import eu.europa.ec.sante.openncp.core.client.DocumentId;
 import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
 import eu.europa.ec.sante.openncp.core.client.FilterParams;
@@ -17,15 +15,12 @@ import eu.europa.ec.sante.openncp.core.client.GenericDocumentCode;
 import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.client.PatientId;
-import eu.europa.ec.sante.openncp.core.client.QueryDocumentRequest;
 import eu.europa.ec.sante.openncp.core.client.QueryDocumentsResponse;
-import eu.europa.ec.sante.openncp.core.client.QueryPatientRequest;
 import eu.europa.ec.sante.openncp.core.client.QueryPatientResponse;
 import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentRequest;
 import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponse;
 import eu.europa.ec.sante.openncp.core.client.SubmitDocumentRequest;
 import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponse;
-import eu.europa.ec.sante.openncp.core.client.ihe.cxf.interceptor.AssertionsInInterceptor;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryPatientOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.RetrieveDocumentOperation;
@@ -53,12 +48,6 @@ import eu.europa.ec.sante.openncp.core.common.exception.XCAException;
 import eu.europa.ec.sante.openncp.core.common.exception.XDRException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.endpoint.Endpoint;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.interceptor.Interceptor;
-import org.apache.cxf.message.Message;
-import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,7 +246,7 @@ public class ClientServiceImpl implements ClientService {
         try {
             final PatientDemographics patientDemographics = queryPatientOperation.getRequest().getPatientDemographics();
             final String countryCode = queryPatientOperation.getRequest().getCountryCode();
-            final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage().getExchange().get("assertionMap");
+            final Map<AssertionEnum, Assertion> assertionMap = queryPatientOperation.getAssertions();
 
             List<eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics> patientDemographicsList = IdentificationService.findIdentityByTraits(PatientDemographicsDts.toDataModel(patientDemographics), assertionMap, countryCode);
 

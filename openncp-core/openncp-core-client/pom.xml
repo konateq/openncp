@@ -9,10 +9,6 @@
     <artifactId>openncp-core-client</artifactId>
     <name>openncp-core-client</name>
 
-    <properties>
-        <cxf.version>3.3.6</cxf.version>
-    </properties>
-
     <dependencies>
         <!-- OpenNCP dependencies -->
         <dependency>
@@ -38,17 +34,6 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <scope>compile</scope>
-        </dependency>
-        <!-- cxf -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-ws-security</artifactId>
-            <version>${cxf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.immutables</groupId>

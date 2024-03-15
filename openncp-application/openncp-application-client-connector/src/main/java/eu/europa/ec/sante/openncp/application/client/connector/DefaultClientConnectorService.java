@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -33,14 +36,19 @@ public class DefaultClientConnectorService implements ClientConnectorService {
 
     public DefaultClientConnectorService(String endpointReference) {
         this.endpointReference = endpointReference;
-
-        eu.europa.ec.sante.openncp.core.client.ClientConnectorService ss = new eu.europa.ec.sante.openncp.core.client.ClientConnectorService();
+        final URL endpoint;
+        try {
+            endpoint = URI.create(endpointReference).toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        eu.europa.ec.sante.openncp.core.client.ClientConnectorService ss = new eu.europa.ec.sante.openncp.core.client.ClientConnectorService(endpoint);
         clientConnectorServicePort = ss.getClientConnectorServicePort();
 
         final Client client = ClientProxy.getClient(clientConnectorServicePort);
         final HTTPConduit conduit = (HTTPConduit) client.getConduit();
-
-
+//        conduit.getTlsClientParameters().setSSLSocketFactory();
+//
         //        SSLContextBuilder builder = SSLContextBuilder.create();
 //        builder.setKeyStoreType("JKS");
 //        builder.setKeyManagerFactoryAlgorithm("SunX509");
