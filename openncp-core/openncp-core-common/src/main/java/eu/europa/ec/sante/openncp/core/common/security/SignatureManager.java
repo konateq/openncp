@@ -1,9 +1,33 @@
 package eu.europa.ec.sante.openncp.core.common.security;
 
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
-import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.security.key.impl.DefaultKeyStoreManager;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.security.auth.x500.X500Principal;
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.XMLStructure;
+import javax.xml.crypto.dsig.Transform;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureException;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMSignContext;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
+import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicConstant;
+import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -26,30 +50,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import javax.security.auth.x500.X500Principal;
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.XMLStructure;
-import javax.xml.crypto.dsig.Transform;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMSignContext;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
-import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * The NCP Signature Manager is a JAVA library for applying and verifying detached digital signatures on XML documents
  * and for applying and verifying enveloped signatures on SAML assertions and Audit Trail Messages
@@ -66,11 +66,11 @@ public class SignatureManager {
     public SignatureManager() {
 
         //Default constructor now defaults to the test keyStoreManager
-        keyManager = new DefaultKeyStoreManager();
+        keyManager = new DatabasePropertiesKeyStoreManager();
         init();
     }
 
-    public SignatureManager(KeyStoreManager keyStoreManager) {
+    public SignatureManager(final KeyStoreManager keyStoreManager) {
 
         //Constructor for unit testing. Sort of DI
         this.keyManager = keyStoreManager;
@@ -92,47 +92,45 @@ public class SignatureManager {
      * @param assertion The SAML Assertion that will be validated by the method.
      * @throws SMgrException When the validation of the signature fails
      */
-    public String verifySAMLAssertion(Assertion assertion) throws SMgrException {
+    public String verifySAMLAssertion(final Assertion assertion) throws SMgrException {
 
         String sigCountryCode = null;
 
         try {
-            var profileValidator = new SAMLSignatureProfileValidator();
-            var assertionSignature = assertion.getSignature();
+            final var profileValidator = new SAMLSignatureProfileValidator();
+            final var assertionSignature = assertion.getSignature();
             try {
                 profileValidator.validate(assertionSignature);
-            } catch (SignatureException e) {
+            } catch (final SignatureException e) {
                 // Indicates signature did not conform to SAML Signature profile
                 throw new SMgrException("SAML Signature Profile Validation: " + e.getMessage());
             }
 
-            X509Certificate cert;
-            List<X509Certificate> certificates = KeyInfoSupport.getCertificates(assertionSignature.getKeyInfo());
-            for (X509Certificate certificate : certificates) {
+            final X509Certificate cert;
+            final List<X509Certificate> certificates = KeyInfoSupport.getCertificates(assertionSignature.getKeyInfo());
+            for (final X509Certificate certificate : certificates) {
                 logger.debug("Certificate: '{}'", certificate.getIssuerX500Principal().getName());
             }
             if (certificates.size() == 1) {
                 cert = certificates.get(0);
                 // Mustafa: When not called through https, we can use the country code of the signature cert
-                String certificateDN = cert.getSubjectDN().getName();
+                final String certificateDN = cert.getSubjectDN().getName();
                 sigCountryCode = certificateDN.substring(certificateDN.indexOf("C=") + 2, certificateDN.indexOf("C=") + 4);
-
             } else {
                 throw new SMgrException("More than one certificate found in KeyInfo");
             }
 
-            var basicX509Credential = new BasicX509Credential(cert);
+            final var basicX509Credential = new BasicX509Credential(cert);
 
             try {
                 SignatureValidator.validate(assertionSignature, basicX509Credential);
-
-            } catch (SignatureException e) {
+            } catch (final SignatureException e) {
                 // Indicates signature was not cryptographically valid, or possibly a processing error
                 throw new SMgrException("Signature Validation: " + e.getMessage());
             }
-            var certificateValidator = new CertificateValidator(keyManager.getTrustStore());
+            final var certificateValidator = new CertificateValidator(keyManager.getTrustStore());
             certificateValidator.validateCertificate(cert);
-        } catch (CertificateException ex) {
+        } catch (final CertificateException ex) {
             logger.error(null, ex);
         }
 
@@ -147,37 +145,35 @@ public class SignatureManager {
      * @param doc The XML Document that will be validated.
      * @throws SMgrException When the validation of the signature fails
      */
-    public void verifyEnvelopedSignature(Document doc) throws SMgrException {
+    public void verifyEnvelopedSignature(final Document doc) throws SMgrException {
 
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
-            var xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
+            final var xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
 
-            NodeList nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+            final NodeList nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
 
             if (nl.getLength() == 0) {
                 throw new SMgrException("Cannot find Signature element");
             } // and document context.
 
-            var certificateValidator = new CertificateValidator(keyManager.getTrustStore());
+            final var certificateValidator = new CertificateValidator(keyManager.getTrustStore());
 
-            var valContext = new DOMValidateContext(certificateValidator, nl.item(0));
+            final var valContext = new DOMValidateContext(certificateValidator, nl.item(0));
 
             // Unmarshal the XMLSignature.
-            var signature = xmlSignatureFactory.unmarshalXMLSignature(valContext);
+            final var signature = xmlSignatureFactory.unmarshalXMLSignature(valContext);
 
             // Validate the XMLSignature.
-            boolean coreValidity = signature.validate(valContext);
+            final boolean coreValidity = signature.validate(valContext);
 
             if (!coreValidity) {
                 throw new SMgrException("Invalid Signature: Mathematical check failed");
             }
-
-        } catch (XMLSignatureException | MarshalException ex) {
+        } catch (final XMLSignatureException | MarshalException ex) {
             throw new SMgrException("Signature Invalid: " + ex.getMessage(), ex);
         }
-
     }
 
     /**
@@ -190,37 +186,44 @@ public class SignatureManager {
      * @throws SMgrException When signing fails
      * @see SignableSAMLObject
      */
-    public void signSAMLAssertion(SignableSAMLObject as, String keyAlias, char[] keyPassword) throws SMgrException {
+    public void signSAMLAssertion(final SignableSAMLObject as, final String keyAlias, final char[] keyPassword) throws SMgrException {
 
-        KeyPair keyPair;
-        X509Certificate cert;
+        final KeyPair keyPair;
+        final X509Certificate cert;
         //check if we must use the default key
         if (keyAlias == null) {
             keyPair = keyManager.getDefaultPrivateKey();
             cert = (X509Certificate) keyManager.getDefaultCertificate();
-
         } else {
             keyPair = keyManager.getPrivateKey(keyAlias, keyPassword);
             cert = (X509Certificate) keyManager.getCertificate(keyAlias);
         }
 
-        XMLObjectBuilderFactory builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
-        var signature = (Signature) builderFactory.getBuilder(Signature.DEFAULT_ELEMENT_NAME).buildObject(Signature.DEFAULT_ELEMENT_NAME);
-        Credential signingCredential = CredentialSupport.getSimpleCredential(cert, keyPair.getPrivate());
+        final XMLObjectBuilderFactory builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
+        final var signature = (Signature) builderFactory.getBuilder(Signature.DEFAULT_ELEMENT_NAME).buildObject(Signature.DEFAULT_ELEMENT_NAME);
+        final Credential signingCredential = CredentialSupport.getSimpleCredential(cert, keyPair.getPrivate());
 
         signature.setSigningCredential(signingCredential);
         signature.setSignatureAlgorithm(signatureAlgorithm);
         signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
 
-        var keyInfo = (KeyInfo) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(KeyInfo.DEFAULT_ELEMENT_NAME).buildObject(KeyInfo.DEFAULT_ELEMENT_NAME);
-        X509Data data = (X509Data) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(X509Data.DEFAULT_ELEMENT_NAME).buildObject(X509Data.DEFAULT_ELEMENT_NAME);
-        var x509Certificate = (org.opensaml.xmlsec.signature.X509Certificate) XMLObjectProviderRegistrySupport.getBuilderFactory()
-                .getBuilder(org.opensaml.xmlsec.signature.X509Certificate.DEFAULT_ELEMENT_NAME).buildObject(org.opensaml.xmlsec.signature.X509Certificate.DEFAULT_ELEMENT_NAME);
+        final var keyInfo = (KeyInfo) XMLObjectProviderRegistrySupport.getBuilderFactory()
+                                                                      .getBuilder(KeyInfo.DEFAULT_ELEMENT_NAME)
+                                                                      .buildObject(KeyInfo.DEFAULT_ELEMENT_NAME);
+        final X509Data data = (X509Data) XMLObjectProviderRegistrySupport.getBuilderFactory()
+                                                                         .getBuilder(X509Data.DEFAULT_ELEMENT_NAME)
+                                                                         .buildObject(X509Data.DEFAULT_ELEMENT_NAME);
+        final var x509Certificate = (org.opensaml.xmlsec.signature.X509Certificate) XMLObjectProviderRegistrySupport.getBuilderFactory()
+                                                                                                                    .getBuilder(
+                                                                                                                            org.opensaml.xmlsec.signature.X509Certificate.DEFAULT_ELEMENT_NAME)
+                                                                                                                    .buildObject(
+                                                                                                                            org.opensaml.xmlsec.signature.X509Certificate.DEFAULT_ELEMENT_NAME);
 
-        String value;
+        final String value;
         try {
-            value = org.apache.commons.codec.binary.Base64.encodeBase64String(((BasicX509Credential) signingCredential).getEntityCertificate().getEncoded());
-        } catch (CertificateEncodingException e) {
+            value = org.apache.commons.codec.binary.Base64.encodeBase64String(
+                    ((BasicX509Credential) signingCredential).getEntityCertificate().getEncoded());
+        } catch (final CertificateEncodingException e) {
             throw new SMgrException(e.getMessage(), e);
         }
         x509Certificate.setValue(value);
@@ -230,14 +233,14 @@ public class SignatureManager {
 
         as.setSignature(signature);
         try {
-            var marshallerFactory = XMLObjectProviderRegistrySupport.getMarshallerFactory();
+            final var marshallerFactory = XMLObjectProviderRegistrySupport.getMarshallerFactory();
             marshallerFactory.getMarshaller(as).marshall(as);
-        } catch (MarshallingException e) {
+        } catch (final MarshallingException e) {
             throw new SMgrException(e.getMessage(), e);
         }
         try {
             Signer.signObject(signature);
-        } catch (SignatureException ex) {
+        } catch (final SignatureException ex) {
             throw new SMgrException(ex.getMessage(), ex);
         }
     }
@@ -249,7 +252,7 @@ public class SignatureManager {
      * @param doc The Document that is going to be signed. be used for signing.
      * @throws SMgrException When signing fails
      */
-    public void signXMLWithEnvelopedSig(Document doc) throws SMgrException {
+    public void signXMLWithEnvelopedSig(final Document doc) throws SMgrException {
         signXMLWithEnvelopedSig(doc, null, null);
     }
 
@@ -263,10 +266,10 @@ public class SignatureManager {
      * @param keyPassword
      * @throws SMgrException When signing fails
      */
-    public void signXMLWithEnvelopedSig(Document doc, String keyAlias, char[] keyPassword) throws SMgrException {
+    public void signXMLWithEnvelopedSig(final Document doc, final String keyAlias, final char[] keyPassword) throws SMgrException {
 
-        KeyPair kp;
-        X509Certificate cert;
+        final KeyPair kp;
+        final X509Certificate cert;
 
         if (keyAlias == null) {
             kp = keyManager.getDefaultPrivateKey();
@@ -274,38 +277,38 @@ public class SignatureManager {
         } else {
             kp = keyManager.getPrivateKey(keyAlias, keyPassword);
             cert = (X509Certificate) keyManager.getCertificate(keyAlias);
-
         }
 
         try {
-            String providerName = System.getProperty("jsr105Provider", "org.jcp.xml.dsig.internal.dom.XMLDSigRI");
-            var xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM",
-                    (Provider) Class.forName(providerName).getDeclaredConstructor().newInstance());
-            var reference = xmlSignatureFactory.newReference("",
-                    xmlSignatureFactory.newDigestMethod(digestAlgorithm, null),
-                    Collections.singletonList(xmlSignatureFactory.newTransform(Transform.ENVELOPED, (XMLStructure) null)),
-                    null, null);
+            final String providerName = System.getProperty("jsr105Provider", "org.jcp.xml.dsig.internal.dom.XMLDSigRI");
+            final var xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM", (Provider) Class.forName(providerName)
+                                                                                                   .getDeclaredConstructor()
+                                                                                                   .newInstance());
+            final var reference = xmlSignatureFactory.newReference("", xmlSignatureFactory.newDigestMethod(digestAlgorithm, null),
+                                                                   Collections.singletonList(xmlSignatureFactory.newTransform(Transform.ENVELOPED,
+                                                                                                                              (XMLStructure) null)),
+                                                                   null, null);
 
-            var signedInfo = xmlSignatureFactory.newSignedInfo(xmlSignatureFactory.newCanonicalizationMethod(CryptographicConstant.ALGO_ID_C14N_EXCL_WITH_COMMENTS,
-                            (C14NMethodParameterSpec) null), xmlSignatureFactory.newSignatureMethod(signatureAlgorithm, null),
-                    Collections.singletonList(reference));
+            final var signedInfo = xmlSignatureFactory.newSignedInfo(
+                    xmlSignatureFactory.newCanonicalizationMethod(CryptographicConstant.ALGO_ID_C14N_EXCL_WITH_COMMENTS,
+                                                                  (C14NMethodParameterSpec) null),
+                    xmlSignatureFactory.newSignatureMethod(signatureAlgorithm, null), Collections.singletonList(reference));
 
-            var keyInfoFactory = xmlSignatureFactory.getKeyInfoFactory();
+            final var keyInfoFactory = xmlSignatureFactory.getKeyInfoFactory();
 
-            List<Serializable> x509Content = new ArrayList<>();
+            final List<Serializable> x509Content = new ArrayList<>();
             x509Content.add(cert.getSubjectX500Principal().getName(X500Principal.RFC1779));
             x509Content.add(cert);
-            var x509Data = keyInfoFactory.newX509Data(x509Content);
+            final var x509Data = keyInfoFactory.newX509Data(x509Content);
 
-            var keyInfo = keyInfoFactory.newKeyInfo(Collections.singletonList(x509Data));
+            final var keyInfo = keyInfoFactory.newKeyInfo(Collections.singletonList(x509Data));
 
-            var domSignContext = new DOMSignContext(kp.getPrivate(), doc.getDocumentElement());
-            var xmlSignature = xmlSignatureFactory.newXMLSignature(signedInfo, keyInfo);
+            final var domSignContext = new DOMSignContext(kp.getPrivate(), doc.getDocumentElement());
+            final var xmlSignature = xmlSignatureFactory.newXMLSignature(signedInfo, keyInfo);
             xmlSignature.sign(domSignContext);
-
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchAlgorithmException
-                | InvalidAlgorithmParameterException | MarshalException | XMLSignatureException | NoSuchMethodException
-                | InvocationTargetException ex) {
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchAlgorithmException |
+                       InvalidAlgorithmParameterException | MarshalException | XMLSignatureException | NoSuchMethodException |
+                       InvocationTargetException ex) {
             throw new SMgrException(ex.getMessage(), ex);
         }
     }
@@ -318,7 +321,7 @@ public class SignatureManager {
      * @throws SMgrException When signing fails
      * @see SignableSAMLObject
      */
-    public void signSAMLAssertion(Assertion trc) throws SMgrException {
+    public void signSAMLAssertion(final Assertion trc) throws SMgrException {
         signSAMLAssertion(trc, null, null);
     }
 }

@@ -1,5 +1,14 @@
 package eu.europa.ec.sante.openncp.core.common.eadc;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.TimeZone;
+import java.util.UUID;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
+
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
@@ -24,15 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-
-import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.TimeZone;
-import java.util.UUID;
 
 /**
  * This class wraps the EADC invocation. As it gathers several aspects required to its proper usage, such as
@@ -61,17 +61,18 @@ public class EadcUtilWrapper {
      * @param direction      the Operation type: INBOUND or OUTBOUND
      * @param serviceType    the Service Type representing the action executed to prevent processing of personal data
      */
-    public static void invokeEadc(MessageContext requestMsgCtx, MessageContext responseMsgCtx, ServiceClient serviceClient,
-                                  Document cda, Date startTime, Date endTime, String receivingIso, EadcEntry.DsTypes dsType,
-                                  EadcUtil.Direction direction, ServiceType serviceType) {
+    public static void invokeEadc(final MessageContext requestMsgCtx, final MessageContext responseMsgCtx, final ServiceClient serviceClient, final Document cda,
+                                  final Date startTime, final Date endTime, final String receivingIso, final EadcEntry.DsTypes dsType, final EadcUtil.Direction direction,
+                                  final ServiceType serviceType) {
 
         new Thread(() -> {
-            var watch = new StopWatch();
+            final var watch = new StopWatch();
             watch.start();
             try {
-                EadcUtil.invokeEadc(requestMsgCtx, responseMsgCtx, cda, buildTransactionInfo(requestMsgCtx, responseMsgCtx,
-                        serviceClient, direction, startTime, endTime, receivingIso, serviceType), dsType);
-            } catch (Exception e) {
+                EadcUtil.invokeEadc(requestMsgCtx, responseMsgCtx, cda,
+                                    buildTransactionInfo(requestMsgCtx, responseMsgCtx, serviceClient, direction, startTime, endTime, receivingIso,
+                                                         serviceType), dsType);
+            } catch (final Exception e) {
                 LOGGER.error("[EADC] Invocation Failed - Exception: '{}'", e.getMessage(), e);
             } finally {
                 watch.stop();
@@ -96,17 +97,18 @@ public class EadcUtilWrapper {
      * @param direction      the Operation type: INBOUND or OUTBOUND
      * @param serviceType    the Service Type representing the action executed to prevent processing of personal data
      */
-    public static void invokeEadcFailure(MessageContext requestMsgCtx, MessageContext responseMsgCtx, ServiceClient serviceClient,
-                                         Document cda, Date startTime, Date endTime, String receivingIso, EadcEntry.DsTypes dsType,
-                                         EadcUtil.Direction direction, ServiceType serviceType, String errorDescription) {
+    public static void invokeEadcFailure(final MessageContext requestMsgCtx, final MessageContext responseMsgCtx, final ServiceClient serviceClient, final Document cda,
+                                         final Date startTime, final Date endTime, final String receivingIso, final EadcEntry.DsTypes dsType, final EadcUtil.Direction direction,
+                                         final ServiceType serviceType, final String errorDescription) {
 
         new Thread(() -> {
-            var watch = new StopWatch();
+            final var watch = new StopWatch();
             watch.start();
             try {
-                EadcUtil.invokeEadcFailure(requestMsgCtx, responseMsgCtx, cda, buildTransactionInfo(requestMsgCtx, responseMsgCtx,
-                        serviceClient, direction, startTime, endTime, receivingIso, serviceType), dsType, errorDescription);
-            } catch (Exception e) {
+                EadcUtil.invokeEadcFailure(requestMsgCtx, responseMsgCtx, cda,
+                                           buildTransactionInfo(requestMsgCtx, responseMsgCtx, serviceClient, direction, startTime, endTime,
+                                                                receivingIso, serviceType), dsType, errorDescription);
+            } catch (final Exception e) {
                 LOGGER.error("[EADC Failure] Invocation Failed - Exception: '{}'", e.getMessage(), e);
             } finally {
                 watch.stop();
@@ -117,14 +119,14 @@ public class EadcUtilWrapper {
         }).start();
     }
 
-    public static boolean hasTransactionErrors(SOAPEnvelope envelope) {
-        if(envelope != null) {
+    public static boolean hasTransactionErrors(final SOAPEnvelope envelope) {
+        if (envelope != null) {
             Iterator<OMElement> it = envelope.getBody().getChildElements();
             while (it.hasNext()) {
-                OMElement elementDocSet = it.next();
+                final OMElement elementDocSet = it.next();
 
                 if (StringUtils.equals(elementDocSet.getLocalName(), "RegistryError")) {
-                    String severity = elementDocSet.getAttributeValue(QName.valueOf("severity"));
+                    final String severity = elementDocSet.getAttributeValue(QName.valueOf("severity"));
                     if (StringUtils.equals(severity, "urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error")) {
                         return true;
                     }
@@ -136,13 +138,13 @@ public class EadcUtilWrapper {
         return false;
     }
 
-    public static String getTransactionErrorDescription(SOAPEnvelope envelope) {
+    public static String getTransactionErrorDescription(final SOAPEnvelope envelope) {
         String errorDescription = "unknown";
 
-        if(envelope != null) {
+        if (envelope != null) {
             Iterator<OMElement> it = envelope.getBody().getChildElements();
             while (it.hasNext()) {
-                OMElement elementDocSet = it.next();
+                final OMElement elementDocSet = it.next();
 
             /* example element
                 <RegistryError
@@ -153,8 +155,8 @@ public class EadcUtilWrapper {
                         location="urn:oid:2.16.17.710.823.1000.990.1"/>
             */
                 if (StringUtils.equals(elementDocSet.getLocalName(), "RegistryError")) {
-                    String err = elementDocSet.getAttributeValue(QName.valueOf("errorCode"));
-                    String cod = elementDocSet.getAttributeValue(QName.valueOf("codeContext"));
+                    final String err = elementDocSet.getAttributeValue(QName.valueOf("errorCode"));
+                    final String cod = elementDocSet.getAttributeValue(QName.valueOf("codeContext"));
                     errorDescription = cod + " [" + err + "]";
                     break;
                 }
@@ -179,23 +181,23 @@ public class EadcUtilWrapper {
      * @param serviceType   the service type related to the IHE transaction
      * @return the filled Transaction Info object
      */
-    private static TransactionInfo buildTransactionInfo(MessageContext reqMsgContext, MessageContext rspMsgContext,
-                                                        ServiceClient serviceClient, EadcUtil.Direction direction, Date startTime,
-                                                        Date endTime, String countryCodeA, ServiceType serviceType) throws Exception {
+    private static TransactionInfo buildTransactionInfo(final MessageContext reqMsgContext, final MessageContext rspMsgContext, final ServiceClient serviceClient,
+                                                        final EadcUtil.Direction direction, final Date startTime, final Date endTime, final String countryCodeA,
+                                                        final ServiceType serviceType) throws Exception {
 
-        var transactionInfo = new ObjectFactory().createComplexTypeTransactionInfo();
+        final var transactionInfo = new ObjectFactory().createComplexTypeTransactionInfo();
         transactionInfo.setAuthenticationLevel(reqMsgContext != null ? extractAuthenticationMethodFromAssertion(getAssertion(reqMsgContext)) : null);
         transactionInfo.setDirection(direction != null ? direction.toString() : null);
         transactionInfo.setStartTime(startTime != null ? getDateAsRFC822String(startTime) : null);
         transactionInfo.setEndTime(endTime != null ? getDateAsRFC822String(endTime) : null);
         transactionInfo.setDuration(endTime != null && startTime != null ? String.valueOf(endTime.getTime() - startTime.getTime()) : null);
         transactionInfo.setHomeAddress(EventLogClientUtil.getSourceGatewayIdentifier());
-        String sndIso = reqMsgContext != null ? extractSendingCountryIsoFromAssertion(getAssertion(reqMsgContext)) : null;
+        final String sndIso = reqMsgContext != null ? extractSendingCountryIsoFromAssertion(getAssertion(reqMsgContext)) : null;
         transactionInfo.setSndISO(StringUtils.upperCase(sndIso));
         transactionInfo.setSndNCPOID(sndIso != null ? OidUtil.getHomeCommunityId(sndIso.toLowerCase()) : null);
 
-        if (reqMsgContext != null && reqMsgContext.getOptions() != null && reqMsgContext.getOptions().getFrom() != null
-                && reqMsgContext.getOptions().getFrom().getAddress() != null) {
+        if (reqMsgContext != null && reqMsgContext.getOptions() != null && reqMsgContext.getOptions().getFrom() != null &&
+            reqMsgContext.getOptions().getFrom().getAddress() != null) {
 
             transactionInfo.setHomeHost(reqMsgContext.getOptions().getFrom().getAddress());
         }
@@ -215,14 +217,18 @@ public class EadcUtilWrapper {
         //  TODO: Clarify values for this field according specifications and GDPR, current value set to "N/A GDPR"
         transactionInfo.setHumanRequestor("N/A GDPR");
         transactionInfo.setUserId("N/A GDPR");
-        transactionInfo.setPOC(reqMsgContext != null ?
-                extractAssertionInfo(getAssertion(reqMsgContext), "urn:oasis:names:tc:xspa:1.0:environment:locality") + " (" +
-                        extractAssertionInfo(getAssertion(reqMsgContext), "urn:ehdsi:names:subject:healthcare-facility-type") + ")" : null);
-        transactionInfo.setPOCID(reqMsgContext != null ? extractAssertionInfo(getAssertion(reqMsgContext), "urn:oasis:names:tc:xspa:1.0:subject:organization-id") : null);
+        transactionInfo.setPOC(
+                reqMsgContext != null ? extractAssertionInfo(getAssertion(reqMsgContext), "urn:oasis:names:tc:xspa:1.0:environment:locality") + " (" +
+                                        extractAssertionInfo(getAssertion(reqMsgContext), "urn:ehdsi:names:subject:healthcare-facility-type") + ")"
+                                      : null);
+        transactionInfo.setPOCID(
+                reqMsgContext != null ? extractAssertionInfo(getAssertion(reqMsgContext), "urn:oasis:names:tc:xspa:1.0:subject:organization-id")
+                                      : null);
         transactionInfo.setReceivingISO(countryCodeA != null ? StringUtils.upperCase(countryCodeA) : null);
         transactionInfo.setReceivingNCPOID(countryCodeA != null ? OidUtil.getHomeCommunityId(countryCodeA.toLowerCase()) : null);
 
-        if (serviceClient != null && serviceClient.getOptions() != null && serviceClient.getOptions().getTo() != null && serviceClient.getOptions().getTo().getAddress() != null) {
+        if (serviceClient != null && serviceClient.getOptions() != null && serviceClient.getOptions().getTo() != null &&
+            serviceClient.getOptions().getTo().getAddress() != null) {
             transactionInfo.setReceivingHost(serviceClient.getOptions().getTo().getAddress());
             transactionInfo.setReceivingAddr(EventLogClientUtil.getTargetGatewayIdentifier(serviceClient.getOptions().getTo().getAddress()));
         }
@@ -251,10 +257,10 @@ public class EadcUtilWrapper {
      * @return
      * @throws Exception
      */
-    private static Assertion getAssertion(MessageContext requestMessageContext) throws Exception {
+    private static Assertion getAssertion(final MessageContext requestMessageContext) throws Exception {
 
-        var soapHeader = requestMessageContext.getEnvelope().getHeader();
-        Element soapHeaderElement = XMLUtils.toDOM(soapHeader);
+        final var soapHeader = requestMessageContext.getEnvelope().getHeader();
+        final Element soapHeaderElement = XMLUtils.toDOM(soapHeader);
         return Helper.getHCPAssertion(soapHeaderElement);
     }
 
@@ -265,12 +271,12 @@ public class EadcUtilWrapper {
      * @param expression  the expression to evaluate
      * @return a string representing the information presented on the specified node
      */
-    private static String extractAssertionInfo(Assertion idAssertion, String expression) {
-        if(idAssertion == null) {
+    private static String extractAssertionInfo(final Assertion idAssertion, final String expression) {
+        if (idAssertion == null) {
             return null;
         }
-        for (AttributeStatement attributeStatement : idAssertion.getAttributeStatements()) {
-            for (Attribute attribute : attributeStatement.getAttributes()) {
+        for (final AttributeStatement attributeStatement : idAssertion.getAttributeStatements()) {
+            for (final Attribute attribute : attributeStatement.getAttributes()) {
                 if (attribute.getName().equals(expression)) {
                     return getAttributeValue(attribute);
                 }
@@ -285,14 +291,13 @@ public class EadcUtilWrapper {
      * @param attribute the Assertion attribute
      * @return a string containing the value of the attribute
      */
-    private static String getAttributeValue(Attribute attribute) {
+    private static String getAttributeValue(final Attribute attribute) {
 
         String attributeValue = null;
         if (!attribute.getAttributeValues().isEmpty()) {
             attributeValue = attribute.getAttributeValues().get(0).getDOM().getTextContent();
         }
         return attributeValue;
-
     }
 
     /**
@@ -301,10 +306,10 @@ public class EadcUtilWrapper {
      * @param date the date object to be converted
      * @return the RFC 2822 string representation of the date
      */
-    private static String getDateAsRFC822String(Date date) {
+    private static String getDateAsRFC822String(final Date date) {
 
-        var timeZone = TimeZone.getTimeZone("UTC");
-        var dateFormat = new SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z");
+        final var timeZone = TimeZone.getTimeZone("UTC");
+        final var dateFormat = new SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z");
         dateFormat.setTimeZone(timeZone);
 
         return dateFormat.format(date);
@@ -316,15 +321,15 @@ public class EadcUtilWrapper {
      * @param retrieveDocumentSetResponseType
      * @return
      */
-    public static Document getCDA(RetrieveDocumentSetResponseType retrieveDocumentSetResponseType) {
+    public static Document getCDA(final RetrieveDocumentSetResponseType retrieveDocumentSetResponseType) {
 
-        RetrieveDocumentSetResponseType.DocumentResponse documentResponse;
+        final RetrieveDocumentSetResponseType.DocumentResponse documentResponse;
 
-        if (retrieveDocumentSetResponseType != null && retrieveDocumentSetResponseType.getDocumentResponse() != null
-                && !retrieveDocumentSetResponseType.getDocumentResponse().isEmpty()) {
+        if (retrieveDocumentSetResponseType != null && retrieveDocumentSetResponseType.getDocumentResponse() != null &&
+            !retrieveDocumentSetResponseType.getDocumentResponse().isEmpty()) {
 
             documentResponse = retrieveDocumentSetResponseType.getDocumentResponse().get(0);
-            byte[] documentData = documentResponse.getDocument();
+            final byte[] documentData = documentResponse.getDocument();
             return toXmlDocument(documentData);
         }
         return null;
@@ -338,14 +343,14 @@ public class EadcUtilWrapper {
      * @param idAssertion the Identity Assertion
      * @return a string containing the authentication method
      */
-    private static String extractAuthenticationMethodFromAssertion(Assertion idAssertion) {
+    private static String extractAuthenticationMethodFromAssertion(final Assertion idAssertion) {
 
-        if(idAssertion == null) {
+        if (idAssertion == null) {
             return null;
         }
         if (!idAssertion.getAuthnStatements().isEmpty()) {
-            var authnStatement = idAssertion.getAuthnStatements().get(0);
-            String authnContextClassRef = authnStatement.getAuthnContext().getAuthnContextClassRef().getURI();
+            final var authnStatement = idAssertion.getAuthnStatements().get(0);
+            final String authnContextClassRef = authnStatement.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
             return authnContextClassRef.substring(authnContextClassRef.lastIndexOf(':') + 1);
         } else {
             return null;
@@ -358,7 +363,7 @@ public class EadcUtilWrapper {
      * @param idAssertion the Identity Assertion
      * @return string containing the assertion's Subject NameID
      */
-    private static String extractNameIdFromAssertion(Assertion idAssertion) {
+    private static String extractNameIdFromAssertion(final Assertion idAssertion) {
         return idAssertion.getSubject().getNameID().getValue();
     }
 
@@ -370,9 +375,10 @@ public class EadcUtilWrapper {
      * @param idAssertion
      * @return String containing the assertion issuer's ISO country code
      */
-    private static String extractSendingCountryIsoFromAssertion(Assertion idAssertion) {
-        if(idAssertion == null)
+    private static String extractSendingCountryIsoFromAssertion(final Assertion idAssertion) {
+        if (idAssertion == null) {
             return null;
+        }
         return idAssertion.getIssuer().getValue().toUpperCase().split(":")[2];
     }
 
@@ -383,10 +389,9 @@ public class EadcUtilWrapper {
      * @param envelope The SOAP envelope
      * @return The message ID
      */
-    private static String getMessageID(SOAPEnvelope envelope) {
+    private static String getMessageID(final SOAPEnvelope envelope) {
 
-        Iterator<OMElement> it = envelope.getHeader().getChildrenWithName(
-                new QName("http://www.w3.org/2005/08/addressing", "MessageID"));
+        final Iterator<OMElement> it = envelope.getHeader().getChildrenWithName(new QName("http://www.w3.org/2005/08/addressing", "MessageID"));
         if (it.hasNext()) {
             return it.next().getText();
         } else {
@@ -395,14 +400,14 @@ public class EadcUtilWrapper {
         }
     }
 
-    public static Document toXmlDocument(byte[] content) {
+    public static Document toXmlDocument(final byte[] content) {
 
         if (ArrayUtils.isEmpty(content)) {
             return null;
         }
         try {
             return XMLUtil.parseContent(content);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+        } catch (final ParserConfigurationException | SAXException | IOException e) {
             return null;
         }
     }

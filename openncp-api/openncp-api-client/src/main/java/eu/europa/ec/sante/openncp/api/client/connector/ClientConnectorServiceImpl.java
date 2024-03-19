@@ -2,6 +2,7 @@ package eu.europa.ec.sante.openncp.api.client.connector;
 
 import java.util.List;
 import java.util.Map;
+import javax.jws.WebService;
 
 import eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType;
 import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
@@ -28,9 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-@javax.jws.WebService(serviceName = "ClientConnectorService", portName = "ClientConnectorServicePort",
-                      targetNamespace = "http://client.core.openncp.sante.ec.europa.eu", wsdlLocation = "classpath:wsdl/ClientConnectorService.wsdl",
-                      endpointInterface = "eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType")
+@WebService(serviceName = "ClientConnectorService", portName = "ClientConnectorServicePort",
+            targetNamespace = "http://client.core.openncp.sante.ec.europa.eu", wsdlLocation = "classpath:wsdl/ClientConnectorService.wsdl",
+            endpointInterface = "eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType")
 @Service
 public class ClientConnectorServiceImpl implements ClientConnectorServicePortType {
 

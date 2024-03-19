@@ -1,18 +1,23 @@
-package eu.europa.ec.sante.openncp.core.common.security.key.impl;
-
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
-import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package eu.europa.ec.sante.openncp.core.common.security.key;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+
+import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class DefaultKeyStoreManager implements KeyStoreManager {
 
@@ -27,45 +32,45 @@ public final class DefaultKeyStoreManager implements KeyStoreManager {
     private KeyStore keyStore;
     private KeyStore trustStore;
 
-    public DefaultKeyStoreManager() {
+    public DefaultKeyStoreManager(final String keyStoreLocation, final String keystorePassword, final String truststoreLocation,
+                                  final String truststorePassword, final String privateKeyAlias, final String privateKeyPassword) {
 
         // Constants Initialization
-        ConfigurationManager cm = ConfigurationManagerFactory.getConfigurationManager();
-        KEYSTORE_LOCATION = cm.getProperty("NCP_SIG_KEYSTORE_PATH");
-        TRUSTSTORE_LOCATION = cm.getProperty("TRUSTSTORE_PATH");
-        KEYSTORE_PASSWORD = cm.getProperty("NCP_SIG_KEYSTORE_PASSWORD");
-        TRUSTSTORE_PASSWORD = cm.getProperty("TRUSTSTORE_PASSWORD");
-        PRIVATEKEY_ALIAS = cm.getProperty("NCP_SIG_PRIVATEKEY_ALIAS");
-        PRIVATEKEY_PASSWORD = cm.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD");
+        KEYSTORE_LOCATION = Validate.notBlank(keyStoreLocation);
+        TRUSTSTORE_LOCATION = Validate.notBlank(truststoreLocation);
+        KEYSTORE_PASSWORD = Validate.notBlank(keystorePassword);
+        TRUSTSTORE_PASSWORD = Validate.notBlank(truststorePassword);
+        PRIVATEKEY_ALIAS = Validate.notBlank(privateKeyAlias);
+        PRIVATEKEY_PASSWORD = Validate.notBlank(privateKeyPassword);
 
         keyStore = getKeyStore();
         trustStore = getTrustStore();
     }
 
     @Override
-    public KeyPair getPrivateKey(String alias, char[] password) throws SMgrException {
+    public KeyPair getPrivateKey(final String alias, final char[] password) throws SMgrException {
 
         try {
 
             // Get private key
-            Key key = keyStore.getKey(alias, password);
+            final Key key = keyStore.getKey(alias, password);
             if (key instanceof PrivateKey) {
                 // Get certificate of public key
-                Certificate cert = keyStore.getCertificate(alias);
+                final Certificate cert = keyStore.getCertificate(alias);
 
                 // Get public key
-                PublicKey publicKey = cert.getPublicKey();
+                final PublicKey publicKey = cert.getPublicKey();
 
                 // Return a key pair
                 return new KeyPair(publicKey, (PrivateKey) key);
             }
-        } catch (UnrecoverableKeyException e) {
+        } catch (final UnrecoverableKeyException e) {
             LOGGER.error(null, e);
             throw new SMgrException("Key with alias:" + alias + " is unrecoverable", e);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             LOGGER.error(null, e);
             throw new SMgrException("Key with alias:" + alias + " uses an incompatible algorithm", e);
-        } catch (KeyStoreException e) {
+        } catch (final KeyStoreException e) {
             LOGGER.error(null, e);
             throw new SMgrException("Key with alias:" + alias + " not found", e);
         }
@@ -78,25 +83,23 @@ public final class DefaultKeyStoreManager implements KeyStoreManager {
         try {
             keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 
-            try (InputStream keystoreStream = new FileInputStream(KEYSTORE_LOCATION)) {
+            try (final InputStream keystoreStream = new FileInputStream(KEYSTORE_LOCATION)) {
                 keyStore.load(keystoreStream, KEYSTORE_PASSWORD.toCharArray());
 
                 return keyStore;
             }
-
-        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException ex) {
+        } catch (final IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException ex) {
             LOGGER.error(null, ex);
         }
         return null;
     }
 
     @Override
-    public Certificate getCertificate(String alias) throws SMgrException {
+    public Certificate getCertificate(final String alias) throws SMgrException {
 
         try {
             return keyStore.getCertificate(alias);
-
-        } catch (KeyStoreException ex) {
+        } catch (final KeyStoreException ex) {
             LOGGER.error(null, ex);
             throw new SMgrException("Certificate with alias: " + alias + " not found in keystore", ex);
         }
@@ -107,11 +110,11 @@ public final class DefaultKeyStoreManager implements KeyStoreManager {
 
         try {
             trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            try (InputStream keystoreStream = new FileInputStream(TRUSTSTORE_LOCATION)) {
+            try (final InputStream keystoreStream = new FileInputStream(TRUSTSTORE_LOCATION)) {
                 trustStore.load(keystoreStream, TRUSTSTORE_PASSWORD.toCharArray());
                 return trustStore;
             }
-        } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException ex) {
+        } catch (final IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException ex) {
             LOGGER.error(null, ex);
         }
         return null;

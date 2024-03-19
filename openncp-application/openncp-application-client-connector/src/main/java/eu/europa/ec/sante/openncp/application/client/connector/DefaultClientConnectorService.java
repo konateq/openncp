@@ -1,7 +1,31 @@
 package eu.europa.ec.sante.openncp.application.client.connector;
 
-import eu.europa.ec.sante.openncp.core.client.*;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.util.List;
+import java.util.Map;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+import javax.xml.ws.BindingProvider;
+
+import eu.europa.ec.sante.openncp.application.client.connector.interceptor.AddSamlAssertionInterceptor;
+import eu.europa.ec.sante.openncp.core.client.DocumentId;
+import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
+import eu.europa.ec.sante.openncp.core.client.FilterParams;
+import eu.europa.ec.sante.openncp.core.client.GenericDocumentCode;
+import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.PatientId;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.Validate;
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
@@ -9,12 +33,6 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 /*
  *  Client Service class providing access to the MyHealth@EU workflows (Patient Summary, ePrescription, OrCD etc.).
@@ -30,37 +48,32 @@ public class DefaultClientConnectorService implements ClientConnectorService {
     // URL of the targeted NCP-B - ClientConnectorService.wsdl
     private final String endpointReference;
 
-    private ObjectFactory objectFactory = new ObjectFactory();
+    private final ObjectFactory objectFactory = new ObjectFactory();
 
-    final ClientConnectorServicePortType clientConnectorServicePort;
+    private final ClientConnectorServicePortTypeWrapper clientConnectorService;
 
-    public DefaultClientConnectorService(String endpointReference) {
-        this.endpointReference = endpointReference;
-        final URL endpoint;
-        try {
-            endpoint = URI.create(endpointReference).toURL();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        eu.europa.ec.sante.openncp.core.client.ClientConnectorService ss = new eu.europa.ec.sante.openncp.core.client.ClientConnectorService(endpoint);
-        clientConnectorServicePort = ss.getClientConnectorServicePort();
+    private final KeyStoreManager keyStoreManager;
 
-        final Client client = ClientProxy.getClient(clientConnectorServicePort);
+    public DefaultClientConnectorService(final String endpointReference, final KeyStoreManager keyStoreManager) {
+        this.keyStoreManager = Validate.notNull(keyStoreManager);
+        this.endpointReference = Validate.notBlank(endpointReference);
+
+        final eu.europa.ec.sante.openncp.core.client.ClientConnectorService ss = new eu.europa.ec.sante.openncp.core.client.ClientConnectorService();
+        clientConnectorService = new ClientConnectorServicePortTypeWrapper(ss.getClientConnectorServicePort());
+        clientConnectorService.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointReference);
+
+        final Client client = ClientProxy.getClient(clientConnectorService.getClientConnectorServicePortType());
+        client.getOutInterceptors().add(new AddSamlAssertionInterceptor());
         final HTTPConduit conduit = (HTTPConduit) client.getConduit();
-//        conduit.getTlsClientParameters().setSSLSocketFactory();
-//
-        //        SSLContextBuilder builder = SSLContextBuilder.create();
-//        builder.setKeyStoreType("JKS");
-//        builder.setKeyManagerFactoryAlgorithm("SunX509");
-//
-//        builder.loadKeyMaterial(ResourceUtils.getFile(Constants.SC_KEYSTORE_PATH),
-//                                Constants.SC_KEYSTORE_PASSWORD.toCharArray(),
-//                                Constants.SC_PRIVATEKEY_PASSWORD.toCharArray());
-//
-//        builder.loadTrustMaterial(ResourceUtils.getFile(Constants.TRUSTSTORE_PATH),
-//                                  Constants.TRUSTSTORE_PASSWORD.toCharArray(), TrustAllStrategy.INSTANCE);
+        final TLSClientParameters tlsClientParameters = ObjectUtils.firstNonNull(conduit.getTlsClientParameters(), new TLSClientParameters());
+        //FIXME [KJW] this should be configurable, you dont want to disable the CN check in production!!
+        tlsClientParameters.setDisableCNCheck(true);
+        tlsClientParameters.setSSLSocketFactory(getSSLSocketFactory());
+        conduit.setTlsClientParameters(tlsClientParameters);
+    }
 
-
+    public DefaultClientConnectorService(final String endpointReference) {
+        this(endpointReference, new DatabasePropertiesKeyStoreManager());
     }
 
     /**
@@ -74,19 +87,20 @@ public class DefaultClientConnectorService implements ClientConnectorService {
      * @return List of clinical documents and metadata searched by the clinician.
      */
     @Override
-    public List<EpsosDocument> queryDocuments(Map<AssertionEnum, Assertion> assertions, String countryCode, PatientId patientId,
-                                              List<GenericDocumentCode> classCodes, FilterParams filterParams) throws ClientConnectorException {
+    public List<EpsosDocument> queryDocuments(final Map<AssertionEnum, Assertion> assertions, final String countryCode, final PatientId patientId,
+                                              final List<GenericDocumentCode> classCodes, final FilterParams filterParams)
+            throws ClientConnectorException {
 
         logger.info("[National Connector] queryDocuments(countryCode:'{}')", countryCode);
 
-        var queryDocumentRequest = objectFactory.createQueryDocumentRequest();
+        final var queryDocumentRequest = objectFactory.createQueryDocumentRequest();
         classCodes.forEach(genericDocumentCode -> queryDocumentRequest.getClassCode().add(genericDocumentCode));
         queryDocumentRequest.setPatientId(patientId);
         queryDocumentRequest.setCountryCode(countryCode);
         queryDocumentRequest.setFilterParams(filterParams);
 
-        //set assertions to soap call
-        return clientConnectorServicePort.queryDocuments(queryDocumentRequest);
+        clientConnectorService.setAssertions(assertions);
+        return clientConnectorService.getClientConnectorServicePortType().queryDocuments(queryDocumentRequest);
     }
 
     /**
@@ -97,17 +111,24 @@ public class DefaultClientConnectorService implements ClientConnectorService {
      * @param patientDemographics - Identifiers of the requested patient
      * @return List of patients found (only 1 patient is expected in MyHealth@EU)
      */
-    public List<PatientDemographics> queryPatient(Map<AssertionEnum, Assertion> assertions, String countryCode,
-                                                  PatientDemographics patientDemographics) throws ClientConnectorException {
+    public List<PatientDemographics> queryPatient(final Map<AssertionEnum, Assertion> assertions, final String countryCode,
+                                                  final PatientDemographics patientDemographics) throws ClientConnectorException {
 
         logger.info("[National Connector] queryPatient(countryCode:'{}')", countryCode);
 
-        var queryPatientRequest = objectFactory.createQueryPatientRequest();
+        final var queryPatientRequest = objectFactory.createQueryPatientRequest();
         queryPatientRequest.setPatientDemographics(patientDemographics);
         queryPatientRequest.setCountryCode(countryCode);
 
+        clientConnectorService.setAssertions(assertions);
+
         //set assertions to soap call
-        return clientConnectorServicePort.queryPatient(queryPatientRequest);
+        return clientConnectorService.getClientConnectorServicePortType().queryPatient(queryPatientRequest);
+    }
+
+    @Override
+    public String sayHello(final String name) {
+        return clientConnectorService.getClientConnectorServicePortType().sayHello(name);
     }
 
     /**
@@ -117,11 +138,11 @@ public class DefaultClientConnectorService implements ClientConnectorService {
      * @param name       - Token sent for testing.
      * @return Hello message concatenated with the token passed as parameter.
      */
-    public String sayHello(Map<AssertionEnum, Assertion> assertions, String name) throws ClientConnectorException {
+    public String sayHello(final Map<AssertionEnum, Assertion> assertions, final String name) throws ClientConnectorException {
 
         logger.info("[National Connector] sayHello(name:'{}')", name);
         //set assertions to soap call
-        return clientConnectorServicePort.sayHello(name);
+        return clientConnectorService.getClientConnectorServicePortType().sayHello(name);
     }
 
     /**
@@ -135,12 +156,13 @@ public class DefaultClientConnectorService implements ClientConnectorService {
      * @param targetLanguage  - Expected target language of the CDA translation.
      * @return Clinical Document and metadata returned by the Country of Origin.
      */
-    public EpsosDocument retrieveDocument(Map<AssertionEnum, Assertion> assertions, String countryCode, DocumentId documentId, String homeCommunityId,
-                                          GenericDocumentCode classCode, String targetLanguage) throws ClientConnectorException {
+    public EpsosDocument retrieveDocument(final Map<AssertionEnum, Assertion> assertions, final String countryCode, final DocumentId documentId,
+                                          final String homeCommunityId, final GenericDocumentCode classCode, final String targetLanguage)
+            throws ClientConnectorException {
 
         logger.info("[National Connector] retrieveDocument(countryCode:'{}', homeCommunityId:'{}', targetLanguage:'{}')", countryCode,
                     homeCommunityId, targetLanguage);
-        var retrieveDocumentRequest = objectFactory.createRetrieveDocumentRequest();
+        final var retrieveDocumentRequest = objectFactory.createRetrieveDocumentRequest();
         retrieveDocumentRequest.setDocumentId(documentId);
         retrieveDocumentRequest.setClassCode(classCode);
         retrieveDocumentRequest.setCountryCode(countryCode);
@@ -148,7 +170,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         retrieveDocumentRequest.setTargetLanguage(targetLanguage);
 
         //set assertions to soap call
-        return clientConnectorServicePort.retrieveDocument(retrieveDocumentRequest);
+        return clientConnectorService.getClientConnectorServicePortType().retrieveDocument(retrieveDocumentRequest);
     }
 
     /**
@@ -160,211 +182,246 @@ public class DefaultClientConnectorService implements ClientConnectorService {
      * @param patientDemographics - Demographics of the patient linked to the document submission.
      * @return Acknowledge and status of the document submission.
      */
-    public String submitDocument(Map<AssertionEnum, Assertion> assertions, String countryCode, EpsosDocument document,
-                                                 PatientDemographics patientDemographics) throws ClientConnectorException {
+    public String submitDocument(final Map<AssertionEnum, Assertion> assertions, final String countryCode, final EpsosDocument document,
+                                 final PatientDemographics patientDemographics) throws ClientConnectorException {
 
         logger.info("[National Connector] submitDocument(countryCode:'{}')", countryCode);
-        var submitDocumentRequest = objectFactory.createSubmitDocumentRequest();
+        final var submitDocumentRequest = objectFactory.createSubmitDocumentRequest();
         submitDocumentRequest.setDocument(document);
         submitDocumentRequest.setCountryCode(countryCode);
         submitDocumentRequest.setPatientDemographics(patientDemographics);
 
         //set assertions to soap call
-        return clientConnectorServicePort.submitDocument(submitDocumentRequest);
+        return clientConnectorService.getClientConnectorServicePortType().submitDocument(submitDocumentRequest);
     }
-//
-//    /**
-//     * Adds the different types of Assertions to the SOAP Header.
-//     *
-//     * @param clientConnectorServiceStub - Client Service stub.
-//     * @param assertions                 - Map of assertions required by the transaction (HCP, TRC and NoK optional).
-//     */
-//    private void addAssertions(ClientConnectorServiceStub clientConnectorServiceStub, Map<AssertionEnum, Assertion> assertions) throws Exception {
-//
-//        if (!assertions.containsKey(AssertionEnum.CLINICIAN)) {
-//            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_GENERIC, "HCP Assertion element is required.", null);
-//        }
-//
-//        if (AssertionHelper.isExpired(assertions.get(AssertionEnum.CLINICIAN))) {
-//            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_HPI_GENERIC, "HCP Assertion expired", null);
-//        }
-//
-//        var omFactory = OMAbstractFactory.getSOAP12Factory();
-//        SOAPHeaderBlock omSecurityElement = omFactory.createSOAPHeaderBlock(omFactory.createOMElement(new QName(WSSE_NS, "Security", "wsse"), null));
-//
-//        if (assertions.containsKey(AssertionEnum.NEXT_OF_KIN)) {
-//            var assertion = assertions.get(AssertionEnum.NEXT_OF_KIN);
-//            if (AssertionHelper.isExpired(assertion)) {
-//                throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_SEC_DATA_INTEGRITY_NOT_ENSURED, "Next of Kin Assertion is expired",
-//                                                           null);
-//            }
-//            omSecurityElement.addChild(XMLUtils.toOM(assertion.getDOM()));
-//        }
-//        if (assertions.containsKey(AssertionEnum.TREATMENT)) {
-//            var assertion = assertions.get(AssertionEnum.TREATMENT);
-//            if (AssertionHelper.isExpired(assertion)) {
-//                throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_SEC_DATA_INTEGRITY_NOT_ENSURED,
-//                                                           "Treatment Confirmation Assertion is expired", null);
-//            }
-//            omSecurityElement.addChild(XMLUtils.toOM(assertion.getDOM()));
-//        }
-//        var assertion = assertions.get(AssertionEnum.CLINICIAN);
-//        omSecurityElement.addChild(XMLUtils.toOM(assertion.getDOM()));
-//        clientConnectorServiceStub._getServiceClient().addHeader(omSecurityElement);
-//    }
-//
-//    /**
-//     * Configures the SSL Context to support Two Way SLL and using the Service Consumer TLS certificate.
-//     *
-//     * @return Initialized SSL Context supporting Two Way SSL.
-//     */
-//    private SSLContext buildSSLContext() throws ClientConnectorConsumerException {
-//
-//        try {
-//            SSLContextBuilder builder = SSLContextBuilder.create();
-//            builder.setKeyStoreType("JKS");
-//            builder.setKeyManagerFactoryAlgorithm("SunX509");
-//
-//            builder.loadKeyMaterial(ResourceUtils.getFile(Constants.SC_KEYSTORE_PATH), Constants.SC_KEYSTORE_PASSWORD.toCharArray(),
-//                                    Constants.SC_PRIVATEKEY_PASSWORD.toCharArray());
-//
-//            builder.loadTrustMaterial(ResourceUtils.getFile(Constants.TRUSTSTORE_PATH), Constants.TRUSTSTORE_PASSWORD.toCharArray(),
-//                                      TrustAllStrategy.INSTANCE);
-//
-//            return builder.build();
-//        } catch (NoSuchAlgorithmException | KeyStoreException | UnrecoverableKeyException | CertificateException | IOException |
-//                 KeyManagementException e) {
-//            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_SEC_DATA_INTEGRITY_NOT_ENSURED,
-//                                                       "SSL Context cannot be initialized: " + e.getMessage(), null, e);
-//        }
-//    }
-//
-//    /**
-//     * Returns Apache HttpClient supporting Two Way SSL and using TLS protocol 1.2 and 1.3.
-//     *
-//     * @return Secured HttpClient initialized.
-//     */
-//    private HttpClient getSSLClient() throws ClientConnectorConsumerException {
-//
-//        SSLContext sslContext = buildSSLContext();
-//        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1.2", "TLSv1.3" },
-//                                                                                               null, NoopHostnameVerifier.INSTANCE);
-//        HttpClientBuilder builder = HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory);
-//        builder.setSSLContext(sslContext);
-//        builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-//
-//        return builder.build();
-//    }
-//
-//    /**
-//     * Initializes the ClientConnectorService client stubs to contact WSDL.
-//     *
-//     * @return Initialized ClientConnectorServiceStub set to the configured EPR and the SOAP version.
-//     */
-//    private ClientConnectorServiceStub initializeServiceStub() throws ClientConnectorConsumerException {
-//
-//        try {
-//
-//            logger.info("[National Connector] Initializing ClientConnectorService Stub");
-//            var clientConnectorStub = new ClientConnectorServiceStub(endpointReference);
-//            clientConnectorStub._getServiceClient().getOptions().setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
-//            clientConnectorStub._getServiceClient().getOptions().setTimeOutInMilliSeconds(TIMEOUT);
-//            clientConnectorStub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, TIMEOUT);
-//            clientConnectorStub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, TIMEOUT);
-//            // Enabling WS Addressing module.
-//            clientConnectorStub._getServiceClient().engageModule("addressing");
-//            this.registerEvidenceEmitterHandler(clientConnectorStub);
-//
-//            // Enabling Axis2 - SSL 2 ways communication (not active by default).
-//            clientConnectorStub._getServiceClient()
-//                               .getServiceContext()
-//                               .getConfigurationContext()
-//                               .setProperty(HTTPConstants.CACHED_HTTP_CLIENT, getSSLClient());
-//            clientConnectorStub._getServiceClient().getServiceContext().getConfigurationContext().setProperty(HTTPConstants.REUSE_HTTP_CLIENT, false);
-//
-//            return clientConnectorStub;
-//        } catch (AxisFault axisFault) {
-//            throw createClientConnectorConsumerException(axisFault);
-//        }
-//    }
-//
-//    /**
-//     * Configures the Non Repudiation process into the Apache Axis2 phase.
-//     *
-//     * @param clientConnectorServiceStub - Client Service stub.
-//     */
-//    private void registerEvidenceEmitterHandler(ClientConnectorServiceStub clientConnectorServiceStub) {
-//
-//        // Adding custom phase for evidence emitter processing.
-//        logger.debug("Adding custom phase for Outflow Evidence Emitter processing");
-//        var outFlowHandlerDescription = new HandlerDescription("OutFlowEvidenceEmitterHandler");
-//        outFlowHandlerDescription.setHandler(new OutFlowEvidenceEmitterHandler());
-//        var axisConfiguration = clientConnectorServiceStub._getServiceClient().getServiceContext().getConfigurationContext().getAxisConfiguration();
-//        List<Phase> outFlowPhasesList = axisConfiguration.getOutFlowPhases();
-//        var outFlowEvidenceEmitterPhase = new Phase("OutFlowEvidenceEmitterPhase");
-//        try {
-//            outFlowEvidenceEmitterPhase.addHandler(outFlowHandlerDescription);
-//        } catch (PhaseException ex) {
-//            logger.error("PhaseException: '{}'", ex.getMessage(), ex);
-//        }
-//        outFlowPhasesList.add(outFlowEvidenceEmitterPhase);
-//        axisConfiguration.setGlobalOutPhase(outFlowPhasesList);
-//    }
-//
-//    /**
-//     * Trims the Patient Demographics sent by the client and received by the Client Connector.
-//     *
-//     * @param patientDemographics Identity Traits to be trimmed and provided by the client
-//     */
-//    private void trimPatientDemographics(PatientDemographics patientDemographics) {
-//
-//        // Iterate over the Patient Ids
-//        List<PatientId> patientIds = new ArrayList<>();
-//        for (PatientId patientId : patientDemographics.getPatientIdArray()) {
-//            if (StringUtils.isNotBlank(patientId.getExtension())) {
-//                patientId.setExtension(StringUtils.trim(patientId.getExtension()));
-//                patientId.setRoot(StringUtils.trim(patientId.getRoot()));
-//                patientIds.add(patientId);
-//            }
-//        }
-//        patientDemographics.setPatientIdArray(patientIds.toArray(new PatientId[0]));
-//        if (StringUtils.isNotBlank(patientDemographics.getAdministrativeGender())) {
-//            patientDemographics.setAdministrativeGender(StringUtils.trim(patientDemographics.getAdministrativeGender()));
-//        }
-//        if (StringUtils.isNotBlank(patientDemographics.getFamilyName())) {
-//            patientDemographics.setFamilyName(StringUtils.trim(patientDemographics.getFamilyName()));
-//        }
-//        if (StringUtils.isNotBlank(patientDemographics.getGivenName())) {
-//            patientDemographics.setGivenName(StringUtils.trim(patientDemographics.getGivenName()));
-//        }
-//        if (StringUtils.isNotBlank(patientDemographics.getEmail())) {
-//            patientDemographics.setEmail(StringUtils.trim(patientDemographics.getEmail()));
-//        }
-//        if (StringUtils.isNotBlank(patientDemographics.getTelephone())) {
-//            patientDemographics.setTelephone(StringUtils.trim(patientDemographics.getTelephone()));
-//        }
-//        if (StringUtils.isNotBlank(patientDemographics.getStreetAddress())) {
-//            patientDemographics.setStreetAddress(StringUtils.trim(patientDemographics.getStreetAddress()));
-//        }
-//        if (StringUtils.isNotBlank(patientDemographics.getPostalCode())) {
-//            patientDemographics.setPostalCode(StringUtils.trim(patientDemographics.getPostalCode()));
-//        }
-//        if (StringUtils.isNotBlank(patientDemographics.getCity())) {
-//            patientDemographics.setCity(StringUtils.trim(patientDemographics.getCity()));
-//        }
-//        if (StringUtils.isNotBlank(patientDemographics.getCountry())) {
-//            patientDemographics.setCountry(StringUtils.trim(patientDemographics.getCountry()));
-//        }
-//    }
-//
-//    private ClientConnectorConsumerException createClientConnectorConsumerException(AxisFault axisFault) {
-//
-//        String errorCode = axisFault.getFaultCode() != null ? axisFault.getFaultCode().getLocalPart() : null;
-//        String message = axisFault.getMessage();
-//        String context = axisFault.getDetail() != null ? axisFault.getDetail().getText() : null;
-//
-//        OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
-//
-//        return new ClientConnectorConsumerException(openncpErrorCode, message, context, axisFault);
-//    }
+
+    public SSLSocketFactory getSSLSocketFactory() {
+
+        final SSLContext sslContext;
+        try {
+            final String sigKeystorePassword = "gazelle";
+
+            return getSslSocketFactory(sigKeystorePassword, keyStoreManager);
+        } catch (final KeyManagementException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
+            logger.error("Exception: '{}'", e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public static SSLSocketFactory getSslSocketFactory(final String sigKeystorePassword, final KeyStoreManager keyStoreManager)
+            throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException {
+        final SSLContext sslContext;
+        sslContext = SSLContext.getInstance("TLSv1.2");
+
+        final var keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStoreManager.getKeyStore(), sigKeystorePassword.toCharArray());
+
+        final var trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        trustManagerFactory.init(keyStoreManager.getTrustStore());
+
+        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+        return sslContext.getSocketFactory();
+    }
+
+    //
+    //    /**
+    //     * Adds the different types of Assertions to the SOAP Header.
+    //     *
+    //     * @param clientConnectorServiceStub - Client Service stub.
+    //     * @param assertions                 - Map of assertions required by the transaction (HCP, TRC and NoK optional).
+    //     */
+    //    private void addAssertions(ClientConnectorServiceStub clientConnectorServiceStub, Map<AssertionEnum, Assertion> assertions) throws
+    //    Exception {
+    //
+    //        if (!assertions.containsKey(AssertionEnum.CLINICIAN)) {
+    //            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_GENERIC, "HCP Assertion element is required.", null);
+    //        }
+    //
+    //        if (AssertionHelper.isExpired(assertions.get(AssertionEnum.CLINICIAN))) {
+    //            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_HPI_GENERIC, "HCP Assertion expired", null);
+    //        }
+    //
+    //        var omFactory = OMAbstractFactory.getSOAP12Factory();
+    //        SOAPHeaderBlock omSecurityElement = omFactory.createSOAPHeaderBlock(omFactory.createOMElement(new QName(WSSE_NS, "Security", "wsse"),
+    //        null));
+    //
+    //        if (assertions.containsKey(AssertionEnum.NEXT_OF_KIN)) {
+    //            var assertion = assertions.get(AssertionEnum.NEXT_OF_KIN);
+    //            if (AssertionHelper.isExpired(assertion)) {
+    //                throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_SEC_DATA_INTEGRITY_NOT_ENSURED, "Next of Kin Assertion is
+    //                expired",
+    //                                                           null);
+    //            }
+    //            omSecurityElement.addChild(XMLUtils.toOM(assertion.getDOM()));
+    //        }
+    //        if (assertions.containsKey(AssertionEnum.TREATMENT)) {
+    //            var assertion = assertions.get(AssertionEnum.TREATMENT);
+    //            if (AssertionHelper.isExpired(assertion)) {
+    //                throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_SEC_DATA_INTEGRITY_NOT_ENSURED,
+    //                                                           "Treatment Confirmation Assertion is expired", null);
+    //            }
+    //            omSecurityElement.addChild(XMLUtils.toOM(assertion.getDOM()));
+    //        }
+    //        var assertion = assertions.get(AssertionEnum.CLINICIAN);
+    //        omSecurityElement.addChild(XMLUtils.toOM(assertion.getDOM()));
+    //        clientConnectorServiceStub._getServiceClient().addHeader(omSecurityElement);
+    //    }
+    //
+    //    /**
+    //     * Configures the SSL Context to support Two Way SLL and using the Service Consumer TLS certificate.
+    //     *
+    //     * @return Initialized SSL Context supporting Two Way SSL.
+    //     */
+    //    private SSLContext buildSSLContext() throws ClientConnectorConsumerException {
+    //
+    //        try {
+    //            SSLContextBuilder builder = SSLContextBuilder.create();
+    //            builder.setKeyStoreType("JKS");
+    //            builder.setKeyManagerFactoryAlgorithm("SunX509");
+    //
+    //            builder.loadKeyMaterial(ResourceUtils.getFile(Constants.SC_KEYSTORE_PATH), Constants.SC_KEYSTORE_PASSWORD.toCharArray(),
+    //                                    Constants.SC_PRIVATEKEY_PASSWORD.toCharArray());
+    //
+    //            builder.loadTrustMaterial(ResourceUtils.getFile(Constants.TRUSTSTORE_PATH), Constants.TRUSTSTORE_PASSWORD.toCharArray(),
+    //                                      TrustAllStrategy.INSTANCE);
+    //
+    //            return builder.build();
+    //        } catch (NoSuchAlgorithmException | KeyStoreException | UnrecoverableKeyException | CertificateException | IOException |
+    //                 KeyManagementException e) {
+    //            throw new ClientConnectorConsumerException(OpenNCPErrorCode.ERROR_SEC_DATA_INTEGRITY_NOT_ENSURED,
+    //                                                       "SSL Context cannot be initialized: " + e.getMessage(), null, e);
+    //        }
+    //    }
+    //
+    //    /**
+    //     * Returns Apache HttpClient supporting Two Way SSL and using TLS protocol 1.2 and 1.3.
+    //     *
+    //     * @return Secured HttpClient initialized.
+    //     */
+    //    private HttpClient getSSLClient() throws ClientConnectorConsumerException {
+    //
+    //        SSLContext sslContext = buildSSLContext();
+    //        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1.2", "TLSv1
+    //        .3" },
+    //                                                                                               null, NoopHostnameVerifier.INSTANCE);
+    //        HttpClientBuilder builder = HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory);
+    //        builder.setSSLContext(sslContext);
+    //        builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+    //
+    //        return builder.build();
+    //    }
+    //
+    //    /**
+    //     * Initializes the ClientConnectorService client stubs to contact WSDL.
+    //     *
+    //     * @return Initialized ClientConnectorServiceStub set to the configured EPR and the SOAP version.
+    //     */
+    //    private ClientConnectorServiceStub initializeServiceStub() throws ClientConnectorConsumerException {
+    //
+    //        try {
+    //
+    //            logger.info("[National Connector] Initializing ClientConnectorService Stub");
+    //            var clientConnectorStub = new ClientConnectorServiceStub(endpointReference);
+    //            clientConnectorStub._getServiceClient().getOptions().setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
+    //            clientConnectorStub._getServiceClient().getOptions().setTimeOutInMilliSeconds(TIMEOUT);
+    //            clientConnectorStub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, TIMEOUT);
+    //            clientConnectorStub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, TIMEOUT);
+    //            // Enabling WS Addressing module.
+    //            clientConnectorStub._getServiceClient().engageModule("addressing");
+    //            this.registerEvidenceEmitterHandler(clientConnectorStub);
+    //
+    //            // Enabling Axis2 - SSL 2 ways communication (not active by default).
+    //            clientConnectorStub._getServiceClient()
+    //                               .getServiceContext()
+    //                               .getConfigurationContext()
+    //                               .setProperty(HTTPConstants.CACHED_HTTP_CLIENT, getSSLClient());
+    //            clientConnectorStub._getServiceClient().getServiceContext().getConfigurationContext().setProperty(HTTPConstants
+    //            .REUSE_HTTP_CLIENT, false);
+    //
+    //            return clientConnectorStub;
+    //        } catch (AxisFault axisFault) {
+    //            throw createClientConnectorConsumerException(axisFault);
+    //        }
+    //    }
+    //
+    //    /**
+    //     * Configures the Non Repudiation process into the Apache Axis2 phase.
+    //     *
+    //     * @param clientConnectorServiceStub - Client Service stub.
+    //     */
+    //    private void registerEvidenceEmitterHandler(ClientConnectorServiceStub clientConnectorServiceStub) {
+    //
+    //        // Adding custom phase for evidence emitter processing.
+    //        logger.debug("Adding custom phase for Outflow Evidence Emitter processing");
+    //        var outFlowHandlerDescription = new HandlerDescription("OutFlowEvidenceEmitterHandler");
+    //        outFlowHandlerDescription.setHandler(new OutFlowEvidenceEmitterHandler());
+    //        var axisConfiguration = clientConnectorServiceStub._getServiceClient().getServiceContext().getConfigurationContext()
+    //        .getAxisConfiguration();
+    //        List<Phase> outFlowPhasesList = axisConfiguration.getOutFlowPhases();
+    //        var outFlowEvidenceEmitterPhase = new Phase("OutFlowEvidenceEmitterPhase");
+    //        try {
+    //            outFlowEvidenceEmitterPhase.addHandler(outFlowHandlerDescription);
+    //        } catch (PhaseException ex) {
+    //            logger.error("PhaseException: '{}'", ex.getMessage(), ex);
+    //        }
+    //        outFlowPhasesList.add(outFlowEvidenceEmitterPhase);
+    //        axisConfiguration.setGlobalOutPhase(outFlowPhasesList);
+    //    }
+    //
+    //    /**
+    //     * Trims the Patient Demographics sent by the client and received by the Client Connector.
+    //     *
+    //     * @param patientDemographics Identity Traits to be trimmed and provided by the client
+    //     */
+    //    private void trimPatientDemographics(PatientDemographics patientDemographics) {
+    //
+    //        // Iterate over the Patient Ids
+    //        List<PatientId> patientIds = new ArrayList<>();
+    //        for (PatientId patientId : patientDemographics.getPatientIdArray()) {
+    //            if (StringUtils.isNotBlank(patientId.getExtension())) {
+    //                patientId.setExtension(StringUtils.trim(patientId.getExtension()));
+    //                patientId.setRoot(StringUtils.trim(patientId.getRoot()));
+    //                patientIds.add(patientId);
+    //            }
+    //        }
+    //        patientDemographics.setPatientIdArray(patientIds.toArray(new PatientId[0]));
+    //        if (StringUtils.isNotBlank(patientDemographics.getAdministrativeGender())) {
+    //            patientDemographics.setAdministrativeGender(StringUtils.trim(patientDemographics.getAdministrativeGender()));
+    //        }
+    //        if (StringUtils.isNotBlank(patientDemographics.getFamilyName())) {
+    //            patientDemographics.setFamilyName(StringUtils.trim(patientDemographics.getFamilyName()));
+    //        }
+    //        if (StringUtils.isNotBlank(patientDemographics.getGivenName())) {
+    //            patientDemographics.setGivenName(StringUtils.trim(patientDemographics.getGivenName()));
+    //        }
+    //        if (StringUtils.isNotBlank(patientDemographics.getEmail())) {
+    //            patientDemographics.setEmail(StringUtils.trim(patientDemographics.getEmail()));
+    //        }
+    //        if (StringUtils.isNotBlank(patientDemographics.getTelephone())) {
+    //            patientDemographics.setTelephone(StringUtils.trim(patientDemographics.getTelephone()));
+    //        }
+    //        if (StringUtils.isNotBlank(patientDemographics.getStreetAddress())) {
+    //            patientDemographics.setStreetAddress(StringUtils.trim(patientDemographics.getStreetAddress()));
+    //        }
+    //        if (StringUtils.isNotBlank(patientDemographics.getPostalCode())) {
+    //            patientDemographics.setPostalCode(StringUtils.trim(patientDemographics.getPostalCode()));
+    //        }
+    //        if (StringUtils.isNotBlank(patientDemographics.getCity())) {
+    //            patientDemographics.setCity(StringUtils.trim(patientDemographics.getCity()));
+    //        }
+    //        if (StringUtils.isNotBlank(patientDemographics.getCountry())) {
+    //            patientDemographics.setCountry(StringUtils.trim(patientDemographics.getCountry()));
+    //        }
+    //    }
+    //
+    //    private ClientConnectorConsumerException createClientConnectorConsumerException(AxisFault axisFault) {
+    //
+    //        String errorCode = axisFault.getFaultCode() != null ? axisFault.getFaultCode().getLocalPart() : null;
+    //        String message = axisFault.getMessage();
+    //        String context = axisFault.getDetail() != null ? axisFault.getDetail().getText() : null;
+    //
+    //        OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
+    //
+    //        return new ClientConnectorConsumerException(openncpErrorCode, message, context, axisFault);
+    //    }
 }

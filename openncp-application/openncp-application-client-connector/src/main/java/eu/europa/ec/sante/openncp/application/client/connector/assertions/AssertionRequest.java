@@ -1,9 +1,24 @@
 package eu.europa.ec.sante.openncp.application.client.connector.assertions;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.util.UUID;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPHeaderElement;
+
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.security.key.impl.DefaultKeyStoreManager;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Marshaller;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -15,22 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPHeaderElement;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.util.UUID;
+import static eu.europa.ec.sante.openncp.application.client.connector.DefaultClientConnectorService.getSslSocketFactory;
 
 public class AssertionRequest {
 
@@ -48,10 +48,10 @@ public class AssertionRequest {
 
     public AssertionRequest() throws STSClientException {
         try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilderFactory.setNamespaceAware(true);
             this.documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException ex) {
+        } catch (final ParserConfigurationException ex) {
             throw new STSClientException("Unable to create RST Message");
         }
     }
@@ -60,41 +60,39 @@ public class AssertionRequest {
         return documentBuilder;
     }
 
-    public void setDocumentBuilder(DocumentBuilder documentBuilder) {
+    public void setDocumentBuilder(final DocumentBuilder documentBuilder) {
         this.documentBuilder = documentBuilder;
     }
 
-    public Element convertAssertionToElement(Assertion assertion) {
-
+    public Element convertAssertionToElement(final Assertion assertion) {
 
         try {
-            Document doc = documentBuilder.newDocument();
-            Marshaller marshaller = XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(assertion);
+            final Document doc = documentBuilder.newDocument();
+            final Marshaller marshaller = XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(assertion);
             if (marshaller == null) {
                 logger.error("SAML Marshalling is NULL");
                 return null;
             }
             marshaller.marshall(assertion, doc);
             return doc.getDocumentElement();
-        } catch (MarshallingException e) {
+        } catch (final MarshallingException e) {
             logger.error("MarshallingException: '{}", e.getMessage(), e);
             return null;
         }
     }
 
-    public Assertion convertElementToAssertion(Element element) {
+    public Assertion convertElementToAssertion(final Element element) {
 
         // Unmarshalling using the document root element, an EntitiesDescriptor in this case
         try {
 
-            Unmarshaller unmarshaller = XMLObjectProviderRegistrySupport.getUnmarshallerFactory().getUnmarshaller(element);
+            final Unmarshaller unmarshaller = XMLObjectProviderRegistrySupport.getUnmarshallerFactory().getUnmarshaller(element);
             if (unmarshaller == null) {
                 logger.error("SAML Unmarshalling is NULL");
                 return null;
             }
             return (Assertion) unmarshaller.unmarshall(element);
-
-        } catch (UnmarshallingException e) {
+        } catch (final UnmarshallingException e) {
             logger.error("UnmarshallingException: '{}", e.getMessage(), e);
             return null;
         }
@@ -104,43 +102,32 @@ public class AssertionRequest {
         return Constants.UUID_PREFIX + UUID.randomUUID();
     }
 
-    public void createRSTHeader(SOAPHeader header, String messageId, Assertion assertion) {
+    public void createRSTHeader(final SOAPHeader header, final String messageId, final Assertion assertion) {
 
         try {
 
-            SOAPHeaderElement messageIdElem = header.addHeaderElement(new QName(ADDRESSING_NS, "MessageID", "wsa"));
+            final SOAPHeaderElement messageIdElem = header.addHeaderElement(new QName(ADDRESSING_NS, "MessageID", "wsa"));
             messageIdElem.setTextContent(messageId);
 
-            SOAPHeaderElement securityHeaderElem = header.addHeaderElement(new QName(WS_SEC_NS, "Security", "wsse"));
+            final SOAPHeaderElement securityHeaderElem = header.addHeaderElement(new QName(WS_SEC_NS, "Security", "wsse"));
             securityHeaderElem.setMustUnderstand(true);
 
-            Element assertionElement = convertAssertionToElement(assertion);
+            final Element assertionElement = convertAssertionToElement(assertion);
             securityHeaderElem.appendChild(header.getOwnerDocument().importNode(assertionElement, true));
-
-        } catch (SOAPException ex) {
+        } catch (final SOAPException ex) {
             logger.error(null, ex);
         }
     }
 
     public SSLSocketFactory getSSLSocketFactory() {
 
-        SSLContext sslContext;
+        final SSLContext sslContext;
         try {
-            KeyStoreManager keyStoreManager = new DefaultKeyStoreManager();
-            String sigKeystorePassword = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_KEYSTORE_PASSWORD");
+            final KeyStoreManager keyStoreManager = new DatabasePropertiesKeyStoreManager();
+            final String sigKeystorePassword = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_KEYSTORE_PASSWORD");
 
-            sslContext = SSLContext.getInstance("TLSv1.2");
-
-            var keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-            keyManagerFactory.init(keyStoreManager.getKeyStore(), sigKeystorePassword.toCharArray());
-
-            var trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-            trustManagerFactory.init(keyStoreManager.getTrustStore());
-
-            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-            return sslContext.getSocketFactory();
-
-        } catch (KeyManagementException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
+            return getSslSocketFactory(sigKeystorePassword, keyStoreManager);
+        } catch (final KeyManagementException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
             logger.error("Exception: '{}'", e.getMessage(), e);
             return null;
         }
