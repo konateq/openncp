@@ -1,5 +1,8 @@
 package eu.europa.ec.sante.openncp.application.client.connector;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,37 +11,50 @@ import java.util.Map;
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil;
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.Concept;
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.SignatureKeystoreInfo;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.SetEnvironmentVariable;
+import org.mockito.Mockito;
 import org.opensaml.saml.saml2.core.Assertion;
+import org.springframework.util.ResourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+@SetEnvironmentVariable(key = "EPSOS_PROPS_PATH", value = "")
 class DefaultClientConnectorServiceIntegrationTest {
 
     private static DefaultClientConnectorService clientConnectorService;
     private static DefaultKeyStoreManager keyStoreManager;
 
     @BeforeAll
-    static void setup() {
-        final String keyStoreLocation = "D:\\projects\\work\\dg_sante\\ehealth_bak\\openncp-docker\\certificates\\gazelle-signature-keystore.jks";
-        final String keystorePassword = "gazelle";
+    static void setup() throws Exception {
+        ConfigurationManager mockedConfigurationManager = Mockito.mock(ConfigurationManager.class);
+        when(mockedConfigurationManager.getProperty("SC_KEYSTORE_PATH")).thenReturn("src/test/resources/gazelle-service-consumer-keystore.jks");
+        when(mockedConfigurationManager.getProperty("SC_KEYSTORE_PASSWORD")).thenReturn("gazelle");
+        when(mockedConfigurationManager.getProperty("SC_PRIVATEKEY_PASSWORD")).thenReturn("gazelle");
+        when(mockedConfigurationManager.getProperty("TRUSTSTORE_PATH")).thenReturn("src/test/resources/eu-truststore.jks");
+        when(mockedConfigurationManager.getProperty("TRUSTSTORE_PASSWORD")).thenReturn("changeit");
 
-        final String truststoreLocation = "D:\\projects\\work\\dg_sante\\ehealth_bak\\openncp-docker\\certificates\\eu-truststore.jks";
-        final String truststorePassword = "changeit";
+        setFinalStatic(ConfigurationManagerFactory.class.getDeclaredField("configurationManager"), mockedConfigurationManager);
 
-        final String privateKeyAlias = "gazelle.ncp-signature.openncp.dg-sante.eu";
-        final String privateKeyPassword = "gazelle";
+        clientConnectorService = new DefaultClientConnectorService("https://localhost:8080/services/ClientConnectorService");
+    }
 
-        keyStoreManager = new DefaultKeyStoreManager(keyStoreLocation, keystorePassword, truststoreLocation, truststorePassword, privateKeyAlias,
-                                                     privateKeyPassword);
-
-        clientConnectorService = new DefaultClientConnectorService("https://localhost:8080/services/ClientConnectorService", keyStoreManager);
+    static void setFinalStatic(Field field, Object newValue) throws Exception {
+        field.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        field.set(null, newValue);
     }
 
     @Test
@@ -48,7 +64,6 @@ class DefaultClientConnectorServiceIntegrationTest {
     }
 
     @Test
-    @SetEnvironmentVariable(key = "EPSOS_PROPS_PATH", value = "D:\\projects\\data\\dg_sante\\openncp\\EPSOS_PROPS_PATH\\")
     void queryPatient() throws ClientConnectorException {
         final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
         assertions.put(AssertionEnum.CLINICIAN, createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu"));

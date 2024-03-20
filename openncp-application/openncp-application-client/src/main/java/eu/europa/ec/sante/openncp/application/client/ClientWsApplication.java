@@ -1,5 +1,7 @@
 package eu.europa.ec.sante.openncp.application.client;
 
+import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -14,9 +16,9 @@ public class ClientWsApplication extends SpringBootServletInitializer {
     public static void main(final String[] args) throws Exception {
         SpringApplication.run(ClientWsApplication.class, args);
 
-        //        final String serverMode = System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE);
-        //        LOGGER.info("Server Mode: '{}'", StringUtils.isNotBlank(serverMode) ? serverMode : "N/A");
-        //
+        final String serverMode = System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE);
+        LOGGER.info("Server Mode: '{}'", StringUtils.isNotBlank(serverMode) ? serverMode : "N/A");
+
         //        System.setProperty("javax.net.ssl.keyStore", Constants.SC_KEYSTORE_PATH);
         //        System.setProperty("javax.net.ssl.keyStorePassword", Constants.SC_KEYSTORE_PASSWORD);
         //        System.setProperty("javax.net.ssl.key.alias", Constants.SC_PRIVATEKEY_ALIAS);
