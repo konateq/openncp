@@ -57,7 +57,7 @@ public interface ClientConnectorService {
      * @param patientDemographics - Demographics of the patient linked to the document submission.
      * @return Acknowledge and status of the document submission.
      */
-    String submitDocument(final Map<AssertionEnum, Assertion> assertions, final String countryCode, final EpsosDocument document,
+    SubmitDocumentResponse submitDocument(final Map<AssertionEnum, Assertion> assertions, final String countryCode, final EpsosDocument document,
                           final PatientDemographics patientDemographics) throws ClientConnectorException;
 
     /**

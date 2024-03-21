@@ -48,7 +48,7 @@ class DefaultClientConnectorServiceIntegrationTest {
 
         setFinalStatic(ConfigurationManagerFactory.class.getDeclaredField("configurationManager"), mockedConfigurationManager);
 
-        clientConnectorService = new DefaultClientConnectorService("https://localhost:8080/services/ClientConnectorService");
+        clientConnectorService = new DefaultClientConnectorService("https://localhost:6443/openncp-client-connector/services/ClientConnectorService");
     }
 
     static void setFinalStatic(final Field field, final Object newValue) throws Exception {

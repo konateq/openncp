@@ -1,30 +1,10 @@
 package eu.europa.ec.sante.openncp.application.client.connector;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.util.List;
-import java.util.Map;
-import javax.net.ssl.*;
-import javax.xml.ws.BindingProvider;
-
 import eu.europa.ec.sante.openncp.application.client.connector.interceptor.AddSamlAssertionInterceptor;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.core.client.DocumentId;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.FilterParams;
-import eu.europa.ec.sante.openncp.core.client.GenericDocumentCode;
-import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.client.PatientId;
+import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
-import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.ssl.HttpsClientConfiguration;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
@@ -33,17 +13,28 @@ import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+import javax.xml.ws.BindingProvider;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.util.List;
+import java.util.Map;
 
 /*
  *  Client Service class providing access to the MyHealth@EU workflows (Patient Summary, ePrescription, OrCD etc.).
  */
-@Service
 public class DefaultClientConnectorService implements ClientConnectorService {
 
     // Default timeout set to Three minutes.
@@ -273,8 +264,8 @@ public class DefaultClientConnectorService implements ClientConnectorService {
      * @param patientDemographics - Demographics of the patient linked to the document submission.
      * @return Acknowledge and status of the document submission.
      */
-    public String submitDocument(final Map<AssertionEnum, Assertion> assertions, final String countryCode, final EpsosDocument document,
-                                 final PatientDemographics patientDemographics) throws ClientConnectorException {
+    public SubmitDocumentResponse submitDocument(final Map<AssertionEnum, Assertion> assertions, final String countryCode, final EpsosDocument document,
+                                                 final PatientDemographics patientDemographics) throws ClientConnectorException {
 
         logger.info("[National Connector] submitDocument(countryCode:'{}')", countryCode);
         final var submitDocumentRequest = objectFactory.createSubmitDocumentRequest();
@@ -283,7 +274,9 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         submitDocumentRequest.setPatientDemographics(patientDemographics);
 
         //set assertions to soap call
-        return clientConnectorService.getClientConnectorServicePortType().submitDocument(submitDocumentRequest);
+        final SubmitDocumentResponse submitDocumentResponse = objectFactory.createSubmitDocumentResponse();
+        submitDocumentResponse.setResponseStatus(clientConnectorService.getClientConnectorServicePortType().submitDocument(submitDocumentRequest));
+        return submitDocumentResponse;
     }
 
 
