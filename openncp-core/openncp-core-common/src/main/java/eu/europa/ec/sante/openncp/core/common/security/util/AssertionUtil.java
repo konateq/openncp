@@ -1,21 +1,30 @@
 package eu.europa.ec.sante.openncp.core.common.security.util;
 
 import java.util.List;
+import java.util.Optional;
 import javax.xml.namespace.QName;
 
 import org.opensaml.core.xml.XMLObjectBuilder;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.Unmarshaller;
+import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.schema.XSAny;
 import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.core.xml.schema.XSURI;
+import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.AttributeValue;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 
 public class AssertionUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AssertionUtil.class);
 
     private AssertionUtil() {
     }
@@ -181,5 +190,21 @@ public class AssertionUtil {
         attrVal.setValue(value);
         attr.getAttributeValues().add(attrVal);
         return attr;
+    }
+
+    public static Optional<Assertion> toAssertion(final Element element) {
+        // Unmarshalling using the document root element, an EntitiesDescriptor in this case
+        try {
+
+            final Unmarshaller unmarshaller = XMLObjectProviderRegistrySupport.getUnmarshallerFactory().getUnmarshaller(element);
+            if (unmarshaller == null) {
+                LOGGER.error("SAML Unmarshalling is NULL");
+                return Optional.empty();
+            }
+            return Optional.of((Assertion) unmarshaller.unmarshall(element));
+        } catch (final UnmarshallingException e) {
+            LOGGER.error("UnmarshallingException: '{}", e.getMessage(), e);
+            return Optional.empty();
+        }
     }
 }

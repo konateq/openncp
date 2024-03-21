@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.application.client.connector.interceptor;
 
 import java.util.Map;
+import java.util.Optional;
 
 import eu.europa.ec.sante.openncp.application.client.connector.ClientConnectorException;
 import eu.europa.ec.sante.openncp.application.client.connector.ClientConnectorServicePortTypeWrapper;
@@ -47,8 +48,10 @@ public class AddSamlAssertionInterceptor extends AbstractSoapInterceptor {
             final SecurityBuilder securityBuilder = new SecurityBuilder();
             final Security security = securityBuilder.buildObject();
 
-            final Map<AssertionEnum, Assertion> assertions = (Map<AssertionEnum, Assertion>) message.get(
-                    ClientConnectorServicePortTypeWrapper.REQUESTCONTEXT_ASSERTIONS_KEY);
+            final Map<AssertionEnum, Assertion> assertions = Optional.ofNullable(
+                                                                             (Map<AssertionEnum, Assertion>) message.get(ClientConnectorServicePortTypeWrapper.REQUESTCONTEXT_ASSERTIONS_KEY))
+                                                                     .orElseGet(Map::of);
+
             assertions.forEach((assertionEnum, assertion) -> {
                 security.getUnknownXMLObjects().add(assertion);
             });

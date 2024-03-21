@@ -9,10 +9,11 @@ import java.util.Map;
 
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil;
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.Concept;
-import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.SignatureKeystoreInfo;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.PatientId;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
@@ -33,21 +34,26 @@ class DefaultClientConnectorServiceIntegrationTest {
 
     @BeforeAll
     static void setup() throws Exception {
-        ConfigurationManager mockedConfigurationManager = Mockito.mock(ConfigurationManager.class);
+        final ConfigurationManager mockedConfigurationManager = Mockito.mock(ConfigurationManager.class);
         when(mockedConfigurationManager.getProperty("SC_KEYSTORE_PATH")).thenReturn("src/test/resources/gazelle-service-consumer-keystore.jks");
         when(mockedConfigurationManager.getProperty("SC_KEYSTORE_PASSWORD")).thenReturn("gazelle");
         when(mockedConfigurationManager.getProperty("SC_PRIVATEKEY_PASSWORD")).thenReturn("gazelle");
         when(mockedConfigurationManager.getProperty("TRUSTSTORE_PATH")).thenReturn("src/test/resources/eu-truststore.jks");
         when(mockedConfigurationManager.getProperty("TRUSTSTORE_PASSWORD")).thenReturn("changeit");
 
+        when(mockedConfigurationManager.getProperty("NCP_SIG_KEYSTORE_PATH")).thenReturn("src/test/resources/gazelle-signature-keystore.jks");
+        when(mockedConfigurationManager.getProperty("NCP_SIG_KEYSTORE_PASSWORD")).thenReturn("gazelle");
+        when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_ALIAS")).thenReturn("gazelle.ncp-signature.openncp.dg-sante.eu");
+        when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD")).thenReturn("gazelle");
+
         setFinalStatic(ConfigurationManagerFactory.class.getDeclaredField("configurationManager"), mockedConfigurationManager);
 
         clientConnectorService = new DefaultClientConnectorService("https://localhost:8080/services/ClientConnectorService");
     }
 
-    static void setFinalStatic(Field field, Object newValue) throws Exception {
+    static void setFinalStatic(final Field field, final Object newValue) throws Exception {
         field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        final Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         field.set(null, newValue);
@@ -57,7 +63,7 @@ class DefaultClientConnectorServiceIntegrationTest {
     void sayHello() {
         final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
         assertions.put(AssertionEnum.CLINICIAN, createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu"));
-        final String response = clientConnectorService.sayHello(assertions,"Kim");
+        final String response = clientConnectorService.sayHello(assertions, "Kim");
         assertThat(response).isEqualTo("Hello Kim");
     }
 
@@ -66,7 +72,15 @@ class DefaultClientConnectorServiceIntegrationTest {
         final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
         assertions.put(AssertionEnum.CLINICIAN, createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu"));
 
-        final List<PatientDemographics> response = clientConnectorService.queryPatient(assertions, "BE", null);
+        final ObjectFactory objectFactory = new ObjectFactory();
+        final PatientId patientId = objectFactory.createPatientId();
+        patientId.setRoot("1.3.6.1.4.1.48336");
+        patientId.setExtension("2-1234-W7");
+
+        final PatientDemographics patientDemographics = objectFactory.createPatientDemographics();
+        patientDemographics.getPatientId().add(patientId);
+
+        final List<PatientDemographics> response = clientConnectorService.queryPatient(assertions, "BE", patientDemographics);
         assertThat(response).isNotNull();
     }
 
@@ -88,17 +102,9 @@ class DefaultClientConnectorServiceIntegrationTest {
         conceptRole.setCodeSystemId("2.16.840.1.113883.2.9.6.2.7");
         conceptRole.setCodeSystemName("ISCO");
         conceptRole.setDisplayName("Medical Doctors");
-
-        final SignatureKeystoreInfo signatureKeystoreInfo = new SignatureKeystoreInfo();
-        signatureKeystoreInfo.setSignatureKeystorePath(
-                "D:\\projects\\work\\dg_sante\\ehealth_bak\\openncp-docker\\certificates\\gazelle-signature-keystore.jks");
-        signatureKeystoreInfo.setSignatureKeystorePassword("gazelle");
-
-        signatureKeystoreInfo.setSignatureKeyAlias("gazelle.ncp-signature.openncp.dg-sante.eu");
-        signatureKeystoreInfo.setSignatureKeyPassword("gazelle");
-
-        return AssertionTestUtil.createHCPAssertion(keyStoreManager, signatureKeystoreInfo, username, fullName, email, "BE", "BElgium", "homecommid",
-                                                    conceptRole, "eHealth OpenNCP EU Portal", "urn:hl7ii:1.2.3.4:ABCD", "Resident Physician",
-                                                    "TREATMENT", "eHDSI EU Testing MedCare Center", permissions, null);
+        
+        return AssertionTestUtil.createHCPAssertion(username, fullName, email, "BE", "BElgium", "homecommid", conceptRole,
+                                                    "eHealth OpenNCP EU Portal", "urn:hl7ii:1.2.3.4:ABCD", "Resident Physician", "TREATMENT",
+                                                    "eHDSI EU Testing MedCare Center", permissions, null);
     }
 }

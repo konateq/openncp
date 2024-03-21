@@ -62,7 +62,7 @@ public class LocalConfiguration {
         resource.setName(jndiName);
         resource.setType(DataSource.class.getName());
         resource.setProperty("driverClassName", "com.mysql.cj.jdbc.Driver");
-        resource.setProperty("url", "jdbc:mysql://localhost:3307/ehealth_properties?useSSL=false");
+        resource.setProperty("url", "jdbc:mysql://localhost:3307/ehealth_properties?allowPublicKeyRetrieval=true&useSSL=false");
         resource.setProperty("username", "root");
         resource.setProperty("password", "Password1");
         return resource;

@@ -23,17 +23,18 @@
             <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
             <version>${cxf.version}</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.cxf</groupId>-->
-        <!--            <artifactId>cxf-rt-ws-security</artifactId>-->
-        <!--            <version>${cxf.version}</version>-->
-        <!--            <exclusions>-->
-        <!--                <exclusion>-->
-        <!--                    <groupId>org.glassfish.jaxb</groupId>-->
-        <!--                    <artifactId>jaxb-runtime</artifactId>-->
-        <!--                </exclusion>-->
-        <!--            </exclusions>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+            <version>${cxf.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-runtime</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>

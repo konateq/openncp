@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import javax.jws.WebService;
 
+import eu.europa.ec.sante.openncp.api.client.AssertionContextProvider;
 import eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType;
 import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
 import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
@@ -83,9 +84,10 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
 
     @Override
     public List<PatientDemographics> queryPatient(final QueryPatientRequest queryPatientRequest) {
-        final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage()
-                                                                                                                .getExchange()
-                                                                                                                .get("assertionMap");
+        final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
+                                                                                   .orElseThrow(() -> new ClientConnectorException(
+                                                                                           "No assertion context found"))
+                                                                                   .getAssertions();
         final QueryPatientOperation queryPatientOperation = ImmutableQueryPatientOperation.builder()
                                                                                           .assertions(assertionMap)
                                                                                           .request(queryPatientRequest)
