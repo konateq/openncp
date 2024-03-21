@@ -126,11 +126,6 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         return clientConnectorService.getClientConnectorServicePortType().queryPatient(queryPatientRequest);
     }
 
-    @Override
-    public String sayHello(final String name) {
-        return clientConnectorService.getClientConnectorServicePortType().sayHello(name);
-    }
-
     /**
      * Default Webservice test method available mainly for configuration and testing purpose.
      *

@@ -2,7 +2,6 @@ package eu.europa.ec.sante.openncp.application.client.connector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,18 +12,15 @@ import eu.europa.ec.sante.openncp.application.client.connector.testutils.Asserti
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.SignatureKeystoreInfo;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
-import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
-import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.SetEnvironmentVariable;
 import org.mockito.Mockito;
 import org.opensaml.saml.saml2.core.Assertion;
-import org.springframework.util.ResourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -59,7 +55,9 @@ class DefaultClientConnectorServiceIntegrationTest {
 
     @Test
     void sayHello() {
-        final String response = clientConnectorService.sayHello("Kim");
+        final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
+        assertions.put(AssertionEnum.CLINICIAN, createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu"));
+        final String response = clientConnectorService.sayHello(assertions,"Kim");
         assertThat(response).isEqualTo("Hello Kim");
     }
 
