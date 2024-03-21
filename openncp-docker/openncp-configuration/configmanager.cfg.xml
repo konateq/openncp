@@ -12,6 +12,6 @@
         <!-- Disable the second-level cache  -->
         <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
-        <mapping class="eu.europa.ec.sante.ehdsi.openncp.configmanager.domain.Property"/>
+        <mapping class="eu.europa.ec.sante.openncp.common.configuration.domain.Property"/>
     </session-factory>
 </hibernate-configuration>

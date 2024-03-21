@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.application.client.connector;
 
 import eu.europa.ec.sante.openncp.application.client.connector.interceptor.AddSamlAssertionInterceptor;
+import eu.europa.ec.sante.openncp.application.client.connector.interceptor.TransportTokenInInterceptor;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
@@ -69,6 +70,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         client.getBus().getFeatures().add(new WSAddressingFeature());
 
         client.getOutInterceptors().add(new AddSamlAssertionInterceptor());
+        client.getInInterceptors().add(new TransportTokenInInterceptor());
 
         final HTTPConduit conduit = (HTTPConduit) client.getConduit();
 
