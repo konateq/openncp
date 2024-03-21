@@ -18,6 +18,7 @@ import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.Asser
 import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.SetEnvironmentVariable;
 import org.mockito.Mockito;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @SetEnvironmentVariable(key = "EPSOS_PROPS_PATH", value = "")
+@Disabled("Commented out since the test is expecting a running client. Use this test for local testing.")
 class DefaultClientConnectorServiceIntegrationTest {
 
     private static DefaultClientConnectorService clientConnectorService;
