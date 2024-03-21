@@ -57,10 +57,47 @@
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-r4</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.herasaf.xacml.core</groupId>
+            <artifactId>herasaf-xacml-core</artifactId>
+        </dependency>
         <!-- Logback dependencies -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+        </dependency>
+        <!-- Axis2 dependencies -->
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-kernel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-transport-http</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Apache dependencies -->
+        <dependency>
+            <groupId>org.apache.ibatis</groupId>
+            <artifactId>ibatis-sqlmap</artifactId>
+        </dependency>
+        <!-- OpenSAML dependencies -->
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xacml-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xacml-saml-impl</artifactId>
         </dependency>
         <!-- Test dependencies -->
         <dependency>
@@ -74,4 +111,26 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.14.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <extension>true</extension>
+                    <schemaDirectory>src/main/resources</schemaDirectory>
+                    <generatePackage>eu.europa.ec.sante.openncp.core.common.evidence.etsi.rem</generatePackage>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

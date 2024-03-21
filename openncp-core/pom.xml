@@ -11,9 +11,23 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>openncp-core-common</module>
         <module>openncp-core-client</module>
         <module>openncp-core-server</module>
-        <module>openncp-core-common</module>
         <module>openncp-core-trc-sts</module>
     </modules>
+
+    <properties>
+        <axis2.version>1.8.1</axis2.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-kernel</artifactId>
+                <version>${axis2.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

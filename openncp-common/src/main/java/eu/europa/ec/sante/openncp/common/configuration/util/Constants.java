@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.common.configuration.util;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,10 +82,16 @@ public class Constants {
 
     static {
         String epsosPath = Optional.ofNullable(System.getenv(PROPS_ENV_VAR)).orElseGet(() -> System.getProperty(PROPS_ENV_VAR));
-        if (!epsosPath.endsWith(FileSystems.getDefault().getSeparator())) {
-            epsosPath += FileSystems.getDefault().getSeparator();
+        if (StringUtils.isNotBlank(epsosPath)) {
+            if (!epsosPath.endsWith(FileSystems.getDefault().getSeparator())) {
+                epsosPath += FileSystems.getDefault().getSeparator();
+            }
+        } else {
+            epsosPath = StringUtils.EMPTY;
+            LOGGER.error("No {} set, this is needed for a fully working oNCP application, make sure to add it as an environment variable or a system property.", PROPS_ENV_VAR);
         }
         EPSOS_PROPS_PATH = epsosPath;
+
         LOGGER.info("OpenNCP Util Constants Initialization - EPSOS_PROPS_PATH: '{}'", EPSOS_PROPS_PATH);
 
         SERVER_IP = ConfigurationManagerFactory.getConfigurationManager().getProperty("SERVER_IP");

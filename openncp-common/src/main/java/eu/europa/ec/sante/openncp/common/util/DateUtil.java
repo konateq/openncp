@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.common.util;
 
+import net.ihe.gazelle.jaxb.certificate.sante.Validate;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,13 @@ public class DateUtil {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         return DATATYPE_FACTORY.newXMLGregorianCalendar(calendar);
+    }
+
+    public static Date toDate(XMLGregorianCalendar calendar) {
+        if (calendar == null) {
+            return null;
+        }
+        return calendar.toGregorianCalendar().getTime();
     }
 
     // Returns the current time in the local time zone

@@ -1,7 +1,6 @@
 package eu.europa.eu.sante.openncp.security;
 
-import eu.europa.ec.sante.openncp.security.key.KeyStoreManager;
-import eu.europa.eu.sante.openncp.security.key.impl.NSTestKeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import eu.europa.eu.sante.openncp.security.key.impl.TianiTestKeyStoreManager;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -12,8 +11,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.*;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;

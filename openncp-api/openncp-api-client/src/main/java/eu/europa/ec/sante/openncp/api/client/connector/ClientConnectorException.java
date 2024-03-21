@@ -1,0 +1,27 @@
+package eu.europa.ec.sante.openncp.api.client.connector;
+
+
+import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
+
+public class ClientConnectorException extends RuntimeException {
+
+    public ClientConnectorException() {
+        super();
+    }
+
+    public ClientConnectorException(String message) {
+        super(message);
+    }
+
+    public ClientConnectorException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ClientConnectorException(Throwable cause) {
+        super(cause);
+    }
+
+    protected ClientConnectorException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+}

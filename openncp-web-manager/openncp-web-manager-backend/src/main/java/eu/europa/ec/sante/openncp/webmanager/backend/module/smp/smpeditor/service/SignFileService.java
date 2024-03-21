@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service;
 
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.Constants;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.FileUtil;
+import eu.europa.ec.sante.openncp.webmanager.backend.service.PermissionUtil;
 import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +85,7 @@ public class SignFileService {
         Element siSigPointer = findSig(type, docUnwrapped);
         SignatureValidator.validateSignature(siSigPointer);
 
-        FileUtil.initializeFolders(Constants.SMP_DIR_PATH);
+        PermissionUtil.initializeFolders(Constants.SMP_DIR_PATH);
         File generatedSignFile = new File(Constants.SMP_DIR_PATH + File.separator + fileName);
         Source source = new DOMSource(docServiceMetadata);
         Result result = new StreamResult(generatedSignFile);

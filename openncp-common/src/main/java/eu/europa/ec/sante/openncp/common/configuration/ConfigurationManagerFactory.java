@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.common.configuration;
 
-import eu.europa.ec.sante.openncp.common.configuration.util.Assert;
+import org.apache.commons.lang3.Validate;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -32,7 +32,7 @@ public class ConfigurationManagerFactory {
     private static SessionFactory buildSessionFactory() {
         try {
             String path = System.getenv("EPSOS_PROPS_PATH");
-            Assert.notNull(path, "Environment variable 'EPSOS_PROPS_PATH' is not set!");
+            Validate.notNull(path, "Environment variable 'EPSOS_PROPS_PATH' is not set!");
             return new Configuration().configure(new File(path, "configmanager.cfg.xml"))
                     .buildSessionFactory();
         } catch (Exception e) {

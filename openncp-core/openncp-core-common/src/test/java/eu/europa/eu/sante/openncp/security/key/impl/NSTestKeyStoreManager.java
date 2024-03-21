@@ -1,7 +1,7 @@
 package eu.europa.eu.sante.openncp.security.key.impl;
 
-import eu.europa.ec.sante.openncp.security.exception.SMgrException;
-import eu.europa.ec.sante.openncp.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

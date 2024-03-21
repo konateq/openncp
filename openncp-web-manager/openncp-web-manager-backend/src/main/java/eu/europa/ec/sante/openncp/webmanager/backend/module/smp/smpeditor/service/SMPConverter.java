@@ -4,7 +4,7 @@ import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFacto
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.Constants;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPFieldProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.FileUtil;
+import eu.europa.ec.sante.openncp.webmanager.backend.service.PermissionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ehdsi.*;
 import org.slf4j.Logger;
@@ -85,7 +85,7 @@ public class SMPConverter {
         ServiceMetadata serviceMetadata = objectFactory.createServiceMetadata();
 
         //XML file generated at path
-        FileUtil.initializeFolders(Constants.SMP_DIR_PATH);
+        PermissionUtil.initializeFolders(Constants.SMP_DIR_PATH);
         generatedFile = new File(Constants.SMP_DIR_PATH + File.separator + fileName);
 
         //Type of SMP File -> Redirect | Service Information
@@ -284,7 +284,7 @@ public class SMPConverter {
         ObjectFactory objectFactory = new ObjectFactory();
         ServiceMetadata serviceMetadata = objectFactory.createServiceMetadata();
         //  XML file generated at path
-        FileUtil.initializeFolders(Constants.SMP_DIR_PATH);
+        PermissionUtil.initializeFolders(Constants.SMP_DIR_PATH);
         generatedFile = new File(Constants.SMP_DIR_PATH + File.separator + fileName);
 
         //  Type of SMP File -> Redirect | Service Information

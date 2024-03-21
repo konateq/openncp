@@ -18,7 +18,7 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.servic
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.DynamicDiscoveryClient;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.SMPConverter;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.SslUtil;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.FileUtil;
+import eu.europa.ec.sante.openncp.webmanager.backend.service.PermissionUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -87,7 +87,7 @@ public class SMPUploadFileController {
     @PostMapping(path = "/smpeditor/uploader/fileToUpload")
     public ResponseEntity<SMPHttp> createSMPHttp(@RequestPart MultipartFile multipartFile) {
         SMPHttp smpHttp = new SMPHttp();
-        FileUtil.initializeFolders(Constants.SMP_DIR_PATH);
+        PermissionUtil.initializeFolders(Constants.SMP_DIR_PATH);
         File convFile = new File(Constants.SMP_DIR_PATH + File.separator + multipartFile.getOriginalFilename());
         try {
             multipartFile.transferTo(convFile);

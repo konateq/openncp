@@ -1,7 +1,8 @@
 package eu.europa.ec.sante.openncp.common.audit;
 
-import eu.europa.ec.sante.openncp.common.audit.auditmessagebuilders.*;
 import net.RFC3881.dicom.AuditMessage;
+
+import eu.europa.ec.sante.openncp.common.audit.auditmessagebuilders.*;
 
 public enum EventType {
 
