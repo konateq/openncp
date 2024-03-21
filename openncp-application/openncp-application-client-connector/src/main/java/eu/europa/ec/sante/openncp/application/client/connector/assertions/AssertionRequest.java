@@ -5,8 +5,10 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.util.UUID;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,6 +20,7 @@ import javax.xml.soap.SOAPHeaderElement;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Marshaller;
@@ -29,8 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import static eu.europa.ec.sante.openncp.application.client.connector.DefaultClientConnectorService.getSslSocketFactory;
 
 public class AssertionRequest {
 
@@ -121,13 +122,23 @@ public class AssertionRequest {
 
     public SSLSocketFactory getSSLSocketFactory() {
 
-        final SSLContext sslContext;
+        SSLContext sslContext;
         try {
-            final KeyStoreManager keyStoreManager = new DatabasePropertiesKeyStoreManager();
-            final String sigKeystorePassword = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_KEYSTORE_PASSWORD");
+            KeyStoreManager keyStoreManager = new DatabasePropertiesKeyStoreManager();
+            String sigKeystorePassword = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_KEYSTORE_PASSWORD");
 
-            return getSslSocketFactory(sigKeystorePassword, keyStoreManager);
-        } catch (final KeyManagementException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
+            sslContext = SSLContext.getInstance("TLSv1.2");
+
+            var keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+            keyManagerFactory.init(keyStoreManager.getKeyStore(), sigKeystorePassword.toCharArray());
+
+            var trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+            trustManagerFactory.init(keyStoreManager.getTrustStore());
+
+            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+            return sslContext.getSocketFactory();
+
+        } catch (KeyManagementException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
             logger.error("Exception: '{}'", e.getMessage(), e);
             return null;
         }

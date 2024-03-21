@@ -22,6 +22,7 @@ import eu.europa.ec.sante.openncp.core.client.ihe.dto.RetrieveDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.SubmitDocumentOperation;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import org.apache.commons.lang3.Validate;
+import org.apache.cxf.feature.Features;
 import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.apache.cxf.ws.policy.AssertionInfoMap;
 import org.opensaml.saml.saml2.core.Assertion;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
             targetNamespace = "http://client.core.openncp.sante.ec.europa.eu", wsdlLocation = "classpath:wsdl/ClientConnectorService.wsdl",
             endpointInterface = "eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType")
 @Service
+@Features(features = "org.apache.cxf.ext.logging.LoggingFeature")
 public class ClientConnectorServiceImpl implements ClientConnectorServicePortType {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientConnectorServiceImpl.class);
