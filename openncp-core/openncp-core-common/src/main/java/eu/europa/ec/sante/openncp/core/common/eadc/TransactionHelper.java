@@ -24,7 +24,7 @@ public class TransactionHelper {
 
     static {
         try {
-            jaxbContext = JAXBContext.newInstance("eu.epsos.pt.eadc.datamodel");
+            jaxbContext = JAXBContext.newInstance("eu.europa.ec.sante.openncp.core.common.eadc.datamodel");
         } catch (JAXBException e) {
             throw new IllegalStateException(e);
         }

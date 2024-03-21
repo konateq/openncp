@@ -53,7 +53,7 @@
     </context-param>
     <listener>
         <listener-class>
-            eu.europa.ec.sante.ehdsi.openncp.cc.QuartzInitializerListener
+            eu.europa.ec.sante.openncp.cc.QuartzInitializerListener
         </listener-class>
     </listener>
 

@@ -314,7 +314,7 @@ public class RespondingGateway_ServiceStub extends Stub {
             /* Log soap request */
             String logRequestBody;
             try {
-                if (!org.apache.commons.lang3.StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
+                if (!StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
                     String logRequestMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(env));
                     loggerClinical.debug("{}\n{}", XCAConstants.LOG.OUTGOING_XCA_QUERY_MESSAGE, logRequestMsg);
                 }

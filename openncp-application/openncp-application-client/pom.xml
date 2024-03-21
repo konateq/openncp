@@ -21,39 +21,64 @@
             <groupId>net.bull.javamelody</groupId>
             <artifactId>javamelody-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-dbcp</artifactId>
+            <version>8.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-features-logging</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-bindings-soap</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-core</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.axis2</groupId>-->
-<!--                <artifactId>axis2-aar-maven-plugin</artifactId>-->
-<!--                <version>${axis2.version}</version>-->
-<!--                <extensions>true</extensions>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>package-aar</id>-->
-<!--                        <phase>prepare-package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>aar</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <wsdlFileName>ClientConnectorService.wsdl</wsdlFileName>-->
-<!--                    <fileSets>-->
-<!--                        <fileSet>-->
-<!--                            <directory>${project.basedir}/src/main/resources/wsdl</directory>-->
-<!--                            <outputDirectory>META-INF</outputDirectory>-->
-<!--                            <includes>-->
-<!--                                <include>**/*.xsd</include>-->
-<!--                            </includes>-->
-<!--                        </fileSet>-->
-<!--                    </fileSets>-->
-<!--                    <servicesXmlFile>${project.build.outputDirectory}/axis2/services.xml</servicesXmlFile>-->
-<!--                    <wsdlFile>${project.build.outputDirectory}/wsdl/ClientConnectorService.wsdl</wsdlFile>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.axis2</groupId>-->
+            <!--                <artifactId>axis2-aar-maven-plugin</artifactId>-->
+            <!--                <version>${axis2.version}</version>-->
+            <!--                <extensions>true</extensions>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>package-aar</id>-->
+            <!--                        <phase>prepare-package</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>aar</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--                <configuration>-->
+            <!--                    <wsdlFileName>ClientConnectorService.wsdl</wsdlFileName>-->
+            <!--                    <fileSets>-->
+            <!--                        <fileSet>-->
+            <!--                            <directory>${project.basedir}/src/main/resources/wsdl</directory>-->
+            <!--                            <outputDirectory>META-INF</outputDirectory>-->
+            <!--                            <includes>-->
+            <!--                                <include>**/*.xsd</include>-->
+            <!--                            </includes>-->
+            <!--                        </fileSet>-->
+            <!--                    </fileSets>-->
+            <!--                    <servicesXmlFile>${project.build.outputDirectory}/axis2/services.xml</servicesXmlFile>-->
+            <!--                    <wsdlFile>${project.build.outputDirectory}/wsdl/ClientConnectorService.wsdl</wsdlFile>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 </project>

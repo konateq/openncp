@@ -56,7 +56,7 @@ public class TransformationService implements ITransformationService, TMConstant
 
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
 
-    private final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ctx_tsam.xml");
+    private final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ctx_tm.xml");
 
     private HashMap<String, String> level1Type;
     private HashMap<String, String> level3Type;

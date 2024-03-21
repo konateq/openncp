@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
+import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponse;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
 
@@ -14,12 +15,12 @@ public class SubmitDocumentResponseDts {
     private SubmitDocumentResponseDts() {
     }
 
+    static final ObjectFactory objectFactory = new ObjectFactory();
+
     public static SubmitDocumentResponse newInstance(XdrResponse xdrResponse) {
 
-        final SubmitDocumentResponse result = SubmitDocumentResponse.Factory.newInstance();
-
+        final SubmitDocumentResponse result = objectFactory.createSubmitDocumentResponse();
         result.setResponseStatus(xdrResponse.getResponseStatus());
-
         return result;
     }
 }

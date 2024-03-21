@@ -3,7 +3,7 @@ package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.Author;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument1;
+import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
 import eu.europa.ec.sante.openncp.core.client.ReasonOfHospitalisation;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.OrCDDocumentMetaData;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.XDSDocument;
@@ -12,14 +12,13 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.
 import org.apache.commons.lang3.StringUtils;
 
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * This is a Data Transformation Service providing functions to transform data into a Document object.
@@ -38,12 +37,12 @@ public class DocumentDts {
      * @param document the document to be converted.
      * @return the result of the conversion, as a Document.
      */
-    public static EpsosDocument1 newInstance(XDSDocument document) {
+    public static EpsosDocument newInstance(XDSDocument document) {
 
         if (document == null) {
             return null;
         }
-        final EpsosDocument1 result = EpsosDocument1.Factory.newInstance();
+        final EpsosDocument result = new EpsosDocument();
         result.setUuid(document.getDocumentUniqueId());
         result.setDescription(document.getDescription());
         result.setCreationDate(convertDate(document.getCreationTime()));
@@ -57,7 +56,7 @@ public class DocumentDts {
         }
         result.setMimeType(document.getMimeType());
         if (document.getAuthors() != null) {
-            result.setAuthorsArray(convertAuthorList(document.getAuthors()));
+            result.getAuthors().addAll(Arrays.asList(convertAuthorList(document.getAuthors())));
         }
         if (document.getReasonOfHospitalisation() != null) {
             result.setReasonOfHospitalisation(convertReasonOfHospitalisation(document.getReasonOfHospitalisation()));
@@ -105,14 +104,6 @@ public class DocumentDts {
         return result;
     }
 
-    private static String composeCodeAndText(String code, String text) {
-        String label = code;
-        if (StringUtils.isNotBlank(text)) {
-            label = "[" + code + "] " + text;
-        }
-        return label;
-    }
-
     private static Author[] convertAuthorList(List<OrCDDocumentMetaData.Author> authors) {
 
         var convertedAuthors = new Author[authors.size()];
@@ -123,9 +114,9 @@ public class DocumentDts {
             if (author.getAuthorSpeciality() != null) {
                 authorSpecialities = author.getAuthorSpeciality().toArray(new String[author.getAuthorSpeciality().size()]);
             }
-            var convertedAuthor = Author.Factory.newInstance();
+            var convertedAuthor = new Author();
             convertedAuthor.setPerson(authorPerson);
-            convertedAuthor.setSpecialtyArray(authorSpecialities);
+            convertedAuthor.getSpecialty().addAll(Arrays.asList(authorSpecialities));
             convertedAuthors[i] = convertedAuthor;
         }
         return convertedAuthors;
@@ -133,7 +124,7 @@ public class DocumentDts {
 
     private static ReasonOfHospitalisation convertReasonOfHospitalisation(OrCDDocumentMetaData.ReasonOfHospitalisation reasonOfHospitalisation) {
 
-        var convertedReasonOfHospitalisation = ReasonOfHospitalisation.Factory.newInstance();
+        var convertedReasonOfHospitalisation = new ReasonOfHospitalisation();
         convertedReasonOfHospitalisation.setCode(reasonOfHospitalisation.getCode());
         convertedReasonOfHospitalisation.setText(reasonOfHospitalisation.getText());
         return convertedReasonOfHospitalisation;
@@ -145,22 +136,22 @@ public class DocumentDts {
      * @param documentAssociation the list of XDSDocument.
      * @return the result of the conversion, as a list of Document.
      */
-    public static EpsosDocument1[] newInstance(List<XDSDocumentAssociation> documentAssociation) {
+    public static EpsosDocument[] newInstance(List<XDSDocumentAssociation> documentAssociation) {
 
         if (documentAssociation == null || documentAssociation.isEmpty()) {
-            return new EpsosDocument1[0];
+            return new EpsosDocument[0];
         }
 
-        List<EpsosDocument1> resultList = new ArrayList<>();
+        List<EpsosDocument> resultList = new ArrayList<>();
 
         for (XDSDocumentAssociation doc : documentAssociation) {
-            EpsosDocument1 xmlDoc = DocumentDts.newInstance(doc.getCdaXML());
-            EpsosDocument1 pdfDoc = DocumentDts.newInstance(doc.getCdaPDF());
+            EpsosDocument xmlDoc = DocumentDts.newInstance(doc.getCdaXML());
+            EpsosDocument pdfDoc = DocumentDts.newInstance(doc.getCdaPDF());
 
             //  If CDA L1 and L3 are existing then we shall create an association between the 2 documents.
             if (xmlDoc != null && pdfDoc != null) {
-                pdfDoc.setAssociatedDocumentsArray(new EpsosDocument1[]{xmlDoc});
-                xmlDoc.setAssociatedDocumentsArray(new EpsosDocument1[]{pdfDoc});
+                pdfDoc.getAssociatedDocuments().add(xmlDoc);
+                xmlDoc.getAssociatedDocuments().add(pdfDoc);;
             }
 
             // Adding the reference to the L1 CDA document
@@ -173,7 +164,7 @@ public class DocumentDts {
                 resultList.add(xmlDoc);
             }
         }
-        return resultList.toArray(new EpsosDocument1[resultList.size()]);
+        return resultList.toArray(new EpsosDocument[resultList.size()]);
     }
 
     /**
@@ -182,12 +173,12 @@ public class DocumentDts {
      * @param documentResponse the document to be converted.
      * @return the result of the conversion, as a Document.
      */
-    public static EpsosDocument1 newInstance(RetrieveDocumentSetResponseType.DocumentResponse documentResponse) {
+    public static EpsosDocument newInstance(RetrieveDocumentSetResponseType.DocumentResponse documentResponse) {
 
         if (documentResponse == null) {
             return null;
         }
-        final EpsosDocument1 result = EpsosDocument1.Factory.newInstance();
+        final EpsosDocument result = new EpsosDocument();
         result.setHcid(documentResponse.getHomeCommunityId());
         result.setUuid(documentResponse.getDocumentUniqueId());
         result.setMimeType(documentResponse.getMimeType());
@@ -201,9 +192,9 @@ public class DocumentDts {
      * Converts a string containing a date in the yyyyMMddHHmmss format to a Calendar instance.
      *
      * @param dateString a String representation of the Date.
-     * @return a Calendar instance, with the given String values.
+     * @return an XMLGregorianCalendar instance, with the given String values.
      */
-    private static Calendar convertDate(String dateString) {
+    private static XMLGregorianCalendar convertDate(String dateString) {
 
         var pattern1 = "yyyyMMddHHmmss";
         var pattern2 = "yyyyMMdd";
@@ -221,19 +212,12 @@ public class DocumentDts {
             return null;
         }
 
-        DateFormat formatter;
-        Date date;
-        Calendar cal;
-
-        formatter = new SimpleDateFormat(selectedPattern);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(selectedPattern);
         try {
-            date = formatter.parse(dateString);
-            cal = Calendar.getInstance();
-            cal.setTime(date);
-        } catch (ParseException ex) {
-            throw new RuntimeException(ex);
+            Date date = simpleDateFormat.parse(dateString);
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(simpleDateFormat.format(date));
+        } catch (DatatypeConfigurationException | ParseException e) {
+            throw new RuntimeException(e);
         }
-
-        return cal;
     }
 }

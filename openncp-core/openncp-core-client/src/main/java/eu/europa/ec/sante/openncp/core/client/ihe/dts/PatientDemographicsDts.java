@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
+import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
 import org.apache.commons.lang3.StringUtils;
 
@@ -7,10 +8,7 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
- * This is an Data Transformation Service. This provide functions to transform data into a PatientDemographics object.
- *
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
- * @author Marcelo Fonseca<code> - marcelo.fonseca@iuz.pt</code>
+ * This is a Data Transformation Service. This provides functions to transform data into a PatientDemographics object.
  */
 public final class PatientDemographicsDts {
 
@@ -21,15 +19,14 @@ public final class PatientDemographicsDts {
     }
 
     /**
-     * Converts a QueryPatientDocument object into a PatienDemographics Object.
+     * Converts a QueryPatientDocument object into a PatientDemographics Object.
      *
      * @param patientDemographics representing a QueryPatientDocument.
      * @return a PatientDemographics object.
      * @throws ParseException
      * @see PatientDemographics
-     * @see eu.europa.ec.sante.openncp.core.client.QueryPatientDocument
      */
-    public static PatientDemographics newInstance(final eu.europa.ec.sante.openncp.core.client.PatientDemographics patientDemographics) throws ParseException {
+    public static PatientDemographics toDataModel(final eu.europa.ec.sante.openncp.core.client.PatientDemographics patientDemographics) throws ParseException {
 
         if (patientDemographics == null) {
             return null;
@@ -41,7 +38,7 @@ public final class PatientDemographicsDts {
             result.setAdministrativeGender(PatientDemographics.Gender.parseGender(StringUtils.trim(patientDemographics.getAdministrativeGender())));
         }
         if (patientDemographics.getBirthDate() != null) {
-            result.setBirthDate(patientDemographics.getBirthDate().getTime());
+            result.setBirthDate(DateUtil.toDate(patientDemographics.getBirthDate()));
         }
         if (StringUtils.isNotBlank(patientDemographics.getCity())) {
             result.setCity(StringUtils.trim(patientDemographics.getCity()));
@@ -58,8 +55,8 @@ public final class PatientDemographicsDts {
         if (StringUtils.isNotBlank(patientDemographics.getGivenName())) {
             result.setGivenName(StringUtils.trim(patientDemographics.getGivenName()));
         }
-        if (patientDemographics.getPatientIdArray() != null) {
-            result.setIdList(PatientIdDts.newInstance(patientDemographics.getPatientIdArray()));
+        if (patientDemographics.getPatientId() != null) {
+            result.setIdList(PatientIdDts.toDataModel(patientDemographics.getPatientId()));
         }
         if (StringUtils.isNotBlank(patientDemographics.getPostalCode())) {
             result.setPostalCode(StringUtils.trim(patientDemographics.getPostalCode()));
@@ -74,29 +71,27 @@ public final class PatientDemographicsDts {
         return result;
     }
 
-    public static eu.europa.ec.sante.openncp.core.client.PatientDemographics newInstance(final PatientDemographics patientDemographics) {
+    public static eu.europa.ec.sante.openncp.core.client.PatientDemographics fromDataModel(final PatientDemographics patientDemographics) {
 
         if (patientDemographics == null) {
             return null;
         }
 
-        final eu.europa.ec.sante.openncp.core.client.PatientDemographics result = eu.europa.ec.sante.openncp.core.client.PatientDemographics.Factory.newInstance();
+        final eu.europa.ec.sante.openncp.core.client.PatientDemographics result = new eu.europa.ec.sante.openncp.core.client.PatientDemographics();
 
         if (patientDemographics.getAdministrativeGender() != null) {
             result.setAdministrativeGender(patientDemographics.getAdministrativeGender().toString());
         }
 
         if (patientDemographics.getBirthDate() != null) {
-            final Calendar calendar = new GregorianCalendar();
-            calendar.setTime(patientDemographics.getBirthDate());
-            result.setBirthDate(calendar);
+            result.setBirthDate(DateUtil.getDateAsXMLGregorian(patientDemographics.getBirthDate()));
         }
         result.setCity(patientDemographics.getCity());
         result.setCountry(patientDemographics.getCountry());
         result.setEmail(patientDemographics.getEmail());
         result.setFamilyName(patientDemographics.getFamilyName());
         result.setGivenName(patientDemographics.getGivenName());
-        result.setPatientIdArray(PatientIdDts.newInstance(patientDemographics.getIdList()));
+        result.getPatientId().addAll(PatientIdDts.fromDataModel(patientDemographics.getIdList()));
         result.setPostalCode(patientDemographics.getPostalCode());
         result.setStreetAddress(patientDemographics.getStreetAddress());
         result.setTelephone(patientDemographics.getTelephone());
@@ -104,7 +99,7 @@ public final class PatientDemographicsDts {
         return result;
     }
 
-    public static List<eu.europa.ec.sante.openncp.core.client.PatientDemographics> newInstance(final List<PatientDemographics> patientDemList) {
+    public static List<eu.europa.ec.sante.openncp.core.client.PatientDemographics> fromDataModel(final List<PatientDemographics> patientDemList) {
 
         if (patientDemList == null) {
             return Collections.emptyList();
@@ -113,7 +108,7 @@ public final class PatientDemographicsDts {
         final List<eu.europa.ec.sante.openncp.core.client.PatientDemographics> result = new ArrayList<>(patientDemList.size());
 
         for (PatientDemographics pd : patientDemList) {
-            result.add(newInstance(pd));
+            result.add(fromDataModel(pd));
         }
 
         return result;

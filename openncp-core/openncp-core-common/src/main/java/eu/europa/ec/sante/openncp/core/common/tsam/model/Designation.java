@@ -105,7 +105,7 @@ public class Designation {
 		this.type = type;
 	}
 
-	public Boolean isPreffered() {
+	public Boolean getPreferred() {
 		return preferred;
 	}
 

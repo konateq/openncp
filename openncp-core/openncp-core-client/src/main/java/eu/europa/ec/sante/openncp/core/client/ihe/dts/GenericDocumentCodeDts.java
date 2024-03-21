@@ -12,7 +12,7 @@ import java.util.List;
 public class GenericDocumentCodeDts {
 
     public static GenericDocumentCode newInstance(eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode genericDocCode) {
-        final GenericDocumentCode result = GenericDocumentCode.Factory.newInstance();
+        final GenericDocumentCode result = new GenericDocumentCode();
         result.setSchema(genericDocCode.getSchema());
         result.setValue(genericDocCode.getValue());
         result.setNodeRepresentation(genericDocCode.getValue());

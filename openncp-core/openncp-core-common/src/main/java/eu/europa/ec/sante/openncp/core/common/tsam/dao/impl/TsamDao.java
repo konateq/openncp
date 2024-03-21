@@ -119,9 +119,9 @@ public class TsamDao extends HibernateDaoSupport implements ITsamDao {
         if (designations.size() > 1) {
             designations.sort(new Comparator<Designation>() {
                 public int compare(Designation o1, Designation o2) {
-                    if (Boolean.TRUE.equals(o1.isPreffered())) {
+                    if (Boolean.TRUE.equals(o1.getPreferred())) {
                         return -1;
-                    } else if (Boolean.TRUE.equals(o2.isPreffered())) {
+                    } else if (Boolean.TRUE.equals(o2.getPreferred())) {
                         return 1;
                     }
                     return 0;

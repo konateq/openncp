@@ -2,7 +2,7 @@ package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument1;
+import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
 import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrDocumentSource;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequestDts;
@@ -62,7 +62,7 @@ public class DispensationService {
      * @param assertionMap HCP Assertion
      * @throws ParseException
      */
-    public static XdrResponse initialize(final EpsosDocument1 document, final PatientDemographics patient, final String countryCode,
+    public static XdrResponse initialize(final EpsosDocument document, final PatientDemographics patient, final String countryCode,
                                          final Map<AssertionEnum, Assertion> assertionMap) throws XDRException, ParseException {
 
         LOGGER.info("[CC] Dispense Service: Initialize");
@@ -83,7 +83,7 @@ public class DispensationService {
      * <dl> <dt><b>Warning Conditions: </b> <dd>eDispensation data is not processed by the country of affiliation
      * <dd>eDispensations are not rolled back automatically by the country of affiliation </dl>
      */
-    public static XdrResponse discard(final EpsosDocument1 document, final PatientDemographics patient, final String countryCode,
+    public static XdrResponse discard(final EpsosDocument document, final PatientDemographics patient, final String countryCode,
                                       final Map<AssertionEnum, Assertion> assertionMap) throws XDRException, ParseException {
 
         LOGGER.info("[CC] Dispense Service: DISCARD");

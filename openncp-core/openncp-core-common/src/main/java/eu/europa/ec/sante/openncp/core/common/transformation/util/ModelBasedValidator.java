@@ -33,6 +33,13 @@ public class ModelBasedValidator implements TMConstants {
     private HashMap<String, String> friendlyTypes;
     private HashMap<String, String> pivotTypes;
 
+    public static ModelBasedValidator getInstance() {
+        if (instance == null) {
+            instance = new ModelBasedValidator();
+        }
+        return instance;
+    }
+
     public ModelValidatorResult validate(String document, String docType, boolean friendly) {
 
         log.info("MDA validator start");

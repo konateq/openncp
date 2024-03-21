@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
                   xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
-                  xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy"
+                  xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702"
                   xmlns:tns="http://client.core.openncp.sante.ec.europa.eu"
-                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
-                  xmlns:wsaw="http://www.w3.org/2007/05/addressing/metadata"
+                  xmlns:wsp="http://www.w3.org/ns/ws-policy"
+                  xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata"
                   xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                   targetNamespace="http://client.core.openncp.sante.ec.europa.eu"
@@ -46,24 +46,24 @@
     </wsdl:message>
     <wsdl:portType name="ClientConnectorServicePortType">
         <wsdl:operation name="sayHello">
-            <wsdl:input message="tns:sayHello" wsaw:Action="urn:ehdsi:sayHello"/>
-            <wsdl:output message="tns:sayHelloResponse" wsaw:Action="urn:ehdsi:sayHelloResponse"/>
+            <wsdl:input message="tns:sayHello" wsam:Action="urn:ehdsi:sayHello" />
+            <wsdl:output message="tns:sayHelloResponse" wsam:Action="urn:ehdsi:sayHelloResponse" />
         </wsdl:operation>
         <wsdl:operation name="queryPatient">
-            <wsdl:input message="tns:queryPatient" wsaw:Action="urn:ehdsi:queryPatient"/>
-            <wsdl:output message="tns:queryPatientResponse" wsaw:Action="urn:ehdsi:queryPatientResponse"/>
+            <wsdl:input message="tns:queryPatient" wsam:Action="urn:ehdsi:queryPatient" />
+            <wsdl:output message="tns:queryPatientResponse" wsam:Action="urn:ehdsi:queryPatientResponse" />
         </wsdl:operation>
         <wsdl:operation name="queryDocuments">
-            <wsdl:input message="tns:queryDocuments" wsaw:Action="urn:ehdsi:queryDocuments"/>
-            <wsdl:output message="tns:queryDocumentsResponse" wsaw:Action="urn:ehdsi:queryDocumentsResponse"/>
+            <wsdl:input message="tns:queryDocuments" wsam:Action="urn:ehdsi:queryDocuments" />
+            <wsdl:output message="tns:queryDocumentsResponse" wsam:Action="urn:ehdsi:queryDocumentsResponse" />
         </wsdl:operation>
         <wsdl:operation name="retrieveDocument">
-            <wsdl:input message="tns:retrieveDocument" wsaw:Action="urn:ehdsi:retrieveDocument"/>
-            <wsdl:output message="tns:retrieveDocumentResponse" wsaw:Action="urn:ehdsi:retrieveDocumentResponse"/>
+            <wsdl:input message="tns:retrieveDocument" wsam:Action="urn:ehdsi:retrieveDocument" />
+            <wsdl:output message="tns:retrieveDocumentResponse" wsam:Action="urn:ehdsi:retrieveDocumentResponse" />
         </wsdl:operation>
         <wsdl:operation name="submitDocument">
-            <wsdl:input message="tns:submitDocument" wsaw:Action="urn:ehdsi:submitDocument"/>
-            <wsdl:output message="tns:submitDocumentResponse" wsaw:Action="urn:ehdsi:submitDocumentResponse"/>
+            <wsdl:input message="tns:submitDocument" wsam:Action="urn:ehdsi:submitDocument" />
+            <wsdl:output message="tns:submitDocumentResponse" wsam:Action="urn:ehdsi:submitDocumentResponse" />
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="ClientConnectorServicePortBinding" type="tns:ClientConnectorServicePortType">
