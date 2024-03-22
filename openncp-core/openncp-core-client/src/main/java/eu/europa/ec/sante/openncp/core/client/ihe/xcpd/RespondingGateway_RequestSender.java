@@ -1,5 +1,8 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.xcpd;
 
+import java.util.Locale;
+import java.util.Map;
+
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerException;
 import eu.europa.ec.sante.openncp.common.configuration.RegisteredService;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
@@ -14,9 +17,6 @@ import eu.europa.ec.sante.openncp.core.common.util.OidUtil;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * RespondingGateway_RequestSender class.
@@ -34,31 +34,31 @@ public final class RespondingGateway_RequestSender {
      * Builds and sends a PRPA_IN201305UV02 HL7 message, representing an XCPD Request process.
      */
     public static PRPAIN201306UV02 respondingGateway_PRPA_IN201305UV02(final PatientDemographics patientDemographics,
-                                                                       final Map<AssertionEnum, Assertion> assertionMap,
-                                                                       final String countryCode) throws NoPatientIdDiscoveredException {
+                                                                       final Map<AssertionEnum, Assertion> assertionMap, final String countryCode)
+            throws NoPatientIdDiscoveredException {
 
-        var dynamicDiscoveryService = new DynamicDiscoveryService();
+        final var dynamicDiscoveryService = new DynamicDiscoveryService();
         String endpointUrl = null;
         try {
             endpointUrl = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH),
-                    RegisteredService.PATIENT_IDENTIFICATION_SERVICE);
-        } catch (ConfigurationManagerException e){
-            throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC, e.getMessage());
+                                                                 RegisteredService.PATIENT_IDENTIFICATION_SERVICE);
+        } catch (final ConfigurationManagerException e) {
+            throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC, e);
         }
 
-        String dstHomeCommunityId = OidUtil.getHomeCommunityId(countryCode.toLowerCase(Locale.ENGLISH));
-        var hl7Request = PRPAIN201305UV022DTS.newInstance(patientDemographics, dstHomeCommunityId);
+        final String dstHomeCommunityId = OidUtil.getHomeCommunityId(countryCode.toLowerCase(Locale.ENGLISH));
+        final var hl7Request = PRPAIN201305UV022DTS.newInstance(patientDemographics, dstHomeCommunityId);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("ClientConnector is trying to contact remote NCP-A:\nEndpoint: '{}'\nHomeCommunityId: '{}'",
-                    endpointUrl, dstHomeCommunityId);
+            LOGGER.debug("ClientConnector is trying to contact remote NCP-A:\nEndpoint: '{}'\nHomeCommunityId: '{}'", endpointUrl,
+                         dstHomeCommunityId);
         }
         return sendRequest(endpointUrl, hl7Request, assertionMap, countryCode);
     }
 
-    private static PRPAIN201306UV02 sendRequest(String endpointUrl, PRPAIN201305UV02 pRPAIN201305UV022,
-                                                Map<AssertionEnum, Assertion> assertionMap, final String countryCode) throws NoPatientIdDiscoveredException {
+    private static PRPAIN201306UV02 sendRequest(final String endpointUrl, final PRPAIN201305UV02 pRPAIN201305UV022, final Map<AssertionEnum, Assertion> assertionMap,
+                                                final String countryCode) throws NoPatientIdDiscoveredException {
 
-        var respondingGatewayServiceStub = new RespondingGateway_ServiceStub(endpointUrl);
+        final var respondingGatewayServiceStub = new RespondingGateway_ServiceStub(endpointUrl);
         // Dummy handler for any mustUnderstand
         EventLogClientUtil.createDummyMustUnderstandHandler(respondingGatewayServiceStub);
         respondingGatewayServiceStub.setCountryCode(countryCode);
