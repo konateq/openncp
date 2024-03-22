@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.sante</groupId>
-            <artifactId>openncp-core-common</artifactId>
+            <artifactId>openncp-core-server-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -23,4 +23,19 @@
             <version>4.8-m8</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+            <profile>
+                <!-- This profile bundles the mock National Connector implementation -->
+                <id>national-connector-mock</id>
+                <dependencies>
+                    <dependency>
+                        <groupId>eu.europa.ec.sante</groupId>
+                        <artifactId>openncp-core-server-mock</artifactId>
+                        <version>${project.version}</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </profile>
+        </profiles>
 </project>

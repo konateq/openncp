@@ -241,22 +241,14 @@ public class XmlUtil implements TMConstants {
         return stringToDom(documentToString);
     }
 
-    /**
-     * Returns InputStream from Document
-     *
-     * @param node Document Node to transform as InputStream
-     * @return InputStream
-     * @throws TransformerException Java XML Transformation error
-     */
-    public static InputStream nodeToInputStream(Node node) throws TransformerException {
+    public static Document parseContent(String content) throws ParserConfigurationException, SAXException, IOException {
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Result outputTarget = new StreamResult(outputStream);
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.transform(new DOMSource(node), outputTarget);
-        return new ByteArrayInputStream(outputStream.toByteArray());
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setNamespaceAware(true);
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        StringReader lReader = new StringReader(content);
+        InputSource inputSource = new InputSource(lReader);
+        return documentBuilder.parse(inputSource);
     }
 
     public static String getElementPath(Node e) {
