@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.server.ihe.xcpd;
+package eu.europa.ec.sante.openncp.core.server.api.ihe.xcpd;
 
 import eu.europa.ec.sante.openncp.core.common.NationalConnectorInterface;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;

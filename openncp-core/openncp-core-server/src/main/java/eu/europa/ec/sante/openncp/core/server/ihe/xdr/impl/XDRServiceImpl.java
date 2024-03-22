@@ -9,7 +9,6 @@ import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
-import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.common.IHEEventType;
 import eu.europa.ec.sante.openncp.core.common.RegistryErrorSeverity;
@@ -32,7 +31,6 @@ import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorList;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
-import eu.europa.ec.sante.openncp.core.common.exception.DocumentProcessingException;
 import eu.europa.ec.sante.openncp.core.common.exception.DocumentTransformationException;
 import eu.europa.ec.sante.openncp.core.common.exception.NIException;
 import eu.europa.ec.sante.openncp.core.common.exception.NoConsentException;
@@ -44,7 +42,7 @@ import eu.europa.ec.sante.openncp.core.common.transformation.util.DomUtils;
 import eu.europa.ec.sante.openncp.core.server.ihe.AdhocQueryResponseStatus;
 import eu.europa.ec.sante.openncp.core.server.ihe.RegistryErrorUtils;
 import eu.europa.ec.sante.openncp.core.server.ihe.exception.NationalInfrastructureException;
-import eu.europa.ec.sante.openncp.core.server.ihe.xdr.DocumentSubmitInterface;
+import eu.europa.ec.sante.openncp.core.server.api.ihe.xdr.DocumentSubmitInterface;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -640,115 +638,6 @@ public class XDRServiceImpl implements XDRServiceInterface {
             SMgrException, InsufficientRightsException {
 
         return SAML2Validator.validateXDRHeader(sh, classCode);
-    }
-
-    /**
-     * @param request
-     * @param sh
-     * @param eventLog
-     * @return
-     */
-    public RegistryResponseType saveHCER(ProvideAndRegisterDocumentSetRequestType request, SOAPHeader sh, EventLog
-            eventLog) {
-
-        RegistryResponseType response = new RegistryResponseType();
-        String sigCountryCode = null;
-
-        Element shElement = null;
-        try {
-            shElement = XMLUtils.toDOM(sh);
-        } catch (Exception e) {
-            logger.error("Exception: '{}'", e.getMessage(), e);
-        }
-        documentSubmitService.setSOAPHeader(shElement);
-
-        RegistryErrorList rel = ofRs.createRegistryErrorList();
-        try {
-            sigCountryCode = validateXDRHeader(shElement, ClassCode.HCER_CLASSCODE);
-        } catch (OpenNCPErrorCodeException e) {
-            logger.error("OpenncpErrorCodeException: '{}'", e.getMessage(), e);
-            RegistryErrorUtils.addErrorMessage(
-                    rel,
-                    e.getErrorCode(),
-                    e.getMessage(),
-                    e.getLocalizedMessage(),
-                    RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
-        } catch (SMgrException e) {
-            logger.error("SMgrException: '{}'", e.getMessage(), e);
-            RegistryErrorUtils.addErrorMessage(
-                    rel,
-                    OpenNCPErrorCode.ERROR_SEC_GENERIC,
-                    e.getMessage(),
-                    e.getLocalizedMessage(),
-                    RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
-        }
-
-        String fullPatientId = getDocumentEntryPatientId(request);
-        if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && loggerClinical.isDebugEnabled()) {
-            loggerClinical.info("Received a HCER document for patient: '{}'", fullPatientId);
-        }
-        /*
-         * Here PDP checks and related calls are skipped, necessary checks to be performed in the NI while processing
-         * the consent document.
-         */
-        for (int i = 0; i < request.getDocument().size(); i++) {
-            ProvideAndRegisterDocumentSetRequestType.Document doc = request.getDocument().get(i);
-
-            try {
-                /* Validate CDA epSOS Pivot */
-                if (OpenNCPValidation.isValidationEnable()) {
-                    OpenNCPValidation.validateCdaDocument(new String(doc.getValue(), StandardCharsets.UTF_8),
-                            NcpSide.NCP_A, obtainClassCode(request), true);
-                }
-
-                TMResponseStructure tmResponseStructure = TranslationsAndMappingsClient.translate(DomUtils.byteToDocument(doc.getValue()), Constants.LANGUAGE_CODE);
-                org.w3c.dom.Document cdaDocument = Base64Util.decode(tmResponseStructure.getResponseCDA());
-                byte[] docBytes = XMLUtils.toOM(cdaDocument.getDocumentElement()).toString().getBytes(StandardCharsets.UTF_8);
-                String documentString = new String(docBytes, StandardCharsets.UTF_8);
-
-
-                /* Validate CDA epSOS Pivot */
-                if (OpenNCPValidation.isValidationEnable()) {
-                    OpenNCPValidation.validateCdaDocument(documentString, NcpSide.NCP_A, obtainClassCode(request), true);
-                }
-
-                org.w3c.dom.Document domDocument = XMLUtil.parseContent(documentString);
-                EPSOSDocument epsosDocument = DocumentFactory.createEPSOSDocument(fullPatientId, ClassCode.HCER_CLASSCODE, domDocument);
-                documentSubmitService.submitHCER(epsosDocument);
-            } catch (DocumentProcessingException e) {
-                logger.error("DocumentProcessingException: '{}'", e.getMessage(), e);
-                RegistryErrorUtils.addErrorMessage(
-                        rel,
-                        e.getOpenncpErrorCode(),
-                        e.getMessage(),
-                        e.getLocalizedMessage(),
-                        RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
-            } catch (DocumentTransformationException e) {
-                logger.error("DocumentTransformationException: '{}'", e.getMessage(), e);
-                RegistryErrorUtils.addErrorMessage(
-                        rel,
-                        e.getErrorCode(),
-                        e.getMessage(),
-                        e.getLocalizedMessage(),
-                        RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
-            } catch (Exception e) {
-                logger.error("Exception: '{}'", e.getMessage(), e);
-                RegistryErrorUtils.addErrorMessage(
-                        rel,
-                        OpenNCPErrorCode.ERROR_ED_GENERIC,
-                        e.getMessage(),
-                        e.getLocalizedMessage(),
-                        RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
-            }
-        }
-        if (!rel.getRegistryError().isEmpty()) {
-            response.setRegistryErrorList(rel);
-            response.setStatus(AdhocQueryResponseStatus.FAILURE);
-        } else {
-            response.setStatus(AdhocQueryResponseStatus.SUCCESS);
-        }
-
-        return response;
     }
 
     public RegistryResponseType reportDocumentTypeError(ProvideAndRegisterDocumentSetRequestType request) {
