@@ -7,14 +7,8 @@
         <version>8.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>openncp-docker</artifactId>
-    <name>OpenNCP Docker</name>
+    <name>openncp-docker</name>
     <dependencies>
-        <!--        <dependency>-->
-        <!--            <groupId>eu.europa.ec.sante.ehdsi.openncp-protocol-terminators.openncp-ncp-server</groupId>-->
-        <!--            <artifactId>openncp-ws-server</artifactId>-->
-        <!--            <version>${project.version}</version>-->
-        <!--            <type>war</type>-->
-        <!--        </dependency>-->
     </dependencies>
     <build>
         <plugins>
@@ -33,8 +27,8 @@
                 <configuration>
                     <artifactItems>
                         <artifactItem>
-                            <groupId>eu.europa.ec.sante.ehdsi.openncp-protocol-terminators.openncp-ncp-server</groupId>
-                            <artifactId>openncp-ws-server</artifactId>
+                            <groupId>eu.europa.ec.sante</groupId>
+                            <artifactId>openncp-application-server</artifactId>
                             <version>${project.version}</version>
                             <type>war</type>
                             <overWrite>true</overWrite>
@@ -43,25 +37,25 @@
                         </artifactItem>
                         <artifactItem>
                             <groupId>eu.europa.ec.sante</groupId>
-                            <artifactId>>openncp-application-client</artifactId>
+                            <artifactId>openncp-application-client</artifactId>
                             <version>${project.version}</version>
                             <type>war</type>
                             <overWrite>true</overWrite>
                             <outputDirectory>${basedir}/target/classes/webapp</outputDirectory>
                             <destFileName>openncp-client-connector.war</destFileName>
                         </artifactItem>
+                        <!--                        <artifactItem>-->
+                        <!--                            <groupId>eu.europa.ec.sante</groupId>-->
+                        <!--                            <artifactId>openatna-web</artifactId>-->
+                        <!--                            <version>${project.version}</version>-->
+                        <!--                            <type>war</type>-->
+                        <!--                            <overWrite>true</overWrite>-->
+                        <!--                            <outputDirectory>${basedir}/target/classes/webapp</outputDirectory>-->
+                        <!--                            <destFileName>openatna-web.war</destFileName>-->
+                        <!--                        </artifactItem>-->
                         <artifactItem>
-                            <groupId>eu.europa.ec.sante.ehdsi.openncp-openatna</groupId>
-                            <artifactId>openatna-web</artifactId>
-                            <version>${project.version}</version>
-                            <type>war</type>
-                            <overWrite>true</overWrite>
-                            <outputDirectory>${basedir}/target/classes/webapp</outputDirectory>
-                            <destFileName>openatna-web.war</destFileName>
-                        </artifactItem>
-                        <artifactItem>
-                            <groupId>eu.europa.ec.sante.ehdsi</groupId>
-                            <artifactId>openncp-gateway-backend</artifactId>
+                            <groupId>eu.europa.ec.sante</groupId>
+                            <artifactId>openncp-web-manager-backend</artifactId>
                             <version>${project.version}</version>
                             <type>war</type>
                             <overWrite>true</overWrite>
@@ -69,7 +63,7 @@
                             <destFileName>openncp-gateway-backend.war</destFileName>
                         </artifactItem>
                         <artifactItem>
-                            <groupId>eu.europa.ec.sante.ehdsi</groupId>
+                            <groupId>eu.europa.ec.sante</groupId>
                             <artifactId>openncp-configuration-utility</artifactId>
                             <version>${project.version}</version>
                             <type>jar</type>
@@ -78,25 +72,25 @@
                             <destFileName>openncp-configuration-utility.jar</destFileName>
                         </artifactItem>
                         <artifactItem>
-                            <groupId>eu.europa.ec.sante.ehdsi</groupId>
-                            <artifactId>openncp-trc-sts</artifactId>
+                            <groupId>eu.europa.ec.sante</groupId>
+                            <artifactId>openncp-application-trc-sts</artifactId>
                             <version>${project.version}</version>
                             <type>war</type>
                             <overWrite>true</overWrite>
                             <outputDirectory>${basedir}/target/classes/webapp/</outputDirectory>
                             <destFileName>TRC-STS.war</destFileName>
                         </artifactItem>
+                        <!--                        <artifactItem>-->
+                        <!--                            <groupId>eu.europa.ec.sante</groupId>-->
+                        <!--                            <artifactId>translations-and-mappings-ws</artifactId>-->
+                        <!--                            <version>${project.version}</version>-->
+                        <!--                            <type>war</type>-->
+                        <!--                            <overWrite>true</overWrite>-->
+                        <!--                            <outputDirectory>${basedir}/target/classes/webapp/</outputDirectory>-->
+                        <!--                            <destFileName>translations-and-mappings-ws.war</destFileName>-->
+                        <!--                        </artifactItem>-->
                         <artifactItem>
-                            <groupId>eu.europa.ec.sante.ehdsi</groupId>
-                            <artifactId>translations-and-mappings-ws</artifactId>
-                            <version>${project.version}</version>
-                            <type>war</type>
-                            <overWrite>true</overWrite>
-                            <outputDirectory>${basedir}/target/classes/webapp/</outputDirectory>
-                            <destFileName>translations-and-mappings-ws.war</destFileName>
-                        </artifactItem>
-                        <artifactItem>
-                            <groupId>eu.europa.ec.sante.ehdsi</groupId>
+                            <groupId>eu.europa.ec.sante</groupId>
                             <artifactId>openncp-tsam-sync</artifactId>
                             <version>${project.version}</version>
                             <type>jar</type>
@@ -105,8 +99,8 @@
                             <destFileName>openncp-tsam-sync.jar</destFileName>
                         </artifactItem>
                         <artifactItem>
-                            <groupId>eu.europa.ec.sante.ehdsi.openncp-cdadisplaytool</groupId>
-                            <artifactId>openncp-tsamexporter</artifactId>
+                            <groupId>eu.europa.ec.sante</groupId>
+                            <artifactId>openncp-tsam-exporter</artifactId>
                             <version>${project.version}</version>
                             <type>jar</type>
                             <overWrite>true</overWrite>

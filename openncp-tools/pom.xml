@@ -13,5 +13,6 @@
     <modules>
         <module>openncp-tsam-exporter</module>
         <module>openncp-tsam-sync</module>
+        <module>openncp-configuration-utility</module>
     </modules>
 </project>
