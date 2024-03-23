@@ -129,6 +129,7 @@
         <hapi.fhir.version>6.6.0</hapi.fhir.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
         <cxf.version>3.6.3</cxf.version>
+        <bcprov.version>1.70</bcprov.version>
     </properties>
 
     <dependencyManagement>

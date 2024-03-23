@@ -16,8 +16,6 @@ import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtil;
 import eu.europa.ec.sante.openncp.core.common.eadc.EadcUtilWrapper;
 import eu.europa.ec.sante.openncp.core.common.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.util.EventLogUtil;
-import net.ihe.gazelle.hl7v3.prpain201305UV02.PRPAIN201305UV02Type;
-import net.ihe.gazelle.hl7v3.prpain201306UV02.PRPAIN201306UV02Type;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -29,7 +27,6 @@ import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +57,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
 
         JAXBContext jc = null;
         try {
-            jc = JAXBContext.newInstance(PRPAIN201305UV02Type.class, PRPAIN201306UV02Type.class);
+            jc = JAXBContext.newInstance(PRPAIN201305UV02.class, PRPAIN201306UV02.class);
         } catch (javax.xml.bind.JAXBException ex) {
             LOGGER.error("Unable to create JAXBContext: '{}'", ex.getMessage(), ex);
         } finally {
@@ -178,7 +175,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
             eadcError = e.getMessage();
             throw AxisFault.makeFault(e);
         } finally {
-            if(!eadcError.isEmpty()) {
+            if (!eadcError.isEmpty()) {
                 EadcUtilWrapper.invokeEadcFailure(msgContext, newMsgContext, null, null, startTime,
                         new Date(), Constants.COUNTRY_CODE, EadcEntry.DsTypes.EADC, EadcUtil.Direction.INBOUND,
                         ServiceType.PATIENT_IDENTIFICATION_RESPONSE, eadcError);
@@ -195,7 +192,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 
             OMFactory factory = OMAbstractFactory.getOMFactory();
-            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201305UV02Type.class, param, marshaller,
+            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201305UV02.class, param, marshaller,
                     "urn:hl7-org:v3", "PRPA_IN201305UV02");
             OMNamespace namespace = factory.createOMNamespace("urn:hl7-org:v3", null);
 
@@ -222,7 +219,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 
             OMFactory factory = OMAbstractFactory.getOMFactory();
-            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201306UV02Type.class, param, marshaller, "urn:hl7-org:v3", "PRPA_IN201306UV02");
+            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201306UV02.class, param, marshaller, "urn:hl7-org:v3", "PRPA_IN201306UV02");
             OMNamespace namespace = factory.createOMNamespace("urn:hl7-org:v3", null);
 
             return factory.createOMElement(source, "PRPA_IN201306UV02", namespace);

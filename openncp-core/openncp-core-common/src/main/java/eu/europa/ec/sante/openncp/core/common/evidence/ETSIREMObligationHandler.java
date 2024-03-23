@@ -48,7 +48,7 @@ public class ETSIREMObligationHandler implements ObligationHandler {
 
     static {
         try {
-            jaxbContext = JAXBContext.newInstance("eu.esens.abb.nonrep.etsi.rem");
+            jaxbContext = JAXBContext.newInstance("eu.europa.ec.sante.openncp.core.common.evidence.etsi.rem");
         } catch (JAXBException e) {
             throw new IllegalStateException(e);
         }
