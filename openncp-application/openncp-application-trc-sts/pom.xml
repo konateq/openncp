@@ -25,6 +25,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>net.bull.javamelody</groupId>
+            <artifactId>javamelody-core</artifactId>
+            <version>${javamelody.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+        <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <exclusions>
@@ -86,8 +96,31 @@
                 <!--                        </execution>-->
                 <!--                    </executions>-->
                 <!--                </plugin>-->
+
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <id>monitoring</id>
+            <properties>
+                <enable.monitoring.start/>
+                <enable.monitoring.stop/>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>net.bull.javamelody</groupId>
+                    <artifactId>javamelody-core</artifactId>
+                    <version>${javamelody.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.jrobin</groupId>
+                    <artifactId>jrobin</artifactId>
+                    <version>1.5.9</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

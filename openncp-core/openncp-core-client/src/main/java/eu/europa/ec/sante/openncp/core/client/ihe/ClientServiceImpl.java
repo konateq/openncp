@@ -134,7 +134,7 @@ public class ClientServiceImpl implements ClientService {
 
             final QueryResponse response;
             if (documentCodes.size() == 1) {
-                final String classCode = documentCodes.get(0).getValue();
+                final String classCode = documentCodes.get(0).getNodeRepresentation();
                 switch (ClassCode.getByCode(classCode)) {
                     case PS_CLASSCODE:
                         response = PatientService.list(PatientIdDts.toDataModel(patientId), countryCode,

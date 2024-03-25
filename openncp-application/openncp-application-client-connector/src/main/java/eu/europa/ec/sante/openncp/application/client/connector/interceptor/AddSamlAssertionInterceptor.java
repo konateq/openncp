@@ -53,6 +53,7 @@ public class AddSamlAssertionInterceptor extends AbstractSoapInterceptor {
                                                                      .orElseGet(Map::of);
 
             assertions.forEach((assertionEnum, assertion) -> {
+                LOGGER.debug("Adding assertion key [{}] and value [{}]", assertionEnum, assertion);
                 security.getUnknownXMLObjects().add(assertion);
             });
 
