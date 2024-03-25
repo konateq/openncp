@@ -27,6 +27,8 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 
+import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
+import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.cryptacular.util.CertUtil;
