@@ -3,6 +3,9 @@ package eu.europa.ec.sante.openncp.sts;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.core.common.security.issuer.SamlTRCIssuer;
 import jakarta.servlet.http.HttpServletRequest;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
