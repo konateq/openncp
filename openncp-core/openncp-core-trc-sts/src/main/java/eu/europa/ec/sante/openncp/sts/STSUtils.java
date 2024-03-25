@@ -22,9 +22,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
-import jakarta.xml.soap.SOAPElement;
-import jakarta.xml.ws.WebServiceException;
-import jakarta.xml.ws.handler.MessageContext;
+import javax.xml.soap.SOAPElement;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
