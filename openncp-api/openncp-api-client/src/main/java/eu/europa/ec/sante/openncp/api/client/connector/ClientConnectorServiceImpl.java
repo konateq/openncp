@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @WebService(serviceName = "ClientConnectorService", portName = "ClientConnectorServicePort",
-            targetNamespace = "http://client.core.openncp.sante.ec.europa.eu", wsdlLocation = "classpath:wsdl/ClientConnectorService.wsdl",
-            endpointInterface = "eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType")
+        targetNamespace = "http://client.core.openncp.sante.ec.europa.eu", wsdlLocation = "classpath:wsdl/ClientConnectorService.wsdl",
+        endpointInterface = "eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType")
 @Service
 @Features(features = "org.apache.cxf.ext.logging.LoggingFeature")
 public class ClientConnectorServiceImpl implements ClientConnectorServicePortType {
@@ -48,58 +48,62 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
 
     @Override
     public String submitDocument(final SubmitDocumentRequest submitDocumentRequest) {
-        final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage()
-                                                                                                                .getExchange()
-                                                                                                                .get("assertionMap");
+        final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
+                .orElseThrow(() -> new ClientConnectorException(
+                        "No assertion context found"))
+                .getAssertions();
         final SubmitDocumentOperation submitDocumentOperation = ImmutableSubmitDocumentOperation.builder()
-                                                                                                .assertions(assertionMap)
-                                                                                                .request(submitDocumentRequest)
-                                                                                                .build();
+                .assertions(assertionMap)
+                .request(submitDocumentRequest)
+                .build();
         return clientService.submitDocument(submitDocumentOperation);
     }
 
     @Override
     public List<EpsosDocument> queryDocuments(final QueryDocumentRequest queryDocumentRequest) {
-        final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage()
-                                                                                                                .getExchange()
-                                                                                                                .get("assertionMap");
+        final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
+                .orElseThrow(() -> new ClientConnectorException(
+                        "No assertion context found"))
+                .getAssertions();
         final QueryDocumentOperation queryDocumentOperation = ImmutableQueryDocumentOperation.builder()
-                                                                                             .assertions(assertionMap)
-                                                                                             .request(queryDocumentRequest)
-                                                                                             .build();
+                .assertions(assertionMap)
+                .request(queryDocumentRequest)
+                .build();
         return clientService.queryDocuments(queryDocumentOperation);
     }
 
     @Override
     public EpsosDocument retrieveDocument(final RetrieveDocumentRequest retrieveDocumentRequest) {
-        final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage()
-                                                                                                                .getExchange()
-                                                                                                                .get("assertionMap");
+        final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
+                .orElseThrow(() -> new ClientConnectorException(
+                        "No assertion context found"))
+                .getAssertions();
         final RetrieveDocumentOperation retrieveDocumentOperation = ImmutableRetrieveDocumentOperation.builder()
-                                                                                                      .assertions(assertionMap)
-                                                                                                      .request(retrieveDocumentRequest)
-                                                                                                      .build();
+                .assertions(assertionMap)
+                .request(retrieveDocumentRequest)
+                .build();
         return clientService.retrieveDocument(retrieveDocumentOperation);
     }
 
     @Override
     public List<PatientDemographics> queryPatient(final QueryPatientRequest queryPatientRequest) {
         final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
-                                                                                   .orElseThrow(() -> new ClientConnectorException(
-                                                                                           "No assertion context found"))
-                                                                                   .getAssertions();
+                .orElseThrow(() -> new ClientConnectorException(
+                        "No assertion context found"))
+                .getAssertions();
         final QueryPatientOperation queryPatientOperation = ImmutableQueryPatientOperation.builder()
-                                                                                          .assertions(assertionMap)
-                                                                                          .request(queryPatientRequest)
-                                                                                          .build();
+                .assertions(assertionMap)
+                .request(queryPatientRequest)
+                .build();
         return clientService.queryPatient(queryPatientOperation);
     }
 
     @Override
     public String sayHello(final String name) {
-        final Map<AssertionEnum, Assertion> assertionMap = (Map<AssertionEnum, Assertion>) PhaseInterceptorChain.getCurrentMessage()
-                                                                                                                .getExchange()
-                                                                                                                .get("assertionMap");
+        final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
+                .orElseThrow(() -> new ClientConnectorException(
+                        "No assertion context found"))
+                .getAssertions();
         final AssertionInfoMap assertionInfoMap = PhaseInterceptorChain.getCurrentMessage().get(AssertionInfoMap.class);
 
         return clientService.sayHello(name);
