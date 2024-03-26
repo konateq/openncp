@@ -69,7 +69,9 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
                 .assertions(assertionMap)
                 .request(queryDocumentRequest)
                 .build();
-        return clientService.queryDocuments(queryDocumentOperation);
+        List<EpsosDocument> epsosDocuments = clientService.queryDocuments(queryDocumentOperation);
+        LOGGER.info("epsosDocuments : " + epsosDocuments);
+        return epsosDocuments;
     }
 
     @Override

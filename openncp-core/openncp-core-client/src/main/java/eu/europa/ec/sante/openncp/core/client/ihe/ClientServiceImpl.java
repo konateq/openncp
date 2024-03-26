@@ -165,7 +165,7 @@ public class ClientServiceImpl implements ClientService {
             }
 
             if (response.getDocumentAssociations() != null && !response.getDocumentAssociations().isEmpty()) {
-                queryDocumentsResponse.getReturn().addAll(Arrays.asList(DocumentDts.newInstance(response.getDocumentAssociations())));
+                queryDocumentsResponse.getReturn().addAll(DocumentDts.newInstance(response.getDocumentAssociations()));
             }
         } catch (final XCAException | RuntimeException ex) {
             LoggingSlf4j.error(logger, methodName, ex);

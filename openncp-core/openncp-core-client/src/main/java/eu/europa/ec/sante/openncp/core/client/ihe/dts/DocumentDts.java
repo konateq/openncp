@@ -139,23 +139,22 @@ public class DocumentDts {
      * @param documentAssociation the list of XDSDocument.
      * @return the result of the conversion, as a list of Document.
      */
-    public static EpsosDocument[] newInstance(List<XDSDocumentAssociation> documentAssociation) {
-
-        if (documentAssociation == null || documentAssociation.isEmpty()) {
-            return new EpsosDocument[0];
-        }
+    public static List<EpsosDocument> newInstance(List<XDSDocumentAssociation> documentAssociation) {
 
         List<EpsosDocument> resultList = new ArrayList<>();
+        if (documentAssociation == null || documentAssociation.isEmpty()) {
+            return resultList;
+        }
 
         for (XDSDocumentAssociation doc : documentAssociation) {
             EpsosDocument xmlDoc = DocumentDts.newInstance(doc.getCdaXML());
             EpsosDocument pdfDoc = DocumentDts.newInstance(doc.getCdaPDF());
 
             //  If CDA L1 and L3 are existing then we shall create an association between the 2 documents.
-//            if (xmlDoc != null && pdfDoc != null) {
-//                pdfDoc.getAssociatedDocuments().add(xmlDoc);
-//                xmlDoc.getAssociatedDocuments().add(pdfDoc);;
-//            }
+            if (xmlDoc != null && pdfDoc != null) {
+                pdfDoc.getAssociatedDocuments().add(DocumentDts.newInstance(doc.getCdaXML()));
+                xmlDoc.getAssociatedDocuments().add(DocumentDts.newInstance(doc.getCdaPDF()));
+            }
 
             // Adding the reference to the L1 CDA document
             if (pdfDoc != null) {
@@ -167,7 +166,7 @@ public class DocumentDts {
                 resultList.add(xmlDoc);
             }
         }
-        return resultList.toArray(new EpsosDocument[resultList.size()]);
+        return resultList;
     }
 
     /**

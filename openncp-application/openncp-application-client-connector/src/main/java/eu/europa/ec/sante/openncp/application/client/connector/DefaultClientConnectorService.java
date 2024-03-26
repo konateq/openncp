@@ -189,7 +189,10 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         queryDocumentRequest.setFilterParams(filterParams);
 
         clientConnectorService.setAssertions(assertions);
-        return clientConnectorService.getClientConnectorServicePortType().queryDocuments(queryDocumentRequest);
+
+        List<EpsosDocument> epsosDocuments = clientConnectorService.getClientConnectorServicePortType().queryDocuments(queryDocumentRequest);
+        logger.info("epsosDocuments : " + epsosDocuments);
+        return epsosDocuments;
     }
 
     /**
