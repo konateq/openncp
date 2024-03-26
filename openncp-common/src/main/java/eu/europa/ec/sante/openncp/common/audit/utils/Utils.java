@@ -87,7 +87,7 @@ public class Utils {
      */
     public static boolean validateSchema(String xmlDocumentUrl) throws SAXException, IOException {
 
-        InputStream streamXsd = Utils.class.getClassLoader().getResourceAsStream("src/main/dicom/DICOM_Unsigned.xsd");
+        InputStream streamXsd = Utils.class.getClassLoader().getResourceAsStream("DICOM_Unsigned.xsd");
         if (streamXsd == null || streamXsd.available() == 0) {
             LOGGER.error("Cannot load XSD resource: \"DICOM_Unsigned.xsd\"");
             return false;
