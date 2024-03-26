@@ -40,3 +40,6 @@ atlassian-ide-plugin.xml
 /openncp-gazelle-validation/nb-configuration.xml
 /openatna/web/nb-configuration.xml
 /openncp-gateway/openncp-gateway-frontend/env.local
+/openncp-core/openncp-core-server/overlays/
+/openncp-application/openncp-application-server/overlays/
+/openncp-docker/logs/
