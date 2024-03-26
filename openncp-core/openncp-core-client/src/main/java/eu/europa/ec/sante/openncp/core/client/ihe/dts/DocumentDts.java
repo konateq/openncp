@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This is a Data Transformation Service providing functions to transform data into a Document object.
@@ -59,7 +60,7 @@ public class DocumentDts {
         }
         result.setMimeType(document.getMimeType());
         if (document.getAuthors() != null) {
-            result.getAuthors().addAll(Arrays.asList(convertAuthorList(document.getAuthors())));
+            result.getAuthors().addAll(convertAuthorList(document.getAuthors()));
         }
         if (document.getReasonOfHospitalisation() != null) {
             result.setReasonOfHospitalisation(convertReasonOfHospitalisation(document.getReasonOfHospitalisation()));
@@ -107,22 +108,17 @@ public class DocumentDts {
         return result;
     }
 
-    private static Author[] convertAuthorList(List<OrCDDocumentMetaData.Author> authors) {
-
-        var convertedAuthors = new Author[authors.size()];
-        for (var i = 0; i < authors.size(); i++) {
-            var author = authors.get(i);
-            String authorPerson = author.getAuthorPerson();
-            String[] authorSpecialities = null;
-            if (author.getAuthorSpeciality() != null) {
-                authorSpecialities = author.getAuthorSpeciality().toArray(new String[author.getAuthorSpeciality().size()]);
-            }
+    private static List<Author> convertAuthorList(List<OrCDDocumentMetaData.Author> authors) {
+        return authors.stream().map(author -> {
             var convertedAuthor = objectFactory.createAuthor();
+
+            String authorPerson = author.getAuthorPerson();
             convertedAuthor.setPerson(authorPerson);
-            convertedAuthor.getSpecialty().addAll(Arrays.asList(authorSpecialities));
-            convertedAuthors[i] = convertedAuthor;
-        }
-        return convertedAuthors;
+            if (author.getAuthorSpeciality() != null) {
+                convertedAuthor.getSpecialty().addAll(author.getAuthorSpeciality());
+            }
+            return convertedAuthor;
+        }).collect(Collectors.toList());
     }
 
     private static ReasonOfHospitalisation convertReasonOfHospitalisation(OrCDDocumentMetaData.ReasonOfHospitalisation reasonOfHospitalisation) {
