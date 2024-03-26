@@ -4,6 +4,7 @@ import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.Author;
 import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
+import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.client.ReasonOfHospitalisation;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.OrCDDocumentMetaData;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.XDSDocument;
@@ -25,6 +26,8 @@ import java.util.*;
  */
 public class DocumentDts {
 
+    static final ObjectFactory objectFactory = new ObjectFactory();
+
     /**
      * Private constructor to disable class instantiation.
      */
@@ -42,7 +45,7 @@ public class DocumentDts {
         if (document == null) {
             return null;
         }
-        final EpsosDocument result = new EpsosDocument();
+        final EpsosDocument result = objectFactory.createEpsosDocument();
         result.setUuid(document.getDocumentUniqueId());
         result.setDescription(document.getDescription());
         result.setCreationDate(convertDate(document.getCreationTime()));
@@ -114,7 +117,7 @@ public class DocumentDts {
             if (author.getAuthorSpeciality() != null) {
                 authorSpecialities = author.getAuthorSpeciality().toArray(new String[author.getAuthorSpeciality().size()]);
             }
-            var convertedAuthor = new Author();
+            var convertedAuthor = objectFactory.createAuthor();
             convertedAuthor.setPerson(authorPerson);
             convertedAuthor.getSpecialty().addAll(Arrays.asList(authorSpecialities));
             convertedAuthors[i] = convertedAuthor;
@@ -124,7 +127,7 @@ public class DocumentDts {
 
     private static ReasonOfHospitalisation convertReasonOfHospitalisation(OrCDDocumentMetaData.ReasonOfHospitalisation reasonOfHospitalisation) {
 
-        var convertedReasonOfHospitalisation = new ReasonOfHospitalisation();
+        var convertedReasonOfHospitalisation = objectFactory.createReasonOfHospitalisation();
         convertedReasonOfHospitalisation.setCode(reasonOfHospitalisation.getCode());
         convertedReasonOfHospitalisation.setText(reasonOfHospitalisation.getText());
         return convertedReasonOfHospitalisation;
@@ -149,10 +152,10 @@ public class DocumentDts {
             EpsosDocument pdfDoc = DocumentDts.newInstance(doc.getCdaPDF());
 
             //  If CDA L1 and L3 are existing then we shall create an association between the 2 documents.
-            if (xmlDoc != null && pdfDoc != null) {
-                pdfDoc.getAssociatedDocuments().add(xmlDoc);
-                xmlDoc.getAssociatedDocuments().add(pdfDoc);;
-            }
+//            if (xmlDoc != null && pdfDoc != null) {
+//                pdfDoc.getAssociatedDocuments().add(xmlDoc);
+//                xmlDoc.getAssociatedDocuments().add(pdfDoc);;
+//            }
 
             // Adding the reference to the L1 CDA document
             if (pdfDoc != null) {
@@ -178,7 +181,7 @@ public class DocumentDts {
         if (documentResponse == null) {
             return null;
         }
-        final EpsosDocument result = new EpsosDocument();
+        final EpsosDocument result = objectFactory.createEpsosDocument();
         result.setHcid(documentResponse.getHomeCommunityId());
         result.setUuid(documentResponse.getDocumentUniqueId());
         result.setMimeType(documentResponse.getMimeType());

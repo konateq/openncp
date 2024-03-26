@@ -207,7 +207,6 @@ public class TRCAssertionRequest extends AssertionRequest {
             var unmarshaller = unmarshallerFactory.getUnmarshaller(assertion);
             var trcAssertion = (Assertion) unmarshaller.unmarshall(assertDoc.getDocumentElement());
             if (OpenNCPValidation.isValidationEnable()) {
-
                 OpenNCPValidation.validateTRCAssertion(trcAssertion, NcpSide.NCP_B);
             }
             return trcAssertion;

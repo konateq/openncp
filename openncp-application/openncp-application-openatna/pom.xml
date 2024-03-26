@@ -1,0 +1,219 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.europa.ec.sante</groupId>
+        <artifactId>openncp-application</artifactId>
+        <version>8.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>openncp-application-openatna</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <commons-lang.version>2.6</commons-lang.version>
+        <itextpdf.version>7.2.2</itextpdf.version>
+        <jasperreports.version>6.18.1</jasperreports.version>
+    </properties>
+
+    <name>OpenNCP OpenATNA</name>
+    <url>https://openatna.projects.openhealthtools.org</url>
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Andrew Harrison</name>
+        </developer>
+        <developer>
+            <name>Wenzhi Li</name>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>syslog</module>
+        <module>audit</module>
+        <module>jaxb</module>
+        <module>anom</module>
+        <module>net</module>
+        <module>report</module>
+        <module>archive</module>
+        <module>all</module>
+        <module>web</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>hibernate3-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <components>
+                        <component>
+                            <name>hbm2ddl</name>
+                        </component>
+                    </components>
+                    <componentProperties>
+                        <configurationfile>/src/main/resources/openatna-hibernate.cfg.xml</configurationfile>
+                        <export>false</export>
+                    </componentProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>monitoring</id>
+            <properties>
+                <enable.monitoring.start/>
+                <enable.monitoring.stop/>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>net.bull.javamelody</groupId>
+                    <artifactId>javamelody-core</artifactId>
+                    <version>${javamelody.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.jrobin</groupId>
+                    <artifactId>jrobin</artifactId>
+                    <version>1.5.9</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>headers</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <inherited>false</inherited>
+                        <groupId>com.mycila.maven-license-plugin</groupId>
+                        <artifactId>maven-license-plugin</artifactId>
+                        <version>1.5.0</version>
+                        <configuration>
+                            <properties>
+                                <year>2009-2010</year>
+                            </properties>
+                            <header>${basedir}/header.txt</header>
+                            <failIfMissing>true</failIfMissing>
+                            <aggregate>true</aggregate>
+                            <mapping>
+                                <java>JAVADOC_STYLE</java>
+                                <groovy>JAVADOC_STYLE</groovy>
+                                <js>JAVADOC_STYLE</js>
+                                <css>JAVADOC_STYLE</css>
+                                <xml>XML_STYLE</xml>
+                                <dtd>XML_STYLE</dtd>
+                                <xsd>XML_STYLE</xsd>
+                                <html>XML_STYLE</html>
+                                <htm>XML_STYLE</htm>
+                                <jrxml>XML_STYLE</jrxml>
+                                <xsl>XML_STYLE</xsl>
+                                <fml>XML_STYLE</fml>
+                                <apt>DOUBLETILDE_STYLE</apt>
+                                <properties>SCRIPT_STYLE</properties>
+                                <log>SCRIPT_STYLE</log>
+                                <sh>SCRIPT_STYLE</sh>
+                                <txt>TEXT</txt>
+                                <bat>BATCH</bat>
+                                <cmd>BATCH</cmd>
+                                <sql>DOUBLEDASHES_STYLE</sql>
+                                <jsp>DYNASCRIPT_STYLE</jsp>
+                                <ftl>FTL</ftl>
+                                <xhtml>XML_STYLE</xhtml>
+                                <vm>SHARPSTAR_STYLE</vm>
+                                <jspx>XML_STYLE</jspx>
+                            </mapping>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>cu</id>
+                                <configuration>
+                                    <properties>
+                                        <company>University of Cardiff
+                                            and others
+                                        </company>
+                                        <contributor1>University of
+                                            Cardiff - initial API and
+                                            implementation
+                                        </contributor1>
+                                        <contributor2>-</contributor2>
+                                    </properties>
+                                    <excludes>
+                                        <exclude>**/header.txt</exclude>
+                                        <exclude>**/*.log</exclude>
+                                        <exclude>**/*.xml</exclude>
+                                        <exclude>**/*.properties</exclude>
+                                        <exclude>**/*.bat</exclude>
+                                        <exclude>**/*.list</exclude>
+                                        <exclude>**/*.sh</exclude>
+                                        <exclude>**/*.jrxml</exclude>
+                                        <exclude>**/*.jks</exclude>
+                                        <exclude>**/*.p12</exclude>
+                                        <exclude>**/openatna/jaxb21/*</exclude>
+                                        <exclude>**/build/**</exclude>
+                                        <exclude>**/openatna/net/*</exclude>
+                                        <exclude>**/common/utils/*</exclude>
+                                    </excludes>
+                                </configuration>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>format</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>moss</id>
+                                <configuration>
+                                    <properties>
+                                        <company>Misys Open Source
+                                            Solutions (MOSS) and others
+                                        </company>
+                                        <contributor1>Misys Open Source
+                                            Solutions - initial API and
+                                            implementation
+                                        </contributor1>
+                                        <contributor2>-</contributor2>
+                                    </properties>
+                                    <excludes>
+                                        <exclude>**/header.txt</exclude>
+                                        <exclude>**/*.log</exclude>
+                                        <exclude>**/*.xml</exclude>
+                                        <exclude>**/*.properties</exclude>
+                                        <exclude>**/*.bat</exclude>
+                                        <exclude>**/*.list</exclude>
+                                        <exclude>**/*.sh</exclude>
+                                        <exclude>**/*.jks</exclude>
+                                        <exclude>**/*.p12</exclude>
+                                        <exclude>**/openatna/jaxb21/*</exclude>
+                                        <exclude>**/build/**</exclude>
+                                    </excludes>
+                                    <includes>
+                                        <include>**/openatna/net/*</include>
+                                        <include>**/common/utils/*</include>
+                                    </includes>
+                                </configuration>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>format</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

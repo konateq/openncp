@@ -44,15 +44,15 @@
                             <outputDirectory>${basedir}/target/classes/webapp</outputDirectory>
                             <destFileName>openncp-client-connector.war</destFileName>
                         </artifactItem>
-                        <!--                        <artifactItem>-->
-                        <!--                            <groupId>eu.europa.ec.sante</groupId>-->
-                        <!--                            <artifactId>openatna-web</artifactId>-->
-                        <!--                            <version>${project.version}</version>-->
-                        <!--                            <type>war</type>-->
-                        <!--                            <overWrite>true</overWrite>-->
-                        <!--                            <outputDirectory>${basedir}/target/classes/webapp</outputDirectory>-->
-                        <!--                            <destFileName>openatna-web.war</destFileName>-->
-                        <!--                        </artifactItem>-->
+                        <artifactItem>
+                            <groupId>eu.europa.ec.sante</groupId>
+                            <artifactId>openatna-web</artifactId>
+                            <version>${project.version}</version>
+                            <type>war</type>
+                            <overWrite>true</overWrite>
+                            <outputDirectory>${basedir}/target/classes/webapp</outputDirectory>
+                            <destFileName>openatna-web.war</destFileName>
+                        </artifactItem>
                         <artifactItem>
                             <groupId>eu.europa.ec.sante</groupId>
                             <artifactId>openncp-web-manager-backend</artifactId>

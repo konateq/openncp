@@ -160,41 +160,41 @@ services:
       LOGGING_LEVEL_ROOT: DEBUG
     networks:
       - openncp
-  #  openncp-openatna:
-  #    container_name: openncp-openatna
-  #    build:
-  #      context: .
-  #      dockerfile: Dockerfile-openatna
-  #    env_file:
-  #      - ./openncp-openatna/openatna.database.env
-  #      - ./openncp-openatna/openatna.env
-  #    ports:
-  #      - "${NCP_OPENATNA_CONNECTOR_PORT}:${NCP_OPENATNA_CONNECTOR_PORT}"
-  #      - "${NCP_OPENATNA_CONNECTOR_SECURE_PORT}:${NCP_OPENATNA_CONNECTOR_SECURE_PORT}"
-  #    depends_on:
-  #      mysql:
-  #        condition: service_healthy
-  #      openncp-configuration-utility:
-  #        condition: service_completed_successfully
-  #    environment:
-  #      CATALINA_OPTS: "
-  #        -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
-  #        -Dfile.encoding=UTF-8"
-  #      JAVA_OPTS: "
-  #        -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
-  #        -Dfile.encoding=UTF-8
-  #        -Dtls_key_alias=${TLS_KEY_ALIAS}
-  #        -Dtls_keystore_pwd=${TLS_KEYSTORE_PWD}
-  #        -Dtls_keystore_path=${TLS_KEYSTORE_PATH}
-  #        -Dtls_truststore_pwd=${TLS_TRUSTSTORE_PWD}
-  #        -Dtls_truststore_path=${TLS_TRUSTSTORE_PATH}"
-  #      LOGGING_LEVEL_ROOT: DEBUG
-  #    volumes:
-  #      - ./openncp-configuration:/opt/openncp-configuration
-  #      - ./logs/openncp-openatna:/usr/local/tomcat/logs
-  #      - ./certificates:/opt/openncp-configuration/keystore
-  #    networks:
-  #      - openncp
+  openncp-openatna:
+    container_name: openncp-openatna
+    build:
+      context: .
+      dockerfile: Dockerfile-openatna
+    env_file:
+      - ./openncp-openatna/openatna.database.env
+      - ./openncp-openatna/openatna.env
+    ports:
+      - "${NCP_OPENATNA_CONNECTOR_PORT}:${NCP_OPENATNA_CONNECTOR_PORT}"
+      - "${NCP_OPENATNA_CONNECTOR_SECURE_PORT}:${NCP_OPENATNA_CONNECTOR_SECURE_PORT}"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      openncp-configuration-utility:
+        condition: service_completed_successfully
+    environment:
+      CATALINA_OPTS: "
+        -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
+        -Dfile.encoding=UTF-8"
+      JAVA_OPTS: "
+        -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
+        -Dfile.encoding=UTF-8
+        -Dtls_key_alias=${TLS_KEY_ALIAS}
+        -Dtls_keystore_pwd=${TLS_KEYSTORE_PWD}
+        -Dtls_keystore_path=${TLS_KEYSTORE_PATH}
+        -Dtls_truststore_pwd=${TLS_TRUSTSTORE_PWD}
+        -Dtls_truststore_path=${TLS_TRUSTSTORE_PATH}"
+      LOGGING_LEVEL_ROOT: DEBUG
+    volumes:
+      - ./openncp-configuration:/opt/openncp-configuration
+      - ./logs/openncp-openatna:/usr/local/tomcat/logs
+      - ./certificates:/opt/openncp-configuration/keystore
+    networks:
+      - openncp
   openncp-trc-sts:
     container_name: openncp-trc-sts
     build:
