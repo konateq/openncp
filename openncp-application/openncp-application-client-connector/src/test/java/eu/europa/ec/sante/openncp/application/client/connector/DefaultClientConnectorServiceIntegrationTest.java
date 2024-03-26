@@ -9,12 +9,13 @@ import java.util.Map;
 
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil;
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.Concept;
+import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
-import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.client.PatientId;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.junit.jupiter.api.BeforeAll;
@@ -85,6 +86,26 @@ class DefaultClientConnectorServiceIntegrationTest {
         final List<PatientDemographics> response = clientConnectorService.queryPatient(assertions, "BE", patientDemographics);
         assertThat(response).isNotNull();
     }
+
+    @Test
+    void queryDocuments() throws ClientConnectorException {
+        final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
+        assertions.put(AssertionEnum.CLINICIAN, createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu"));
+
+        final ObjectFactory objectFactory = new ObjectFactory();
+        final PatientId patientId = objectFactory.createPatientId();
+        patientId.setRoot("1.3.6.1.4.1.48336");
+        patientId.setExtension("2-1234-W7");
+
+        GenericDocumentCode classCode = objectFactory.createGenericDocumentCode();
+        classCode.setNodeRepresentation(ClassCode.PS_CLASSCODE.getCode());
+        classCode.setSchema(IheConstants.CLASSCODE_SCHEME);
+        classCode.setValue(Constants.PS_TITLE);
+
+        List<EpsosDocument> documentList = clientConnectorService.queryDocuments(assertions, "BE", patientId, List.of(classCode), null);
+        assertThat(documentList).isNotNull().hasSize(2);
+    }
+
 
     private Assertion createClinicalAssertion(final KeyStoreManager keyStoreManager, final String username, final String fullName,
                                               final String email) {
