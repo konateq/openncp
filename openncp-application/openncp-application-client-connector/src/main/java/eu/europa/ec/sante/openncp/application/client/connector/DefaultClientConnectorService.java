@@ -260,6 +260,8 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         retrieveDocumentRequest.setHomeCommunityId(homeCommunityId);
         retrieveDocumentRequest.setTargetLanguage(targetLanguage);
 
+        clientConnectorService.setAssertions(assertions);
+
         //set assertions to soap call
         return clientConnectorService.getClientConnectorServicePortType().retrieveDocument(retrieveDocumentRequest);
     }
@@ -283,24 +285,11 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         submitDocumentRequest.setPatientDemographics(patientDemographics);
 
         //set assertions to soap call
+        clientConnectorService.setAssertions(assertions);
+
         final SubmitDocumentResponse submitDocumentResponse = objectFactory.createSubmitDocumentResponse();
         submitDocumentResponse.setResponseStatus(clientConnectorService.getClientConnectorServicePortType().submitDocument(submitDocumentRequest));
         return submitDocumentResponse;
-    }
-
-
-    public static SSLSocketFactory getSslSocketFactory(final KeyStoreManager keyStoreManager, final String keyStorePwd) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException {
-        final SSLContext sslContext;
-        sslContext = SSLContext.getInstance("TLSv1.2");
-
-        final var keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStoreManager.getKeyStore(), keyStorePwd.toCharArray());
-
-        final var trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(keyStoreManager.getTrustStore());
-
-        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-        return sslContext.getSocketFactory();
     }
 
 //

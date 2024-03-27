@@ -80,15 +80,15 @@
                             <outputDirectory>${basedir}/target/classes/webapp/</outputDirectory>
                             <destFileName>TRC-STS.war</destFileName>
                         </artifactItem>
-                        <!--                        <artifactItem>-->
-                        <!--                            <groupId>eu.europa.ec.sante</groupId>-->
-                        <!--                            <artifactId>translations-and-mappings-ws</artifactId>-->
-                        <!--                            <version>${project.version}</version>-->
-                        <!--                            <type>war</type>-->
-                        <!--                            <overWrite>true</overWrite>-->
-                        <!--                            <outputDirectory>${basedir}/target/classes/webapp/</outputDirectory>-->
-                        <!--                            <destFileName>translations-and-mappings-ws.war</destFileName>-->
-                        <!--                        </artifactItem>-->
+                        <artifactItem>
+                            <groupId>eu.europa.ec.sante</groupId>
+                            <artifactId>openncp-application-transformation</artifactId>
+                            <version>${project.version}</version>
+                            <type>war</type>
+                            <overWrite>true</overWrite>
+                            <outputDirectory>${basedir}/target/classes/webapp/</outputDirectory>
+                            <destFileName>translations-and-mappings-ws.war</destFileName>
+                        </artifactItem>
                         <artifactItem>
                             <groupId>eu.europa.ec.sante</groupId>
                             <artifactId>openncp-tsam-sync</artifactId>

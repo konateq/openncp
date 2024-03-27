@@ -15,5 +15,6 @@
         <module>openncp-application-trc-sts</module>
         <module>openncp-application-client-connector</module>
         <module>openncp-application-openatna</module>
+        <module>openncp-application-transformation</module>
     </modules>
 </project>
