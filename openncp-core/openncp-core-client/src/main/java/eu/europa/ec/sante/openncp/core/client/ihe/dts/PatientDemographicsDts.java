@@ -38,7 +38,7 @@ public final class PatientDemographicsDts {
             result.setAdministrativeGender(PatientDemographics.Gender.parseGender(StringUtils.trim(patientDemographics.getAdministrativeGender())));
         }
         if (patientDemographics.getBirthDate() != null) {
-            result.setBirthDate(DateUtil.toDate(patientDemographics.getBirthDate()));
+            result.setBirthDate(patientDemographics.getBirthDate().getTime());
         }
         if (StringUtils.isNotBlank(patientDemographics.getCity())) {
             result.setCity(StringUtils.trim(patientDemographics.getCity()));
@@ -84,7 +84,7 @@ public final class PatientDemographicsDts {
         }
 
         if (patientDemographics.getBirthDate() != null) {
-            result.setBirthDate(DateUtil.getDateAsXMLGregorian(patientDemographics.getBirthDate()));
+            result.setBirthDate(DateUtil.toCalendar(patientDemographics.getBirthDate()));
         }
         result.setCity(patientDemographics.getCity());
         result.setCountry(patientDemographics.getCountry());

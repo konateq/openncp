@@ -6,11 +6,14 @@ import eu.europa.ec.sante.openncp.core.client.Author;
 import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
 import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.client.ReasonOfHospitalisation;
+import eu.europa.ec.sante.openncp.core.client.ihe.xca.RespondingGateway_ServiceStub;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.OrCDDocumentMetaData;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.XDSDocument;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.XDSDocumentAssociation;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -26,7 +29,7 @@ import java.util.stream.Collectors;
  * This is a Data Transformation Service providing functions to transform data into a Document object.
  */
 public class DocumentDts {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentDts.class);
     static final ObjectFactory objectFactory = new ObjectFactory();
 
     /**
@@ -192,7 +195,8 @@ public class DocumentDts {
      * @param dateString a String representation of the Date.
      * @return an XMLGregorianCalendar instance, with the given String values.
      */
-    private static XMLGregorianCalendar convertDate(String dateString) {
+    private static Calendar convertDate(String dateString) {
+
 
         var pattern1 = "yyyyMMddHHmmss";
         var pattern2 = "yyyyMMdd";
@@ -213,8 +217,10 @@ public class DocumentDts {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(selectedPattern);
         try {
             Date date = simpleDateFormat.parse(dateString);
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(simpleDateFormat.format(date));
-        } catch (DatatypeConfigurationException | ParseException e) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            return calendar;
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }

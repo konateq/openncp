@@ -137,6 +137,10 @@
                                     <wsdl>${basedir}/src/main/resources/wsdl/ClientConnectorService.wsdl</wsdl>
                                     <wsdlLocation>classpath:wsdl/ClientConnectorService.wsdl</wsdlLocation>
                                     <extendedSoapHeaders>true</extendedSoapHeaders>
+                                    <bindingFiles>
+                                        <bindingFile>${basedir}/src/main/resources/wsdl/binding.jxb</bindingFile>
+                                    </bindingFiles>
+
                                     <!--                                        <extraargs>-->
                                     <!--                                            <extraarg>-impl</extraarg>-->
                                     <!--                                            <extraarg>-server</extraarg>-->

@@ -11,10 +11,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Random;
-import java.util.TimeZone;
+import java.util.*;
 
 public class DateUtil {
 
@@ -41,6 +38,13 @@ public class DateUtil {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         return DATATYPE_FACTORY.newXMLGregorianCalendar(calendar);
+    }
+
+    public static Calendar toCalendar(final Date date) {
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        return calendar;
     }
 
     public static Date toDate(XMLGregorianCalendar calendar) {

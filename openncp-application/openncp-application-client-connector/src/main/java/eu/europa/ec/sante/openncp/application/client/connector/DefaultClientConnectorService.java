@@ -10,6 +10,8 @@ import org.apache.commons.lang3.Validate;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.ext.logging.LoggingFeature;
+import org.apache.cxf.ext.logging.LoggingInInterceptor;
+import org.apache.cxf.ext.logging.LoggingOutInterceptor;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
@@ -70,6 +72,8 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         client.getBus().getFeatures().add(new WSAddressingFeature());
 
         client.getOutInterceptors().add(new AddSamlAssertionInterceptor());
+        client.getInInterceptors().add(new LoggingInInterceptor());
+        client.getOutInterceptors().add(new LoggingOutInterceptor());
         client.getInInterceptors().add(new TransportTokenInInterceptor());
 
         final HTTPConduit conduit = (HTTPConduit) client.getConduit();
