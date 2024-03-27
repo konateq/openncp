@@ -15,6 +15,7 @@ import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.*;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.PurposeOfUse;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @SetEnvironmentVariable(key = "EPSOS_PROPS_PATH", value = "")
+@Disabled("Requires a complete environment")
 class DefaultClientConnectorServiceIntegrationTest {
 
     private static DefaultClientConnectorService clientConnectorService;
@@ -115,6 +117,33 @@ class DefaultClientConnectorServiceIntegrationTest {
 
         List<EpsosDocument> documentList = clientConnectorService.queryDocuments(assertions, "BE", patientId, List.of(classCode), null);
         assertThat(documentList).isNotNull().hasSize(2);
+    }
+
+    @Test
+    void retrieveDocument() throws ClientConnectorException, STSClientException, MarshallingException {
+        final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
+        Assertion clinicalAssertion = createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu");
+
+        final ObjectFactory objectFactory = new ObjectFactory();
+        final PatientId patientId = objectFactory.createPatientId();
+        patientId.setRoot("1.3.6.1.4.1.48336");
+        patientId.setExtension("2-1234-W7");
+
+        var documentId = objectFactory.createDocumentId();
+        documentId.setDocumentUniqueId("1.2.752.129.2.1.2.1^PS_W7_EU.1");
+        documentId.setRepositoryUniqueId("1.3.6.1.4.1.48336");
+
+        assertions.put(AssertionEnum.CLINICIAN, clinicalAssertion);
+        Assertion treatmentConfirmationAssertion = AssertionTestUtil.createPatientConfirmationPlain(clinicalAssertion, patientId, PurposeOfUse.TREATMENT.name());
+        assertions.put(AssertionEnum.TREATMENT, treatmentConfirmationAssertion);
+
+        GenericDocumentCode classCode = objectFactory.createGenericDocumentCode();
+        classCode.setNodeRepresentation(ClassCode.PS_CLASSCODE.getCode());
+        classCode.setSchema(IheConstants.CLASSCODE_SCHEME);
+        classCode.setValue(Constants.PS_TITLE);
+
+        EpsosDocument document = clientConnectorService.retrieveDocument(assertions, "BE", documentId, "1.3.6.1.4.1.48336", classCode, null);
+        assertThat(document).isNotNull();
     }
 
 
