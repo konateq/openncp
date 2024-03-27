@@ -4,6 +4,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
+    <tx:annotation-driven transaction-manager="tsamTransactionManager"/>
+
     <bean id="tsamConfig" class="eu.europa.ec.sante.openncp.core.common.tsam.util.TsamConfiguration">
         <property name="translationLang" value="${translationLanguage}"/>
         <property name="transcodingLang" value="${transcodingLanguage}"/>
@@ -38,14 +40,12 @@
         </property>
     </bean>
 
-    <tx:annotation-driven transaction-manager="tsamTransactionManager"/>
-
-    <bean id="tsamTransactionManager"
-          class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+    <bean id="tsamTransactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
         <property name="sessionFactory" ref="tsamSessionFactory"/>
     </bean>
 
-    <bean id="eu.europa.ec.sante.openncp.core.common.tsam.dao.ITsamDao" class="eu.europa.ec.sante.openncp.core.common.tsam.dao.impl.TsamDao">
+    <bean id="eu.europa.ec.sante.openncp.core.common.tsam.dao.ITsamDao"
+          class="eu.europa.ec.sante.openncp.core.common.tsam.dao.impl.TsamDao">
         <property name="sessionFactory" ref="tsamSessionFactory"/>
         <property name="config" ref="tsamConfig"/>
     </bean>

@@ -50,10 +50,10 @@
         <property name="eDispensationSchematronPivotPath">
             <value>${EPSOS_PROPS_PATH}${tm.schematron.path.edispensation.pivot}</value>
         </property>
-        <property name="scannedDocumentFriendlyPath">
+        <property name="scannedDocFriendlyPath">
             <value>${EPSOS_PROPS_PATH}${tm.schematron.path.scannedDocument.friendly}</value>
         </property>
-        <property name="scannedDocumentPivotPath">
+        <property name="scannedDocPivotPath">
             <value>${EPSOS_PROPS_PATH}${tm.schematron.path.scannedDocument.pivot}</value>
         </property>
         <property name="schematronValidationEnabled">
@@ -84,7 +84,7 @@
             <value>${EPSOS_PROPS_PATH}${tm.mda.value_set_repository_path}</value>
         </property>
         <property name="ncpSide">
-            <value>NCP_A</value>
+            <value>NCP_B</value>
         </property>
     </bean>
 
@@ -108,12 +108,6 @@
     </bean>
 
     <bean class="eu.europa.ec.sante.openncp.core.common.transformation.util.ModelBasedValidator" factory-method="getInstance">
-        <property name="config" ref="tmConfiguration"/>
-    </bean>
-
-    <bean class="eu.europa.ec.sante.openncp.core.common.transformation.service.impl.TransformationService"
-          id="eu.europa.ec.sante.openncp.core.common.tm.service.ITransformationService">
-        <property name="tsamApi" ref="eu.europa.ec.sante.openncp.core.common.tsam.service.ITerminologyService"/>
         <property name="config" ref="tmConfiguration"/>
     </bean>
 </beans>
