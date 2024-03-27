@@ -8,7 +8,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication(scanBasePackages = {"eu.europa.ec.sante.openncp.transformation"})
+@SpringBootApplication(scanBasePackages = {"eu.europa.ec.sante.openncp.api.general.transformation"})
 @EnableSwagger2
 public class TransformationApplication extends SpringBootServletInitializer {
 
