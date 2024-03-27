@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.ehdsi;
+package eu.europa.ec.sante.openncp.configuration.utility;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import org.springframework.util.StopWatch;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@EntityScan(basePackages = {"eu.europa.ec.sante.ehdsi"})
+@EntityScan(basePackages = {"eu.europa.ec.sante.openncp.configuration.utility"})
 public class FirstTimeConfigurationApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirstTimeConfigurationApplication.class);

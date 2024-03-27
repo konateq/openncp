@@ -11,7 +11,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class PropertyService {
     private final PropertyRepository propertyRepository;
-    public PropertyService(PropertyRepository propertyRepository) {
+    public PropertyService(final PropertyRepository propertyRepository) {
         this.propertyRepository = propertyRepository;
     }
     public Property save(Property property){

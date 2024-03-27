@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.ehdsi;
+package eu.europa.ec.sante.openncp.configuration.utility;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

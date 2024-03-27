@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.ehdsi;
+package eu.europa.ec.sante.openncp.configuration.utility;
 
 import java.util.Iterator;
 import java.util.List;
