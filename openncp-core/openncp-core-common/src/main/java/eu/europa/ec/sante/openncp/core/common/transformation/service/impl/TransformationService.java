@@ -21,8 +21,8 @@ import eu.europa.ec.sante.openncp.core.common.tsam.util.CodedElement;
 import eu.europa.ec.sante.openncp.core.common.tsam.response.RetrievedConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.response.TSAMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.ITerminologyService;
-import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,11 +61,16 @@ public class TransformationService implements ITransformationService, TMConstant
     private HashMap<String, String> level1Type;
     private HashMap<String, String> level3Type;
 
-    @Autowired
-    private TMConfiguration config;
+    private final TMConfiguration config;
 
-    @Autowired
-    private Validator validator;
+    private final Validator validator;
+
+    public TransformationService(final TMConfiguration config, final Validator validator) {
+        this.config = Validate.notNull(config);
+        this.validator = Validate.notNull(validator);
+
+        fillServiceTypeMaps();
+    }
 
     public TMResponseStructure translate(Document pivotCDA, String targetLanguageCode) {
         logger.info("Translating OpenNCP CDA Document [START]");
@@ -807,8 +812,8 @@ public class TransformationService implements ITransformationService, TMConstant
         return oid;
     }
 
-    @PostConstruct
     public void fillServiceTypeMaps() {
+        logger.debug("Filling service type maps");
 
         level1Type = new HashMap<>();
         level1Type.put(config.getPatientSummaryCode(), PATIENT_SUMMARY1);
