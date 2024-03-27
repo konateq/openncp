@@ -1,46 +1,50 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl;
 
-import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
-import eu.europa.ec.sante.openncp.common.util.*;
+import eu.europa.ec.sante.openncp.common.util.DateUtil;
+import eu.europa.ec.sante.openncp.common.util.HttpUtil;
+import eu.europa.ec.sante.openncp.common.util.UUIDHelper;
+import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.common.IHEEventType;
 import eu.europa.ec.sante.openncp.core.common.RegistryErrorSeverity;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
+import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
 import eu.europa.ec.sante.openncp.core.common.datamodel.FilterParams;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xds.*;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.AssociationType1;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExternalIdentifierType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ExtrinsicObjectType;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
 import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
+
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.exception.DocumentTransformationException;
 import eu.europa.ec.sante.openncp.core.common.exception.NIException;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.core.common.transformation.client.TranslationsAndMappingsClient;
 import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
-import eu.europa.ec.sante.openncp.core.common.transformation.service.ITransformationService;
 import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
-import eu.europa.ec.sante.openncp.core.server.api.ihe.xca.DocumentSearchInterface;
 import eu.europa.ec.sante.openncp.core.server.ihe.AdhocQueryResponseStatus;
 import eu.europa.ec.sante.openncp.core.server.ihe.IheErrorCode;
 import eu.europa.ec.sante.openncp.core.server.ihe.RegistryErrorUtils;
+import eu.europa.ec.sante.openncp.core.server.api.ihe.xca.DocumentSearchInterface;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.XCAServiceInterface;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.ep.EPExtrinsicObjectBuilder;
 import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilder.orcd.OrCDExtrinsicObjectBuilder;
@@ -90,7 +94,6 @@ public class XCAServiceImpl implements XCAServiceInterface {
     private final eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory ofRim;
     private final eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.ObjectFactory ofRs;
     private final DocumentSearchInterface documentSearchService;
-    private final ITransformationService transformationService;
 
     /**
      * Public Constructor for IHE XCA Profile implementation, the default constructor will handle the loading of
@@ -115,8 +118,6 @@ public class XCAServiceImpl implements XCAServiceInterface {
         ofRim = new eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory();
 
         omFactory = OMAbstractFactory.getOMFactory();
-
-        transformationService = SpringContext.getBean(ITransformationService.class);
     }
 
     private static String trimDocumentEntryPatientId(String patientId) {
@@ -735,11 +736,11 @@ public class XCAServiceImpl implements XCAServiceInterface {
             if (isTranscode) {
                 operationType = "toEpSOSPivot";
                 logger.debug("Transforming document to epSOS pivot...");
-                tmResponse = transformationService.transcode(doc);
+                tmResponse = TranslationsAndMappingsClient.transcode(doc);
             } else {
                 operationType = "translate";
                 logger.debug("Translating document to '{}'", Constants.LANGUAGE_CODE);
-                tmResponse = transformationService.translate(doc, Constants.LANGUAGE_CODE);
+                tmResponse = TranslationsAndMappingsClient.translate(doc, Constants.LANGUAGE_CODE);
             }
 
             OMNamespace ns = registryResponseElement.getNamespace();

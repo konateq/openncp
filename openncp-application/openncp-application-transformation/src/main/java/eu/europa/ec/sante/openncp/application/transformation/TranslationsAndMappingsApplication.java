@@ -6,7 +6,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication(scanBasePackages = {"eu.europa.ec.sante.openncp.core.common.transformation"})
+@SpringBootApplication(scanBasePackages = {"eu.europa.ec.sante.openncp"})
 @EnableSwagger2
 public class TranslationsAndMappingsApplication extends SpringBootServletInitializer {
 
