@@ -15,7 +15,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import eu.europa.ec.sante.openncp.application.client.connector.assertions.STSClientException;
+import eu.europa.ec.sante.openncp.application.client.connector.assertions.TRCAssertionRequest;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.core.client.PatientId;
 import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.apache.commons.codec.binary.Base64;
@@ -28,6 +32,7 @@ import org.opensaml.core.config.InitializationService;
 import org.opensaml.core.xml.XMLObjectBuilder;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.schema.XSAny;
 import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.core.xml.schema.XSURI;
@@ -75,6 +80,18 @@ public class AssertionTestUtil {
 
     private AssertionTestUtil() {
         //  Empty private constructor preventing instantiation.
+    }
+
+    public static Assertion createPatientConfirmationPlain(Assertion clinicalAssertion, PatientId patient, String purposeOfUse) throws STSClientException, MarshallingException {
+        String patientId = patient.getExtension() + "^^^&" + patient.getRoot() + "&ISO";
+
+        var builder = new TRCAssertionRequest.Builder(clinicalAssertion, patientId).purposeOfUse(purposeOfUse);
+        var assertionTRC = builder.build().request();
+        var marshaller = new AssertionMarshaller();
+        Element element = marshaller.marshall(assertionTRC);
+        Document document = element.getOwnerDocument();
+        LOGGER.info("TRC Assertion: '{}'\n'{}'", assertionTRC.getID(), getDocumentAsXml(document, false));
+        return assertionTRC;
     }
 
     public static class Concept {

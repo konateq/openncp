@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.europa.ec.sante.openncp.application.client.connector.assertions.STSClientException;
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil;
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.Concept;
 import eu.europa.ec.sante.openncp.common.ClassCode;
@@ -18,18 +19,19 @@ import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.Asser
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.SetEnvironmentVariable;
 import org.mockito.Mockito;
+import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.saml2.core.Assertion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @SetEnvironmentVariable(key = "EPSOS_PROPS_PATH", value = "")
-@Disabled("Commented out since the test is expecting a running client. Use this test for local testing.")
 class DefaultClientConnectorServiceIntegrationTest {
 
     private static DefaultClientConnectorService clientConnectorService;
@@ -48,6 +50,11 @@ class DefaultClientConnectorServiceIntegrationTest {
         when(mockedConfigurationManager.getProperty("NCP_SIG_KEYSTORE_PASSWORD")).thenReturn("gazelle");
         when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_ALIAS")).thenReturn("gazelle.ncp-signature.openncp.dg-sante.eu");
         when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD")).thenReturn("gazelle");
+
+        when(mockedConfigurationManager.getProperty("secman.sts.url")).thenReturn("https://localhost:2443/TRC-STS/SecurityTokenService");
+        when(mockedConfigurationManager.getProperty("secman.sts.checkHostname")).thenReturn("false");
+
+
 
         setFinalStatic(ConfigurationManagerFactory.class.getDeclaredField("configurationManager"), mockedConfigurationManager);
 
@@ -88,14 +95,18 @@ class DefaultClientConnectorServiceIntegrationTest {
     }
 
     @Test
-    void queryDocuments() throws ClientConnectorException {
+    void queryDocuments() throws ClientConnectorException, STSClientException, MarshallingException {
         final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
-        assertions.put(AssertionEnum.CLINICIAN, createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu"));
+        Assertion clinicalAssertion = createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu");
 
         final ObjectFactory objectFactory = new ObjectFactory();
         final PatientId patientId = objectFactory.createPatientId();
         patientId.setRoot("1.3.6.1.4.1.48336");
         patientId.setExtension("2-1234-W7");
+
+        assertions.put(AssertionEnum.CLINICIAN, clinicalAssertion);
+        Assertion treatmentConfirmationAssertion = AssertionTestUtil.createPatientConfirmationPlain(clinicalAssertion, patientId, "TREATMENT");
+        assertions.put(AssertionEnum.TREATMENT, treatmentConfirmationAssertion);
 
         GenericDocumentCode classCode = objectFactory.createGenericDocumentCode();
         classCode.setNodeRepresentation(ClassCode.PS_CLASSCODE.getCode());
