@@ -1,4 +1,4 @@
-package eu.europa.ec.openncp.api.transformation;
+package eu.europa.ec.sante.openncp.api.transformation;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -11,7 +11,6 @@ import eu.europa.ec.sante.openncp.core.common.transformation.service.ITransforma
 import eu.europa.ec.sante.openncp.core.common.transformation.service.PropertyService;
 import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -24,7 +23,7 @@ import java.util.*;
 @RestController
 public class TranslationsAndMappingsController {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(TranslationsAndMappingsController.class);
 
     private static final String AVAILABLE_TRANSLATION_LANGUAGES_PROPERTY_KEY = "AVAILABLE_TRANSLATION_LANGUAGES";
 
@@ -35,11 +34,6 @@ public class TranslationsAndMappingsController {
     public TranslationsAndMappingsController(PropertyService propertyService, ITransformationService transformationService) {
         this.propertyService = propertyService;
         this.transformationService = transformationService;
-    }
-
-    @PostConstruct
-    public void propertiesInit() {
-        logger.info("propertiesInit");
     }
 
     @GetMapping("/languages")

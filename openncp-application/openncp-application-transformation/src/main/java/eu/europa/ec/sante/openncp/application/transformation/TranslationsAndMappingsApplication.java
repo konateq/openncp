@@ -16,11 +16,6 @@ public class TranslationsAndMappingsApplication extends SpringBootServletInitial
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        //return configureApplication(builder);
         return builder;
     }
-
-    //private static SpringApplicationBuilder configureApplication(SpringApplicationBuilder builder) {
-    //  return builder.sources(TranslationsAndMappingsApplication.class).bannerMode(Banner.Mode.OFF);
-    //}
 }
