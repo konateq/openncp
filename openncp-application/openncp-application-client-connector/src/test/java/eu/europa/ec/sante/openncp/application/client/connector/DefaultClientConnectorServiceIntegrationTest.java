@@ -51,7 +51,7 @@ class DefaultClientConnectorServiceIntegrationTest {
         when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_ALIAS")).thenReturn("gazelle.ncp-signature.openncp.dg-sante.eu");
         when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD")).thenReturn("gazelle");
 
-        when(mockedConfigurationManager.getProperty("secman.sts.url")).thenReturn("https://localhost:2443/TRC-STS/SecurityTokenService");
+        when(mockedConfigurationManager.getProperty("secman.sts.url")).thenReturn("https://localhost:2443/TRC-STS/STSServiceService");
         when(mockedConfigurationManager.getProperty("secman.sts.checkHostname")).thenReturn("false");
 
 

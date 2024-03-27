@@ -180,9 +180,9 @@ public class TRCAssertionRequest extends AssertionRequest {
             return assertionTRCA;
 
         } catch (SOAPException | IOException ex) {
-            throw new STSClientException("SOAP Exception: " + ex.getMessage());
+            throw new STSClientException("SOAP Exception: " + ex.getMessage(), ex);
         } catch (UnsupportedOperationException ex) {
-            throw new STSClientException("Unsupported Operation: " + ex.getMessage());
+            throw new STSClientException("Unsupported Operation: " + ex.getMessage(), ex);
         }
     }
 
