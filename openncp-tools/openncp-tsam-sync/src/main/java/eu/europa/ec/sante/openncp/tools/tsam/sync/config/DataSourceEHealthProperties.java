@@ -21,7 +21,7 @@ import java.util.HashMap;
 @EnableJpaRepositories(
         entityManagerFactoryRef = "secondEntityManager",
         transactionManagerRef = "secondPlatformTransactionManager",
-        basePackages = {"eu.europa.ec.sante.openncp.tsam.sync.domainehealthproperty.repository"}
+        basePackages = {"eu.europa.ec.sante.openncp.tools.tsam.sync.domainehealthproperty.repository"}
 )
 @EntityScan(basePackageClasses = {Property.class})
 @ConfigurationProperties(prefix = "tsam-sync.datasource-ehealth-properties")
