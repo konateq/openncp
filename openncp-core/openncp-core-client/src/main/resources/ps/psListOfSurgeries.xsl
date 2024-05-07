@@ -151,7 +151,7 @@
 
     <xsl:template match="n1:targetSiteCode" mode="targetsitecode">
         <xsl:call-template name="show-eHDSIBodySite">
-            <xsl:with-param name="code" select="./@code"/>
+            <xsl:with-param name="node" select="."/>
         </xsl:call-template>
     </xsl:template>
 </xsl:stylesheet>
