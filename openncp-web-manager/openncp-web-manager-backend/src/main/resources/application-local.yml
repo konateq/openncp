@@ -6,17 +6,19 @@ application:
 spring:
   datasource:
     default:
-      url: jdbc:mysql://127.0.0.1/ehealth_properties?useSSL=false
-      username: ehealth_openncp
-      password: MyOpenncpPwd
+      url: jdbc:mysql://127.0.0.1:3307/ehealth_properties?useSSL=false
+      username: root
+      password: Password1
       driver-class-name: com.mysql.jdbc.Driver
     atna:
-      url: jdbc:mysql://127.0.0.1/ehealth_atna?useSSL=false
-      username: ehealth_openncp
-      password: MyOpenncpPwd
+      url: jdbc:mysql://127.0.0.1:3307/ehealth_atna?useSSL=false
+      username: root
+      password: Password1
       driver-class-name: com.mysql.jdbc.Driver
     eadc:
-      url: jdbc:mysql://127.0.0.1/ehealth_eadc?useSSL=false
-      username: ehealth_openncp
-      password: MyOpenncpPwd
+      url: jdbc:mysql://127.0.0.1:3307/ehealth_eadc?useSSL=false
+      username: root
+      password: Password1
       driver-class-name: com.mysql.jdbc.Driver
+server:
+  port: 5678

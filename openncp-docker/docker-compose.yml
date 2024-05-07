@@ -74,7 +74,7 @@ services:
   #      DB_ACTIVE_PROFILE: ${DB_ACTIVE_PROFILE}
   #    build:
   #      context: ./
-  #      dockerfile: ./openncp-tsam-exporter/Dockerfile
+  #      dockerfile: ./openncp-tsam-exporter/Dockerfile-web-manager-backend
   #    depends_on:
   #      mysql:
   #        condition: service_healthy
@@ -267,6 +267,39 @@ services:
       - ./certificates:/opt/openncp-configuration/keystore
     networks:
       - openncp
+  openncp-web-manager-backend:
+    build:
+      dockerfile: openncp-web-manager/Dockerfile-web-manager-backend
+    env_file:
+      - ./openncp-web-manager/openncp-web-manager-backend/.database.env
+      - ./openncp-web-manager/openncp-web-manager-backend/.env
+    ports:
+      - "${NCP_WEB_MANAGER_BACKEND_CONNECTOR_PORT}:${NCP_WEB_MANAGER_BACKEND_CONNECTOR_PORT}"
+      - "${NCP_WEB_MANAGER_BACKEND_CONNECTOR_SECURE_PORT}:${NCP_WEB_MANAGER_BACKEND_CONNECTOR_SECURE_PORT}"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      openncp-configuration-utility:
+        condition: service_completed_successfully
+    environment:
+      CATALINA_OPTS: "
+        -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
+        -Dfile.encoding=UTF-8"
+      JAVA_OPTS: "
+        -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
+        -Dfile.encoding=UTF-8
+        -Dtls_key_alias=${TLS_KEY_ALIAS}
+        -Dtls_keystore_pwd=${TLS_KEYSTORE_PWD}
+        -Dtls_keystore_path=${TLS_KEYSTORE_PATH}
+        -Dtls_truststore_pwd=${TLS_TRUSTSTORE_PWD}
+        -Dtls_truststore_path=${TLS_TRUSTSTORE_PATH}"
+      LOGGING_LEVEL_ROOT: DEBUG
+    volumes:
+      - ./openncp-configuration:/opt/openncp-configuration
+      - ./certificates:/opt/openncp-configuration/keystore
+      - ./logs/openncp-web-manager-backend:/usr/local/tomcat/logs
+    networks:
+      - openncp
 volumes:
   db-data:
   tsam-exporter-data:
@@ -274,5 +307,4 @@ volumes:
 networks:
   openncp:
     name: openncp
-
 
