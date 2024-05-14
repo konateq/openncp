@@ -7,7 +7,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMStatus
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranscodeRequest;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranslateRequest;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.persistence.model.Property;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.ITransformationService;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.ICDATransformationService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.PropertyService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.ihe.tsam.error.TMError;
@@ -30,11 +30,11 @@ public class TransformationController {
 
     private final PropertyService propertyService;
 
-    private final ITransformationService transformationService;
+    private final ICDATransformationService cdaTransformationService;
 
-    public TransformationController(PropertyService propertyService, ITransformationService transformationService) {
+    public TransformationController(PropertyService propertyService, ICDATransformationService cdaTransformationService) {
         this.propertyService = propertyService;
-        this.transformationService = transformationService;
+        this.cdaTransformationService = cdaTransformationService;
     }
 
     @PostConstruct
@@ -58,7 +58,7 @@ public class TransformationController {
 
     @GetMapping(value = "/translateVS", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity retrieveValueSet(@RequestParam String oid, String targetLanguage){
-        var valueSet = transformationService.translateValueSet(oid, targetLanguage);
+        var valueSet = cdaTransformationService.translateValueSet(oid, targetLanguage);
 
         //Create a FHIR context
         FhirContext ctx = FhirContext.forR4();
@@ -85,7 +85,7 @@ public class TransformationController {
         }
         String targetLanguageCode = translateRequest.getTargetLanguageCode();
         logger.info("Translating CDA document in language [{}]", targetLanguageCode);
-        return ResponseEntity.ok(transformationService.translate(pivotCDA, targetLanguageCode));
+        return ResponseEntity.ok(cdaTransformationService.translate(pivotCDA, targetLanguageCode));
     }
 
     @PostMapping(value = "/transcode", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -103,6 +103,6 @@ public class TransformationController {
             return ResponseEntity.badRequest().body(tmResponseStructure);
         }
         logger.info("Transcoding CDA document into PIVOT");
-        return ResponseEntity.ok(transformationService.transcode(friendlyCDA));
+        return ResponseEntity.ok(cdaTransformationService.transcode(friendlyCDA));
     }
 }

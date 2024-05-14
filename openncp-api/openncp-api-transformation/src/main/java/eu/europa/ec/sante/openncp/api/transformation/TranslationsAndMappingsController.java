@@ -7,7 +7,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMStatus
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranscodeRequest;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranslateRequest;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.persistence.model.Property;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.ITransformationService;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.ICDATransformationService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.PropertyService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.ihe.tsam.error.TMError;
@@ -29,11 +29,11 @@ public class TranslationsAndMappingsController {
 
     private final PropertyService propertyService;
 
-    private final ITransformationService transformationService;
+    private final ICDATransformationService cdaTransformationService;
 
-    public TranslationsAndMappingsController(PropertyService propertyService, ITransformationService transformationService) {
+    public TranslationsAndMappingsController(PropertyService propertyService, ICDATransformationService cdaTransformationService) {
         this.propertyService = propertyService;
-        this.transformationService = transformationService;
+        this.cdaTransformationService = cdaTransformationService;
     }
 
     @GetMapping("/languages")
@@ -52,7 +52,7 @@ public class TranslationsAndMappingsController {
 
     @GetMapping(value = "/translateVS", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<String> retrieveValueSet(@RequestParam String oid, String targetLanguage){
-        var valueSet = transformationService.translateValueSet(oid, targetLanguage);
+        var valueSet = cdaTransformationService.translateValueSet(oid, targetLanguage);
 
         //Create a FHIR context
         FhirContext ctx = FhirContext.forR4();
@@ -79,7 +79,7 @@ public class TranslationsAndMappingsController {
         }
         String targetLanguageCode = translateRequest.getTargetLanguageCode();
         logger.info("Translating CDA document in language [{}]", targetLanguageCode);
-        return ResponseEntity.ok(transformationService.translate(pivotCDA, targetLanguageCode));
+        return ResponseEntity.ok(cdaTransformationService.translate(pivotCDA, targetLanguageCode));
     }
 
     @PostMapping(value = "/transcode", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -97,6 +97,6 @@ public class TranslationsAndMappingsController {
             return ResponseEntity.badRequest().body(tmResponseStructure);
         }
         logger.info("Transcoding CDA document into PIVOT");
-        return ResponseEntity.ok(transformationService.transcode(friendlyCDA));
+        return ResponseEntity.ok(cdaTransformationService.transcode(friendlyCDA));
     }
 }

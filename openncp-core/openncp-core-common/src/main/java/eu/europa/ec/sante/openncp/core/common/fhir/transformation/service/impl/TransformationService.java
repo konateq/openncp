@@ -1,17 +1,17 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.TMResponseStructure;
-import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.ITransformationService;
-import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.ITranslationService;
+import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.IFHIRTransformationService;
+import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.IFHIRTranslationService;
 import org.hl7.fhir.r4.model.Bundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TransformationService implements ITransformationService {
+public class TransformationService implements IFHIRTransformationService {
 
     @Autowired
-    public ITranslationService translationService;
+    public IFHIRTranslationService translationService;
 
     @Override
     public TMResponseStructure translate(final Bundle fhirDocument, final String targetLanguageCode) {

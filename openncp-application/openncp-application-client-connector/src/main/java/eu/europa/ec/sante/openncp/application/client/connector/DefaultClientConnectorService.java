@@ -5,7 +5,6 @@ import eu.europa.ec.sante.openncp.application.client.connector.interceptor.Trans
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
-import eu.europa.ec.sante.openncp.core.common.ihe.security.key.KeyStoreManager;
 import org.apache.commons.lang3.Validate;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;

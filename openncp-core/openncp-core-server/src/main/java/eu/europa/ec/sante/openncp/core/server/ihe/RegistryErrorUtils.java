@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.server.ihe;
 
 import eu.europa.ec.sante.openncp.common.error.ErrorCode;
-import eu.europa.ec.sante.openncp.core.common.RegistryErrorSeverity;
+import eu.europa.ec.sante.openncp.core.common.ihe.RegistryErrorSeverity;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryError;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryErrorList;

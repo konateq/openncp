@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.server.api.ihe.xdr;
 
-import eu.europa.ec.sante.openncp.core.common.NationalConnectorInterface;
+import eu.europa.ec.sante.openncp.core.common.ihe.NationalConnectorInterface;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.DiscardDispenseDetails;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.EPSOSDocument;

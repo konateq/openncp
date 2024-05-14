@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.server.nc.mock.common;
 
-import eu.europa.ec.sante.openncp.core.common.NationalConnectorInterface;
+import eu.europa.ec.sante.openncp.core.common.ihe.NationalConnectorInterface;
 import org.w3c.dom.Element;
 
 /**

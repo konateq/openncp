@@ -19,9 +19,9 @@ import javax.xml.soap.SOAPHeaderElement;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.core.common.ihe.security.key.DatabasePropertiesKeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.ihe.security.key.DefaultKeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.ihe.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Marshaller;
 import org.opensaml.core.xml.io.MarshallingException;
