@@ -1,0 +1,260 @@
+package eu.europa.ec.sante.openncp.core.common.fhir.tsam.dao.impl;
+
+import eu.europa.ec.sante.openncp.core.common.fhir.tsam.dao.ITsamDao;
+import eu.europa.ec.sante.openncp.core.common.fhir.tsam.exception.TSAMException;
+import eu.europa.ec.sante.openncp.core.common.fhir.tsam.persistence.model.*;
+import eu.europa.ec.sante.openncp.core.common.fhir.tsam.persistence.repository.*;
+import eu.europa.ec.sante.openncp.core.common.fhir.tsam.response.RetrievedConcept;
+import eu.europa.ec.sante.openncp.core.common.fhir.tsam.util.TSAMError;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@Transactional(readOnly = true)
+public class TsamDao implements ITsamDao {
+
+    private final Logger logger = LoggerFactory.getLogger(TsamDao.class);
+    private static final String CURRENT_STATUS = "current";
+
+    private static final String VALID_STATUS = "valid";
+    private final CodeSystemConceptRepository codeSystemConceptRepository;
+
+    private final CodeSystemVersionRepository codeSystemVersionRepository;
+
+    private final CodeSystemRepository codeSystemRepository;
+
+    private final DesignationRepository designationRepository;
+
+    private final ValueSetRepository valueSetRepository;
+
+    private final ValueSetVersionRepository valueSetVersionRepository;
+
+    private final TranscodingAssociationRepository transcodingAssociationRepository;
+
+    public TsamDao(CodeSystemConceptRepository codeSystemConceptRepository,
+                   CodeSystemVersionRepository codeSystemVersionRepository,
+                   CodeSystemRepository codeSystemRepository,
+                   DesignationRepository designationRepository,
+                   ValueSetRepository valueSetRepository,
+                   ValueSetVersionRepository valueSetVersionRepository,
+                   TranscodingAssociationRepository transcodingAssociationRepository) {
+        this.codeSystemConceptRepository = codeSystemConceptRepository;
+        this.codeSystemVersionRepository = codeSystemVersionRepository;
+        this.codeSystemRepository = codeSystemRepository;
+        this.designationRepository = designationRepository;
+        this.valueSetRepository = valueSetRepository;
+        this.valueSetVersionRepository = valueSetVersionRepository;
+        this.transcodingAssociationRepository = transcodingAssociationRepository;
+    }
+
+    /**
+     * @param codeSystemConcept Code system concept
+     * @param valueSetOid OID of the Value set
+     * @param valueSetVersion name of ValueSetVersion
+     * @return
+     */
+    @Override
+    public boolean valueSetMatches(CodeSystemConcept codeSystemConcept, String valueSetOid, String valueSetVersion) {
+        logger.debug("[TsamDao] valueSetMatches('{}', '{}', '{}')", codeSystemConcept.getCode(), valueSetOid, valueSetVersion);
+        if (valueSetOid == null) {
+            return false;
+        }
+        List<ValueSetVersion> result = valueSetRepository.findByOidAndConcepts(valueSetOid, codeSystemConcept.getId());
+        if (null == valueSetVersion) {
+            return result.size() > 0;
+        } else {
+            boolean match = false;
+            for (ValueSetVersion version : result) {
+                if (valueSetVersion.equals(version.getVersionName())) {
+                    match = true;
+                    break;
+                }
+            }
+            return match;
+        }
+    }
+
+    @Override
+    public CodeSystemConcept getTargetConcept(CodeSystemConcept sourceConcept) throws TSAMException {
+        logger.debug("[TsamDao] getTargetConcept('{}')", sourceConcept.getCode());
+        List<TranscodingAssociation> transcodingAssociations = transcodingAssociationRepository.findTranscodingAssociationsBySourceConcept(sourceConcept);
+
+        if (transcodingAssociations.isEmpty()) {
+            return null;
+        }
+        CodeSystemConcept target = null;
+        for (TranscodingAssociation association : transcodingAssociations) {
+            target = association.getTargedConcept();
+            String status = association.getStatus();
+            if (status == null || !status.equalsIgnoreCase(VALID_STATUS)) {
+            } else break;
+        }
+        if (target == null) {
+            throw new TSAMException(TSAMError.ERROR_TRANSCODING_INVALID);
+        }
+        return target;
+    }
+
+    @Override
+    public Optional<CodeSystemConcept> getConcept(String code, CodeSystemVersion codeSystemVersion) throws TSAMException {
+        logger.debug("[TsamDao] method getConcept('{}', '{}')", code, codeSystemVersion.getFullName());
+        return codeSystemConceptRepository.findByCodeAndCodeSystemVersionId(code, codeSystemVersion.getId());
+    }
+
+    @Override
+    public Optional<CodeSystemConcept> getConceptByCodeSystemVersionIds(String code, List<Long> codeSystemVersionIds) throws TSAMException {
+        logger.debug("--> method CodeSystemConcept getConceptByCodeSystemVersionIds('{}', '{}')", code, codeSystemVersionIds.size());
+
+        var concepts = new ArrayList<CodeSystemConcept>();
+        for (Long codeSystemVersionId: codeSystemVersionIds) {
+            if (codeSystemConceptRepository.findByCodeAndCodeSystemVersionId(code, codeSystemVersionId).isPresent()) {
+                concepts.add(codeSystemConceptRepository.findByCodeAndCodeSystemVersionId(code, codeSystemVersionId).get());
+            }
+        }
+        //TODO Consider logic to distinguish what codes are required
+
+        // if more concepts are found, try to pick current one
+        if (concepts.size() > 1) {
+            for (CodeSystemConcept concept : concepts) {
+                if (StringUtils.equalsIgnoreCase(CURRENT_STATUS, concept.getStatus())) {
+                    return Optional.of(concept);
+                }
+            }
+        }
+        return concepts.stream().findFirst();
+    }
+
+    @Override
+    public CodeSystemVersion getVersion(String version, CodeSystem codeSystem) throws TSAMException {
+        return codeSystemVersionRepository.findByLocalNameAndCodeSystem(version, codeSystem).orElseThrow(() -> new TSAMException(TSAMError.ERROR_CODE_SYSTEM_VERSION_NOTFOUND));
+    }
+
+    @Override
+    public CodeSystem getCodeSystem(String oid) throws TSAMException {
+        return codeSystemRepository.findByOid(oid).orElseThrow(() -> new TSAMException(TSAMError.ERROR_CODE_SYSTEM_NOTFOUND, oid));
+    }
+
+    @Override
+    public List<Long> getCodeSystemVersionIds(String oid) {
+        return codeSystemVersionRepository.findByOid(oid);
+    }
+
+    @Override
+    public List<RetrievedConcept> getConcepts(String valueSetOid, String valueSetVersionName, String language) {
+        logger.debug("[TsamDao] getConcepts('{}', '{}', '{}')", valueSetOid, valueSetVersionName, language);
+        ValueSetVersion valueSetVersion;
+        if (valueSetVersionName != null) {
+            valueSetVersion = valueSetVersionRepository.findValueSetVersionByDescriptionAndValueSetOid(valueSetVersionName, valueSetOid);
+        } else {
+            valueSetVersion = valueSetVersionRepository.findValueSetVersionByStatusAndValueSetOid(CURRENT_STATUS, valueSetOid);
+        }
+        if (valueSetVersion == null) {
+            return new ArrayList<>();
+        }
+
+        List<CodeSystemConcept> codeSystemConcepts = codeSystemConceptRepository.findCodeSystemConceptsByValueSetVersionsIsOrderByIdAsc(valueSetVersion.getId());
+
+        List<Designation> designations = designationRepository.findByValueSetVersion(valueSetVersion.getVersionName());
+
+        List<RetrievedConcept> result = new ArrayList<>();
+        RetrievedConcept retrievedConcept;
+
+        long id1;
+        long id2;
+        int j = 0;
+        for (CodeSystemConcept concept : codeSystemConcepts) {
+            retrievedConcept = new RetrievedConcept(concept);
+            result.add(retrievedConcept);
+            id1 = concept.getId();
+            while (j < codeSystemConcepts.size()) {
+                Designation designation = designations.get(j);
+                id2 = designation.getConcept().getId();
+                if (id1 < id2) {
+                    break;
+                } else if (id1 == id2) {
+                    retrievedConcept.setLanguage(designation.getLanguageCode());
+                    retrievedConcept.setDesignation(designation.getDesignation());
+                    j++;
+                    break;
+                } else {
+                    j++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Designation> getSourceDesignation(CodeSystemConcept target) throws TSAMException {
+        logger.debug("[TsamDao] getSourceDesignation('{}')", target.getCode());
+        List result;
+        try {
+            result = getDesignation(target, "en-GB");
+        } catch (TSAMException e) {
+            if (e.getReason() == TSAMError.ERROR_DESIGNATION_NOTFOUND) {
+                throw new TSAMException(TSAMError.ERROR_TARGET_CONCEPT_NOTFOUND);
+            } else {
+                throw e;
+            }
+        }
+        return result;
+    }
+
+    public List<Designation> getDesignation(CodeSystemConcept codeSystemConcept, String lang) throws TSAMException {
+        logger.debug("[TsamDao] getDesignation('{}', '{}')", codeSystemConcept.getCode(), lang);
+        List<Designation> designations = codeSystemConceptRepository.findDesignationByIdAndDesignationLanguageCode(codeSystemConcept.getId(), lang);
+
+        if (designations.isEmpty()) {
+            throw new TSAMException(TSAMError.ERROR_DESIGNATION_NOTFOUND);
+        }
+
+        List<Designation> filter = new ArrayList<>();
+
+        for (Designation designation : designations) {
+            if (CURRENT_STATUS.equalsIgnoreCase(designation.getStatus())) {
+                filter.add(designation);
+            }
+        }
+
+        if (filter.isEmpty()) {
+            throw new TSAMException(TSAMError.ERROR_NO_CURRENT_DESIGNATIONS);
+        }
+
+        designations = filter;
+
+        // sort designations by preferred flag, put preferred on top
+        if (designations.size() > 1) {
+            designations.sort(new Comparator<Designation>() {
+                public int compare(Designation o1, Designation o2) {
+                    if (Boolean.TRUE.equals(o1.isPreferred())) {
+                        return -1;
+                    } else if (Boolean.TRUE.equals(o2.isPreferred())) {
+                        return 1;
+                    }
+                    return 0;
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                    return super.equals(obj);
+                }
+
+                @Override
+                public int hashCode() {
+                    return super.hashCode();
+                }
+            });
+        }
+
+        return designations;
+    }
+}

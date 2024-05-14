@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="eu.europa.ec.sante.openncp.core.common.tsam.model.Designation" table="designation">
+    <class name="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.Designation" table="designation">
         <id name="id" type="long">
             <column name="id"/>
             <generator class="assigned"/>
@@ -25,7 +25,7 @@
         <property name="statusDate" type="java.util.Date">
             <column name="status_date"/>
         </property>
-        <many-to-one name="concept" class="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystemConcept">
+        <many-to-one name="concept" class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.CodeSystemConcept">
             <column name="code_system_concept_id"></column>
         </many-to-one>
     </class>

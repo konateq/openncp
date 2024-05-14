@@ -2,9 +2,9 @@ package eu.europa.ec.sante.openncp.core.server.nc.mock.xcpd.impl;
 
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
-import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.common.datamodel.PatientId;
-import eu.europa.ec.sante.openncp.core.common.exception.NIException;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientId;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.NIException;
 import eu.europa.ec.sante.openncp.core.server.api.ihe.xcpd.AnswerNotAvailableException;
 import eu.europa.ec.sante.openncp.core.server.api.ihe.xcpd.PatientSearchInterfaceWithDemographics;
 import eu.europa.ec.sante.openncp.core.server.nc.mock.common.NationalConnectorGateway;

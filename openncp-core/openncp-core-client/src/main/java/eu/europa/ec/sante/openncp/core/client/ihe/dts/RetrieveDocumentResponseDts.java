@@ -3,7 +3,7 @@ package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
 import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponse;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 
 /**
  * This is a Data Transformation Service providing functions to transform data into a RetrieveDocumentResponseDTS object.

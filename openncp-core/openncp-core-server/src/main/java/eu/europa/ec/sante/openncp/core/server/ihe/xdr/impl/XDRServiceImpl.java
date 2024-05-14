@@ -1,44 +1,40 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xdr.impl;
 
-import eu.europa.ec.sante.openncp.common.ClassCode;
-import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
-import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
-import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.common.IHEEventType;
-import eu.europa.ec.sante.openncp.core.common.RegistryErrorSeverity;
-import eu.europa.ec.sante.openncp.core.common.XDRServiceInterface;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.Helper;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InvalidFieldException;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.MissingFieldException;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.OpenNCPErrorCodeException;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML2Validator;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InsufficientRightsException;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.OpenNCPErrorCodeException;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.saml.SAML2Validator;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
-import eu.europa.ec.sante.openncp.core.common.datamodel.DiscardDispenseDetails;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xds.DocumentFactory;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xds.EPSOSDocument;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.*;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorList;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.DiscardDispenseDetails;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.DocumentFactory;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.EPSOSDocument;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import eu.europa.ec.sante.openncp.core.common.ihe.IHEEventType;
+import eu.europa.ec.sante.openncp.core.common.ihe.RegistryErrorSeverity;
+import eu.europa.ec.sante.openncp.core.common.ihe.XDRServiceInterface;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.*;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryError;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryErrorList;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryResponseType;
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
-import eu.europa.ec.sante.openncp.core.common.exception.DocumentTransformationException;
-import eu.europa.ec.sante.openncp.core.common.exception.NIException;
-import eu.europa.ec.sante.openncp.core.common.exception.NoConsentException;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.DocumentTransformationException;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.NIException;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.NoConsentException;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
-import eu.europa.ec.sante.openncp.core.common.transformation.client.TranslationsAndMappingsClient;
-import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
-import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
-import eu.europa.ec.sante.openncp.core.common.transformation.util.DomUtils;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.client.TranslationsAndMappingsClient;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.DomUtils;
 import eu.europa.ec.sante.openncp.core.server.ihe.AdhocQueryResponseStatus;
 import eu.europa.ec.sante.openncp.core.server.ihe.RegistryErrorUtils;
 import eu.europa.ec.sante.openncp.core.server.ihe.exception.NationalInfrastructureException;
@@ -132,7 +128,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
                         .getIdentifiable().get(i).getValue() instanceof ExtrinsicObjectType)) {
                     continue;
                 }
-                ExtrinsicObjectType eot = (ExtrinsicObjectType) request.getSubmitObjectsRequest().getRegistryObjectList()
+                eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.ExtrinsicObjectType eot = (ExtrinsicObjectType) request.getSubmitObjectsRequest().getRegistryObjectList()
                         .getIdentifiable().get(i).getValue();
                 String documentId = "";
                 for (ExternalIdentifierType eit : eot.getExternalIdentifier()) {
@@ -189,7 +185,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
                 ExtrinsicObjectType eot = (ExtrinsicObjectType) request.getSubmitObjectsRequest().getRegistryObjectList()
                         .getIdentifiable().get(i).getValue();
                 String documentId = "";
-                for (ExternalIdentifierType eit : eot.getExternalIdentifier()) {
+                for (eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.ExternalIdentifierType eit : eot.getExternalIdentifier()) {
                     if (StringUtils.equals(eit.getIdentificationScheme(), XDRConstants.EXTRINSIC_OBJECT.XDSDOC_UNIQUEID_SCHEME)) {
                         documentId = eit.getValue();
                     }

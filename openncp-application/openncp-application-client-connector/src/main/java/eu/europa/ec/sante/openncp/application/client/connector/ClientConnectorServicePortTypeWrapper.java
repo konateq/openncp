@@ -4,7 +4,7 @@ import java.util.Map;
 import javax.xml.ws.BindingProvider;
 
 import eu.europa.ec.sante.openncp.core.client.ClientConnectorServicePortType;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import org.opensaml.saml.saml2.core.Assertion;
 
 public class ClientConnectorServicePortTypeWrapper {

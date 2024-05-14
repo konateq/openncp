@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
-import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;

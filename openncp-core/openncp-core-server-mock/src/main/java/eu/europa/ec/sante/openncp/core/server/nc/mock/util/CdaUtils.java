@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.server.nc.mock.util;
 
-import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

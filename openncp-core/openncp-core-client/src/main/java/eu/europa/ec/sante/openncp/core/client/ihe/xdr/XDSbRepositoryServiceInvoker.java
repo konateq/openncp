@@ -10,19 +10,19 @@ import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.client.transformation.DomUtils;
 import eu.europa.ec.sante.openncp.core.client.transformation.TranslationsAndMappingsClient;
-import eu.europa.ec.sante.openncp.core.common.DynamicDiscoveryService;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.ihe.DynamicDiscoveryService;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
-import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.*;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
-import eu.europa.ec.sante.openncp.core.common.exception.DocumentTransformationException;
-import eu.europa.ec.sante.openncp.core.common.exception.XDRException;
-import eu.europa.ec.sante.openncp.core.common.transformation.domain.TMResponseStructure;
-import eu.europa.ec.sante.openncp.core.common.transformation.util.Base64Util;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.*;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryResponseType;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.DocumentTransformationException;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.XDRException;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.util.EventLogClientUtil;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.util.XMLUtils;
@@ -101,8 +101,8 @@ public class XDSbRepositoryServiceInvoker {
         String languageCode = document != null ? getLanguageCode(document) : XDRConstants.EXTRINSIC_OBJECT.LANGUAGE_CODE_DEFAULT_VALUE;
 
         // ProvideAndRegisterDocumentSetRequestType
-        eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ObjectFactory ofXds = new eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ObjectFactory();
-        eu.europa.ec.sante.openncp.core.common.datamodel.xsd.lcm._3.ObjectFactory ofLcm = new eu.europa.ec.sante.openncp.core.common.datamodel.xsd.lcm._3.ObjectFactory();
+        eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ObjectFactory ofXds = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ObjectFactory();
+        eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.lcm._3.ObjectFactory ofLcm = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.lcm._3.ObjectFactory();
 
         ProvideAndRegisterDocumentSetRequestType registerDocumentSetRequest = ofXds.createProvideAndRegisterDocumentSetRequestType();
         registerDocumentSetRequest.setSubmitObjectsRequest(ofLcm.createSubmitObjectsRequest());

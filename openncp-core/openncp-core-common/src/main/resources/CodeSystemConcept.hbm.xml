@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystemConcept" table="code_system_concept">
+    <class name="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.CodeSystemConcept" table="code_system_concept">
         <id name="id" type="long">
             <column name="id"/>
             <generator class="assigned"/>
@@ -19,20 +19,20 @@
         <property name="definition" type="java.lang.String">
             <column name="definition"/>
         </property>
-        <many-to-one name="codeSystemVersion" class="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystemVersion">
+        <many-to-one name="codeSystemVersion" class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.CodeSystemVersion">
             <column name="code_system_version_id"></column>
         </many-to-one>
         <bag name="valueSetVersions" inverse="false" table="x_concept_value_set" lazy="true">
             <key>
                 <column name="code_system_concept_id"/>
             </key>
-            <many-to-many class="eu.europa.ec.sante.openncp.core.common.tsam.model.ValueSetVersion" column="value_set_version_id"/>
+            <many-to-many class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.ValueSetVersion" column="value_set_version_id"/>
         </bag>
         <bag name="designations" inverse="false" table="designation" lazy="true">
             <key>
                 <column name="code_system_concept_id"/>
             </key>
-            <one-to-many class="eu.europa.ec.sante.openncp.core.common.tsam.model.Designation"/>
+            <one-to-many class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.Designation"/>
         </bag>
     </class>
 </hibernate-mapping>

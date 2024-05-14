@@ -9,7 +9,7 @@ import javax.xml.namespace.QName;
 
 import eu.europa.ec.sante.openncp.api.client.AssertionContextProvider;
 import eu.europa.ec.sante.openncp.api.client.ImmutableAssertionContext;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.security.util.AssertionUtil;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;

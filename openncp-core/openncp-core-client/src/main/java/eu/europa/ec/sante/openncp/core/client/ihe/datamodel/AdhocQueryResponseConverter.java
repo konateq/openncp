@@ -2,12 +2,12 @@ package eu.europa.ec.sante.openncp.core.client.ihe.datamodel;
 
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xds.OrCDDocumentMetaData;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xds.QueryResponse;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xds.XDSDocument;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xds.XDSDocumentAssociation;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.query._3.AdhocQueryResponse;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.*;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.OrCDDocumentMetaData;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.QueryResponse;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.XDSDocument;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.XDSDocumentAssociation;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.query._3.AdhocQueryResponse;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 

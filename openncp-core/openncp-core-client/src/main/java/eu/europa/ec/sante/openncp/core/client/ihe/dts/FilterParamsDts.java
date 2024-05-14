@@ -19,7 +19,7 @@
  */
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import eu.europa.ec.sante.openncp.core.common.datamodel.FilterParams;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.FilterParams;
 
 public class FilterParamsDts {
 

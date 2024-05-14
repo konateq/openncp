@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
 import eu.europa.ec.sante.openncp.core.client.DocumentId;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xds.XDSDocument;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.XDSDocument;
 
 public class XdsDocumentDts {
 

@@ -21,7 +21,7 @@ import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryPatientOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.RetrieveDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.SubmitDocumentOperation;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import org.apache.commons.lang3.Validate;
 import org.apache.cxf.feature.Features;
 import org.apache.cxf.phase.PhaseInterceptorChain;
