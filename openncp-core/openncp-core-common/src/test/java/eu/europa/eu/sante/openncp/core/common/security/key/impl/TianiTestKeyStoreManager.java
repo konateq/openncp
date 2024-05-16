@@ -1,4 +1,4 @@
-package eu.europa.eu.sante.openncp.security.key.impl;
+package eu.europa.eu.sante.openncp.core.common.security.key.impl;
 
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.slf4j.Logger;
@@ -13,21 +13,21 @@ import java.security.cert.CertificateException;
 /**
  * @author jerouris
  */
-public class SPMSTestKeyStoreManager implements KeyStoreManager {
+public class TianiTestKeyStoreManager implements KeyStoreManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlassfishTestKeyStoreManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TianiTestKeyStoreManager.class);
 
-    private static final String TEST_KEYSTORE_LOCATION = "keystores/spms/pt-server-keystore.jks";
-    private static final String TEST_TRUSTSTORE_LOCATION = "keystores/spms/pt-server-truststore.jks";
-    private static final String TEST_KEYSTORE_PASSWORD = "changeit";
+    private static final String TEST_KEYSTORE_LOCATION = "keystores/tiani/test_keystore_server1.jks";
+    private static final String TEST_TRUSTSTORE_LOCATION = "keystores/tiani/test_truststore1.jks";
+    private static final String TEST_KEYSTORE_PASSWORD = "spirit";
 
-    private static final String TEST_PRIVATEKEY_ALIAS = "ppt.ncp-signature.epsos.spms.pt";
-    private static final String TEST_PRIVATEKEY_PASSWORD = "changeit";
+    private static final String TEST_PRIVATEKEY_ALIAS = "server1";
+    private static final String TEST_PRIVATEKEY_PASSWORD = "spirit";
 
     private KeyStore keyStore;
     private KeyStore trustStore;
 
-    public SPMSTestKeyStoreManager() {
+    public TianiTestKeyStoreManager() {
         // For testing purposes...
         if (keyStore == null) {
             keyStore = getTestKeyStore();
@@ -44,8 +44,7 @@ public class SPMSTestKeyStoreManager implements KeyStoreManager {
             Key key = keyStore.getKey(alias, password);
             if (key instanceof PrivateKey) {
                 // Get certificate of public key
-                Certificate cert = keyStore
-                        .getCertificate(alias);
+                Certificate cert = keyStore.getCertificate(alias);
 
                 // Get public key
                 PublicKey publicKey = cert.getPublicKey();
@@ -60,15 +59,15 @@ public class SPMSTestKeyStoreManager implements KeyStoreManager {
     }
 
     private KeyStore getTestKeyStore() {
+
         try {
             keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            InputStream keystoreStream = ClassLoader
-                    .getSystemResourceAsStream(TEST_KEYSTORE_LOCATION);
+            InputStream keystoreStream = ClassLoader.getSystemResourceAsStream(TEST_KEYSTORE_LOCATION);
             keyStore.load(keystoreStream, TEST_KEYSTORE_PASSWORD.toCharArray());
 
             return keyStore;
 
-        } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException ex) {
+        } catch (IOException | CertificateException | KeyStoreException | NoSuchAlgorithmException ex) {
             LOGGER.error(null, ex);
         }
         return null;
@@ -89,10 +88,8 @@ public class SPMSTestKeyStoreManager implements KeyStoreManager {
 
         try {
             trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            InputStream keystoreStream = ClassLoader
-                    .getSystemResourceAsStream(TEST_TRUSTSTORE_LOCATION);
-            trustStore.load(keystoreStream,
-                    TEST_KEYSTORE_PASSWORD.toCharArray());
+            InputStream keystoreStream = ClassLoader.getSystemResourceAsStream(TEST_TRUSTSTORE_LOCATION);
+            trustStore.load(keystoreStream, TEST_KEYSTORE_PASSWORD.toCharArray());
 
             return trustStore;
 
@@ -104,6 +101,7 @@ public class SPMSTestKeyStoreManager implements KeyStoreManager {
 
     @Override
     public Certificate getCertificate(String alias) {
+
         try {
             return keyStore.getCertificate(alias);
 
@@ -115,8 +113,7 @@ public class SPMSTestKeyStoreManager implements KeyStoreManager {
 
     @Override
     public KeyPair getDefaultPrivateKey() {
-        return getPrivateKey(TEST_PRIVATEKEY_ALIAS,
-                TEST_PRIVATEKEY_PASSWORD.toCharArray());
+        return getPrivateKey(TEST_PRIVATEKEY_ALIAS, TEST_PRIVATEKEY_PASSWORD.toCharArray());
     }
 
     @Override

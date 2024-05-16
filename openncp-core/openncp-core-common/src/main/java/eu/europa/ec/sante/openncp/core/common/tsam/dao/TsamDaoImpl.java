@@ -259,17 +259,11 @@ public class TsamDaoImpl implements TsamDao {
     public List<String> getLtrLanguages() {
 
         final List<String> result = new ArrayList<>();
-        Criteria crt;
-        Iterator<String> iterator;
 
-        crt = getSessionFactory().getCurrentSession().createCriteria(Designation.class);
-        crt.setProjection(Projections.distinct(Projections.property(Designation.AT_LANGUAGE)));
-        iterator = crt.list().iterator();
-
-        while (iterator.hasNext()) {
-            result.add(iterator.next());
+        List<Designation> designations = designationRepository.getDistinctLanguageCode();
+        for (Designation designation: designations) {
+            result.add(designation.getLanguageCode());
         }
-
         return result;
     }
 }

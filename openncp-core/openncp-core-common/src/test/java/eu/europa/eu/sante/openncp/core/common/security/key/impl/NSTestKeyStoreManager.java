@@ -1,4 +1,4 @@
-package eu.europa.eu.sante.openncp.security.key.impl;
+package eu.europa.eu.sante.openncp.core.common.security.key.impl;
 
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;

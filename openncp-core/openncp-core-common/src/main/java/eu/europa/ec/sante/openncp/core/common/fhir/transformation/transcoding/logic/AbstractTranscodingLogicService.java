@@ -1,9 +1,10 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.transcoding.logic;
 
+import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.CodeSystem;
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.utils.ToolingExtensions;
-import eu.europa.ec.sante.openncp.core.common.fhir.tsam.service.IFHIRTerminologyService;
-import eu.europa.ec.sante.openncp.core.common.fhir.tsam.cs.CodeSystem;
-import eu.europa.ec.sante.openncp.core.common.fhir.tsam.response.TSAMResponse;
+import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
+import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -13,10 +14,10 @@ import java.util.Optional;
 
 public abstract class AbstractTranscodingLogicService<R extends Resource> implements TranscodingLogicService<R> {
 
-    private final IFHIRTerminologyService fhirTerminologyService;
+    private final TerminologyService terminologyService;
 
-    public AbstractTranscodingLogicService(final IFHIRTerminologyService fhirTerminologyService) {
-        this.fhirTerminologyService = Validate.notNull(fhirTerminologyService);
+    public AbstractTranscodingLogicService(final TerminologyService terminologyService) {
+        this.terminologyService = Validate.notNull(terminologyService);
     }
 
     @Override
@@ -40,11 +41,11 @@ public abstract class AbstractTranscodingLogicService<R extends Resource> implem
     protected abstract void transcodeTypedResource(R typedResource);
 
     protected Optional<Coding> getTranscoding(final Coding coding) {
-        final TSAMResponse tsamTranscodingResponse = fhirTerminologyService.getConceptByCode(coding);
+        final TSAMResponseStructure tsamTranscodingResponse = terminologyService.getTargetConcept(CodeConcept.from(coding));
         final Coding targetCoding = new Coding(CodeSystem.getUrlBasedOnOid(tsamTranscodingResponse.getCodeSystem()),
                                                tsamTranscodingResponse.getCode(), tsamTranscodingResponse.getDesignation());
         targetCoding.setUserSelected(false);
-        final TSAMResponse tsamTranslationResponse = fhirTerminologyService.getDesignationForConcept(targetCoding, "en-GB");
+        final TSAMResponseStructure tsamTranslationResponse = terminologyService.getDesignation(CodeConcept.from(targetCoding), "en-GB");
         ToolingExtensions.addLanguageTranslation(targetCoding.getDisplayElement(), "en-GB", tsamTranslationResponse.getDesignation());
         return Optional.of(targetCoding);
     }

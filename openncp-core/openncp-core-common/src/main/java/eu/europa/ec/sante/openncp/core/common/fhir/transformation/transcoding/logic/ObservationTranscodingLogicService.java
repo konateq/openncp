@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.transcoding.logic;
 
-import eu.europa.ec.sante.openncp.core.common.fhir.tsam.service.IFHIRTerminologyService;
+import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ObservationTranscodingLogicService extends AbstractTranscodingLogicService<Observation> {
 
-    public ObservationTranscodingLogicService(final IFHIRTerminologyService fhirTerminologyService) {
-        super(fhirTerminologyService);
+    public ObservationTranscodingLogicService(final TerminologyService terminologyService) {
+        super(terminologyService);
     }
 
     @Override

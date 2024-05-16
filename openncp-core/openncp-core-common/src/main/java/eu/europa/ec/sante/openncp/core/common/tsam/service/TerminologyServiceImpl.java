@@ -228,7 +228,7 @@ public class TerminologyServiceImpl implements TerminologyService {
         if (designations.size() > 1) {
             int preferred = 0;
             for (Designation designation : designations) {
-                if (Boolean.TRUE.equals(designation.getPreferred())) {
+                if (designation.isPreferred()) {
                     preferred++;
                 }
             }
@@ -281,11 +281,11 @@ public class TerminologyServiceImpl implements TerminologyService {
         }
     }
 
-    public ITsamDao getDao() {
+    public TsamDao getDao() {
         return dao;
     }
 
-    public void setDao(ITsamDao dao) {
+    public void setDao(TsamDao dao) {
         this.dao = dao;
     }
 
