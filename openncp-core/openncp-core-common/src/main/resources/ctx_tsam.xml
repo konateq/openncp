@@ -6,7 +6,7 @@
 
     <tx:annotation-driven transaction-manager="tsamTransactionManager"/>
 
-    <bean id="tsamConfig" class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.util.TsamConfiguration">
+    <bean id="tsamConfig" class="eu.europa.ec.sante.openncp.core.common.tsam.config.TsamConfiguration">
         <property name="translationLang" value="${translationLanguage}"/>
         <property name="transcodingLang" value="${transcodingLanguage}"/>
     </bean>

@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.TMResponseStructure;
-import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.IFHIRTranslationService;
+import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.FHIRTranslationService;
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.resources.IDomainTranslationService;
 import org.hl7.fhir.r4.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
-public class TranslationService implements IFHIRTranslationService {
+public class TranslationService implements FHIRTranslationService {
 
     @Autowired
     private IDomainTranslationService<Patient> patientTranslationService;

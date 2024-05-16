@@ -2,8 +2,8 @@ package eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.exception.TMException;
-import eu.europa.ec.sante.openncp.core.common.ihe.tsam.error.ITMTSAMError;
-import eu.europa.ec.sante.openncp.core.common.ihe.tsam.error.TMError;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.TMConstants;
 import org.slf4j.Logger;

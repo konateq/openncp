@@ -2,11 +2,16 @@ package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.
 
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.resources.IDomainTranslationService;
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.utils.ToolingExtensions;
+import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.hl7.fhir.r4.model.Composition;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CompositionTranslationService extends AbstractTranslationService implements IDomainTranslationService<Composition>  {
+    public CompositionTranslationService(final TerminologyService terminologyService) {
+        super(terminologyService);
+    }
+
     @Override
     public Composition translate(Composition composition, String targetLanguage) {
 

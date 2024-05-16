@@ -1,22 +1,27 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources.translation;
 
-import eu.europa.ec.sante.openncp.core.common.fhir.tsam.service.IFHIRTerminologyService;
-import eu.europa.ec.sante.openncp.core.common.fhir.tsam.response.TSAMResponse;
+
+import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
+import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
+import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
-public class AbstractTranslationService {
 
-    @Autowired
-    private IFHIRTerminologyService fhirTerminologyService;
+public class AbstractTranslationService {
+    private final TerminologyService terminologyService;
+
+    public AbstractTranslationService(final TerminologyService terminologyService) {
+        this.terminologyService = Validate.notNull(terminologyService);
+    }
 
     String getTranslation(Coding coding, String targetLanguageCode) {
-        TSAMResponse tsamResponse = fhirTerminologyService.getDesignationForConcept(coding, targetLanguageCode);
+        final CodeConcept codeConcept = CodeConcept.from(coding);
+        final TSAMResponseStructure tsamResponse = terminologyService.getDesignation(codeConcept, targetLanguageCode);
         return tsamResponse.getDesignation();
     }
 

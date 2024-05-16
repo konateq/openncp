@@ -1,8 +1,8 @@
 package eu.europa.ec.sante.openncp.core.common.ihe.transformation.exception;
 
-import eu.europa.ec.sante.openncp.core.common.ihe.tsam.error.ITMTSAMError;
-import eu.europa.ec.sante.openncp.core.common.ihe.tsam.error.TMError;
-import eu.europa.ec.sante.openncp.core.common.ihe.tsam.error.TMErrorCtx;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.TMErrorCtx;
 
 public class TMException extends Exception {
 

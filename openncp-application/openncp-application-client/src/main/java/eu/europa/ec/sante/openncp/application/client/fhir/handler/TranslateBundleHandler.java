@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.application.client.fhir.handler;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.handler.BundleHandler;
-import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.IFHIRTranslationService;
+import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.FHIRTranslationService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Bundle;
 import org.springframework.stereotype.Component;
@@ -11,9 +11,9 @@ import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.TMRespo
 @Component
 public class TranslateBundleHandler implements BundleHandler {
 
-    private final IFHIRTranslationService fhirTranslationService;
+    private final FHIRTranslationService fhirTranslationService;
 
-    public TranslateBundleHandler(final IFHIRTranslationService fhirTranslationService) {
+    public TranslateBundleHandler(final FHIRTranslationService fhirTranslationService) {
         this.fhirTranslationService = Validate.notNull(fhirTranslationService);
     }
 

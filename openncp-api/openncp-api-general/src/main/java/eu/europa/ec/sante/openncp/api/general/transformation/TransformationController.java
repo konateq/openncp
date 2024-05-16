@@ -7,10 +7,10 @@ import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMStatus
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranscodeRequest;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranslateRequest;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.persistence.model.Property;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.ICDATransformationService;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATransformationService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.PropertyService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
-import eu.europa.ec.sante.openncp.core.common.ihe.tsam.error.TMError;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -30,9 +30,9 @@ public class TransformationController {
 
     private final PropertyService propertyService;
 
-    private final ICDATransformationService cdaTransformationService;
+    private final CDATransformationService cdaTransformationService;
 
-    public TransformationController(PropertyService propertyService, ICDATransformationService cdaTransformationService) {
+    public TransformationController(PropertyService propertyService, CDATransformationService cdaTransformationService) {
         this.propertyService = propertyService;
         this.cdaTransformationService = cdaTransformationService;
     }
