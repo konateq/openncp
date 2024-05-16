@@ -14,7 +14,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
-@SpringBootApplication(scanBasePackages={"eu.europa.ec.sante.openncp.core.common.tsam"})
+@SpringBootApplication(scanBasePackages={"eu.europa.ec.sante.openncp.core.common.tsam.repository"})
 @RunWith(SpringRunner.class)
 @EntityScan("eu.europa.ec.sante.openncp.core.common.tsam.*")
 public class ValueSetVersionRepositoryTest {

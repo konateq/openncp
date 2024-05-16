@@ -6,23 +6,22 @@ import eu.europa.ec.sante.openncp.core.common.tsam.domain.CodeSystemVersion;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.Designation;
 import eu.europa.ec.sante.openncp.core.common.tsam.repository.CodeSystemConceptRepository;
 import eu.europa.ec.sante.openncp.core.common.tsam.repository.CodeSystemRepository;
+import eu.europa.eu.sante.openncp.core.common.DummyApplication;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Collections;
 import java.util.Optional;
 
-@SpringBootApplication(scanBasePackages={"eu.europa.ec.sante.openncp.core.common.tsam"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = DummyApplication.class)
 @RunWith(SpringRunner.class)
-@EntityScan("eu.europa.ec.sante.openncp.core.common.tsam.*")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class CodeSystemConceptRepositoryTest {
 
     private static boolean setUpIsDone = false;

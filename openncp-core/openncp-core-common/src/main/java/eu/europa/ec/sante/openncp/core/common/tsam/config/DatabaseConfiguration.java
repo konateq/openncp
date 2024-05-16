@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.tsam.config;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -15,7 +16,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "eu.europa.ec.sante.openncp.core.common.fhir.tsam.persistence")
+@EnableJpaRepositories(basePackages = "eu.europa.ec.sante.openncp.core.common.tsam.*")
 public class DatabaseConfiguration {
 
     @Primary
@@ -29,7 +30,7 @@ public class DatabaseConfiguration {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder, DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
-                .packages("eu.europa.ec.sante.myhealtheu.tsam.persistence.model")
+                .packages("eu.europa.ec.sante.openncp.core.common.tsam.domain")
                 .build();
     }
 

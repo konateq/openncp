@@ -257,13 +257,6 @@ public class TsamDaoImpl implements TsamDao {
     }
 
     public List<String> getLtrLanguages() {
-
-        final List<String> result = new ArrayList<>();
-
-        List<Designation> designations = designationRepository.getDistinctLanguageCode();
-        for (Designation designation: designations) {
-            result.add(designation.getLanguageCode());
-        }
-        return result;
+        return designationRepository.findAllAvailableLanguageCodes();
     }
 }

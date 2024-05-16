@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-@SpringBootApplication(scanBasePackages={"eu.europa.ec.sante.openncp.core.common.tsam"})
+@SpringBootApplication(scanBasePackages={"eu.europa.ec.sante.openncp.core.common.tsam.repository"})
 @RunWith(SpringRunner.class)
 @EntityScan("eu.europa.ec.sante.openncp.core.common.tsam.*")
 public class DesignationRepositoryTest {
@@ -40,10 +40,10 @@ public class DesignationRepositoryTest {
 
     @Test
     public void testGetDistinctLanguageCode() {
-        List<Designation> designations = designationRepository.getDistinctLanguageCode();
+        List<String> designations = designationRepository.findAllAvailableLanguageCodes();
         Assert.assertFalse(designations.isEmpty());
         Assert.assertEquals(1, designations.size());
-        Assert.assertEquals("en-GB", designations.get(0).getLanguageCode());
+        Assert.assertEquals("en-GB", designations.get(0));
     }
 
     @Before

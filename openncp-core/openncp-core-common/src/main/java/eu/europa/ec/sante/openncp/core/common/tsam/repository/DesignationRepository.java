@@ -16,5 +16,6 @@ public interface DesignationRepository extends JpaRepository<CodeSystemVersion, 
             "where vsv.description = :valueSetVersion")
     List<Designation> findByValueSetVersion(@Param("valueSetVersion") String valueSetVersion);
 
-    List<Designation> getDistinctLanguageCode();
+    @Query("select distinct d.languageCode from Designation d")
+    List<String> findAllAvailableLanguageCodes();
 }

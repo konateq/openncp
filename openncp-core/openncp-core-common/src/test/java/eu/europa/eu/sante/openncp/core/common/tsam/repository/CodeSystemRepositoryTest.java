@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
-@SpringBootApplication(scanBasePackages={"eu.europa.ec.sante.openncp.core.common.tsam"})
+@SpringBootApplication(scanBasePackages={"eu.europa.ec.sante.openncp.core.common.tsam.repository"})
 @RunWith(SpringRunner.class)
 @EntityScan("eu.europa.ec.sante.openncp.core.common.tsam.*")
 public class CodeSystemRepositoryTest {

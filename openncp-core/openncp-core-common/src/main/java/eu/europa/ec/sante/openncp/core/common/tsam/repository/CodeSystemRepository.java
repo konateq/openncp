@@ -2,6 +2,7 @@ package eu.europa.ec.sante.openncp.core.common.tsam.repository;
 
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.CodeSystem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
