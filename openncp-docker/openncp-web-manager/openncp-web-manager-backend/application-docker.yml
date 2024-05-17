@@ -19,4 +19,4 @@ spring:
 application:
   security:
     jwt:
-      secret: mysecret
+      secret: S7U418zVNeAIRmznNyNQec7eimPD0qEv

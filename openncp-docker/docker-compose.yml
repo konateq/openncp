@@ -269,19 +269,22 @@ services:
       - openncp
   openncp-web-manager-backend:
     build:
-      dockerfile: openncp-web-manager/Dockerfile-web-manager-backend
+      dockerfile: openncp-web-manager/openncp-web-manager-backend/Dockerfile-web-manager-backend
     env_file:
       - ./openncp-web-manager/openncp-web-manager-backend/.database.env
       - ./openncp-web-manager/openncp-web-manager-backend/.env
     ports:
       - "${NCP_WEB_MANAGER_BACKEND_CONNECTOR_PORT}:${NCP_WEB_MANAGER_BACKEND_CONNECTOR_PORT}"
       - "${NCP_WEB_MANAGER_BACKEND_CONNECTOR_SECURE_PORT}:${NCP_WEB_MANAGER_BACKEND_CONNECTOR_SECURE_PORT}"
+      - "8000:8000"
     depends_on:
       mysql:
         condition: service_healthy
       openncp-configuration-utility:
         condition: service_completed_successfully
     environment:
+      SPRING_PROFILES_ACTIVE: production
+      SPRING_CONFIG_ADDITIONAL-LOCATION: file:/opt/config/application-docker.yml
       CATALINA_OPTS: "
         -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
         -Dfile.encoding=UTF-8"
@@ -298,6 +301,19 @@ services:
       - ./openncp-configuration:/opt/openncp-configuration
       - ./certificates:/opt/openncp-configuration/keystore
       - ./logs/openncp-web-manager-backend:/usr/local/tomcat/logs
+    networks:
+      - openncp
+  openncp-web-manager-frontend:
+    depends_on:
+      openncp-web-manager-backend:
+        condition: service_started
+    build:
+      context: ../
+      dockerfile: openncp-docker/openncp-web-manager/openncp-web-manager-frontend/Dockerfile-web-manager-frontend
+      args:
+        GATEWAY_BACKEND_URL: ${GATEWAY_BACKEND_URL}
+    ports:
+      - "${NCP_WEB_MANAGER_FRONTEND_CONNECTOR_PORT}:8080"
     networks:
       - openncp
 volumes:
