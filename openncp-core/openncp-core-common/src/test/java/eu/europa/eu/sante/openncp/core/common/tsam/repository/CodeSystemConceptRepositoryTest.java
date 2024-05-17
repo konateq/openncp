@@ -12,16 +12,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = DummyApplication.class)
 @RunWith(SpringRunner.class)
+
 public class CodeSystemConceptRepositoryTest {
 
     private static boolean setUpIsDone = false;
@@ -29,6 +29,8 @@ public class CodeSystemConceptRepositoryTest {
     private static final String ATC_OID = "2.16.840.1.113883.6.73";
 
     private static CodeSystem insertedCodeSystem;
+
+    private static Long codeSystemVersionId;
 
     @Autowired
     private CodeSystemRepository codeSystemRepository;
@@ -38,15 +40,14 @@ public class CodeSystemConceptRepositoryTest {
 
     @Test
     public void testFindByCodeAndCodeSystemVersionSuccess() {
-        var codeSystemVersionId = codeSystemConceptRepository.findAll().get(0).getCodeSystemVersion().getId();
         Optional<CodeSystemConcept> result = codeSystemConceptRepository.findByCodeAndCodeSystemVersionId("123", codeSystemVersionId);
         Assert.assertTrue(result.isPresent());
         Assert.assertEquals("123", result.get().getCode());
     }
 
     @Test
-    public void testFindByCodeAndCodeSystemVersionEmptyResponse() {
-        Optional<CodeSystemConcept> result = codeSystemConceptRepository.findByCodeAndCodeSystemVersionId("456", null);
+    public void testFindByCodeAndNonExistingCodeSystemVersion() {
+        Optional<CodeSystemConcept> result = codeSystemConceptRepository.findByCodeAndCodeSystemVersionId("456", Long.MAX_VALUE);
         Assert.assertTrue(result.isEmpty());
     }
 
@@ -60,6 +61,7 @@ public class CodeSystemConceptRepositoryTest {
     public void prefillDatabase() {
         if (!setUpIsDone) {
             insertedCodeSystem = codeSystemRepository.save(buildCodeSystem());
+            codeSystemVersionId = insertedCodeSystem.getCodeSystemVersions().get(0).getId();
             setUpIsDone=true;
         }
 

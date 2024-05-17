@@ -4,19 +4,18 @@ import eu.europa.ec.sante.openncp.core.common.tsam.domain.ValueSet;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.ValueSetVersion;
 import eu.europa.ec.sante.openncp.core.common.tsam.repository.ValueSetRepository;
 import eu.europa.ec.sante.openncp.core.common.tsam.repository.ValueSetVersionRepository;
+import eu.europa.eu.sante.openncp.core.common.DummyApplication;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
-@SpringBootApplication(scanBasePackages={"eu.europa.ec.sante.openncp.core.common.tsam.repository"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = DummyApplication.class)
 @RunWith(SpringRunner.class)
-@EntityScan("eu.europa.ec.sante.openncp.core.common.tsam.*")
 public class ValueSetVersionRepositoryTest {
 
     private static boolean setUpIsDone = false;
