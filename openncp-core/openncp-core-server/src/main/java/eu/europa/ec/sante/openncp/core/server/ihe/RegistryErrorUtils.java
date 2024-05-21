@@ -21,8 +21,15 @@ public class RegistryErrorUtils {
     private static final OMFactory omFactory = OMAbstractFactory.getOMFactory();
     private static final ObjectFactory ofRs = new ObjectFactory();
 
-    public static void addErrorMessage(RegistryErrorList registryErrorList, ErrorCode errorCode, String codeContext, String location, RegistryErrorSeverity severity) {
-        registryErrorList.getRegistryError().add(createErrorMessage(errorCode.getCode(), codeContext, location, severity));
+    public static void addErrorMessage(RegistryErrorList registryErrorList, ErrorCode errorCode, String codeContext, RegistryErrorSeverity severity) {
+        registryErrorList.getRegistryError().add(createErrorMessage(errorCode.getCode(), codeContext, null, severity));
+    }
+
+    public static void addErrorMessage(RegistryErrorList registryErrorList, ErrorCode errorCode, String codeContext, Exception e, RegistryErrorSeverity severity) {
+        registryErrorList.getRegistryError().add(createErrorMessage(errorCode.getCode(), codeContext, Arrays.stream(Optional.ofNullable(ExceptionUtils.getRootCause(e)).orElse(e).getStackTrace())
+                .findFirst()
+                .map(StackTraceElement::toString)
+                .orElse(StringUtils.EMPTY), severity));
     }
 
     public static void addErrorOMMessage(OMNamespace ons, OMElement registryErrorList, ErrorCode errorCode, String codeContext, RegistryErrorSeverity severity) {
@@ -44,19 +51,6 @@ public class RegistryErrorUtils {
                 severity));
     }
 
-    private static RegistryError createErrorMessage(String errorCode, String codeContext, Exception e, RegistryErrorSeverity severity) {
-
-        var registryError = ofRs.createRegistryError();
-        registryError.setErrorCode(errorCode);
-        registryError.setLocation(Arrays.stream(Optional.ofNullable(ExceptionUtils.getRootCause(e)).orElse(e).getStackTrace())
-                .findFirst()
-                .map(StackTraceElement::toString)
-                .orElse(StringUtils.EMPTY));
-        registryError.setSeverity(severity.getText());
-        registryError.setCodeContext(codeContext);
-        return registryError;
-    }
-
     private static RegistryError createErrorMessage(String errorCode, String codeContext, String location, RegistryErrorSeverity severity) {
 
         var registryError = ofRs.createRegistryError();
@@ -74,7 +68,6 @@ public class RegistryErrorUtils {
         registryError.addAttribute(omFactory.createOMAttribute("errorCode", null, errorCode));
         String aux = severity != null ? severity.getText() : null;
         registryError.addAttribute(omFactory.createOMAttribute("severity", null, aux));
-        // EHNCP-1131
         registryError.addAttribute(omFactory.createOMAttribute("location", null, location));
         return registryError;
     }

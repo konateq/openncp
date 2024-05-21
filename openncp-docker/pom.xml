@@ -144,7 +144,7 @@
             <!--                            <alias>openncpa-${project.version}${build.number}</alias>-->
             <!--                            <name>opencnp-a:${project.version}</name>-->
             <!--                            <build>-->
-            <!--                                <dockerFile>${project.basedir}/Dockerfile-node-a</dockerFile>-->
+            <!--                                <dockerFile>${project.basedir}/Dockerfile-web-manager-backend-node-a</dockerFile>-->
             <!--                                <tags>-->
             <!--                                    <tag>latest</tag>-->
             <!--                                </tags>-->
