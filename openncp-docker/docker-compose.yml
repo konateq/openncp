@@ -62,30 +62,30 @@ services:
         condition: service_completed_successfully
     networks:
       - openncp
-  #  openncp-tsam-exporter:
-  #    container_name: "openncp-tsam-exporter"
-  #    env_file: .env
-  #    environment:
-  #      DB_HOST: ${DB_HOST}
-  #      DB_INTERNAL_PORT: ${DB_INTERNAL_PORT}
-  #      DB_USER: ${DB_ROOT_USER}
-  #      DRIVER_CLASS_NAME: ${DRIVER_CLASS_NAME}
-  #      DB_PASSWORD: ${DB_ROOT_PASSWORD}
-  #      DB_ACTIVE_PROFILE: ${DB_ACTIVE_PROFILE}
-  #    build:
-  #      context: ./
-  #      dockerfile: ./openncp-tsam-exporter/Dockerfile-web-manager-backend
-  #    depends_on:
-  #      mysql:
-  #        condition: service_healthy
-  #      openncp-configuration-utility:
-  #        condition: service_completed_successfully
-  #      openncp-tsam-sync:
-  #        condition: service_completed_successfully
-  #    volumes:
-  #      - tsam-exporter-data:/opt/openncp-configuration/EpsosRepository
-  #    networks:
-  #      - openncp
+  openncp-tsam-exporter:
+    container_name: "openncp-tsam-exporter"
+    env_file: .env
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_INTERNAL_PORT: ${DB_INTERNAL_PORT}
+      DB_USER: ${DB_ROOT_USER}
+      DRIVER_CLASS_NAME: ${DRIVER_CLASS_NAME}
+      DB_PASSWORD: ${DB_ROOT_PASSWORD}
+      DB_ACTIVE_PROFILE: ${DB_ACTIVE_PROFILE}
+    build:
+      context: ./
+      dockerfile: ./openncp-tsam-exporter/Dockerfile\
+    depends_on:
+      mysql:
+        condition: service_healthy
+      openncp-configuration-utility:
+        condition: service_completed_successfully
+      openncp-tsam-sync:
+        condition: service_completed_successfully
+    volumes:
+      - tsam-exporter-data:/opt/openncp-configuration/EpsosRepository
+    networks:
+      - openncp
   tomcat_node_a:
     build:
       context: .

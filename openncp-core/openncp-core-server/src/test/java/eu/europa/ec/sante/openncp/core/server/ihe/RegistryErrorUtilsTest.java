@@ -2,9 +2,9 @@ package eu.europa.ec.sante.openncp.core.server.ihe;
 
 
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
-import eu.europa.ec.sante.openncp.core.common.RegistryErrorSeverity;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryError;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryErrorList;
+import eu.europa.ec.sante.openncp.core.common.ihe.RegistryErrorSeverity;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryError;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryErrorList;
 import org.junit.Assert;
 import org.junit.Test;
 
