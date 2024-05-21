@@ -1,9 +1,9 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xdr;
 
 import eu.europa.ec.sante.openncp.common.audit.EventLog;
-import eu.europa.ec.sante.openncp.core.common.XDRServiceInterface;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rs._3.RegistryResponseType;
+import eu.europa.ec.sante.openncp.core.common.ihe.XDRServiceInterface;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryResponseType;
 import eu.europa.ec.sante.openncp.core.server.ihe.xdr.impl.XDRServiceImpl;
 import org.apache.axiom.soap.SOAPHeader;
 

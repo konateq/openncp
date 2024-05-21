@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="eu.europa.ec.sante.openncp.core.common.tsam.model.ValueSetVersion" table="value_set_version">
+    <class name="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.ValueSetVersion" table="value_set_version">
         <id name="id" type="long">
             <column name="id"/>
             <generator class="assigned"/>
@@ -25,17 +25,17 @@
         <property name="description" type="java.lang.String">
             <column name="description"/>
         </property>
-        <many-to-one name="previousVersion" class="eu.europa.ec.sante.openncp.core.common.tsam.model.ValueSetVersion">
+        <many-to-one name="previousVersion" class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.ValueSetVersion">
             <column name="previous_version_id"></column>
         </many-to-one>
-        <many-to-one name="valueSet" class="eu.europa.ec.sante.openncp.core.common.tsam.model.ValueSet" fetch="join">
+        <many-to-one name="valueSet" class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.ValueSet" fetch="join">
             <column name="value_set_id"/>
         </many-to-one>
         <bag name="concepts" inverse="false" table="x_concept_value_set" lazy="true">
             <key>
                 <column name="value_set_version_id"/>
             </key>
-            <many-to-many class="eu.europa.ec.sante.openncp.core.common.tsam.model.CodeSystemConcept" column="code_system_concept_id"/>
+            <many-to-many class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.model.CodeSystemConcept" column="code_system_concept_id"/>
         </bag>
     </class>
 </hibernate-mapping>

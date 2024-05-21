@@ -14,6 +14,11 @@
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.sante</groupId>
+            <artifactId>openncp-api-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.sante</groupId>
             <artifactId>openncp-core-client</artifactId>
             <version>${project.version}</version>
         </dependency>

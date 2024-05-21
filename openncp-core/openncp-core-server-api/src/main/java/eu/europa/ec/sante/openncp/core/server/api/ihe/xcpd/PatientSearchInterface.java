@@ -1,10 +1,10 @@
 package eu.europa.ec.sante.openncp.core.server.api.ihe.xcpd;
 
-import eu.europa.ec.sante.openncp.core.common.NationalConnectorInterface;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
-import eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.common.datamodel.PatientId;
-import eu.europa.ec.sante.openncp.core.common.exception.NIException;
+import eu.europa.ec.sante.openncp.core.common.ihe.NationalConnectorInterface;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InsufficientRightsException;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientId;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.NIException;
 import org.opensaml.core.xml.io.MarshallingException;
 
 import java.util.List;

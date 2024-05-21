@@ -12,5 +12,15 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>eu.europa.ec.sante</groupId>
+            <artifactId>openncp-api-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.sante</groupId>
+            <artifactId>openncp-core-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.server.ihe.xca.impl;
 
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.rim._3.SlotType1;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.SlotType1;
 
 import java.util.List;
 

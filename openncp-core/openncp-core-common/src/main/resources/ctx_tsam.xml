@@ -6,7 +6,7 @@
 
     <tx:annotation-driven transaction-manager="tsamTransactionManager"/>
 
-    <bean id="tsamConfig" class="eu.europa.ec.sante.openncp.core.common.tsam.util.TsamConfiguration">
+    <bean id="tsamConfig" class="eu.europa.ec.sante.openncp.core.common.tsam.config.TsamConfiguration">
         <property name="translationLang" value="${translationLanguage}"/>
         <property name="transcodingLang" value="${transcodingLanguage}"/>
     </bean>
@@ -45,13 +45,13 @@
     </bean>
 
     <bean id="eu.europa.ec.sante.openncp.core.common.tsam.dao.ITsamDao"
-          class="eu.europa.ec.sante.openncp.core.common.tsam.dao.impl.TsamDao">
+          class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.dao.impl.TsamDao">
         <property name="sessionFactory" ref="tsamSessionFactory"/>
         <property name="config" ref="tsamConfig"/>
     </bean>
 
     <bean id="eu.europa.ec.sante.openncp.core.common.tsam.service.ITerminologyService"
-          class="eu.europa.ec.sante.openncp.core.common.tsam.service.impl.TerminologyService">
+          class="eu.europa.ec.sante.openncp.core.common.ihe.tsam.service.impl.TerminologyService">
         <property name="dao" ref="eu.europa.ec.sante.openncp.core.common.tsam.dao.ITsamDao"/>
         <property name="config" ref="tsamConfig"/>
     </bean>

@@ -70,12 +70,11 @@ public class DisplayTest {
         } catch (Exception e) {
             LOGGER.error("{}: '{}'", e.getClass(), e.getMessage(), e);
         }
-
     }
 
     @Test
     public void runFile() throws UITransformationException, IOException {
-        fileTest("/Users/mathiasghys/Development/EC/ehealth/cda-display-tool/xsltransformer/samples/1-1234-W6.xml", TRANSFORMATION.WithOutputAndDefinedPath);
+        fileTest("/Users/mathiasghys/Downloads/2-1234-W7.xml", TRANSFORMATION.WithOutputAndDefinedPath);
     }
 
     @Test

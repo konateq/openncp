@@ -11,13 +11,13 @@ import eu.europa.ec.sante.openncp.application.client.connector.assertions.STSCli
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil;
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.Concept;
 import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.*;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.PurposeOfUse;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
-import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.PurposeOfUse;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.apache.commons.lang3.StringUtils;

@@ -24,8 +24,8 @@ import javax.xml.namespace.QName;
 
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicConstant;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.PurposeOfUse;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.saml.SAML;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.PurposeOfUse;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.saml.SAML;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;

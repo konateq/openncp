@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import eu.europa.ec.sante.openncp.core.common.datamodel.PatientId;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientId;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

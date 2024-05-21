@@ -39,13 +39,13 @@ import eu.europa.ec.sante.openncp.core.client.ihe.service.OrderService;
 import eu.europa.ec.sante.openncp.core.client.ihe.service.PatientService;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
 import eu.europa.ec.sante.openncp.core.client.logging.LoggingSlf4j;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xds.QueryResponse;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import eu.europa.ec.sante.openncp.core.common.exception.NoPatientIdDiscoveredException;
-import eu.europa.ec.sante.openncp.core.common.exception.XCAException;
-import eu.europa.ec.sante.openncp.core.common.exception.XDRException;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.QueryResponse;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.NoPatientIdDiscoveredException;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.XCAException;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.XDRException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
@@ -189,7 +189,7 @@ public class ClientServiceImpl implements ClientService {
             final String targetLanguage = retrieveDocumentRequest.getTargetLanguage();
 
             final GenericDocumentCode genericDocumentCode = retrieveDocumentRequest.getClassCode();
-            final eu.europa.ec.sante.openncp.core.common.datamodel.GenericDocumentCode documentCode = GenericDocumentCodeDts.newInstance(
+            final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode documentCode = GenericDocumentCodeDts.newInstance(
                     genericDocumentCode);
             final Map<AssertionEnum, Assertion> assertionMap = retrieveDocumentOperation.getAssertions();
             if (OpenNCPValidation.isValidationEnable()) {
@@ -242,7 +242,7 @@ public class ClientServiceImpl implements ClientService {
             final String countryCode = queryPatientOperation.getRequest().getCountryCode();
             final Map<AssertionEnum, Assertion> assertionMap = queryPatientOperation.getAssertions();
 
-            final List<eu.europa.ec.sante.openncp.core.common.datamodel.PatientDemographics> patientDemographicsList =
+            final List<eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics> patientDemographicsList =
                     IdentificationService.findIdentityByTraits(
                     PatientDemographicsDts.toDataModel(patientDemographics), assertionMap, countryCode);
 

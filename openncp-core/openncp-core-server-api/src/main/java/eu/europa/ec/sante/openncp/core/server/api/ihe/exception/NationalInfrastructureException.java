@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.server.api.ihe.exception;
 
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
-import eu.europa.ec.sante.openncp.core.common.exception.NIException;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.NIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

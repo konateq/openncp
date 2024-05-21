@@ -1,9 +1,9 @@
 package eu.europa.ec.sante.openncp.core.server.api.ihe.xca;
 
-import eu.europa.ec.sante.openncp.core.common.NationalConnectorInterface;
-import eu.europa.ec.sante.openncp.core.common.assertionvalidator.exceptions.InsufficientRightsException;
-import eu.europa.ec.sante.openncp.core.common.datamodel.xds.*;
-import eu.europa.ec.sante.openncp.core.common.exception.NIException;
+import eu.europa.ec.sante.openncp.core.common.ihe.NationalConnectorInterface;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InsufficientRightsException;
+import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.*;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.NIException;
 
 import java.util.List;
 

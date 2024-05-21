@@ -2,7 +2,7 @@ package eu.europa.ec.sante.openncp.core.client.transformation;
 
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
-import eu.europa.ec.sante.openncp.core.common.exception.DocumentTransformationException;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.DocumentTransformationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
