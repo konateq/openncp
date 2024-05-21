@@ -150,7 +150,8 @@
     </xsl:template>
 
     <xsl:template match="n1:targetSiteCode" mode="targetsitecode">
-        <!-- TODO To be bound with a value set, but for now nothing is available. -->
-        <xsl:value-of select="@displayName"/>
+        <xsl:call-template name="show-eHDSIBodySite">
+            <xsl:with-param name="node" select="."/>
+        </xsl:call-template>
     </xsl:template>
 </xsl:stylesheet>
