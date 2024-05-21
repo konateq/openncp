@@ -74,7 +74,7 @@ services:
       DB_ACTIVE_PROFILE: ${DB_ACTIVE_PROFILE}
     build:
       context: ./
-      dockerfile: ./openncp-tsam-exporter/Dockerfile\
+      dockerfile: ./openncp-tsam-exporter/Dockerfile
     depends_on:
       mysql:
         condition: service_healthy
