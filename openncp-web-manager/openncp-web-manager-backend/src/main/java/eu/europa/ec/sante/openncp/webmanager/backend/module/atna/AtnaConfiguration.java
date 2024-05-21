@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna",
+        basePackages = "eu.europa.ec.sante.openncp.webmanager.backend.module.atna",
         entityManagerFactoryRef = "atnaEntityManagerFactory",
         transactionManagerRef = "atnaTransactionManager"
 )
@@ -44,7 +44,7 @@ public class AtnaConfiguration {
                                                                        @Qualifier("atnaDataSource") DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
-                .packages("eu.europa.ec.sante.ehdsi.openncp.gateway.module.atna")
+                .packages("eu.europa.ec.sante.openncp.webmanager.backend.module.atna")
                 .build();
     }
 

@@ -17,7 +17,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "eu.europa.ec.sante.ehdsi.openncp.gateway.persistence")
+@EnableJpaRepositories(basePackages = "eu.europa.ec.sante.openncp.webmanager.backend.persistence")
 public class JpaConfiguration {
 
     @Primary
@@ -39,7 +39,7 @@ public class JpaConfiguration {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder, DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
-                .packages("eu.europa.ec.sante.ehdsi.openncp.gateway.persistence.model")
+                .packages("eu.europa.ec.sante.openncp.webmanager.backend.persistence.model")
                 .build();
     }
 

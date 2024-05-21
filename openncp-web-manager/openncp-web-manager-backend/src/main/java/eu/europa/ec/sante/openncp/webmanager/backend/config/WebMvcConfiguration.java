@@ -6,7 +6,9 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -22,7 +24,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public TomcatServletWebServerFactory tomcatFactory() {
+    @Profile("local")
+    public TomcatServletWebServerFactory tomcatFactory(Environment environment) {
         return new TomcatServletWebServerFactory() {
             @Override
             protected TomcatWebServer getTomcatWebServer(org.apache.catalina.startup.Tomcat tomcat) {
@@ -36,31 +39,31 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 ContextResource defaultResource = new ContextResource();
                 defaultResource.setName("jdbc/ConfMgr");
                 defaultResource.setType(DataSource.class.getName());
-                defaultResource.setProperty("driverClassName", "com.mysql.cj.jdbc.Driver");
+                defaultResource.setProperty("driverClassName", environment.getProperty("spring.datasource.default.driver-class-name","com.mysql.cj.jdbc.Driver"));
                 defaultResource.setProperty("factory", "com.zaxxer.hikari.HikariJNDIFactory");
-                defaultResource.setProperty("jdbcUrl", "jdbc:mysql://localhost:3306/ehealth_properties");
-                defaultResource.setProperty("username", "myUsername");
-                defaultResource.setProperty("password", "myPassword");
+                defaultResource.setProperty("jdbcUrl", environment.getProperty("spring.datasource.default.url","jdbc:mysql://localhost:3306/ehealth_properties"));
+                defaultResource.setProperty("username", environment.getProperty("spring.datasource.default.username","myUsername"));
+                defaultResource.setProperty("password", environment.getProperty("spring.datasource.default.password","myPassword"));
                 context.getNamingResources().addResource(defaultResource);
 
                 ContextResource atnaResource = new ContextResource();
                 atnaResource.setName("jdbc/OPEN_ATNA");
                 atnaResource.setType(DataSource.class.getName());
-                atnaResource.setProperty("driverClassName", "com.mysql.cj.jdbc.Driver");
+                atnaResource.setProperty("driverClassName", environment.getProperty("spring.datasource.atna.driver-class-name","com.mysql.cj.jdbc.Driver"));
                 atnaResource.setProperty("factory", "com.zaxxer.hikari.HikariJNDIFactory");
-                atnaResource.setProperty("jdbcUrl", "jdbc:mysql://localhost:3306/ehealth_atna");
-                atnaResource.setProperty("username", "myUsername");
-                atnaResource.setProperty("password", "myPassword");
+                atnaResource.setProperty("jdbcUrl", environment.getProperty("spring.datasource.atna.url","jdbc:mysql://localhost:3306/ehealth_atna"));
+                atnaResource.setProperty("username",  environment.getProperty("spring.datasource.atna.username","myUsername"));
+                atnaResource.setProperty("password", environment.getProperty("spring.datasource.atna.password","myPassword"));
                 context.getNamingResources().addResource(atnaResource);
 
                 ContextResource eadcResource = new ContextResource();
                 eadcResource.setName("jdbc/EADC");
                 eadcResource.setType(DataSource.class.getName());
-                eadcResource.setProperty("driverClassName", "com.mysql.cj.jdbc.Driver");
+                eadcResource.setProperty("driverClassName", environment.getProperty("spring.datasource.eadc.driver-class-name","com.mysql.cj.jdbc.Driver"));
                 eadcResource.setProperty("factory", "com.zaxxer.hikari.HikariJNDIFactory");
-                eadcResource.setProperty("jdbcUrl", "jdbc:mysql://localhost:3306/ehealth_eadc");
-                eadcResource.setProperty("username", "myUsername");
-                eadcResource.setProperty("password", "myPassword");
+                eadcResource.setProperty("jdbcUrl", environment.getProperty("spring.datasource.eadc.url","jdbc:mysql://localhost:3306/ehealth_eadc"));
+                eadcResource.setProperty("username",  environment.getProperty("spring.datasource.eadc.username","myUsername"));
+                eadcResource.setProperty("password", environment.getProperty("spring.datasource.eadc.password","myPassword"));
                 context.getNamingResources().addResource(eadcResource);
             }
         };

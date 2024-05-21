@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "eu.europa.ec.sante.ehdsi.openncp.gateway.module.eadc",
+        basePackages = "eu.europa.ec.sante.openncp.webmanager.backend.module.eadc",
         entityManagerFactoryRef = "eadcEntityManagerFactory",
         transactionManagerRef = "eadcTransactionManager"
 )
@@ -40,7 +40,7 @@ public class EadcConfiguration {
                                                                        @Qualifier("eadcDataSource") DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
-                .packages("eu.europa.ec.sante.ehdsi.openncp.gateway.module.eadc")
+                .packages("eu.europa.ec.sante.openncp.webmanager.backend.module.eadc")
                 .build();
     }
 
