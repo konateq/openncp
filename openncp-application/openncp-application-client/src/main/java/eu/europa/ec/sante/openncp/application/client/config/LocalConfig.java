@@ -14,10 +14,28 @@ import org.springframework.context.annotation.Profile;
 import javax.sql.DataSource;
 import java.util.List;
 
+/**
+ * This configuration class is only used with the "local" profile.
+ * It will apply the given datasource properties (defined by {@link DataSourcePropertyHolder}) to the JNDI
+ * data resources to simulate Tomcat's server.xml configuration style.
+ * <p>
+ * This allows us to run the client from within IntelliJ to greatly facilitate local debugging.
+ */
 @Configuration
 @EnableConfigurationProperties
 @Profile("local")
 public class LocalConfig {
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource.properties")
+    public DataSourcePropertyHolder propertiesDataSourcePropertyHolder() {
+        return new DataSourcePropertyHolder();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource.tsam")
+    public DataSourcePropertyHolder tsamDataSourcePropertyHolder() {
+        return new DataSourcePropertyHolder();
+    }
 
     @Bean
     public TomcatServletWebServerFactory tomcatFactory(final List<DataSourcePropertyHolder> dataSourcePropertyHolders) {
@@ -36,18 +54,6 @@ public class LocalConfig {
             }
         };
         return tomcat;
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.properties")
-    public DataSourcePropertyHolder propertiesDataSourcePropertyHolder() {
-        return new DataSourcePropertyHolder();
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.tsam")
-    public DataSourcePropertyHolder tsamDataSourcePropertyHolder() {
-        return new DataSourcePropertyHolder();
     }
 
     public static class DataSourcePropertyHolder {

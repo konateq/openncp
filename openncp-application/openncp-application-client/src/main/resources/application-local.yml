@@ -13,3 +13,9 @@ spring:
       password: Password1
       driver-class-name: com.mysql.cj.jdbc.Driver
 
+############################################
+# Change the webserver's port if you need. #
+############################################
+#server:
+#  port: 8888
+
