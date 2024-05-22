@@ -1,6 +1,5 @@
 package eu.europa.ec.sante.openncp.core.common.tsam.config;
 
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -19,13 +18,11 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(basePackages = "eu.europa.ec.sante.openncp.core.common.tsam.*")
 public class DatabaseConfiguration {
 
-    @Primary
     @Bean(destroyMethod="")
     public DataSource dataSource(DataSourceProperties dataSourceProperties) {
         return DataSourceBuilder.create().url(dataSourceProperties.getUrl()).password(dataSourceProperties.getPassword()).username(dataSourceProperties.getUsername()).driverClassName(dataSourceProperties.getDriverClassName()).build();
     }
 
-    @Primary
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder, DataSource dataSource) {
         return builder
@@ -34,7 +31,6 @@ public class DatabaseConfiguration {
                 .build();
     }
 
-    @Primary
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);

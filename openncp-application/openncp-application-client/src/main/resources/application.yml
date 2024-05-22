@@ -35,5 +35,9 @@ spring:
     username: root
     password: Password001
     driverClassName: com.mysql.cj.jdbc.Driver
-  config:
-    import: classpath:application-tsam.yml
+    tsam:
+      jndi-name: java:comp/env/jdbc/TSAM
+      expected-type: javax.sql.DataSource
+    default:
+      jndi-name: java:comp/env/jdbc/ConfMgr
+      expected-type: javax.sql.DataSource

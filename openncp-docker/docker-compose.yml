@@ -73,7 +73,7 @@ services:
       DB_PASSWORD: ${DB_ROOT_PASSWORD}
       DB_ACTIVE_PROFILE: ${DB_ACTIVE_PROFILE}
     build:
-      context: ./
+      context: .
       dockerfile: ./openncp-tsam-exporter/Dockerfile
     depends_on:
       mysql:
