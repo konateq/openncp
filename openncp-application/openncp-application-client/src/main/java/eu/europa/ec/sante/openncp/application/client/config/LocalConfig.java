@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.application.client.config;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.ContextResource;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Configuration
 @EnableConfigurationProperties
@@ -18,7 +20,7 @@ import javax.sql.DataSource;
 public class LocalConfig {
 
     @Bean
-    public TomcatServletWebServerFactory tomcatFactory() {
+    public TomcatServletWebServerFactory tomcatFactory(final List<DataSourcePropertyHolder> dataSourcePropertyHolders) {
         final TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
             @Override
             protected TomcatWebServer getTomcatWebServer(final Tomcat tomcat) {
@@ -28,22 +30,83 @@ public class LocalConfig {
 
             @Override
             protected void postProcessContext(final Context context) {
-                context.getNamingResources().addResource(createJNDIResource("jdbc/ConfMgr", "ehealth_properties"));
-                context.getNamingResources().addResource(createJNDIResource("jdbc/TSAM", "ehealth_ltrdb"));
+                dataSourcePropertyHolders.stream()
+                        .map(DataSourcePropertyHolder::asContextResource)
+                        .forEach(contextResource -> context.getNamingResources().addResource(contextResource));
             }
         };
         return tomcat;
     }
 
-    //TODO this needs to be configuration driven
-    private ContextResource createJNDIResource(final String jndiName, String databaseName) {
-        final ContextResource resource = new ContextResource();
-        resource.setName(jndiName);
-        resource.setType(DataSource.class.getName());
-        resource.setProperty("driverClassName", "com.mysql.cj.jdbc.Driver");
-        resource.setProperty("url", String.format("jdbc:mysql://localhost:3307/%s?allowPublicKeyRetrieval=true&useSSL=false", databaseName));
-        resource.setProperty("username", "root");
-        resource.setProperty("password", "Password1");
-        return resource;
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource.properties")
+    public DataSourcePropertyHolder propertiesDataSourcePropertyHolder() {
+        return new DataSourcePropertyHolder();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource.tsam")
+    public DataSourcePropertyHolder tsamDataSourcePropertyHolder() {
+        return new DataSourcePropertyHolder();
+    }
+
+    public static class DataSourcePropertyHolder {
+        private String url;
+        private String driverClassName;
+        private String username;
+        private String password;
+
+        private String jndiName;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getDriverClassName() {
+            return driverClassName;
+        }
+
+        public void setDriverClassName(String driverClassName) {
+            this.driverClassName = driverClassName;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String getJndiName() {
+            return jndiName;
+        }
+
+        public void setJndiName(String jndiName) {
+            this.jndiName = jndiName;
+        }
+
+        public ContextResource asContextResource() {
+            final ContextResource resource = new ContextResource();
+            resource.setName(this.getJndiName());
+            resource.setType(DataSource.class.getName());
+            resource.setProperty("driverClassName", this.getDriverClassName());
+            resource.setProperty("url", this.getUrl());
+            resource.setProperty("username", this.getUsername());
+            resource.setProperty("password", this.getPassword());
+            return resource;
+        }
     }
 }
