@@ -16,7 +16,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
                 contact = @Contact(name = "eHDSI Support", email = "SANTE-EHEALTH-DSI-SUPPORT@ec.europa.eu")
         )
 )
-@SpringBootApplication(scanBasePackages = {"eu.europa.ec.sante.myhealtheu"})
+@SpringBootApplication(scanBasePackages = {"eu.europa.ec.sante.openncp"})
 public class ServerWebServiceApplication extends SpringBootServletInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(ServerWebServiceApplication.class);

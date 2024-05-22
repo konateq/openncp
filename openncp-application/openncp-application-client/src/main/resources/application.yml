@@ -30,14 +30,18 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
   datasource:
-    url: 'jdbc:mysql://localhost:3306/ltrdb'
+    url: 'jdbc:mysql://localhost:3307/ehealth_properties'
     username: root
-    password: Password001
+    password: Password1
     driverClassName: com.mysql.cj.jdbc.Driver
-    tsam:
-      jndi-name: java:comp/env/jdbc/TSAM
-      expected-type: javax.sql.DataSource
-    default:
-      jndi-name: java:comp/env/jdbc/ConfMgr
-      expected-type: javax.sql.DataSource
+    jndi:
+      tsam:
+        jndiName: java:comp/env/jdbc/TSAM
+        expected-type: javax.sql.DataSource
+      properties:
+        jndiName: java:comp/env/jdbc/ConfMgr
+        expected-type: javax.sql.DataSource

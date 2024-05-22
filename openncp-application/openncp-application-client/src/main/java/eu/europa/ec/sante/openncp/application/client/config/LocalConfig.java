@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.application.client.ihe;
+package eu.europa.ec.sante.openncp.application.client.config;
 
 import javax.sql.DataSource;
 
@@ -20,7 +20,7 @@ import org.springframework.jndi.JndiObjectFactoryBean;
 @Configuration
 @EnableConfigurationProperties
 @Profile("local")
-public class LocalConfiguration {
+public class LocalConfig {
 
     @Bean
     public TomcatServletWebServerFactory tomcatFactory() {
@@ -33,8 +33,8 @@ public class LocalConfiguration {
 
             @Override
             protected void postProcessContext(final Context context) {
-                context.getNamingResources().addResource(createJNDIResource("jdbc/ConfMgr"));
-                context.getNamingResources().addResource(createJNDIResource("jdbc/TSAM"));
+                context.getNamingResources().addResource(createJNDIResource("jdbc/ConfMgr", "ehealth_properties"));
+                context.getNamingResources().addResource(createJNDIResource("jdbc/TSAM", "ehealth_ltrdb"));
 
                 final SecurityConstraint securityConstraint = new SecurityConstraint();
                 securityConstraint.setUserConstraint("CONFIDENTIAL");
@@ -57,12 +57,12 @@ public class LocalConfiguration {
         return connector;
     }
 
-    private ContextResource createJNDIResource(final String jndiName) {
+    private ContextResource createJNDIResource(final String jndiName, String databaseName) {
         final ContextResource resource = new ContextResource();
         resource.setName(jndiName);
         resource.setType(DataSource.class.getName());
         resource.setProperty("driverClassName", "com.mysql.cj.jdbc.Driver");
-        resource.setProperty("url", "jdbc:mysql://localhost:3307/ehealth_properties?allowPublicKeyRetrieval=true&useSSL=false");
+        resource.setProperty("url", String.format("jdbc:mysql://localhost:3307/%s?allowPublicKeyRetrieval=true&useSSL=false", databaseName));
         resource.setProperty("username", "root");
         resource.setProperty("password", "Password1");
         return resource;
@@ -75,19 +75,9 @@ public class LocalConfiguration {
         return jndiObjectFactoryBean;
     }
 
-    @Bean(destroyMethod = "")
-    @ConfigurationProperties(prefix = "spring.datasource.tsam")
-    public JndiObjectFactoryBean tsamDataSource() {
-        return new JndiObjectFactoryBean();
-    }
-
-    //    @Bean(destroyMethod = "")
-    //    public DataSource jndiDataTsamSource() throws IllegalArgumentException, NamingException {
-    //        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-    //        bean.setJndiName("java:comp/env/jdbc/TSAM");
-    //        bean.setProxyInterface(DataSource.class);
-    //        bean.setLookupOnStartup(false);
-    //        bean.afterPropertiesSet();
-    //        return (DataSource) bean.getObject();
-    //    }
+//    @Bean(destroyMethod = "")
+//    @ConfigurationProperties(prefix = "spring.datasource.tsam")
+//    public JndiObjectFactoryBean tsamDataSource() {
+//        return new JndiObjectFactoryBean();
+//    }
 }

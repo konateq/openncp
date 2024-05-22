@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.application.client.ihe;
+package eu.europa.ec.sante.openncp.application.client.config;
 
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;

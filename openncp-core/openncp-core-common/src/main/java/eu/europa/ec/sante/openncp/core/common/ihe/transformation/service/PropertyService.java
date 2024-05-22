@@ -1,8 +1,8 @@
 package eu.europa.ec.sante.openncp.core.common.ihe.transformation.service;
 
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.exception.PropertyNotFoundException;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.persistence.model.Property;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.persistence.repository.PropertyRepository;
+import eu.europa.ec.sante.openncp.core.common.property.PropertyEntity;
+import eu.europa.ec.sante.openncp.core.common.property.PropertyRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,7 @@ public class PropertyService {
         this.propertyRepository = propertyRepository;
     }
 
-    public Property getProperty(String name) {
+    public PropertyEntity getProperty(String name) {
         return propertyRepository.findById(name).orElseThrow(()-> new PropertyNotFoundException(name));
     }
 }

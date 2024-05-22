@@ -6,7 +6,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMRespon
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMStatus;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranscodeRequest;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranslateRequest;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.persistence.model.Property;
+import eu.europa.ec.sante.openncp.core.common.property.PropertyEntity;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATransformationService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.PropertyService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
@@ -39,9 +39,9 @@ public class TransformationController {
     @GetMapping("/languages")
     public Set<String> retrieveAvailableTranslationLanguages() {
         logger.info("Entering retrieveAvailableTranslationLanguages() method");
-        Property property = propertyService.getProperty(AVAILABLE_TRANSLATION_LANGUAGES_PROPERTY_KEY);
+        PropertyEntity propertyEntity = propertyService.getProperty(AVAILABLE_TRANSLATION_LANGUAGES_PROPERTY_KEY);
         var availableLanguageCodes = new HashSet<String>();
-        StringTokenizer st = new StringTokenizer(property.getValue(), ",");
+        StringTokenizer st = new StringTokenizer(propertyEntity.getValue(), ",");
 
         // checking tokens
         while (st.hasMoreTokens()) {

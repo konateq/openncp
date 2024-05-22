@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.ihe.transformation.persistence.model;
+package eu.europa.ec.sante.openncp.core.common.property;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EHNCP_PROPERTY")
-public class Property {
+public class PropertyEntity {
 
     @Id
     private String name;
