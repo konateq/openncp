@@ -1,21 +1,16 @@
 package eu.europa.ec.sante.openncp.application.client.config;
 
-import javax.sql.DataSource;
-
 import org.apache.catalina.Context;
-import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.ContextResource;
-import org.apache.tomcat.util.descriptor.web.SecurityCollection;
-import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jndi.JndiObjectFactoryBean;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableConfigurationProperties
@@ -35,28 +30,12 @@ public class LocalConfig {
             protected void postProcessContext(final Context context) {
                 context.getNamingResources().addResource(createJNDIResource("jdbc/ConfMgr", "ehealth_properties"));
                 context.getNamingResources().addResource(createJNDIResource("jdbc/TSAM", "ehealth_ltrdb"));
-
-                final SecurityConstraint securityConstraint = new SecurityConstraint();
-                securityConstraint.setUserConstraint("CONFIDENTIAL");
-                final SecurityCollection collection = new SecurityCollection();
-                collection.addPattern("/*");
-                securityConstraint.addCollection(collection);
-                context.addConstraint(securityConstraint);
             }
         };
-        //        tomcat.addAdditionalTomcatConnectors(redirectConnector());
         return tomcat;
     }
 
-    private Connector redirectConnector() {
-        final Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-        connector.setScheme("http");
-        connector.setPort(8080);
-        connector.setSecure(false);
-        connector.setRedirectPort(8443);
-        return connector;
-    }
-
+    //TODO this needs to be configuration driven
     private ContextResource createJNDIResource(final String jndiName, String databaseName) {
         final ContextResource resource = new ContextResource();
         resource.setName(jndiName);
@@ -67,17 +46,4 @@ public class LocalConfig {
         resource.setProperty("password", "Password1");
         return resource;
     }
-
-    @Bean(destroyMethod = "")
-    @ConfigurationProperties(prefix = "spring.datasource.default")
-    public JndiObjectFactoryBean confMgrDataSource() {
-        final JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
-        return jndiObjectFactoryBean;
-    }
-
-//    @Bean(destroyMethod = "")
-//    @ConfigurationProperties(prefix = "spring.datasource.tsam")
-//    public JndiObjectFactoryBean tsamDataSource() {
-//        return new JndiObjectFactoryBean();
-//    }
 }

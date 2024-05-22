@@ -45,3 +45,5 @@ spring:
       properties:
         jndiName: java:comp/env/jdbc/ConfMgr
         expected-type: javax.sql.DataSource
+server:
+  port: 8888
