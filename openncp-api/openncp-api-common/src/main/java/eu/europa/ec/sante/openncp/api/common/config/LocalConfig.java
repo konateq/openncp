@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.application.client.config;
+package eu.europa.ec.sante.openncp.api.common.config;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;

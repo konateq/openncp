@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.api.common.configuration;
+package eu.europa.ec.sante.openncp.api.common.config;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;

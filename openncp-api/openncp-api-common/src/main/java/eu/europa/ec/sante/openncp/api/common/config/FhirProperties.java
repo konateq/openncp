@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package eu.europa.ec.sante.openncp.api.common.configuration;
+package eu.europa.ec.sante.openncp.api.common.config;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
 import org.apache.commons.lang3.StringUtils;
