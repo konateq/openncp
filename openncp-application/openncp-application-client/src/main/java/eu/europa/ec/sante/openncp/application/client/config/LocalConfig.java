@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * This configuration class is only used with the "local" profile.
  * It will apply the given datasource properties (defined by {@link DataSourcePropertyHolder}) to the JNDI
- * data resources to simulate Tomcat's server.xml configuration style.
+ * data resources, used in {@link eu.europa.ec.sante.openncp.core.common.database.DatabaseConfiguration} to simulate Tomcat's server.xml configuration style.
  * <p>
  * This allows us to run the client from within IntelliJ to greatly facilitate local debugging.
  */
