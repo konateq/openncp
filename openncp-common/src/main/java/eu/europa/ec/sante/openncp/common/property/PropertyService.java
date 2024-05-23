@@ -5,4 +5,6 @@ import java.util.Optional;
 
 public interface PropertyService {
     Optional<Property> findByKey(String key);
+
+    void createOrUpdate(Property property);
 }

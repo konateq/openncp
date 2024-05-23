@@ -20,4 +20,9 @@ public class PropertyServiceImpl implements PropertyService {
         return propertyRepository.findById(key).map(PropertyEntity::asProperty);
 
     }
+
+    @Override
+    public void createOrUpdate(Property property) {
+
+    }
 }

@@ -4,8 +4,7 @@ import eu.europa.ec.dynamicdiscovery.DynamicDiscoveryBuilder;
 import eu.europa.ec.dynamicdiscovery.core.fetcher.impl.DefaultURLFetcher;
 import eu.europa.ec.dynamicdiscovery.core.security.impl.DefaultProxy;
 import eu.europa.ec.dynamicdiscovery.exception.ConnectionException;
-import eu.europa.ec.sante.openncp.common.property.PropertyEntity;
-import eu.europa.ec.sante.openncp.common.property.PropertyRepository;
+import eu.europa.ec.sante.openncp.common.property.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -27,11 +26,11 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private final Logger logger = LoggerFactory.getLogger(ConfigurationManagerImpl.class);
     private final Map<String, String> properties = new HashMap<>();
 
-    private final PropertyRepository propertyRepository;
+    private final PropertyService propertyService;
 
-    public ConfigurationManagerImpl(PropertyRepository propertyRepository) {
-        Validate.notNull(propertyRepository, "PropertyRepository must not be null!");
-        this.propertyRepository = propertyRepository;
+    public ConfigurationManagerImpl(PropertyService propertyService) {
+        Validate.notNull(propertyService, "propertyService must not be null!");
+        this.propertyService = propertyService;
     }
 
     @Override
@@ -71,9 +70,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     @Override
     public void setProperty(String key, String value) {
-        final PropertyEntity property = new PropertyEntity(key, value);
+        final Property property = Property.of(key, value);
         properties.put(key, value);
-        propertyRepository.save(property);
+        propertyService.createOrUpdate(property);
     }
 
     /**
@@ -141,7 +140,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             }
         }
 
-        final Optional<PropertyEntity> propertyEntity = propertyRepository.findById(key);
+        final Optional<Property> propertyEntity = propertyService.findByKey(key);
         return propertyEntity.map(property -> {
             final String propertyValue = property.getValue();
             properties.put(property.getKey(), propertyValue);

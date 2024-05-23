@@ -51,6 +51,6 @@ public class PropertyEntity {
 
     @Transient
     public Property asProperty() {
-        return ImmutableProperty.builder().build();
+        return ImmutableProperty.builder().key(getKey()).value(getValue()).smp(isSmp()).build();
     }
 }

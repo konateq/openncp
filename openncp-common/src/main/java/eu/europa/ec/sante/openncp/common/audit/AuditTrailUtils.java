@@ -4,6 +4,7 @@ import eu.europa.ec.sante.openncp.common.audit.serialization.AuditLogSerializer;
 import eu.europa.ec.sante.openncp.common.audit.utils.SecurityMgr;
 import eu.europa.ec.sante.openncp.common.audit.utils.Utils;
 import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import net.RFC3881.dicom.AuditMessage;
 import net.RFC3881.dicom.ParticipantObjectDetail;
