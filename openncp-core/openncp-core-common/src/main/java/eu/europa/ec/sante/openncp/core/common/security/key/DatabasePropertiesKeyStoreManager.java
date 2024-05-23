@@ -5,6 +5,8 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 
 public final class DatabasePropertiesKeyStoreManager implements KeyStoreManager {
@@ -14,18 +16,17 @@ public final class DatabasePropertiesKeyStoreManager implements KeyStoreManager 
     public DatabasePropertiesKeyStoreManager() {
 
         // Constants Initialization
-        final ConfigurationManager cm = ConfigurationManagerFactory.getConfigurationManager();
-        final String keyStoreLocation = cm.getProperty("NCP_SIG_KEYSTORE_PATH");
-        final String keystorePassword = cm.getProperty("NCP_SIG_KEYSTORE_PASSWORD");
+        final String keyStoreLocation = Constants.NCP_SIG_KEYSTORE_PATH;
+        final String keystorePassword = Constants.NCP_SIG_KEYSTORE_PASSWORD;
 
-        final String truststoreLocation = cm.getProperty("TRUSTSTORE_PATH");
-        final String truststorePassword = cm.getProperty("TRUSTSTORE_PASSWORD");
+        final String truststoreLocation = Constants.TRUSTSTORE_PATH;
+        final String truststorePassword = Constants.TRUSTSTORE_PASSWORD;
 
-        final String privateKeyAlias = cm.getProperty("NCP_SIG_PRIVATEKEY_ALIAS");
-        final String privateKeyPassword = cm.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD");
+        final String privateKeyAlias = Constants.NCP_SIG_PRIVATEKEY_ALIAS;
+        final String privateKeyPassword = Constants.NCP_SIG_PRIVATEKEY_PASSWORD;
 
         defaultKeyStoreManager = new DefaultKeyStoreManager(keyStoreLocation, keystorePassword, truststoreLocation, truststorePassword,
-                                                            privateKeyAlias, privateKeyPassword);
+                privateKeyAlias, privateKeyPassword);
     }
 
     @Override

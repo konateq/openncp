@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.application.client.connector.assertions;
 
 import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import org.apache.commons.lang3.StringUtils;
 import org.opensaml.core.config.InitializationException;

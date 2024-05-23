@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
@@ -82,16 +83,16 @@ public class SamlNextOfKinIssuer {
         }
         final var issuanceInstant = DateTime.now();
         logger.info("Assertion validity: '{}' - '{}'", hcpIdentityAssertion.getConditions().getNotBefore(),
-                    hcpIdentityAssertion.getConditions().getNotOnOrAfter());
+                hcpIdentityAssertion.getConditions().getNotOnOrAfter());
         if (hcpIdentityAssertion.getConditions().getNotBefore().isAfter(issuanceInstant)) {
             final String msg = "Identity Assertion with ID " + hcpIdentityAssertion.getID() + " can't be used before " +
-                               hcpIdentityAssertion.getConditions().getNotBefore() + ". Current UTC time is " + issuanceInstant;
+                    hcpIdentityAssertion.getConditions().getNotBefore() + ". Current UTC time is " + issuanceInstant;
             logger.error("SecurityManagerException: '{}'", msg);
             throw new SMgrException(msg);
         }
         if (hcpIdentityAssertion.getConditions().getNotOnOrAfter().isBefore(issuanceInstant)) {
             final String msg = "Identity Assertion with ID " + hcpIdentityAssertion.getID() + " can't be used after " +
-                               hcpIdentityAssertion.getConditions().getNotOnOrAfter() + ". Current UTC time is " + issuanceInstant;
+                    hcpIdentityAssertion.getConditions().getNotOnOrAfter() + ". Current UTC time is " + issuanceInstant;
             logger.error("SecurityManagerException: '{}'", msg);
             throw new SMgrException(msg);
         }
@@ -108,7 +109,7 @@ public class SamlNextOfKinIssuer {
         final Subject subject = AssertionUtil.create(Subject.class, Subject.DEFAULT_ELEMENT_NAME);
         assertion.setSubject(subject);
         final var issuer = new IssuerBuilder().buildObject();
-        final String countryCode = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_CODE");
+        final String countryCode = Constants.COUNTRY_CODE;
         final String confIssuer = "urn:initgw:" + countryCode + ":countryB";
         issuer.setValue(confIssuer);
         issuer.setNameQualifier("urn:ehdsi:assertions:nok");
@@ -122,13 +123,13 @@ public class SamlNextOfKinIssuer {
 
         final String spProvidedID = hcpIdentityAssertion.getSubject().getNameID().getSPProvidedID();
         final String humanRequestorNameID = StringUtils.isNotBlank(spProvidedID) ? spProvidedID
-                                                                                 : "<" + hcpIdentityAssertion.getSubject().getNameID().getValue() +
-                                                                                   "@" + hcpIdentityAssertion.getIssuer().getValue() + ">";
+                : "<" + hcpIdentityAssertion.getSubject().getNameID().getValue() +
+                "@" + hcpIdentityAssertion.getIssuer().getValue() + ">";
 
         auditDataMap.put("humanRequestorNameID", humanRequestorNameID);
 
         final var subjectIdAttr = AssertionUtil.findStringInAttributeStatement(hcpIdentityAssertion.getAttributeStatements(),
-                                                                               "urn:oasis:names:tc:xspa:1.0:subject:subject-id");
+                "urn:oasis:names:tc:xspa:1.0:subject:subject-id");
         final String humanRequesterAlternativeUserID = ((XSString) subjectIdAttr.getAttributeValues().get(0)).getValue();
         auditDataMap.put("humanRequestorSubjectID", humanRequesterAlternativeUserID);
 
@@ -211,19 +212,19 @@ public class SamlNextOfKinIssuer {
         }
 
         var pointOfCareAttr = AssertionUtil.findStringInAttributeStatement(hcpIdentityAssertion.getAttributeStatements(),
-                                                                           "urn:oasis:names:tc:xspa:1.0:subject:organization");
+                "urn:oasis:names:tc:xspa:1.0:subject:organization");
         if (pointOfCareAttr != null) {
             final String poc = ((XSString) pointOfCareAttr.getAttributeValues().get(0)).getValue();
             auditDataMap.put("pointOfCare", poc);
         } else {
             pointOfCareAttr = AssertionUtil.findStringInAttributeStatement(hcpIdentityAssertion.getAttributeStatements(),
-                                                                           "urn:oasis:names:tc:xspa:1.0:environment:locality");
+                    "urn:oasis:names:tc:xspa:1.0:environment:locality");
             final String poc = ((XSString) pointOfCareAttr.getAttributeValues().get(0)).getValue();
             auditDataMap.put("pointOfCare", poc);
         }
 
         final var pointOfCareIdAttr = AssertionUtil.findStringInAttributeStatement(hcpIdentityAssertion.getAttributeStatements(),
-                                                                                   "urn:oasis:names:tc:xspa:1.0:subject:organization-id");
+                "urn:oasis:names:tc:xspa:1.0:subject:organization-id");
         if (pointOfCareIdAttr != null) {
             final String pocId = ((XSString) pointOfCareIdAttr.getAttributeValues().get(0)).getValue();
             auditDataMap.put("pointOfCareID", pocId);
@@ -232,16 +233,16 @@ public class SamlNextOfKinIssuer {
         }
 
         final String hrRole = ((XSString) AssertionUtil.findStringInAttributeStatement(hcpIdentityAssertion.getAttributeStatements(),
-                                                                                       "urn:oasis:names:tc:xacml:2.0:subject:role")
-                                                       .getAttributeValues()
-                                                       .get(0)).getValue();
+                        "urn:oasis:names:tc:xacml:2.0:subject:role")
+                .getAttributeValues()
+                .get(0)).getValue();
 
         auditDataMap.put("humanRequestorRole", hrRole);
 
         final String facilityType = ((XSString) AssertionUtil.findStringInAttributeStatement(hcpIdentityAssertion.getAttributeStatements(),
-                                                                                             "urn:ehdsi:names:subject:healthcare-facility-type")
-                                                             .getAttributeValues()
-                                                             .get(0)).getValue();
+                        "urn:ehdsi:names:subject:healthcare-facility-type")
+                .getAttributeValues()
+                .get(0)).getValue();
 
         auditDataMap.put("facilityType", facilityType);
 

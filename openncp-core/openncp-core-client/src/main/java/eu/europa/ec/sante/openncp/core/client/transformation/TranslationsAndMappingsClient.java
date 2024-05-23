@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.core.client.transformation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.DocumentTransformationException;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMResponseStructure;
@@ -25,7 +26,7 @@ public class TranslationsAndMappingsClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(TranslationsAndMappingsClient.class);
 
     public static TMResponseStructure translate(Document cdaPivot, String targetLanguage) throws DocumentTransformationException {
-        try(CloseableHttpClient httpclient = HttpClients.createDefault()){
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             LOGGER.debug("TM - TRANSLATION START.");
             var mapper = new ObjectMapper();
             var node = mapper.createObjectNode();
@@ -58,7 +59,7 @@ public class TranslationsAndMappingsClient {
     }
 
     public static TMResponseStructure transcode(Document cdaFriendly) throws DocumentTransformationException {
-        try(CloseableHttpClient httpclient = HttpClients.createDefault()){
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             LOGGER.debug("TM - TRANSCODING START.");
             var mapper = new ObjectMapper();
             var node = mapper.createObjectNode();

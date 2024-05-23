@@ -4,10 +4,13 @@ import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFacto
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.nio.file.FileSystems;
 import java.util.Optional;
 
+@Component
 public class Constants {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Constants.class);
@@ -40,47 +43,49 @@ public class Constants {
 
     public static final String NOT_USED_FIELD = "Not Used";
     public static final String MIME_TYPE = "text/xml";
-    public static final String SERVER_IP;
-    public static final String HOME_COMM_ID;
-    public static final String COUNTRY_CODE;
-    public static final String COUNTRY_NAME;
-    public static final String COUNTRY_PRINCIPAL_SUBDIVISION;
-    public static final String LANGUAGE_CODE;
+    public static String SERVER_IP;
+    public static String HOME_COMM_ID;
+    public static String COUNTRY_CODE;
+    public static String COUNTRY_NAME;
+    public static String COUNTRY_PRINCIPAL_SUBDIVISION;
+    public static String LANGUAGE_CODE;
     public static final String HR_ID_PREFIX = "SPProvidedID";
     /**
      * Path to the folder containing the configuration files.
      */
-    public static final String EPSOS_PROPS_PATH;
-    public static final String TRUSTSTORE_PATH;
-    public static final String TRUSTSTORE_PASSWORD;
-    public static final String SP_KEYSTORE_PATH;
-    public static final String SP_KEYSTORE_PASSWORD;
-    public static final String SP_PRIVATEKEY_ALIAS;
-    public static final String SP_PRIVATEKEY_PASSWORD;
-    public static final String SC_KEYSTORE_PATH;
-    public static final String SC_KEYSTORE_PASSWORD;
-    public static final String SC_PRIVATEKEY_ALIAS;
-    public static final String SC_PRIVATEKEY_PASSWORD;
-    public static final String NCP_SIG_KEYSTORE_PATH;
-    public static final String NCP_SIG_KEYSTORE_PASSWORD;
-    public static final String NCP_SIG_PRIVATEKEY_ALIAS;
-    public static final String NCP_SIG_PRIVATEKEY_PASSWORD;
+    public static String EPSOS_PROPS_PATH;
+    public static String TRUSTSTORE_PATH;
+    public static String TRUSTSTORE_PASSWORD;
+    public static String SP_KEYSTORE_PATH;
+    public static String SP_KEYSTORE_PASSWORD;
+    public static String SP_PRIVATEKEY_ALIAS;
+    public static String SP_PRIVATEKEY_PASSWORD;
+    public static String SC_KEYSTORE_PATH;
+    public static String SC_KEYSTORE_PASSWORD;
+    public static String SC_PRIVATEKEY_ALIAS;
+    public static String SC_PRIVATEKEY_PASSWORD;
+    public static String NCP_SIG_KEYSTORE_PATH;
+    public static String NCP_SIG_KEYSTORE_PASSWORD;
+    public static String NCP_SIG_PRIVATEKEY_ALIAS;
+    public static String NCP_SIG_PRIVATEKEY_PASSWORD;
 
-    public static final String ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD;
-    public static final String ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD;
-    public static final String ABUSE_UNIQUE_POC_REQUEST_THRESHOLD;
-    public static final String ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD;
-    public static final String ABUSE_ALL_REQUEST_THRESHOLD;
-    public static final String ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD;
-    public static final String ABUSE_SCHEDULER_TIME_INTERVAL;
-    public static final String ABUSE_SCHEDULER_ENABLE;
+    public static String ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD;
+    public static String ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD;
+    public static String ABUSE_UNIQUE_POC_REQUEST_THRESHOLD;
+    public static String ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD;
+    public static String ABUSE_ALL_REQUEST_THRESHOLD;
+    public static String ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD;
+    public static String ABUSE_SCHEDULER_TIME_INTERVAL;
+    public static String ABUSE_SCHEDULER_ENABLE;
 
     /**
      * Name of the System Variable containing the path to the folder containing the configuration files.
      */
     private static final String PROPS_ENV_VAR = "EPSOS_PROPS_PATH";
 
-    static {
+
+    @PostConstruct
+    public static void postConstruct() {
         String epsosPath = Optional.ofNullable(System.getenv(PROPS_ENV_VAR)).orElseGet(() -> System.getProperty(PROPS_ENV_VAR));
         if (StringUtils.isNotBlank(epsosPath)) {
             if (!epsosPath.endsWith(FileSystems.getDefault().getSeparator())) {

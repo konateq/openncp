@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.util;
+package eu.europa.ec.sante.openncp.core.common.ihe.util;
 
 import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
 import eu.europa.ec.sante.openncp.common.audit.EventLog;
@@ -7,6 +7,7 @@ import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.core.common.handler.DummyMustUnderstandHandler;
+import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.client.Stub;
 import org.apache.axis2.context.MessageContext;
@@ -94,7 +95,7 @@ public class EventLogClientUtil {
         eventLog.setSP_UserID(HttpUtil.getServerCertificate(endpointReference));
 
         // Set Audit Source
-        eventLog.setAS_AuditSourceId(ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"));
+        eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
 
         // Set Source Ip
         eventLog.setSourceip(getSourceGatewayIdentifier());

@@ -250,7 +250,12 @@
             <groupId>org.immutables</groupId>
             <artifactId>value</artifactId>
         </dependency>
-           </dependencies>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+
+    </dependencies>
 
     <build>
         <plugins>

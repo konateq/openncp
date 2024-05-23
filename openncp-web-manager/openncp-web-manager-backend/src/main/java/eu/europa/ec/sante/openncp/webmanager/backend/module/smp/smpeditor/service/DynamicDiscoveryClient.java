@@ -7,6 +7,7 @@ import eu.europa.ec.dynamicdiscovery.core.locator.impl.DefaultBDXRLocator;
 import eu.europa.ec.dynamicdiscovery.core.reader.impl.DefaultBDXRReader;
 import eu.europa.ec.dynamicdiscovery.core.security.impl.DefaultSignatureValidator;
 import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.StandardProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.GatewayProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;

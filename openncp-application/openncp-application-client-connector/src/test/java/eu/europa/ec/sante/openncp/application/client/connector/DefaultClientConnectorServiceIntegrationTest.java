@@ -11,6 +11,7 @@ import eu.europa.ec.sante.openncp.application.client.connector.assertions.STSCli
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil;
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.Concept;
 import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;

@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service;
 
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.Constants;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPFieldProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;

@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.security.issuer.SamlTRCIssuer;
 import javax.servlet.http.HttpServletRequest;

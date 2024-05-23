@@ -23,6 +23,6 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public void createOrUpdate(Property property) {
-
+        propertyRepository.save(new PropertyEntity(property));
     }
 }

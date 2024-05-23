@@ -25,6 +25,10 @@ public class PropertyEntity {
         this.value = value;
     }
 
+    public PropertyEntity(Property property) {
+        this(property.getKey(), property.getValue());
+    }
+
     public String getKey() {
         return key;
     }

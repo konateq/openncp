@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerException;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.DynamicDiscoveryService;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.DateTimeUtil;
 import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
