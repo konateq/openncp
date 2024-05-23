@@ -1,6 +1,5 @@
 package eu.europa.ec.sante.openncp.common.validation;
 
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.validation.impl.DefaultGazelleValidatorFactory;
 
 public class GazelleValidatorFactory {

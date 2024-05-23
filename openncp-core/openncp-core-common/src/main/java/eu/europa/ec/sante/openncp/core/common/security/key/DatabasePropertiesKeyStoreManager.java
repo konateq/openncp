@@ -5,7 +5,6 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 
 public final class DatabasePropertiesKeyStoreManager implements KeyStoreManager {

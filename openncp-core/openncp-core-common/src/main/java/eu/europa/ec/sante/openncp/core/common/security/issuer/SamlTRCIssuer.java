@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.xml.namespace.QName;
 
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;

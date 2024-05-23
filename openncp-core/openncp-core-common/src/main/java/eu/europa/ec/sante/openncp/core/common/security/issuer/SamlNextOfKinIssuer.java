@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;

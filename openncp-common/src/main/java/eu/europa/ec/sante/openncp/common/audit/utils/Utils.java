@@ -1,6 +1,5 @@
 package eu.europa.ec.sante.openncp.common.audit.utils;
 
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

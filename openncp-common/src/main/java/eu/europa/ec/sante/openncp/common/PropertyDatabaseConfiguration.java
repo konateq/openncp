@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.database;
+package eu.europa.ec.sante.openncp.common;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,10 +15,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-public class DatabaseConfiguration {
+public class PropertyDatabaseConfiguration {
 
     @EnableJpaRepositories(
-            basePackages = "eu.europa.ec.sante.openncp.core.common.property",
+            basePackages = "eu.europa.ec.sante.openncp.common.property",
             entityManagerFactoryRef = "propertiesEntityManagerFactory",
             transactionManagerRef = "propertiesTransactionManager")
     @Configuration
@@ -43,7 +43,7 @@ public class DatabaseConfiguration {
         public LocalContainerEntityManagerFactoryBean propertiesEntityManagerFactory(EntityManagerFactoryBuilder builder) {
             return builder
                     .dataSource(propertiesDataSource())
-                    .packages("eu.europa.ec.sante.openncp.core.common.property")
+                    .packages("eu.europa.ec.sante.openncp.common.property")
                     .build();
         }
 
@@ -53,51 +53,4 @@ public class DatabaseConfiguration {
             return new JpaTransactionManager(entityManagerFactory);
         }
     }
-
-    @EnableJpaRepositories(
-            basePackages = "eu.europa.ec.sante.openncp.core.common.tsam",
-            entityManagerFactoryRef = "tsamEntityManagerFactory",
-            transactionManagerRef = "tsamTransactionManager"
-    )
-    @Configuration
-    public static class TsamDatabaseConfiguration {
-        @Bean
-        @ConfigurationProperties(prefix = "spring.datasource.jndi.tsam")
-        public JndiPropertyHolder tsamJndiPropertyHolder() {
-            return new JndiPropertyHolder();
-        }
-
-        @Bean
-        public DataSource tsamDataSource() {
-            final JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
-            final DataSource dataSource = dataSourceLookup.getDataSource(tsamJndiPropertyHolder().getJndiName());
-            return dataSource;
-        }
-
-        @Bean
-        public LocalContainerEntityManagerFactoryBean tsamEntityManagerFactory(EntityManagerFactoryBuilder builder) {
-            return builder
-                    .dataSource(tsamDataSource())
-                    .packages("eu.europa.ec.sante.openncp.core.common.tsam")
-                    .build();
-        }
-
-        @Primary
-        public PlatformTransactionManager tsamTransactionManager(@Qualifier("tsamEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
-            return new JpaTransactionManager(entityManagerFactory);
-        }
-    }
-
-    public static class JndiPropertyHolder {
-        private String jndiName;
-
-        public String getJndiName() {
-            return jndiName;
-        }
-
-        public void setJndiName(String jndiName) {
-            this.jndiName = jndiName;
-        }
-    }
-
 }

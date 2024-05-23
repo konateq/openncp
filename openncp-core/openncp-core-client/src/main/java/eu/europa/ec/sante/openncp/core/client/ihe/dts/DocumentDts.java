@@ -6,7 +6,6 @@ import eu.europa.ec.sante.openncp.core.client.Author;
 import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
 import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.client.ReasonOfHospitalisation;
-import eu.europa.ec.sante.openncp.core.client.ihe.xca.RespondingGateway_ServiceStub;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.OrCDDocumentMetaData;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.XDSDocument;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.XDSDocumentAssociation;
@@ -16,9 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

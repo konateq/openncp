@@ -17,7 +17,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import eu.europa.ec.sante.openncp.application.client.connector.assertions.STSClientException;
 import eu.europa.ec.sante.openncp.application.client.connector.assertions.TRCAssertionRequest;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.PatientId;
 import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;

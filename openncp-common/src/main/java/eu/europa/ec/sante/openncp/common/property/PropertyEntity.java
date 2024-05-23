@@ -1,13 +1,11 @@
-package eu.europa.ec.sante.openncp.common.configuration.domain;
+package eu.europa.ec.sante.openncp.common.property;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.beans.Transient;
 
 @Entity
 @Table(name = "EHNCP_PROPERTY")
-public class Property {
+public class PropertyEntity {
 
     @Id
     @Column(name = "NAME")
@@ -19,10 +17,10 @@ public class Property {
     @Column(name = "IS_SMP")
     private boolean smp;
 
-    public Property() {
+    public PropertyEntity() {
     }
 
-    public Property(String key, String value) {
+    public PropertyEntity(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -49,5 +47,10 @@ public class Property {
 
     public void setSmp(boolean smp) {
         this.smp = smp;
+    }
+
+    @Transient
+    public Property asProperty() {
+        return ImmutableProperty.builder().build();
     }
 }

@@ -29,7 +29,6 @@ import eu.europa.ec.sante.openncp.common.audit.EventLog;
 import eu.europa.ec.sante.openncp.common.audit.EventOutcomeIndicator;
 import eu.europa.ec.sante.openncp.common.audit.EventType;
 import eu.europa.ec.sante.openncp.common.audit.TransactionName;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;

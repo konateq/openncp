@@ -13,8 +13,6 @@ import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import eu.europa.ec.sante.openncp.core.common.ihe.eadc.EadcUtil;
-import eu.europa.ec.sante.openncp.core.common.ihe.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.datamodel.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.datamodel.TransactionInfo;
 import eu.europa.ec.sante.openncp.core.common.util.EventLogClientUtil;

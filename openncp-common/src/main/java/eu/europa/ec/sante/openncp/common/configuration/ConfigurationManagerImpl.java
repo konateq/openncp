@@ -4,15 +4,15 @@ import eu.europa.ec.dynamicdiscovery.DynamicDiscoveryBuilder;
 import eu.europa.ec.dynamicdiscovery.core.fetcher.impl.DefaultURLFetcher;
 import eu.europa.ec.dynamicdiscovery.core.security.impl.DefaultProxy;
 import eu.europa.ec.dynamicdiscovery.exception.ConnectionException;
-import eu.europa.ec.sante.openncp.common.configuration.domain.Property;
+import eu.europa.ec.sante.openncp.common.property.PropertyEntity;
+import eu.europa.ec.sante.openncp.common.property.PropertyRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -20,20 +20,18 @@ import java.util.Optional;
 /**
  * OpenNCP Configuration Manager class responsible for the properties management.
  */
+@Component
+@Transactional
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private final Logger logger = LoggerFactory.getLogger(ConfigurationManagerImpl.class);
-    private final SessionFactory sessionFactory;
     private final Map<String, String> properties = new HashMap<>();
 
-    /**
-     * Constructor initializing the Hibernate SessionFactory of the component.
-     *
-     * @param sessionFactory - Hibernate Session Factory
-     */
-    public ConfigurationManagerImpl(SessionFactory sessionFactory) {
-        Validate.notNull(sessionFactory, "Hibernate SessionFactory must not be null!");
-        this.sessionFactory = sessionFactory;
+    private final PropertyRepository propertyRepository;
+
+    public ConfigurationManagerImpl(PropertyRepository propertyRepository) {
+        Validate.notNull(propertyRepository, "PropertyRepository must not be null!");
+        this.propertyRepository = propertyRepository;
     }
 
     @Override
@@ -73,21 +71,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     @Override
     public void setProperty(String key, String value) {
-
-        Property property = new Property(key, value);
-        Session session = sessionFactory.getCurrentSession();
-        Transaction transaction = session.beginTransaction();
+        final PropertyEntity property = new PropertyEntity(key, value);
         properties.put(key, value);
-
-        try {
-            session.saveOrUpdate(property);
-            transaction.commit();
-        } catch (RuntimeException e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            throw e;
-        }
+        propertyRepository.save(property);
     }
 
     /**
@@ -148,31 +134,18 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
      * @return OpenNCP property.
      */
     private Optional<String> findProperty(String key, boolean checkMap) {
-
-        String value = null;
         if (checkMap) {
-            value = properties.get(key);
-        }
-        if (value == null) {
-            Session session = sessionFactory.getCurrentSession();
-            Transaction transaction = session.beginTransaction();
-            Property property;
-            try {
-                property = session.get(Property.class, key);
-                transaction.commit();
-            } catch (RuntimeException e) {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-                throw e;
+            final String value = properties.get(key);
+            if (value != null) {
+                return Optional.of(value);
             }
+        }
 
-            if (property == null) {
-                return Optional.empty();
-            }
-            value = property.getValue();
-            properties.put(key, value);
-        }
-        return Optional.of(value);
+        final Optional<PropertyEntity> propertyEntity = propertyRepository.findById(key);
+        return propertyEntity.map(property -> {
+            final String propertyValue = property.getValue();
+            properties.put(property.getKey(), propertyValue);
+            return propertyValue;
+        });
     }
 }

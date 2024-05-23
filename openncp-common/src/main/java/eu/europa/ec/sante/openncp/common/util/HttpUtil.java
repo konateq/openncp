@@ -1,6 +1,5 @@
 package eu.europa.ec.sante.openncp.common.util;
 
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.StandardProperties;
 import eu.europa.ec.sante.openncp.common.util.proxy.CustomProxySelector;
