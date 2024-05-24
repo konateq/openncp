@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.api.common.interceptors;
+package eu.europa.ec.sante.openncp.core.common.fhir.interceptors;
 
 import ca.uhn.fhir.rest.openapi.OpenApiInterceptor;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;

@@ -8,7 +8,7 @@ import ca.uhn.fhir.rest.api.*;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import eu.europa.ec.sante.openncp.api.common.fhircontext.r4.resources.CompositionLabReportEu;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.CompositionLabReportEu;
 import eu.europa.ec.sante.openncp.api.common.handler.BundleHandler;
 import eu.europa.ec.sante.openncp.core.common.fhir.services.DispatchingService;
 import org.apache.commons.lang3.Validate;

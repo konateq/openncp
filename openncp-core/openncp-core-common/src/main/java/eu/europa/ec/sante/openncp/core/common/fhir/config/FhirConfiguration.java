@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.api.common.config;
+package eu.europa.ec.sante.openncp.core.common.fhir.config;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
@@ -11,9 +11,9 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.validation.FhirValidator;
-import eu.europa.ec.sante.openncp.api.common.fhircontext.EuFhirContextFactory;
-import eu.europa.ec.sante.openncp.api.common.interceptors.SecuredOpenApiInterceptor;
-import eu.europa.ec.sante.openncp.api.common.interceptors.UnsecuredOpenApiInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.EuFhirContextFactory;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.SecuredOpenApiInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.UnsecuredOpenApiInterceptor;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;

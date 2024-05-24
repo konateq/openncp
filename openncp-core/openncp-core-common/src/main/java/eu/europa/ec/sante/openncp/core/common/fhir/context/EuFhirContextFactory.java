@@ -1,9 +1,9 @@
-package eu.europa.ec.sante.openncp.api.common.fhircontext;
+package eu.europa.ec.sante.openncp.core.common.fhir.context;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.parser.LenientErrorHandler;
-import eu.europa.ec.sante.openncp.api.common.fhircontext.r4.resources.CompositionLabReportEu;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.CompositionLabReportEu;
 
 public class EuFhirContextFactory {
 
