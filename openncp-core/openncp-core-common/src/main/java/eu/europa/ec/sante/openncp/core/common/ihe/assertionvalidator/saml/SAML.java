@@ -63,6 +63,9 @@ public class SAML {
             generator = new SecureRandomIdentifierGenerationStrategy();
         } catch (final InitializationException e) {
             LOGGER.error("ConfigurationException: '{}'", e.getMessage(), e);
+        } catch (Throwable t) {
+            LOGGER.error("Failure during static initialization", t);
+            throw t;
         }
     }
 
