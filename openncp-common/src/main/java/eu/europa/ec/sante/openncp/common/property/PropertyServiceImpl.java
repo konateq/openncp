@@ -2,12 +2,12 @@ package eu.europa.ec.sante.openncp.common.property;
 
 import org.apache.commons.lang3.Validate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
-@Transactional
+@Transactional("propertiesTransactionManager" )
 public class PropertyServiceImpl implements PropertyService {
     private final PropertyRepository propertyRepository;
 
