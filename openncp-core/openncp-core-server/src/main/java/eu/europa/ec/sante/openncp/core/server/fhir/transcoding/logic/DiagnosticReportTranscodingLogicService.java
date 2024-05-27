@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.fhir.transformation.transcoding.logic;
+package eu.europa.ec.sante.openncp.core.server.fhir.transcoding.logic;
 
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -6,9 +6,9 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DiagnosticTranscodingLogicService extends AbstractTranscodingLogicService<DiagnosticReport> {
+public class DiagnosticReportTranscodingLogicService extends AbstractTranscodingLogicService<DiagnosticReport> {
 
-    public DiagnosticTranscodingLogicService(final TerminologyService terminologyService) {
+    public DiagnosticReportTranscodingLogicService(final TerminologyService terminologyService) {
         super(terminologyService);
     }
 

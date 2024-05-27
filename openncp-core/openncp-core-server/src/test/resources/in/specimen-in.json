@@ -1,0 +1,52 @@
+{
+  "resourceType" : "Specimen",
+  "id" : "SampleSpecimen",
+  "meta" : {
+    "profile" : ["http://fhir.ehdsi.eu/laboratory/StructureDefinition/Specimen-lab-myhealtheu"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Specimen</b><a name=\"SampleSpecimen\"> </a><a name=\"hcSampleSpecimen\"> </a></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Specimen &quot;SampleSpecimen&quot; </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-Specimen-lab-myhealtheu.html\">Specimen: Laboratory</a></p></div><p><b>status</b>: available</p><p><b>type</b>: Blood <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#119297000 &quot;Blood specimen&quot;)</span></p><h3>Collections</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Extension</b></td></tr><tr><td style=\"display: none\">*</td><td/></tr></table><hr/><blockquote><p><b>Generated Narrative: BodyStructure #BodyStructureSample</b><a name=\"BodyStructureSample\"> </a><a name=\"hcBodyStructureSample\"> </a></p><p><b>morphology</b>: Arterial ulcer <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#789563006)</span></p><p><b>location</b>: Abdomen <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#818983003)</span></p><p><b>patient</b>: <a href=\"Patient-SamplePatient.html\">Patient/SamplePatient</a> &quot; DOE&quot;</p></blockquote></div>"
+  },
+  "contained" : [{
+    "resourceType" : "BodyStructure",
+    "id" : "BodyStructureSample",
+    "meta" : {
+      "profile" : ["http://fhir.ehdsi.eu/laboratory/StructureDefinition/BodyStructure-lab-myhealtheu"]
+    },
+    "morphology" : {
+      "coding" : [{
+        "system" : "http://snomed.info/sct",
+        "code" : "789563006",
+        "display" : "Arterial ulcer"
+      }]
+    },
+    "location" : {
+      "coding" : [{
+        "system" : "http://snomed.info/sct",
+        "code" : "818983003",
+        "display" : "Abdomen"
+      }]
+    },
+    "patient" : {
+      "reference" : "Patient/SamplePatient"
+    }
+  }],
+  "status" : "available",
+  "type" : {
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "119297000",
+      "display" : "Blood specimen"
+    }],
+    "text" : "Blood"
+  },
+  "collection" : {
+    "extension" : [{
+      "url" : "http://hl7.org/fhir/StructureDefinition/bodySite",
+      "valueReference" : {
+        "reference" : "#BodyStructureSample"
+      }
+    }]
+  }
+}

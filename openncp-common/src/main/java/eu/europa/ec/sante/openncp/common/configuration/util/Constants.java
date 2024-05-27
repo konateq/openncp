@@ -1,7 +1,9 @@
 package eu.europa.ec.sante.openncp.common.configuration.util;
 
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -99,40 +101,41 @@ public class Constants {
 
         LOGGER.info("OpenNCP Util Constants Initialization - EPSOS_PROPS_PATH: '{}'", EPSOS_PROPS_PATH);
 
-        SERVER_IP = ConfigurationManagerFactory.getConfigurationManager().getProperty("SERVER_IP");
+        ConfigurationManager configurationManager = Validate.notNull(ConfigurationManagerFactory.getConfigurationManager(), "Configuration manager cannot be null");
+        SERVER_IP = configurationManager.getProperty("SERVER_IP");
 
-        HOME_COMM_ID = ConfigurationManagerFactory.getConfigurationManager().getProperty("HOME_COMM_ID");
-        COUNTRY_CODE = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_CODE");
-        COUNTRY_NAME = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_NAME");
-        COUNTRY_PRINCIPAL_SUBDIVISION = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
-        LANGUAGE_CODE = ConfigurationManagerFactory.getConfigurationManager().getProperty("LANGUAGE_CODE");
+        HOME_COMM_ID = configurationManager.getProperty("HOME_COMM_ID");
+        COUNTRY_CODE = configurationManager.getProperty("COUNTRY_CODE");
+        COUNTRY_NAME = configurationManager.getProperty("COUNTRY_NAME");
+        COUNTRY_PRINCIPAL_SUBDIVISION = configurationManager.getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
+        LANGUAGE_CODE = configurationManager.getProperty("LANGUAGE_CODE");
 
-        TRUSTSTORE_PATH = globalizePath(ConfigurationManagerFactory.getConfigurationManager().getProperty("TRUSTSTORE_PATH"));
-        TRUSTSTORE_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("TRUSTSTORE_PASSWORD");
+        TRUSTSTORE_PATH = globalizePath(configurationManager.getProperty("TRUSTSTORE_PATH"));
+        TRUSTSTORE_PASSWORD = configurationManager.getProperty("TRUSTSTORE_PASSWORD");
 
-        SP_KEYSTORE_PATH = globalizePath(ConfigurationManagerFactory.getConfigurationManager().getProperty("SP_KEYSTORE_PATH"));
-        SP_KEYSTORE_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("SP_KEYSTORE_PASSWORD");
-        SP_PRIVATEKEY_ALIAS = ConfigurationManagerFactory.getConfigurationManager().getProperty("SP_PRIVATEKEY_ALIAS");
-        SP_PRIVATEKEY_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("SP_PRIVATEKEY_PASSWORD");
+        SP_KEYSTORE_PATH = globalizePath(configurationManager.getProperty("SP_KEYSTORE_PATH"));
+        SP_KEYSTORE_PASSWORD = configurationManager.getProperty("SP_KEYSTORE_PASSWORD");
+        SP_PRIVATEKEY_ALIAS = configurationManager.getProperty("SP_PRIVATEKEY_ALIAS");
+        SP_PRIVATEKEY_PASSWORD = configurationManager.getProperty("SP_PRIVATEKEY_PASSWORD");
 
-        SC_KEYSTORE_PATH = globalizePath(ConfigurationManagerFactory.getConfigurationManager().getProperty("SC_KEYSTORE_PATH"));
-        SC_KEYSTORE_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("SC_KEYSTORE_PASSWORD");
-        SC_PRIVATEKEY_ALIAS = ConfigurationManagerFactory.getConfigurationManager().getProperty("SC_PRIVATEKEY_ALIAS");
-        SC_PRIVATEKEY_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("SC_PRIVATEKEY_PASSWORD");
+        SC_KEYSTORE_PATH = globalizePath(configurationManager.getProperty("SC_KEYSTORE_PATH"));
+        SC_KEYSTORE_PASSWORD = configurationManager.getProperty("SC_KEYSTORE_PASSWORD");
+        SC_PRIVATEKEY_ALIAS = configurationManager.getProperty("SC_PRIVATEKEY_ALIAS");
+        SC_PRIVATEKEY_PASSWORD = configurationManager.getProperty("SC_PRIVATEKEY_PASSWORD");
 
-        NCP_SIG_KEYSTORE_PATH = globalizePath(ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_KEYSTORE_PATH"));
-        NCP_SIG_KEYSTORE_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_KEYSTORE_PASSWORD");
-        NCP_SIG_PRIVATEKEY_ALIAS = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_PRIVATEKEY_ALIAS");
-        NCP_SIG_PRIVATEKEY_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_PRIVATEKEY_PASSWORD");
+        NCP_SIG_KEYSTORE_PATH = globalizePath(configurationManager.getProperty("NCP_SIG_KEYSTORE_PATH"));
+        NCP_SIG_KEYSTORE_PASSWORD = configurationManager.getProperty("NCP_SIG_KEYSTORE_PASSWORD");
+        NCP_SIG_PRIVATEKEY_ALIAS = configurationManager.getProperty("NCP_SIG_PRIVATEKEY_ALIAS");
+        NCP_SIG_PRIVATEKEY_PASSWORD = configurationManager.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD");
 
-        ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD");
-        ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD");
-        ABUSE_UNIQUE_POC_REQUEST_THRESHOLD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_UNIQUE_POC_REQUEST_THRESHOLD");
-        ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD");
-        ABUSE_ALL_REQUEST_THRESHOLD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_ALL_REQUEST_THRESHOLD");
-        ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD");
-        ABUSE_SCHEDULER_TIME_INTERVAL = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_SCHEDULER_TIME_INTERVAL");
-        ABUSE_SCHEDULER_ENABLE = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_SCHEDULER_ENABLE");
+        ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD = configurationManager.getProperty("ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD");
+        ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD");
+        ABUSE_UNIQUE_POC_REQUEST_THRESHOLD = configurationManager.getProperty("ABUSE_UNIQUE_POC_REQUEST_THRESHOLD");
+        ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD");
+        ABUSE_ALL_REQUEST_THRESHOLD = configurationManager.getProperty("ABUSE_ALL_REQUEST_THRESHOLD");
+        ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD");
+        ABUSE_SCHEDULER_TIME_INTERVAL = configurationManager.getProperty("ABUSE_SCHEDULER_TIME_INTERVAL");
+        ABUSE_SCHEDULER_ENABLE = configurationManager.getProperty("ABUSE_SCHEDULER_ENABLE");
     }
 
     private Constants() {

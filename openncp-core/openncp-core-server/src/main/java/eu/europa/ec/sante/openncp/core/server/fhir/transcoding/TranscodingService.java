@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.fhir.transformation.transcoding;
+package eu.europa.ec.sante.openncp.core.server.fhir.transcoding;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.TMResponseStructure;
 import org.hl7.fhir.r4.model.Bundle;

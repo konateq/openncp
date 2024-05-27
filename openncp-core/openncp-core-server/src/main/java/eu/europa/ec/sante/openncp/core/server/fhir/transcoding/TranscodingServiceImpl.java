@@ -1,7 +1,7 @@
-package eu.europa.ec.sante.openncp.core.common.fhir.transformation.transcoding;
+package eu.europa.ec.sante.openncp.core.server.fhir.transcoding;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.TMResponseStructure;
-import eu.europa.ec.sante.openncp.core.common.fhir.transformation.transcoding.logic.TranscodingLogicService;
+import eu.europa.ec.sante.openncp.core.server.fhir.transcoding.logic.TranscodingLogicService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;

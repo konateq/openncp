@@ -2,7 +2,7 @@ package eu.europa.ec.sante.openncp.application.client.connector;
 
 import eu.europa.ec.sante.openncp.application.client.connector.interceptor.AddSamlAssertionInterceptor;
 import eu.europa.ec.sante.openncp.application.client.connector.interceptor.TransportTokenInInterceptor;
-import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.core.client.*;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import org.apache.commons.lang3.Validate;
@@ -43,6 +43,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
     private static final String WSSE_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
     // Logger
     private final Logger logger = LoggerFactory.getLogger(DefaultClientConnectorService.class);
+    private final ConfigurationManager configurationManager;
     // URL of the targeted NCP-B - ClientConnectorService.wsdl
     private final String endpointReference;
 
@@ -57,8 +58,9 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         return loggingFeature;
     }
 
-    public DefaultClientConnectorService(final String endpointReference) {
-        this.endpointReference = Validate.notBlank(endpointReference);
+    public DefaultClientConnectorService(final ConfigurationManager configurationManager) {
+        this.configurationManager = Validate.notNull(configurationManager);
+        this.endpointReference = Validate.notBlank(configurationManager.getProperty("PORTAL_CLIENT_CONNECTOR_URL"));
 
         final eu.europa.ec.sante.openncp.core.client.ClientConnectorService ss = new eu.europa.ec.sante.openncp.core.client.ClientConnectorService();
         clientConnectorService = new ClientConnectorServicePortTypeWrapper(ss.getClientConnectorServicePort());
@@ -97,12 +99,12 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         }
         InputStream keystoreStream = null;
         try {
-            keystoreStream = new FileInputStream(Constants.SC_KEYSTORE_PATH);
+            keystoreStream = new FileInputStream(configurationManager.getProperty("SC_KEYSTORE_PATH"));
         } catch (FileNotFoundException e) {
             throw new ClientConnectorException("Could not find the keystore", e);
         }
         try {
-            keyStore.load(keystoreStream, Constants.SC_KEYSTORE_PASSWORD.toCharArray());
+            keyStore.load(keystoreStream, configurationManager.getProperty("SC_KEYSTORE_PASSWORD").toCharArray());
         } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
             throw new ClientConnectorException("Error loading the keystore", e);
         }
@@ -115,7 +117,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
             throw new ClientConnectorException("Could not create the key manager factory", e);
         }
         try {
-            keyManagerFactory.init(keyStore, Constants.SC_KEYSTORE_PASSWORD.toCharArray());
+            keyManagerFactory.init(keyStore, configurationManager.getProperty("SC_KEYSTORE_PASSWORD").toCharArray());
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             throw new ClientConnectorException("Could not initialize the keystore", e);
         }
@@ -135,12 +137,12 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         }
         InputStream trustStoreStream = null;
         try {
-            trustStoreStream = new FileInputStream(Constants.SC_KEYSTORE_PATH);
+            trustStoreStream = new FileInputStream(configurationManager.getProperty("SC_KEYSTORE_PATH"));
         } catch (FileNotFoundException e) {
             throw new ClientConnectorException("Could not find the truststore", e);
         }
         try {
-            trustStore.load(trustStoreStream, Constants.SC_KEYSTORE_PASSWORD.toCharArray());
+            trustStore.load(trustStoreStream, configurationManager.getProperty("SC_KEYSTORE_PASSWORD").toCharArray());
         } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
             throw new ClientConnectorException("Error loading the truststore", e);
         }

@@ -54,12 +54,13 @@ class DefaultClientConnectorServiceIntegrationTest {
 
         when(mockedConfigurationManager.getProperty("secman.sts.url")).thenReturn("https://localhost:2443/TRC-STS/STSServiceService");
         when(mockedConfigurationManager.getProperty("secman.sts.checkHostname")).thenReturn("false");
+        when(mockedConfigurationManager.getProperty("PORTAL_CLIENT_CONNECTOR_URL")).thenReturn("https://localhost:6443/openncp-client-connector/services/ClientConnectorService");
 
 
 
         setFinalStatic(ConfigurationManagerFactory.class.getDeclaredField("configurationManager"), mockedConfigurationManager);
 
-        clientConnectorService = new DefaultClientConnectorService("https://localhost:6443/openncp-client-connector/services/ClientConnectorService");
+        clientConnectorService = new DefaultClientConnectorService(mockedConfigurationManager);
     }
 
     static void setFinalStatic(final Field field, final Object newValue) throws Exception {

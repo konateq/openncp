@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.fhir.transformation.transcoding.logic;
+package eu.europa.ec.sante.openncp.core.server.fhir.transcoding.logic;
 
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.hl7.fhir.r4.model.Patient;
