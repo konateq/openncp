@@ -38,9 +38,11 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.handler.MessageContext;
 
+import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.security.issuer.SamlIssuerHelper;
 import eu.europa.ec.sante.openncp.core.common.security.issuer.SamlNextOfKinIssuer;
+import eu.europa.ec.sante.openncp.core.common.security.issuer.SamlTRCIssuer;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -49,6 +51,7 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 
 @ServiceMode(value = Service.Mode.MESSAGE)
@@ -57,6 +60,9 @@ import org.w3c.dom.Document;
 public class NextOfKinService extends SecurityTokenServiceWS implements Provider<SOAPMessage> {
 
     private final Logger logger = LoggerFactory.getLogger(NextOfKinService.class);
+
+    @Autowired
+    private SamlNextOfKinIssuer samlNextOfKinIssuer;
 
     @Override
     public SOAPMessage invoke(final SOAPMessage soapMessage) {
@@ -93,7 +99,6 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
             final DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
 
             // The response TRC Assertion Issuer.
-            final var samlNextOfKinIssuer = new SamlNextOfKinIssuer();
             final var hcpIdAssertion = getIdAssertionFromHeader(header);
             if (hcpIdAssertion != null) {
                 logger.info("hcpIdAssertion: '{}'", hcpIdAssertion.getID());

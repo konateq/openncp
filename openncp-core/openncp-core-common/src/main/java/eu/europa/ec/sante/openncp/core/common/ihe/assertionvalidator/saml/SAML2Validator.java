@@ -16,6 +16,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.
 import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.common.xml.SAMLSchemaBuilder;
@@ -27,27 +28,21 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+@Component
 public class SAML2Validator {
 
-    private static final ServiceLoader<PolicyAssertionManager> serviceLoader = ServiceLoader.load(PolicyAssertionManager.class);
     private static final String OASIS_WSSE_SCHEMA_LOC = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
     private static final Logger LOGGER = LoggerFactory.getLogger(SAML2Validator.class);
-    private static PolicyAssertionManager policyManager;
 
-    static {
-        try {
-            LOGGER.info("Loading National implementation of PolicyManagerInterface...");
-            policyManager = serviceLoader.iterator().next();
-            LOGGER.info("Successfully loaded PolicyManager");
-        } catch (final Exception e) {
-            LOGGER.error("Failed to load implementation of PolicyManagerInterface: " + e.getMessage(), e);
-        }
+    private final SignatureManager signatureManager;
+    private final PolicyAssertionManager policyAssertionManager;
+
+    private SAML2Validator(SignatureManager signatureManager, PolicyAssertionManager policyAssertionManager) {
+        this.signatureManager = Validate.notNull(signatureManager);
+        this.policyAssertionManager = Validate.notNull(policyAssertionManager);
     }
 
-    private SAML2Validator() {
-    }
-
-    public static String validateXCPDHeader(final Element soapHeader)
+    public String validateXCPDHeader(final Element soapHeader)
             throws MissingFieldException, InsufficientRightsException, InvalidFieldException, XSDValidationException, SMgrException {
 
         LOGGER.debug("[SAML] Validating XCPD Header.");
@@ -84,7 +79,7 @@ public class SAML2Validator {
 
             sigCountryCode = checkHCPAssertion(hcpAssertion, null);
             //TODO: Next of Kin assertion should be checked
-            policyManager.XCPDPermissionValidator(hcpAssertion);
+            policyAssertionManager.XCPDPermissionValidator(hcpAssertion);
         } catch (final IOException | UnmarshallingException e) {
             LOGGER.error("{}: '{}'", e.getClass(), e.getMessage());
         } catch (final SAXException e) {
@@ -94,7 +89,7 @@ public class SAML2Validator {
         return sigCountryCode;
     }
 
-    public static String validateXCAHeader(final Element soapHeader, final ClassCode classCode)
+    public String validateXCAHeader(final Element soapHeader, final ClassCode classCode)
             throws InsufficientRightsException, MissingFieldException, InvalidFieldException, SMgrException {
 
         LOGGER.debug("[SAML] Validating XCA Header.");
@@ -147,7 +142,7 @@ public class SAML2Validator {
             }
 
             sigCountryCode = checkHCPAssertion(hcpAssertion, classCode);
-            policyManager.XCAPermissionValidator(hcpAssertion, classCode);
+            policyAssertionManager.XCAPermissionValidator(hcpAssertion, classCode);
             checkTRCAssertion(trcAssertion, classCode);
             checkTRCAdviceIdReferenceAgainstHCPId(trcAssertion, hcpAssertion);
             //TODO: Next of Kin assertion should be checked
@@ -159,7 +154,7 @@ public class SAML2Validator {
         return sigCountryCode;
     }
 
-    public static String validateXDRHeader(final Element soapHeader, final ClassCode classCode)
+    public String validateXDRHeader(final Element soapHeader, final ClassCode classCode)
             throws InsufficientRightsException, MissingFieldException, InvalidFieldException, SMgrException {
 
         LOGGER.debug("[SAML] Validating XDR Header.");
@@ -211,7 +206,7 @@ public class SAML2Validator {
             }
 
             sigCountryCode = checkHCPAssertion(hcpAssertion, classCode);
-            policyManager.XDRPermissionValidator(hcpAssertion, classCode);
+            policyAssertionManager.XDRPermissionValidator(hcpAssertion, classCode);
             checkTRCAssertion(trcAssertion, classCode);
             checkTRCAdviceIdReferenceAgainstHCPId(trcAssertion, hcpAssertion);
             //TODO: Next of Kin assertion should be checked
@@ -223,7 +218,7 @@ public class SAML2Validator {
         return sigCountryCode;
     }
 
-    private static void checkTRCAdviceIdReferenceAgainstHCPId(final Assertion trcAssertion, final Assertion hcpAssertion) throws InsufficientRightsException {
+    private void checkTRCAdviceIdReferenceAgainstHCPId(final Assertion trcAssertion, final Assertion hcpAssertion) throws InsufficientRightsException {
 
         try {
             final String trcFirstReferenceId = trcAssertion.getAdvice().getAssertionIDReferences().get(0).getAssertionID();
@@ -247,12 +242,12 @@ public class SAML2Validator {
      * @param countryId country ID
      * @return true if consent is given, else false.
      */
-    public static boolean isConsentGiven(final String patientId, final String countryId) {
+    public boolean isConsentGiven(final String patientId, final String countryId) {
 
-        return policyManager.isConsentGiven(patientId, countryId);
+        return policyAssertionManager.isConsentGiven(patientId, countryId);
     }
 
-    public static List<Assertion> getAssertions(final Element soapHeader) {
+    public List<Assertion> getAssertions(final Element soapHeader) {
 
         LOGGER.info("Retrieving SAML tokens from SOAP Header");
         final NodeList securityList = soapHeader.getElementsByTagNameNS(OASIS_WSSE_SCHEMA_LOC, "Security");
@@ -280,7 +275,7 @@ public class SAML2Validator {
         return result;
     }
 
-    private static String checkHCPAssertion(final Assertion assertion, final ClassCode classCode)
+    private String checkHCPAssertion(final Assertion assertion, final ClassCode classCode)
             throws InsufficientRightsException, SMgrException, MissingFieldException, InvalidFieldException {
 
         final String sigCountryCode;
@@ -313,14 +308,14 @@ public class SAML2Validator {
             FieldValueValidators.validateTimeSpanForHCP(assertion);
             FieldValueValidators.validateAuthnContextClassRefValueForHCP(assertion);
 
-            policyManager.XSPASubjectValidatorForHCP(assertion, classCode);
-            policyManager.XSPARoleValidator(assertion, classCode);
-            policyManager.HealthcareFacilityValidator(assertion, classCode);
-            policyManager.PurposeOfUseValidator(assertion, classCode);
+            policyAssertionManager.XSPASubjectValidatorForHCP(assertion, classCode);
+            policyAssertionManager.XSPARoleValidator(assertion, classCode);
+            policyAssertionManager.HealthcareFacilityValidator(assertion, classCode);
+            policyAssertionManager.PurposeOfUseValidator(assertion, classCode);
             if (classCode != null && classCode.equals(ClassCode.EDD_CLASSCODE)) {
-                policyManager.XSPAOrganizationIdValidator(assertion, classCode);
+                policyAssertionManager.XSPAOrganizationIdValidator(assertion, classCode);
             }
-            policyManager.XSPALocalityValidator(assertion, classCode);
+            policyAssertionManager.XSPALocalityValidator(assertion, classCode);
         } catch (final MissingFieldException e) {
             throw new MissingFieldException(OpenNCPErrorCode.ERROR_HPI_GENERIC, e.getMessage());
         } catch (final InvalidFieldException e) {
@@ -331,14 +326,14 @@ public class SAML2Validator {
         // from the signature, but now in order not to change the security manager in Google Code repo, this is reverted back.
         // Konstantin: committed changes to security manager, in order to provide better support XCA and XDR implementations
         //TODO: Improve Exception management.
-        sigCountryCode = new SignatureManager().verifySAMLAssertion(assertion);
+        sigCountryCode = signatureManager.verifySAMLAssertion(assertion);
 
         //TODO EHEALTH-6693 See if needed to incapsulate? ERROR_HPI_GENERIC, WARNING_HPI_GENERIC, ERROR_HPI_INSUFFICIENT_INFORMATION...
 
         return sigCountryCode;
     }
 
-    public static void checkTRCAssertion(final Assertion assertion, final ClassCode classCode)
+    public void checkTRCAssertion(final Assertion assertion, final ClassCode classCode)
             throws MissingFieldException, InvalidFieldException, InsufficientRightsException, SMgrException {
 
         RequiredFieldValidators.validateVersion(assertion);
@@ -371,13 +366,13 @@ public class SAML2Validator {
         FieldValueValidators.validateTimeSpanForTRC(assertion);
         FieldValueValidators.validateAuthnContextClassRefValueForHCP(assertion);
 
-        policyManager.PurposeOfUseValidatorForTRC(assertion, classCode);
-        policyManager.XSPASubjectValidatorForTRC(assertion, classCode);
+        policyAssertionManager.PurposeOfUseValidatorForTRC(assertion, classCode);
+        policyAssertionManager.XSPASubjectValidatorForTRC(assertion, classCode);
 
-        new SignatureManager().verifySAMLAssertion(assertion);
+        signatureManager.verifySAMLAssertion(assertion);
     }
 
-    public static String getCountryCodeFromHCPAssertion(final Element soapHeader) throws MissingFieldException, XSDValidationException, SMgrException {
+    public String getCountryCodeFromHCPAssertion(final Element soapHeader) throws MissingFieldException, XSDValidationException, SMgrException {
 
         String sigCountryCode = null;
 
@@ -410,7 +405,7 @@ public class SAML2Validator {
                 throw (new MissingFieldException("HCP Assertion element is required."));
             }
 
-            sigCountryCode = new SignatureManager().verifySAMLAssertion(hcpAssertion);
+            sigCountryCode = signatureManager.verifySAMLAssertion(hcpAssertion);
         } catch (final IOException | UnmarshallingException e) {
             LOGGER.error("{}: '{}'", e.getMessage(), e);
         } catch (final SAXException e) {

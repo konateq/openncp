@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.common.configuration;
 
 import eu.europa.ec.dynamicdiscovery.DynamicDiscoveryBuilder;
+import eu.europa.ec.sante.openncp.common.Constant;
 
 import java.util.Map;
 
@@ -14,10 +15,12 @@ public interface ConfigurationManager {
     DynamicDiscoveryBuilder initializeDynamicDiscoveryFetcher();
 
     /**
-     * @param key
-     * @return
+     * @deprecated Use {@link #getProperty(Constant)} instead.
      */
+    @Deprecated
     String getProperty(String key);
+
+    String getProperty(Constant constant);
 
     /**
      * @param key

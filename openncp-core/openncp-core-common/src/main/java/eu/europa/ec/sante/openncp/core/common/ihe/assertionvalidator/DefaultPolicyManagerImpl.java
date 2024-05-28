@@ -10,6 +10,7 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import static eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Asse
 /**
  * Default Policy Manager implementation compliant with IHE profiles and eHDSI specifications.
  */
+@Component
 public class DefaultPolicyManagerImpl implements PolicyAssertionManager {
 
     private static final String ERROR_ASSERTION_MISSING_FIELD_ROLE = "A MissingFieldException was caught. The assertion role could not be obtained: '{}'";

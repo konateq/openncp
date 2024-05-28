@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -50,6 +51,7 @@ import java.util.regex.Pattern;
 import static eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode.ERROR_PS_PDF_FORMAT_NOT_PROVIDED;
 
 
+@Service
 public class DocumentSearchMockImpl extends NationalConnectorGateway implements DocumentSearchInterface {
 
     private static final String PATTERN_EP = "epstore.+\\.xml";

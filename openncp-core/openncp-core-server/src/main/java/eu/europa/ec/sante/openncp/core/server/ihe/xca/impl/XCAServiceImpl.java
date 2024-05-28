@@ -56,12 +56,14 @@ import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -74,6 +76,7 @@ import java.util.*;
 
 import static eu.europa.ec.sante.openncp.common.ClassCode.*;
 
+@Service
 public class XCAServiceImpl implements XCAServiceInterface {
 
     private static final DatatypeFactory DATATYPE_FACTORY;
@@ -88,11 +91,12 @@ public class XCAServiceImpl implements XCAServiceInterface {
 
     private final Logger logger = LoggerFactory.getLogger(XCAServiceImpl.class);
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
-    private final OMFactory omFactory;
-    private final ObjectFactory ofQuery;
-    private final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.ObjectFactory ofRim;
-    private final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.ObjectFactory ofRs;
+    private final OMFactory omFactory = OMAbstractFactory.getOMFactory();
+    private final ObjectFactory ofQuery = new ObjectFactory();
+    private final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.ObjectFactory ofRim = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.ObjectFactory();
+    private final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.ObjectFactory ofRs = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.ObjectFactory();
     private final DocumentSearchInterface documentSearchService;
+    private final SAML2Validator saml2Validator;
 
     /**
      * Public Constructor for IHE XCA Profile implementation, the default constructor will handle the loading of
@@ -100,23 +104,9 @@ public class XCAServiceImpl implements XCAServiceInterface {
      *
      * @see ServiceLoader
      */
-    public XCAServiceImpl() {
-
-        ServiceLoader<DocumentSearchInterface> serviceLoader = ServiceLoader.load(DocumentSearchInterface.class);
-        try {
-            logger.info("Loading National implementation of DocumentSearchInterface...");
-            documentSearchService = serviceLoader.iterator().next();
-            logger.info("Successfully loaded documentSearchService");
-        } catch (Exception e) {
-            logger.error("Failed to load implementation of DocumentSearchInterface: " + e.getMessage(), e);
-            throw e;
-        }
-
-        ofQuery = new ObjectFactory();
-        ofRs = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.ObjectFactory();
-        ofRim = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.ObjectFactory();
-
-        omFactory = OMAbstractFactory.getOMFactory();
+    public XCAServiceImpl(final DocumentSearchInterface documentSearchService, final SAML2Validator saml2Validator) {
+        this.documentSearchService = Validate.notNull(documentSearchService);
+        this.saml2Validator = Validate.notNull(saml2Validator);
     }
 
     private static String trimDocumentEntryPatientId(String patientId) {
@@ -435,7 +425,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
         try {
             shElement = XMLUtils.toDOM(soapHeader);
             documentSearchService.setSOAPHeader(shElement);
-            sigCountryCode = SAML2Validator.validateXCAHeader(shElement, getClassCode(classCodeValues));
+            sigCountryCode = saml2Validator.validateXCAHeader(shElement, getClassCode(classCodeValues));
         } catch (OpenNCPErrorCodeException e) {
             logger.error(e.getMessage(), e);
             RegistryErrorUtils.addErrorMessage(registryErrorList, e.getErrorCode(), e.getMessage(), e, RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
@@ -501,7 +491,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
         logger.info("The client country code to be used by the PDP: '{}'", countryCode);
 
         // Then, it is the Policy Decision Point (PDP) that decides according to the consent of the patient
-        if (!SAML2Validator.isConsentGiven(fullPatientId, countryCode)) {
+        if (!saml2Validator.isConsentGiven(fullPatientId, countryCode)) {
             RegistryErrorUtils.addErrorMessage(registryErrorList, OpenNCPErrorCode.ERROR_NO_CONSENT,
                     OpenNCPErrorCode.ERROR_NO_CONSENT.getDescription(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
         }
@@ -813,7 +803,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
                 logger.info("Could not get client country code from the service consumer certificate. " +
                         "The reason can be that the call was not via HTTPS. " +
                         "Will check the country code from the signature certificate now.");
-                countryCode = SAML2Validator.getCountryCodeFromHCPAssertion(soapHeaderElement);
+                countryCode = saml2Validator.getCountryCodeFromHCPAssertion(soapHeaderElement);
                 if (countryCode != null) {
                     logger.info("Found the client country code via the signature certificate.");
                 } else {
@@ -828,7 +818,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
             logger.info("The client country code to be used by the PDP '{}' ", countryCode);
 
             // Then, it is the Policy Decision Point (PDP) that decides according to the consent of the patient
-            if (!SAML2Validator.isConsentGiven(fullPatientId, countryCode)) {
+            if (!saml2Validator.isConsentGiven(fullPatientId, countryCode)) {
                 failure = true;
                 RegistryErrorUtils.addErrorOMMessage(omNamespace, registryErrorList, OpenNCPErrorCode.ERROR_NO_CONSENT,
                         OpenNCPErrorCode.ERROR_NO_CONSENT.getDescription(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
@@ -923,7 +913,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
             classCodeValue = epsosDoc.getClassCode();
 
             try {
-                SAML2Validator.validateXCAHeader(soapHeaderElement, classCodeValue);
+                saml2Validator.validateXCAHeader(soapHeaderElement, classCodeValue);
             } catch (OpenNCPErrorCodeException e) {
                 logger.error("OpenncpErrorCodeException: '{}'", e.getMessage(), e);
                 RegistryErrorUtils.addErrorOMMessage(omNamespace, registryErrorList, e.getErrorCode(), e.getMessage(),

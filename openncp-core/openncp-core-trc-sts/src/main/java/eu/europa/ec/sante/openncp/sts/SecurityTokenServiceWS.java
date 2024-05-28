@@ -31,6 +31,7 @@ import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.cryptacular.util.CertUtil;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -42,6 +43,7 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.xmlsec.signature.X509Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -73,9 +75,8 @@ public class SecurityTokenServiceWS extends SpringBeanAutowiringSupport {
     @Resource
     public WebServiceContext context;
 
-    public SecurityTokenServiceWS() {
-        // Default empty constructor.
-    }
+    @Autowired
+    private SignatureManager signatureManager;
 
     public void createResponseHeader(SOAPHeader header, String messageId) {
 
@@ -177,7 +178,6 @@ public class SecurityTokenServiceWS extends SpringBeanAutowiringSupport {
                 return null;
             } else {
                 assertDoc.getDocumentElement().setIdAttribute("ID", true);
-                var signatureManager = new SignatureManager();
                 signatureManager.verifyEnvelopedSignature(assertDoc);
             }
             var unmarshallerFactory = XMLObjectProviderRegistrySupport.getUnmarshallerFactory();

@@ -7,13 +7,13 @@ import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
+import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.saml.SAML2Validator;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientId;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.org.hl7.v3.*;
-import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XCPDErrorCode;
 import eu.europa.ec.sante.openncp.core.server.api.ihe.xcpd.PatientSearchInterface;
 import eu.europa.ec.sante.openncp.core.server.api.ihe.xcpd.PatientSearchInterfaceWithDemographics;
@@ -28,6 +28,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -43,6 +44,7 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Service
 public class XCPDServiceImpl implements XCPDServiceInterface {
 
     private static final DatatypeFactory DATATYPE_FACTORY;
@@ -57,21 +59,13 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
 
     private final Logger logger = LoggerFactory.getLogger(XCPDServiceImpl.class);
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
-    private final ObjectFactory objectFactory;
+    private final ObjectFactory objectFactory = new ObjectFactory();
     private final PatientSearchInterface patientSearchService;
+    private final SAML2Validator saml2Validator;
 
-    public XCPDServiceImpl() {
-
-        objectFactory = new ObjectFactory();
-        ServiceLoader<PatientSearchInterface> serviceLoader = ServiceLoader.load(PatientSearchInterface.class);
-        try {
-            logger.info("Loading National implementation of PatientSearchInterface...");
-            patientSearchService = serviceLoader.iterator().next();
-            logger.info("Successfully loaded PatientSearchService");
-        } catch (Exception e) {
-            logger.error("Failed to load implementation of PatientSearchService: " + e.getMessage(), e);
-            throw e;
-        }
+    public XCPDServiceImpl(PatientSearchInterface patientSearchService, SAML2Validator saml2Validator) {
+        this.patientSearchService = patientSearchService;
+        this.saml2Validator = saml2Validator;
     }
 
     private String getParticipantObjectID(II id) {
@@ -591,7 +585,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         patientSearchService.setSOAPHeader(shElement);
 
         try {
-            sigCountryCode = SAML2Validator.validateXCPDHeader(shElement);
+            sigCountryCode = saml2Validator.validateXCPDHeader(shElement);
 
             String senderHomeCommID = inputMessage.getSender().getDevice().getId().get(0).getRoot();
             String receiverHomeCommID = inputMessage.getReceiver().get(0).getDevice().getId().get(0).getRoot();
@@ -716,7 +710,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                      *  (both the root and extension) to PDP, if required by PDP procedures.
                      */
                     for (var i = 0; i < demographicsList.size(); i++) {
-                        if (!SAML2Validator.isConsentGiven(demographicsList.get(i).getIdList().get(0).getExtension(), countryCode)) {
+                        if (!saml2Validator.isConsentGiven(demographicsList.get(i).getIdList().get(0).getExtension(), countryCode)) {
                             // This patient data cannot be sent to Country B
                             demographicsList.remove(i);
                             i--;

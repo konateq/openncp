@@ -4,6 +4,7 @@ import eu.europa.ec.dynamicdiscovery.DynamicDiscoveryBuilder;
 import eu.europa.ec.dynamicdiscovery.core.fetcher.impl.DefaultURLFetcher;
 import eu.europa.ec.dynamicdiscovery.core.security.impl.DefaultProxy;
 import eu.europa.ec.dynamicdiscovery.exception.ConnectionException;
+import eu.europa.ec.sante.openncp.common.Constant;
 import eu.europa.ec.sante.openncp.common.property.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -37,6 +38,12 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     public String getProperty(String key) {
         Validate.notNull(key, "key must not be null!");
         return getProperty(key, true);
+    }
+
+    @Override
+    public String getProperty(Constant constant) {
+        Validate.notNull(constant, "constant must not be null!");
+        return getProperty(constant.getKey());
     }
 
     /**

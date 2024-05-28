@@ -20,9 +20,11 @@ import eu.europa.ec.sante.openncp.application.client.connector.assertion.Asserti
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.ImmutableTrcAssertionRequest;
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.STSClientException;
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.TrcAssertionRequest;
+import eu.europa.ec.sante.openncp.common.Constant;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.PatientId;
 import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -297,10 +299,17 @@ public class AssertionTestUtil {
 
         final String signatureKeystorePath = Constants.NCP_SIG_KEYSTORE_PATH;
         final String signatureKeystorePassword = Constants.NCP_SIG_KEYSTORE_PASSWORD;
+        final String truststorePath = Constants.TRUSTSTORE_PATH;
+        final String truststorePassword = Constants.TRUSTSTORE_PASSWORD;
         final String signatureKeyAlias = Constants.NCP_SIG_PRIVATEKEY_ALIAS;
         final String signatureKeyPassword = Constants.NCP_SIG_PRIVATEKEY_PASSWORD;
 
-        final KeyStoreManager keyManager = new DatabasePropertiesKeyStoreManager();
+        final KeyStoreManager keyManager = new DefaultKeyStoreManager(signatureKeystorePath,
+                signatureKeystorePassword,
+                truststorePath,
+                truststorePassword,
+                signatureKeyAlias,
+                signatureKeyPassword);
         final X509Certificate signatureCertificate;
         PrivateKey privateKey = null;
 

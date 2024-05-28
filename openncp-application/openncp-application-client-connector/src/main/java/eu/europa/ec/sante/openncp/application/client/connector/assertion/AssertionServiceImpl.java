@@ -1,7 +1,10 @@
 package eu.europa.ec.sante.openncp.application.client.connector.assertion;
 
+import eu.europa.ec.sante.openncp.common.Constant;
 import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -12,14 +15,17 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 
 @Service
 public class AssertionServiceImpl implements AssertionService {
@@ -28,8 +34,13 @@ public class AssertionServiceImpl implements AssertionService {
 
     private static final String SAML20_TOKEN_URN = "urn:oasis:names:tc:SAML:2.0:assertion";
     private final DocumentBuilder documentBuilder;
+    private final KeyStoreManager keyStoreManager;
+    private final ConfigurationManager configurationManager;
 
-    public AssertionServiceImpl() throws STSClientException {
+    public AssertionServiceImpl(KeyStoreManager keyStoreManager, ConfigurationManager configurationManager) throws STSClientException {
+        this.keyStoreManager = Validate.notNull(keyStoreManager);
+        this.configurationManager = Validate.notNull(configurationManager);
+
         try {
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilderFactory.setNamespaceAware(true);
@@ -65,6 +76,7 @@ public class AssertionServiceImpl implements AssertionService {
 
             //  Write and send the SOAP message
             LOGGER.info("Sending SOAP request - Default Key Alias: '{}'", StringUtils.isNotBlank(sslKeyAlias) ? sslKeyAlias : "N/A");
+
             assertionRequest.getSoapMessage().writeTo(httpConnection.getOutputStream());
             SOAPMessage response = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createMessage(new MimeHeaders(), httpConnection.getInputStream());
 
@@ -80,7 +92,7 @@ public class AssertionServiceImpl implements AssertionService {
             LOGGER.info("TRC Assertion: '{}'", assertion != null ? assertionRequest.getId() : "TRC Assertion is NULL");
 
             if (assertionRequest.validationEnabled()) {
-               assertionRequest.validate(assertion);
+                assertionRequest.validate(assertion);
             }
 
             return assertion;
@@ -89,6 +101,9 @@ public class AssertionServiceImpl implements AssertionService {
             throw new STSClientException("SOAP Exception: " + ex.getMessage(), ex);
         } catch (UnsupportedOperationException ex) {
             throw new STSClientException("Unsupported Operation: " + ex.getMessage(), ex);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new STSClientException(e.getMessage(), e);
         }
     }
 
@@ -122,6 +137,25 @@ public class AssertionServiceImpl implements AssertionService {
     }
 
     private SSLSocketFactory getSSLSocketFactory() {
-        return null;
+
+        SSLContext sslContext;
+        try {
+            String sigKeystorePassword = configurationManager.getProperty(Constant.NCP_SIG_KEYSTORE_PASSWORD);
+
+            sslContext = SSLContext.getInstance("TLSv1.2");
+
+            var keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+            keyManagerFactory.init(keyStoreManager.getKeyStore(), sigKeystorePassword.toCharArray());
+
+            var trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+            trustManagerFactory.init(keyStoreManager.getTrustStore());
+
+            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+            return sslContext.getSocketFactory();
+
+        } catch (KeyManagementException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
+            LOGGER.error("Exception: '{}'", e.getMessage(), e);
+            return null;
+        }
     }
 }

@@ -46,10 +46,12 @@ import eu.europa.ec.sante.openncp.core.server.api.ihe.xdr.DocumentSubmitInterfac
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -61,8 +63,8 @@ import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.ServiceLoader;
 
+@Service
 public class XDRServiceImpl implements XDRServiceInterface {
 
     private static final DatatypeFactory DATATYPE_FACTORY;
@@ -78,31 +80,16 @@ public class XDRServiceImpl implements XDRServiceInterface {
 
     private final Logger logger = LoggerFactory.getLogger(XDRServiceImpl.class);
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
-    private final ObjectFactory ofRs;
-    private final DocumentSubmitInterface documentSubmitService;
+    private final ObjectFactory ofRs = new ObjectFactory();
+    private final DocumentSubmitInterface documentSubmitInterface;
+    private final SAML2Validator saml2Validator;
 
-    public XDRServiceImpl() {
-
-        ServiceLoader<DocumentSubmitInterface> serviceLoader = ServiceLoader.load(DocumentSubmitInterface.class);
-        try {
-            logger.info("Loading National implementation of DocumentSubmitInterface...");
-            documentSubmitService = serviceLoader.iterator().next();
-            logger.info("Successfully loaded documentSubmitService");
-        } catch (Exception e) {
-            logger.error("Failed to load implementation of documentSubmitService: " + e.getMessage(), e);
-            throw e;
-        }
-        ofRs = new ObjectFactory();
-    }
-
-    protected XDRServiceImpl(DocumentSubmitInterface dsi, ObjectFactory ofRs) {
-        this.documentSubmitService = dsi;
-        this.ofRs = ofRs;
+    public XDRServiceImpl(final DocumentSubmitInterface documentSubmitInterface, final SAML2Validator saml2Validator) {
+        this.documentSubmitInterface = Validate.notNull(documentSubmitInterface);
+        this.saml2Validator = Validate.notNull(saml2Validator);
     }
 
     private RegistryError createErrorMessage(OpenNCPErrorCode openncpErrorCode, String codeContext, String value, String location, RegistryErrorSeverity severity) {
-
-
         RegistryError registryError = ofRs.createRegistryError();
         registryError.setErrorCode(openncpErrorCode.getCode());
         registryError.setLocation(location);
@@ -265,13 +252,13 @@ public class XDRServiceImpl implements XDRServiceInterface {
         logger.info("Processing Discard Dispense Medication");
         RegistryErrorList registryErrorList = ofRs.createRegistryErrorList();
         Element soapHeaderElement = XMLUtils.toDOM(soapHeader);
-        documentSubmitService.setSOAPHeader(soapHeaderElement);
+        documentSubmitInterface.setSOAPHeader(soapHeaderElement);
 
         //  Validate HCP SAML token according de Medication Discard Dispense rule:
         String sealCountryCode = null;
 
         try {
-            sealCountryCode = SAML2Validator.validateXDRHeader(soapHeaderElement, ClassCode.EDD_CLASSCODE);
+            sealCountryCode = saml2Validator.validateXDRHeader(soapHeaderElement, ClassCode.EDD_CLASSCODE);
 
         } catch (OpenNCPErrorCodeException | SMgrException e) {
             logger.error("'{}': '{}'", e.getClass().getName(), e.getMessage(), e);
@@ -302,7 +289,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
             }
         }
         logger.info("The client country code to be used by the PDP: '{}'", countryCode);
-        if (!SAML2Validator.isConsentGiven(fullPatientId, countryCode)) {
+        if (!saml2Validator.isConsentGiven(fullPatientId, countryCode)) {
             logger.debug("No consent given, throwing InsufficientRightsException");
             NoConsentException e = new NoConsentException(null);
             RegistryErrorUtils.addErrorMessage(
@@ -371,7 +358,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
             discardDetails.setHealthCareProviderOrganization(Helper.getOrganization(soapHeaderElement));
             discardDetails.setHealthCareProviderOrganizationId(Helper.getOrganizationId(soapHeaderElement));
             //  TODO: EHNCP-2055 Inconsistency in handling patient id
-            documentSubmitService.cancelDispensation(discardDetails, epsosDocument);
+            documentSubmitInterface.cancelDispensation(discardDetails, epsosDocument);
 
         } catch (NationalInfrastructureException e) {
             logger.error("DocumentSubmitException: '{}'-'{}'", e.getOpenncpErrorCode(), e.getMessage());
@@ -422,11 +409,11 @@ public class XDRServiceImpl implements XDRServiceInterface {
             logger.error(e.getMessage());
             throw e;
         }
-        documentSubmitService.setSOAPHeader(shElement);
+        documentSubmitInterface.setSOAPHeader(shElement);
 
         RegistryErrorList registryErrorList = ofRs.createRegistryErrorList();
         try {
-            sealCountryCode = SAML2Validator.validateXDRHeader(shElement, ClassCode.ED_CLASSCODE);
+            sealCountryCode = saml2Validator.validateXDRHeader(shElement, ClassCode.ED_CLASSCODE);
 
         } catch (OpenNCPErrorCodeException e) {
             logger.error("OpenncpErrorCodeException: '{}'", e.getMessage(), e);
@@ -469,7 +456,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
             }
         }
         logger.info("The client country code to be used by the PDP: '{}'", countryCode);
-        if (!SAML2Validator.isConsentGiven(fullPatientId, countryCode)) {
+        if (!saml2Validator.isConsentGiven(fullPatientId, countryCode)) {
             logger.debug("No consent given, throwing InsufficientRightsException");
             NoConsentException e = new NoConsentException(null);
             RegistryErrorUtils.addErrorMessage(
@@ -536,7 +523,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
                     }
                     // Call to National Connector
                     documentId = getDocumentId(epsosDocument.getDocument());
-                    documentSubmitService.submitDispensation(epsosDocument);
+                    documentSubmitInterface.submitDispensation(epsosDocument);
 
                     // Evidence for response from NI for XDR submit (dispensation)
                     /* Joao: the NRR is being generated based on the request message (submitted document). The interface for document submission does not return
@@ -628,7 +615,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
     protected String validateXDRHeader(Element sh, ClassCode classCode) throws MissingFieldException, InvalidFieldException,
             SMgrException, InsufficientRightsException {
 
-        return SAML2Validator.validateXDRHeader(sh, classCode);
+        return saml2Validator.validateXDRHeader(sh, classCode);
     }
 
     public RegistryResponseType reportDocumentTypeError(ProvideAndRegisterDocumentSetRequestType request) {

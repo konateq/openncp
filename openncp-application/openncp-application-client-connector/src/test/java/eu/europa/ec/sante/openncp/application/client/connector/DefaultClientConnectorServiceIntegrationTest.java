@@ -42,7 +42,7 @@ class DefaultClientConnectorServiceIntegrationTest {
     private static DefaultClientConnectorService clientConnectorService;
     private static DefaultKeyStoreManager keyStoreManager;
     private static ConfigurationManager mockedConfigurationManager;
-    private final AssertionService assertionService = new AssertionServiceImpl();
+    private final AssertionService assertionService = new AssertionServiceImpl(keyStoreManager, mockedConfigurationManager);
 
     @BeforeAll
     static void setup() throws Exception {

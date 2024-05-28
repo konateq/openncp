@@ -11,6 +11,7 @@ import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKey
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.util.AssertionUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
@@ -34,24 +35,20 @@ import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.impl.IssuerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SamlNextOfKinIssuer {
 
     private final Logger logger = LoggerFactory.getLogger(SamlNextOfKinIssuer.class);
     KeyStoreManager keyStoreManager;
-    HashMap<String, String> auditDataMap;
-
-    public SamlNextOfKinIssuer() {
-
-        keyStoreManager = new DatabasePropertiesKeyStoreManager();
-        auditDataMap = new HashMap<>();
-    }
+    HashMap<String, String> auditDataMap = new HashMap<>();
 
     /**
      * @param keyStoreManager
      */
     public SamlNextOfKinIssuer(final KeyStoreManager keyStoreManager) {
-        this.keyStoreManager = keyStoreManager;
+        this.keyStoreManager = Validate.notNull(keyStoreManager);
     }
 
     //    /**

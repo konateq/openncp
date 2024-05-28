@@ -28,6 +28,7 @@ import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicC
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -47,6 +48,7 @@ import org.opensaml.xmlsec.signature.support.SignatureValidator;
 import org.opensaml.xmlsec.signature.support.Signer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -56,6 +58,7 @@ import org.w3c.dom.NodeList;
  *
  * @author Jerry Dimitriou <jerouris at netsmart.gr>
  */
+@Component
 public class SignatureManager {
 
     private final Logger logger = LoggerFactory.getLogger(SignatureManager.class);
@@ -63,17 +66,8 @@ public class SignatureManager {
     private String signatureAlgorithm;
     private String digestAlgorithm;
 
-    public SignatureManager() {
-
-        //Default constructor now defaults to the test keyStoreManager
-        keyManager = new DatabasePropertiesKeyStoreManager();
-        init();
-    }
-
     public SignatureManager(final KeyStoreManager keyStoreManager) {
-
-        //Constructor for unit testing. Sort of DI
-        this.keyManager = keyStoreManager;
+        this.keyManager = Validate.notNull(keyStoreManager);
         init();
     }
 
