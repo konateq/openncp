@@ -41,30 +41,24 @@ import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.impl.IssuerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 /**
  * The TRC Assertion issuer is a sub-component that issues Treatment Relationship Assertions as specified in eHDSI SAML
  * Profile specification document. It makes use of the Signature Manager for signing the assertions.
  * An audit trail entry is written after the successful issuance of a TRC assertion.
  */
+@Component
 public class SamlTRCIssuer {
 
     private final Logger logger = LoggerFactory.getLogger(SamlTRCIssuer.class);
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
 
-    KeyStoreManager keyStoreManager;
-    HashMap<String, String> auditDataMap;
+    private final KeyStoreManager keyStoreManager;
+    private final HashMap<String, String> auditDataMap = new HashMap<>();
 
-    public SamlTRCIssuer() {
-
-        keyStoreManager = new DatabasePropertiesKeyStoreManager();
-        auditDataMap = new HashMap<>();
-    }
-
-    /**
-     * @param keyStoreManager
-     */
-    public SamlTRCIssuer(final KeyStoreManager keyStoreManager) {
+    public SamlTRCIssuer(@Qualifier("databasePropertiesKeyStoreManager") final KeyStoreManager keyStoreManager) {
         this.keyStoreManager = keyStoreManager;
     }
 

@@ -8,7 +8,10 @@ import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component("databasePropertiesKeyStoreManager")
 public final class DatabasePropertiesKeyStoreManager implements KeyStoreManager {
 
     private final DefaultKeyStoreManager defaultKeyStoreManager;

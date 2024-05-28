@@ -21,6 +21,7 @@ import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFacto
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
 import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Marshaller;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class AssertionRequest {
+public abstract class AssertionRequest {
 
     public static final String ADDRESSING_NS = "http://www.w3.org/2005/08/addressing";
     public static final String ACTION_URI = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Issue";
@@ -43,10 +44,12 @@ public class AssertionRequest {
     public static final String WS_TRUST_NS = "http://docs.oasis-open.org/ws-sx/ws-trust/200512";
 
     private final Logger logger = LoggerFactory.getLogger(AssertionRequest.class);
+    private final KeyStoreManager keyStoreManager;
 
     private DocumentBuilder documentBuilder;
 
-    public AssertionRequest() throws STSClientException {
+    public AssertionRequest(KeyStoreManager keyStoreManager) throws STSClientException {
+        this.keyStoreManager = Validate.notNull(keyStoreManager);
         try {
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilderFactory.setNamespaceAware(true);
@@ -123,7 +126,6 @@ public class AssertionRequest {
 
         SSLContext sslContext;
         try {
-            KeyStoreManager keyStoreManager = new DatabasePropertiesKeyStoreManager();
             String sigKeystorePassword = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_KEYSTORE_PASSWORD");
 
             sslContext = SSLContext.getInstance("TLSv1.2");

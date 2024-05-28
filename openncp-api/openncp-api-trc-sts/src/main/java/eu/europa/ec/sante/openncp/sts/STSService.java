@@ -39,12 +39,16 @@ import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPMessage;
+
+import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTimeZone;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 
 @ServiceMode(value = Mode.MESSAGE)
@@ -53,6 +57,9 @@ import org.w3c.dom.Document;
 public class STSService extends SecurityTokenServiceWS implements Provider<SOAPMessage> {
 
     private final Logger logger = LoggerFactory.getLogger(STSService.class);
+
+    @Autowired
+    private SamlTRCIssuer samlTRCIssuer;
 
     @Override
     public SOAPMessage invoke(final SOAPMessage source) {
@@ -93,7 +100,6 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
             final DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
 
             // The response TRC Assertion Issuer.
-            final var samlTRCIssuer = new SamlTRCIssuer();
             final var hcpIdAssertion = getIdAssertionFromHeader(header);
             if (hcpIdAssertion != null) {
                 logger.info("hcpIdAssertion: '{}'", hcpIdAssertion.getID());

@@ -1,9 +1,12 @@
 package eu.europa.ec.sante.openncp.application.client.connector.assertions;
 
 import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -43,16 +46,27 @@ public class TRCAssertionRequest extends AssertionRequest {
         } catch (InitializationException e) {
             LOGGER.error("OpenSAML module cannot be initialized: '{}'", e.getMessage(), e);
         }
-        if (ConfigurationManagerFactory.getConfigurationManager().getProperty(STSConstant.URL_WS_TRC).length() == 0) {
-            ConfigurationManagerFactory.getConfigurationManager()
-                    .setProperty(STSConstant.URL_WS_TRC, "https://localhost:8443/TRC-STS/SecurityTokenService");
-        }
-        DEFAULT_STS_URL = ConfigurationManagerFactory.getConfigurationManager().getProperty(STSConstant.URL_WS_TRC);
 
-        if (ConfigurationManagerFactory.getConfigurationManager().getProperty(STSConstant.STS_CHECK_HOSTNAME).length() == 0) {
-            ConfigurationManagerFactory.getConfigurationManager().setProperty(STSConstant.STS_CHECK_HOSTNAME, "false");
-        }
-        CHECK_FOR_HOSTNAME = ConfigurationManagerFactory.getConfigurationManager().getProperty(STSConstant.STS_CHECK_HOSTNAME);
+    }
+
+    private final ConfigurationManager configurationManager;
+
+    public TRCAssertionRequest(KeyStoreManager keyStoreManager, ConfigurationManager configurationManager) throws STSClientException {
+        super(keyStoreManager);
+        this.configurationManager = Validate.notNull(configurationManager);
+//
+//
+//        if (configurationManager.getProperty(STSConstant.URL_WS_TRC).length() == 0) {
+//            configurationManager
+//                    .setProperty(STSConstant.URL_WS_TRC, "https://localhost:8443/TRC-STS/SecurityTokenService");
+//        }
+//        DEFAULT_STS_URL = ConfigurationManagerFactory.getConfigurationManager().getProperty(STSConstant.URL_WS_TRC);
+//
+//        if (ConfigurationManagerFactory.getConfigurationManager().getProperty(STSConstant.STS_CHECK_HOSTNAME).length() == 0) {
+//            ConfigurationManagerFactory.getConfigurationManager().setProperty(STSConstant.STS_CHECK_HOSTNAME, "false");
+//        }
+//        CHECK_FOR_HOSTNAME = ConfigurationManagerFactory.getConfigurationManager().getProperty(STSConstant.STS_CHECK_HOSTNAME);
+
     }
 
     private final Assertion idAssert;
