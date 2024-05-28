@@ -7,6 +7,8 @@ import javax.xml.namespace.QName;
 import org.opensaml.core.xml.XMLObjectBuilder;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.Marshaller;
+import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.io.Unmarshaller;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.schema.XSAny;
@@ -20,6 +22,7 @@ import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class AssertionUtil {
@@ -203,6 +206,21 @@ public class AssertionUtil {
             }
             return Optional.of((Assertion) unmarshaller.unmarshall(element));
         } catch (final UnmarshallingException e) {
+            LOGGER.error("UnmarshallingException: '{}", e.getMessage(), e);
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<Element> toElement(final Assertion assertion, final Document document) {
+        try {
+            final Marshaller marshaller = XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(assertion);
+            if (marshaller == null) {
+                LOGGER.error("SAML marshaller is NULL");
+                return Optional.empty();
+            }
+            marshaller.marshall(assertion, document);
+            return Optional.of(document.getDocumentElement());
+        } catch (final MarshallingException e) {
             LOGGER.error("UnmarshallingException: '{}", e.getMessage(), e);
             return Optional.empty();
         }

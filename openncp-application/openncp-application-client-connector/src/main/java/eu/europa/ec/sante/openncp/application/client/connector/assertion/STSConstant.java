@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.application.client.connector.assertions;
+package eu.europa.ec.sante.openncp.application.client.connector.assertion;
 
 public class STSConstant {
 
