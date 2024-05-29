@@ -20,14 +20,14 @@ public interface AssertionRequest {
     String SAML20_TOKEN_URN = "urn:oasis:names:tc:SAML:2.0:assertion";
     String WS_SEC_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
 
-    @Value.Default
+    @Value.Derived
     default String getId() {
         return "urn:uuid:" + UUID.randomUUID();
     }
 
     URL getLocation();
 
-    @Value.Redacted
+    @Value.Auxiliary
     Assertion getAssertion();
 
     boolean checkForHostname();

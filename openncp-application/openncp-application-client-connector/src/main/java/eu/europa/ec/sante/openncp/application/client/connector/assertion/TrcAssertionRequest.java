@@ -33,7 +33,7 @@ public interface TrcAssertionRequest extends AssertionRequest {
         OpenNCPValidation.validateTRCAssertion(assertion, NcpSide.NCP_B);
     }
 
-    @Value.Default
+    @Value.Auxiliary
     @Override
     default void getSoapBody(SOAPBody body) {
         try {

@@ -77,7 +77,8 @@ public class AssertionServiceImpl implements AssertionService {
             //  Write and send the SOAP message
             LOGGER.info("Sending SOAP request - Default Key Alias: '{}'", StringUtils.isNotBlank(sslKeyAlias) ? sslKeyAlias : "N/A");
 
-            assertionRequest.getSoapMessage().writeTo(httpConnection.getOutputStream());
+            SOAPMessage soapMessage = assertionRequest.getSoapMessage();
+            soapMessage.writeTo(httpConnection.getOutputStream());
             SOAPMessage response = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createMessage(new MimeHeaders(), httpConnection.getInputStream());
 
             LOGGER.info("Receiving SOAP response");
