@@ -36,8 +36,10 @@ public interface AssertionRequest {
 
     void validate(Assertion assertion);
 
+    @Value.Auxiliary
     void getSoapBody(SOAPBody body);
 
+    @Value.Auxiliary
     default DocumentBuilder getDocumentBuilder() {
         try {
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -48,11 +50,11 @@ public interface AssertionRequest {
         }
     }
 
+    @Value.Auxiliary
     default SOAPMessage getSoapMessage() {
         try {
             final SOAPMessage message = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createMessage();
             final SOAPHeader soapHeader = message.getSOAPHeader();
-            final SOAPBody soapBody = message.getSOAPBody();
             final SOAPHeaderElement messageIdElem = soapHeader.addHeaderElement(new QName(ADDRESSING_NS, "MessageID", "wsa"));
             messageIdElem.setTextContent(getId());
 
@@ -62,6 +64,7 @@ public interface AssertionRequest {
             final Element assertionElement = AssertionUtil.toElement(getAssertion(), getDocumentBuilder().newDocument()).orElseThrow(() -> new STSClientException("Could not convert the assertion to element"));
             securityHeaderElem.appendChild(soapHeader.getOwnerDocument().importNode(assertionElement, true));
 
+            final SOAPBody soapBody = message.getSOAPBody();
             getSoapBody(soapBody);
 
             return message;
