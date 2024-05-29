@@ -18,6 +18,7 @@ import eu.europa.ec.sante.openncp.common.audit.EventLog;
 import eu.europa.ec.sante.openncp.common.audit.EventOutcomeIndicator;
 import eu.europa.ec.sante.openncp.common.audit.EventType;
 import eu.europa.ec.sante.openncp.common.audit.TransactionName;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
@@ -57,16 +58,18 @@ import org.w3c.dom.Document;
 @ServiceMode(value = Service.Mode.MESSAGE)
 @WebServiceProvider(targetNamespace = "https://ehdsi.eu/", serviceName = "NextOfKinTokenService", portName = "NextOfKinTokenService_Port")
 @BindingType(value = "http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/")
+@org.springframework.stereotype.Service
 public class NextOfKinService extends SecurityTokenServiceWS implements Provider<SOAPMessage> {
 
     private final Logger logger = LoggerFactory.getLogger(NextOfKinService.class);
 
-    @Autowired
     private SamlNextOfKinIssuer samlNextOfKinIssuer;
+    private final ConfigurationManager configurationManager;
 
-    public NextOfKinService(SamlNextOfKinIssuer samlNextOfKinIssuer, SignatureManager signatureManager) {
+    public NextOfKinService(SamlNextOfKinIssuer samlNextOfKinIssuer, SignatureManager signatureManager, ConfigurationManager configurationManager) {
         super(signatureManager);
         this.samlNextOfKinIssuer = Validate.notNull(samlNextOfKinIssuer);
+        this.configurationManager = Validate.notNull(configurationManager);
     }
 
 
@@ -157,7 +160,7 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
         final var auditService = AuditServiceFactory.getInstance();
         final XMLGregorianCalendar date = DateUtil.getDateAsXMLGregorian(new Date());
         final String trcCommonName = HttpUtil.getTlsCertificateCommonName(
-                ConfigurationManagerFactory.getConfigurationManager().getProperty("secman.nextOfKin.url"));
+                configurationManager.getProperty("secman.nextOfKin.url"));
         final String sourceGateway = getClientIP();
         logger.info("STS Client IP: '{}'", sourceGateway);
         final var messageContext = context.getMessageContext();
@@ -168,8 +171,7 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
         final EventLog eventLogNOKA = EventLog.createEventLogNOKA(TransactionName.NOK_ASSERTION, EventActionCode.EXECUTE, date,
                                                                   EventOutcomeIndicator.FULL_SUCCESS, pointOfCareID, facilityType, humanRequestorNameID,
                                                                   humanRequestorRole, humanRequestorSubjectID, certificateCommonName, trcCommonName,
-                                                                  ConfigurationManagerFactory.getConfigurationManager()
-                                                                                       .getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"), nokID,
+                                                                  configurationManager.getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"), nokID,
                                                             Constants.UUID_PREFIX + assertionId, reqMid, reqSecHeader, resMid, resSecHeader,
                                                             IPUtil.isLocalLoopbackIp(sourceGateway) ? serverName : sourceGateway,
                                                                   STSUtils.getSTSServerIP(), NcpSide.NCP_B);

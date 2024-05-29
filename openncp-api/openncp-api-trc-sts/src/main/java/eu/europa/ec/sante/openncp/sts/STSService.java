@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.sts;
 import com.sun.xml.ws.api.security.trust.WSTrustException;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.*;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
@@ -37,15 +38,18 @@ import java.util.GregorianCalendar;
 @ServiceMode(value = Mode.MESSAGE)
 @WebServiceProvider(targetNamespace = "https://ehdsi.eu/", serviceName = "SecurityTokenService", portName = "ISecurityTokenService_Port")
 @BindingType(value = "http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/")
+@org.springframework.stereotype.Service
 public class STSService extends SecurityTokenServiceWS implements Provider<SOAPMessage> {
 
     private final Logger logger = LoggerFactory.getLogger(STSService.class);
 
     private SamlTRCIssuer samlTRCIssuer;
+    private final ConfigurationManager configurationManager;
 
-    public STSService(SamlTRCIssuer samlTRCIssuer, SignatureManager signatureManager) {
+    public STSService(SamlTRCIssuer samlTRCIssuer, SignatureManager signatureManager, ConfigurationManager configurationManager) {
         super(signatureManager);
         this.samlTRCIssuer = Validate.notNull(samlTRCIssuer);
+        this.configurationManager = Validate.notNull(configurationManager);
     }
 
     @Override
@@ -148,7 +152,7 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
             logger.error("DatatypeConfigurationException: '{}'", ex.getMessage(), ex);
         }
         final String trcCommonName = HttpUtil.getTlsCertificateCommonName(
-                ConfigurationManagerFactory.getConfigurationManager().getProperty("secman.sts.url"));
+                configurationManager.getProperty("secman.sts.url"));
         final String sourceGateway = getClientIP();
         logger.info("STS Client IP: '{}'", sourceGateway);
         final var messageContext = context.getMessageContext();
@@ -159,9 +163,7 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
         final EventLog eventLogTRCA = EventLog.createEventLogTRCA(TransactionName.TRC_ASSERTION, EventActionCode.EXECUTE, date2,
                                                                   EventOutcomeIndicator.FULL_SUCCESS, pointOfCareID, facilityType,
                                                                   humanRequestorNameID, humanRequestorRole, humanRequestorSubjectID,
-                                                                  certificateCommonName, trcCommonName,
-                                                                  ConfigurationManagerFactory.getConfigurationManager()
-                                                                                             .getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"), patientID,
+                                                                  certificateCommonName, trcCommonName, configurationManager.getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"), patientID,
                                                                   Constants.UUID_PREFIX + assertionId, reqMid, reqSecHeader, resMid, resSecHeader,
                                                                   IPUtil.isLocalLoopbackIp(sourceGateway) ? serverName : sourceGateway,
                                                                   STSUtils.getSTSServerIP(), NcpSide.NCP_B);

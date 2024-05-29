@@ -43,12 +43,11 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.xmlsec.signature.X509Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class SecurityTokenServiceWS extends SpringBeanAutowiringSupport {
+public class SecurityTokenServiceWS {
 
     public static final String MESSAGE_ID = "MessageID";
     public static final QName Messaging_To = new QName("http://www.w3.org/2005/08/addressing", "To");
