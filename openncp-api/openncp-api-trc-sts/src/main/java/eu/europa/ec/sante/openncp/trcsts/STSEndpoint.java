@@ -1,18 +1,25 @@
 package eu.europa.ec.sante.openncp.trcsts;
 
+import com.message.schemas.message.MessageBody;
+import https.ehdsi_eu.ISecurityTokenService;
+import org.springframework.stereotype.Service;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-@Endpoint
-public class STSEndpoint {
+import javax.jws.WebService;
+import javax.xml.ws.BindingType;
+import javax.xml.ws.ServiceMode;
+import javax.xml.ws.WebServiceProvider;
+
+
+@WebService(serviceName = "SecurityTokenService", portName = "ISecurityTokenService_Port",
+        targetNamespace = "https://ehdsi.eu")
+public class STSEndpoint implements ISecurityTokenService {
     private static final String NAMESPACE_URI = "https://ehdsi.eu/";
-//    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "IssueToken")
-//    @ResponsePayload
-//    public GetCountryResponse getCountry(@RequestPayload GetCountryRequest request) {
-//        GetCountryResponse response = new GetCountryResponse();
-//        response.setCountry(countryRepository.findCountry(request.getName()));
-//
-//        return response;
-//    }
+
+    @Override
+    public MessageBody issueToken(MessageBody rstMessage) {
+        return null;
+    }
 }
