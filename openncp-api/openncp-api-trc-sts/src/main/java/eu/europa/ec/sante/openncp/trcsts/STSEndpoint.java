@@ -8,9 +8,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import javax.jws.WebService;
-import javax.xml.ws.BindingType;
-import javax.xml.ws.ServiceMode;
-import javax.xml.ws.WebServiceProvider;
 
 
 @WebService(serviceName = "SecurityTokenService", portName = "ISecurityTokenService_Port",

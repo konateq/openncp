@@ -7,13 +7,15 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.feature.LoggingFeature;
 import org.apache.cxf.jaxws.EndpointImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class WebServiceConfig {
-    @Bean
+
+    private static final String BINDING_URI = "http://www.w3.org/2003/05/soap/bindings/HTTP/";
+
+    @Bean(name=Bus.DEFAULT_BUS_ID)
     public SpringBus springBus() {
         var loggingFeature = new LoggingFeature();
         loggingFeature.setPrettyLogging(true);
@@ -26,6 +28,7 @@ public class WebServiceConfig {
     @Bean
     public Endpoint endpoint(Bus bus) {
         EndpointImpl endpoint = new EndpointImpl(bus, new STSEndpoint());
+        endpoint.setBindingUri(BINDING_URI);
         endpoint.publish("/SecurityTokenService");
         return endpoint;
     }
