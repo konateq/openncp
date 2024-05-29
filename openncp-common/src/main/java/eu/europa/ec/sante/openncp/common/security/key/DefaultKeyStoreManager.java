@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.security.key;
+package eu.europa.ec.sante.openncp.common.security.key;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

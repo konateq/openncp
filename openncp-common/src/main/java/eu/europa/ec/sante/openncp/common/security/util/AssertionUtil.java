@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.security.util;
+package eu.europa.ec.sante.openncp.common.security.util;
 
 import java.util.List;
 import java.util.Optional;

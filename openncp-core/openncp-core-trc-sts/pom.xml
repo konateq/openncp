@@ -60,11 +60,6 @@
             <artifactId>openncp-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>eu.europa.ec.sante</groupId>
-            <artifactId>openncp-core-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
 </project>

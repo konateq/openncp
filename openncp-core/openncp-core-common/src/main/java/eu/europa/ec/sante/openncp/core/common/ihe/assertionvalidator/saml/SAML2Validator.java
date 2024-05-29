@@ -3,7 +3,6 @@ package eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.saml;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ServiceLoader;
 import javax.xml.transform.dom.DOMSource;
 
 import eu.europa.ec.sante.openncp.common.ClassCode;
@@ -13,8 +12,8 @@ import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.XSDValidationException;
-import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.SignatureManager;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.opensaml.core.xml.io.UnmarshallingException;

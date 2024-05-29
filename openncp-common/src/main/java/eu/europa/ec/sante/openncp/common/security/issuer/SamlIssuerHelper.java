@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.security.issuer;
+package eu.europa.ec.sante.openncp.common.security.issuer;
 
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;

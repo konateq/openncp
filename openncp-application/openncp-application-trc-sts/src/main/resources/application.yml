@@ -1,0 +1,44 @@
+hapi:
+  fhir:
+    version: r4
+    server:
+      path: /fhir
+    rest:
+      server-name: hapi-fhir-spring-boot-sample-server-jersey
+      server-version: 1.0.0
+      implementation-description: myHealth@EU FHIR POC
+      default-response-encoding: json
+      e-tag-support: enabled
+      default-pretty-print: true
+    validation:
+      enabled: true
+      request-only: true
+    openapi:
+      enabled: true
+      secured: false
+management:
+  security:
+    enabled: false
+logging:
+  level:
+    ca.uhn.fhir.jaxrs: debug
+fhirserver:
+  url: http://localhost:8081/fhir/
+fhir:
+  server:
+    inclusion: true
+spring:
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    jndi:
+      tsam:
+        jndiName: java:comp/env/jdbc/TSAM
+      properties:
+        jndiName: java:comp/env/jdbc/ConfMgr

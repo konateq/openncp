@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.security.evidence;
+package eu.europa.ec.sante.openncp.common.security.evidence;
 
 import org.w3c.dom.Element;
 

@@ -1,45 +1,15 @@
 package eu.europa.ec.sante.openncp.sts;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
-import eu.europa.ec.sante.openncp.core.common.security.issuer.SamlTRCIssuer;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.ws.BindingType;
-import javax.xml.ws.Provider;
-import javax.xml.ws.Service.Mode;
-import javax.xml.ws.ServiceMode;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceProvider;
-import javax.xml.ws.handler.MessageContext;
-
 import com.sun.xml.ws.api.security.trust.WSTrustException;
 import eu.europa.ec.sante.openncp.common.NcpSide;
-import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
-import eu.europa.ec.sante.openncp.common.audit.EventActionCode;
-import eu.europa.ec.sante.openncp.common.audit.EventLog;
-import eu.europa.ec.sante.openncp.common.audit.EventOutcomeIndicator;
-import eu.europa.ec.sante.openncp.common.audit.EventType;
-import eu.europa.ec.sante.openncp.common.audit.TransactionName;
+import eu.europa.ec.sante.openncp.common.audit.*;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPConstants;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPMessage;
-
+import eu.europa.ec.sante.openncp.common.security.SignatureManager;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.issuer.SamlTRCIssuer;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTimeZone;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -47,8 +17,22 @@ import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.*;
+import javax.xml.ws.*;
+import javax.xml.ws.Service.Mode;
+import javax.xml.ws.handler.MessageContext;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 @ServiceMode(value = Mode.MESSAGE)
 @WebServiceProvider(targetNamespace = "https://ehdsi.eu/", serviceName = "SecurityTokenService", portName = "ISecurityTokenService_Port")
@@ -57,8 +41,12 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
 
     private final Logger logger = LoggerFactory.getLogger(STSService.class);
 
-    @Autowired
     private SamlTRCIssuer samlTRCIssuer;
+
+    public STSService(SamlTRCIssuer samlTRCIssuer, SignatureManager signatureManager) {
+        super(signatureManager);
+        this.samlTRCIssuer = Validate.notNull(samlTRCIssuer);
+    }
 
     @Override
     public SOAPMessage invoke(final SOAPMessage source) {

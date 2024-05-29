@@ -1,10 +1,8 @@
 package eu.europa.ec.sante.openncp.application.client.connector.assertion;
 
 import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil;
-import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
 import org.junit.jupiter.api.Test;
 import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.impl.AssertionImpl;
 
 import javax.xml.soap.SOAPMessage;
 import java.net.MalformedURLException;
@@ -13,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class TrcAssertionRequestTest {
     @Test

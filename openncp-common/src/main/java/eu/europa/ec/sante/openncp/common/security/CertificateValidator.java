@@ -1,7 +1,7 @@
-package eu.europa.ec.sante.openncp.core.common.security;
+package eu.europa.ec.sante.openncp.common.security;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

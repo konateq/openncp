@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.security.key;
+package eu.europa.ec.sante.openncp.common.security.key;
 
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -6,14 +6,9 @@ import java.security.cert.Certificate;
 
 import eu.europa.ec.sante.openncp.common.Constant;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
-import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import org.apache.commons.lang3.Validate;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 @Component("databasePropertiesKeyStoreManager")
 public final class DatabasePropertiesKeyStoreManager implements KeyStoreManager {

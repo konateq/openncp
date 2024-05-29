@@ -4,7 +4,7 @@ import eu.europa.ec.sante.openncp.common.Constant;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -21,6 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -76,10 +77,14 @@ public class AssertionServiceImpl implements AssertionService {
 
             //  Write and send the SOAP message
             LOGGER.info("Sending SOAP request - Default Key Alias: '{}'", StringUtils.isNotBlank(sslKeyAlias) ? sslKeyAlias : "N/A");
+            LOGGER.info("SOAP Message : '{}'", assertionRequest.getSoapMessage());
 
             SOAPMessage soapMessage = assertionRequest.getSoapMessage();
             soapMessage.writeTo(httpConnection.getOutputStream());
-            SOAPMessage response = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createMessage(new MimeHeaders(), httpConnection.getInputStream());
+            InputStream inputStream = httpConnection.getInputStream();
+
+            LOGGER.info("httpConnection.getInputStream() : '{}'", inputStream);
+            SOAPMessage response = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createMessage(new MimeHeaders(), inputStream);
 
             LOGGER.info("Receiving SOAP response");
             if (response.getSOAPBody().hasFault()) {

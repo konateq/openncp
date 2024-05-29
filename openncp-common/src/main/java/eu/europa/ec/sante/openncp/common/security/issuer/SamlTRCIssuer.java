@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.security.issuer;
+package eu.europa.ec.sante.openncp.common.security.issuer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,12 +8,11 @@ import javax.xml.namespace.QName;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
-import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
-import eu.europa.ec.sante.openncp.core.common.security.TwoFactorAuthentication;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
-import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.security.util.AssertionUtil;
+import eu.europa.ec.sante.openncp.common.security.SignatureManager;
+import eu.europa.ec.sante.openncp.common.security.TwoFactorAuthentication;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.common.security.util.AssertionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;

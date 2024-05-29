@@ -34,7 +34,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryEr
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.DocumentTransformationException;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.NIException;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.client.TranslationsAndMappingsClient;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;

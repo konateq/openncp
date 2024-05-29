@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.security.exception;
+package eu.europa.ec.sante.openncp.common.security.exception;
 
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 

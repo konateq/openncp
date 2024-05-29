@@ -1,8 +1,8 @@
-package eu.europa.ec.sante.openncp.core.common.security.evidence;
+package eu.europa.ec.sante.openncp.common.security.evidence;
 
-import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
-import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.common.security.SignatureManager;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;

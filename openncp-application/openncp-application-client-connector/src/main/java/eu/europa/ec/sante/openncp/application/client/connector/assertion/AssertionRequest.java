@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.application.client.connector.assertion;
 
-import eu.europa.ec.sante.openncp.core.common.security.util.AssertionUtil;
+import eu.europa.ec.sante.openncp.common.security.util.AssertionUtil;
 import org.immutables.value.Value;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.w3c.dom.Element;

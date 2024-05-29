@@ -20,12 +20,10 @@ import eu.europa.ec.sante.openncp.application.client.connector.assertion.Asserti
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.ImmutableTrcAssertionRequest;
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.STSClientException;
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.TrcAssertionRequest;
-import eu.europa.ec.sante.openncp.common.Constant;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.PatientId;
-import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.security.key.DefaultKeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.common.security.key.DefaultKeyStoreManager;
+import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;

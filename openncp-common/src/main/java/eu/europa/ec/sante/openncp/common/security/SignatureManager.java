@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.security;
+package eu.europa.ec.sante.openncp.common.security;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -24,10 +24,9 @@ import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicConstant;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
-import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
 import org.apache.commons.lang3.Validate;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;

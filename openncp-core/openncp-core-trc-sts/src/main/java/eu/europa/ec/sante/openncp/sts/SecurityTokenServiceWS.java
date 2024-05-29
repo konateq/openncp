@@ -27,8 +27,8 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 
-import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.SignatureManager;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -75,8 +75,11 @@ public class SecurityTokenServiceWS extends SpringBeanAutowiringSupport {
     @Resource
     public WebServiceContext context;
 
-    @Autowired
     private SignatureManager signatureManager;
+
+    public SecurityTokenServiceWS(SignatureManager signatureManager) {
+        this.signatureManager = Validate.notNull(signatureManager);
+    }
 
     public void createResponseHeader(SOAPHeader header, String messageId) {
 

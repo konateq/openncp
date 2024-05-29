@@ -1,7 +1,7 @@
-package eu.europa.ec.sante.openncp.core.common.security.key;
+package eu.europa.ec.sante.openncp.common.security.key;
 
 
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 
 import java.security.*;
 import java.security.cert.Certificate;

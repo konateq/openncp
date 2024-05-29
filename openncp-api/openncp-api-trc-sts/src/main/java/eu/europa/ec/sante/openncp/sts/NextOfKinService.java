@@ -38,12 +38,12 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.handler.MessageContext;
 
-import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
-import eu.europa.ec.sante.openncp.core.common.security.issuer.SamlIssuerHelper;
-import eu.europa.ec.sante.openncp.core.common.security.issuer.SamlNextOfKinIssuer;
-import eu.europa.ec.sante.openncp.core.common.security.issuer.SamlTRCIssuer;
+import eu.europa.ec.sante.openncp.common.security.SignatureManager;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.issuer.SamlIssuerHelper;
+import eu.europa.ec.sante.openncp.common.security.issuer.SamlNextOfKinIssuer;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTimeZone;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -63,6 +63,12 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
 
     @Autowired
     private SamlNextOfKinIssuer samlNextOfKinIssuer;
+
+    public NextOfKinService(SamlNextOfKinIssuer samlNextOfKinIssuer, SignatureManager signatureManager) {
+        super(signatureManager);
+        this.samlNextOfKinIssuer = Validate.notNull(samlNextOfKinIssuer);
+    }
+
 
     @Override
     public SOAPMessage invoke(final SOAPMessage soapMessage) {
