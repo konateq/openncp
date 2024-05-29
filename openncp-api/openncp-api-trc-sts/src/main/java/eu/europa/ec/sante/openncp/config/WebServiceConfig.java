@@ -26,8 +26,8 @@ public class WebServiceConfig {
     }
  
     @Bean
-    public Endpoint endpoint(Bus bus) {
-        EndpointImpl endpoint = new EndpointImpl(bus, new STSEndpoint());
+    public Endpoint endpoint(Bus bus, STSEndpoint stsEndpoint) {
+        EndpointImpl endpoint = new EndpointImpl(bus, stsEndpoint);
         endpoint.setBindingUri(BINDING_URI);
         endpoint.publish("/SecurityTokenService");
         return endpoint;

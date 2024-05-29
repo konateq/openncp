@@ -12,6 +12,7 @@ import javax.jws.WebService;
 
 @WebService(serviceName = "SecurityTokenService", portName = "ISecurityTokenService_Port",
         targetNamespace = "https://ehdsi.eu")
+@Service
 public class STSEndpoint implements ISecurityTokenService {
     private static final String NAMESPACE_URI = "https://ehdsi.eu/";
 
