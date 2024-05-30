@@ -11,6 +11,7 @@ import eu.europa.ec.sante.openncp.core.server.nc.mock.common.NationalConnectorGa
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +20,7 @@ import java.util.*;
 /**
  * Mock implementation of the PatientSearchInterface, to be replaced nationally.
  */
+@Service
 public class PatientSearchMockImpl extends NationalConnectorGateway implements PatientSearchInterfaceWithDemographics {
 
     private static final String GENDER = "administrativeGender";

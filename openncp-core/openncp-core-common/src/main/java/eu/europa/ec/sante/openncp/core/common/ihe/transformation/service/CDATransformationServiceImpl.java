@@ -26,7 +26,6 @@ import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 import org.w3c.dom.*;
@@ -36,7 +35,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATransformationService, TMConstants {
@@ -54,8 +52,6 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
-
-    private final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("ctx_tm.xml");
 
     private HashMap<String, String> level1Type;
     private HashMap<String, String> level3Type;

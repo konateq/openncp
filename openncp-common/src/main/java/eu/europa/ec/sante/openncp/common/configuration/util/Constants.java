@@ -1,13 +1,18 @@
 package eu.europa.ec.sante.openncp.common.configuration.util;
 
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.nio.file.FileSystems;
 import java.util.Optional;
 
+@Component
 public class Constants {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Constants.class);
@@ -40,47 +45,49 @@ public class Constants {
 
     public static final String NOT_USED_FIELD = "Not Used";
     public static final String MIME_TYPE = "text/xml";
-    public static final String SERVER_IP;
-    public static final String HOME_COMM_ID;
-    public static final String COUNTRY_CODE;
-    public static final String COUNTRY_NAME;
-    public static final String COUNTRY_PRINCIPAL_SUBDIVISION;
-    public static final String LANGUAGE_CODE;
+    public static String SERVER_IP;
+    public static String HOME_COMM_ID;
+    public static String COUNTRY_CODE;
+    public static String COUNTRY_NAME;
+    public static String COUNTRY_PRINCIPAL_SUBDIVISION;
+    public static String LANGUAGE_CODE;
     public static final String HR_ID_PREFIX = "SPProvidedID";
     /**
      * Path to the folder containing the configuration files.
      */
-    public static final String EPSOS_PROPS_PATH;
-    public static final String TRUSTSTORE_PATH;
-    public static final String TRUSTSTORE_PASSWORD;
-    public static final String SP_KEYSTORE_PATH;
-    public static final String SP_KEYSTORE_PASSWORD;
-    public static final String SP_PRIVATEKEY_ALIAS;
-    public static final String SP_PRIVATEKEY_PASSWORD;
-    public static final String SC_KEYSTORE_PATH;
-    public static final String SC_KEYSTORE_PASSWORD;
-    public static final String SC_PRIVATEKEY_ALIAS;
-    public static final String SC_PRIVATEKEY_PASSWORD;
-    public static final String NCP_SIG_KEYSTORE_PATH;
-    public static final String NCP_SIG_KEYSTORE_PASSWORD;
-    public static final String NCP_SIG_PRIVATEKEY_ALIAS;
-    public static final String NCP_SIG_PRIVATEKEY_PASSWORD;
+    public static String EPSOS_PROPS_PATH;
+    public static String TRUSTSTORE_PATH;
+    public static String TRUSTSTORE_PASSWORD;
+    public static String SP_KEYSTORE_PATH;
+    public static String SP_KEYSTORE_PASSWORD;
+    public static String SP_PRIVATEKEY_ALIAS;
+    public static String SP_PRIVATEKEY_PASSWORD;
+    public static String SC_KEYSTORE_PATH;
+    public static String SC_KEYSTORE_PASSWORD;
+    public static String SC_PRIVATEKEY_ALIAS;
+    public static String SC_PRIVATEKEY_PASSWORD;
+    public static String NCP_SIG_KEYSTORE_PATH;
+    public static String NCP_SIG_KEYSTORE_PASSWORD;
+    public static String NCP_SIG_PRIVATEKEY_ALIAS;
+    public static String NCP_SIG_PRIVATEKEY_PASSWORD;
 
-    public static final String ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD;
-    public static final String ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD;
-    public static final String ABUSE_UNIQUE_POC_REQUEST_THRESHOLD;
-    public static final String ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD;
-    public static final String ABUSE_ALL_REQUEST_THRESHOLD;
-    public static final String ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD;
-    public static final String ABUSE_SCHEDULER_TIME_INTERVAL;
-    public static final String ABUSE_SCHEDULER_ENABLE;
+    public static String ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD;
+    public static String ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD;
+    public static String ABUSE_UNIQUE_POC_REQUEST_THRESHOLD;
+    public static String ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD;
+    public static String ABUSE_ALL_REQUEST_THRESHOLD;
+    public static String ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD;
+    public static String ABUSE_SCHEDULER_TIME_INTERVAL;
+    public static String ABUSE_SCHEDULER_ENABLE;
 
     /**
      * Name of the System Variable containing the path to the folder containing the configuration files.
      */
     private static final String PROPS_ENV_VAR = "EPSOS_PROPS_PATH";
 
-    static {
+
+    @PostConstruct
+    public static void postConstruct() {
         String epsosPath = Optional.ofNullable(System.getenv(PROPS_ENV_VAR)).orElseGet(() -> System.getProperty(PROPS_ENV_VAR));
         if (StringUtils.isNotBlank(epsosPath)) {
             if (!epsosPath.endsWith(FileSystems.getDefault().getSeparator())) {
@@ -94,40 +101,41 @@ public class Constants {
 
         LOGGER.info("OpenNCP Util Constants Initialization - EPSOS_PROPS_PATH: '{}'", EPSOS_PROPS_PATH);
 
-        SERVER_IP = ConfigurationManagerFactory.getConfigurationManager().getProperty("SERVER_IP");
+        ConfigurationManager configurationManager = Validate.notNull(ConfigurationManagerFactory.getConfigurationManager(), "Configuration manager cannot be null");
+        SERVER_IP = configurationManager.getProperty("SERVER_IP");
 
-        HOME_COMM_ID = ConfigurationManagerFactory.getConfigurationManager().getProperty("HOME_COMM_ID");
-        COUNTRY_CODE = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_CODE");
-        COUNTRY_NAME = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_NAME");
-        COUNTRY_PRINCIPAL_SUBDIVISION = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
-        LANGUAGE_CODE = ConfigurationManagerFactory.getConfigurationManager().getProperty("LANGUAGE_CODE");
+        HOME_COMM_ID = configurationManager.getProperty("HOME_COMM_ID");
+        COUNTRY_CODE = configurationManager.getProperty("COUNTRY_CODE");
+        COUNTRY_NAME = configurationManager.getProperty("COUNTRY_NAME");
+        COUNTRY_PRINCIPAL_SUBDIVISION = configurationManager.getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
+        LANGUAGE_CODE = configurationManager.getProperty("LANGUAGE_CODE");
 
-        TRUSTSTORE_PATH = globalizePath(ConfigurationManagerFactory.getConfigurationManager().getProperty("TRUSTSTORE_PATH"));
-        TRUSTSTORE_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("TRUSTSTORE_PASSWORD");
+        TRUSTSTORE_PATH = globalizePath(configurationManager.getProperty("TRUSTSTORE_PATH"));
+        TRUSTSTORE_PASSWORD = configurationManager.getProperty("TRUSTSTORE_PASSWORD");
 
-        SP_KEYSTORE_PATH = globalizePath(ConfigurationManagerFactory.getConfigurationManager().getProperty("SP_KEYSTORE_PATH"));
-        SP_KEYSTORE_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("SP_KEYSTORE_PASSWORD");
-        SP_PRIVATEKEY_ALIAS = ConfigurationManagerFactory.getConfigurationManager().getProperty("SP_PRIVATEKEY_ALIAS");
-        SP_PRIVATEKEY_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("SP_PRIVATEKEY_PASSWORD");
+        SP_KEYSTORE_PATH = globalizePath(configurationManager.getProperty("SP_KEYSTORE_PATH"));
+        SP_KEYSTORE_PASSWORD = configurationManager.getProperty("SP_KEYSTORE_PASSWORD");
+        SP_PRIVATEKEY_ALIAS = configurationManager.getProperty("SP_PRIVATEKEY_ALIAS");
+        SP_PRIVATEKEY_PASSWORD = configurationManager.getProperty("SP_PRIVATEKEY_PASSWORD");
 
-        SC_KEYSTORE_PATH = globalizePath(ConfigurationManagerFactory.getConfigurationManager().getProperty("SC_KEYSTORE_PATH"));
-        SC_KEYSTORE_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("SC_KEYSTORE_PASSWORD");
-        SC_PRIVATEKEY_ALIAS = ConfigurationManagerFactory.getConfigurationManager().getProperty("SC_PRIVATEKEY_ALIAS");
-        SC_PRIVATEKEY_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("SC_PRIVATEKEY_PASSWORD");
+        SC_KEYSTORE_PATH = globalizePath(configurationManager.getProperty("SC_KEYSTORE_PATH"));
+        SC_KEYSTORE_PASSWORD = configurationManager.getProperty("SC_KEYSTORE_PASSWORD");
+        SC_PRIVATEKEY_ALIAS = configurationManager.getProperty("SC_PRIVATEKEY_ALIAS");
+        SC_PRIVATEKEY_PASSWORD = configurationManager.getProperty("SC_PRIVATEKEY_PASSWORD");
 
-        NCP_SIG_KEYSTORE_PATH = globalizePath(ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_KEYSTORE_PATH"));
-        NCP_SIG_KEYSTORE_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_KEYSTORE_PASSWORD");
-        NCP_SIG_PRIVATEKEY_ALIAS = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_PRIVATEKEY_ALIAS");
-        NCP_SIG_PRIVATEKEY_PASSWORD = ConfigurationManagerFactory.getConfigurationManager().getProperty("NCP_SIG_PRIVATEKEY_PASSWORD");
+        NCP_SIG_KEYSTORE_PATH = globalizePath(configurationManager.getProperty("NCP_SIG_KEYSTORE_PATH"));
+        NCP_SIG_KEYSTORE_PASSWORD = configurationManager.getProperty("NCP_SIG_KEYSTORE_PASSWORD");
+        NCP_SIG_PRIVATEKEY_ALIAS = configurationManager.getProperty("NCP_SIG_PRIVATEKEY_ALIAS");
+        NCP_SIG_PRIVATEKEY_PASSWORD = configurationManager.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD");
 
-        ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD");
-        ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD");
-        ABUSE_UNIQUE_POC_REQUEST_THRESHOLD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_UNIQUE_POC_REQUEST_THRESHOLD");
-        ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD");
-        ABUSE_ALL_REQUEST_THRESHOLD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_ALL_REQUEST_THRESHOLD");
-        ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD");
-        ABUSE_SCHEDULER_TIME_INTERVAL = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_SCHEDULER_TIME_INTERVAL");
-        ABUSE_SCHEDULER_ENABLE = ConfigurationManagerFactory.getConfigurationManager().getProperty("ABUSE_SCHEDULER_ENABLE");
+        ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD = configurationManager.getProperty("ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD");
+        ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD");
+        ABUSE_UNIQUE_POC_REQUEST_THRESHOLD = configurationManager.getProperty("ABUSE_UNIQUE_POC_REQUEST_THRESHOLD");
+        ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD");
+        ABUSE_ALL_REQUEST_THRESHOLD = configurationManager.getProperty("ABUSE_ALL_REQUEST_THRESHOLD");
+        ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD");
+        ABUSE_SCHEDULER_TIME_INTERVAL = configurationManager.getProperty("ABUSE_SCHEDULER_TIME_INTERVAL");
+        ABUSE_SCHEDULER_ENABLE = configurationManager.getProperty("ABUSE_SCHEDULER_ENABLE");
     }
 
     private Constants() {

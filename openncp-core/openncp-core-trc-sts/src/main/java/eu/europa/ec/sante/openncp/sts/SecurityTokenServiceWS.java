@@ -27,10 +27,11 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 
-import eu.europa.ec.sante.openncp.core.common.security.SignatureManager;
-import eu.europa.ec.sante.openncp.core.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.common.security.SignatureManager;
+import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.cryptacular.util.CertUtil;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -72,8 +73,10 @@ public class SecurityTokenServiceWS {
     @Resource
     public WebServiceContext context;
 
-    public SecurityTokenServiceWS() {
-        // Default empty constructor.
+    private SignatureManager signatureManager;
+
+    public SecurityTokenServiceWS(SignatureManager signatureManager) {
+        this.signatureManager = Validate.notNull(signatureManager);
     }
 
     public void createResponseHeader(SOAPHeader header, String messageId) {
@@ -176,7 +179,6 @@ public class SecurityTokenServiceWS {
                 return null;
             } else {
                 assertDoc.getDocumentElement().setIdAttribute("ID", true);
-                var signatureManager = new SignatureManager();
                 signatureManager.verifyEnvelopedSignature(assertDoc);
             }
             var unmarshallerFactory = XMLObjectProviderRegistrySupport.getUnmarshallerFactory();

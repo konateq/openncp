@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.util;
+package eu.europa.ec.sante.openncp.core.common.ihe.util;
 
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.audit.*;

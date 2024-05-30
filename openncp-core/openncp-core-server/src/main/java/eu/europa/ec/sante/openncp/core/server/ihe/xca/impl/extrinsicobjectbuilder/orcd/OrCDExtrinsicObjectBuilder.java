@@ -17,8 +17,6 @@ import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.extrinsicobjectbuilde
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static eu.europa.ec.sante.openncp.common.configuration.util.Constants.UUID_PREFIX;
-
 import java.util.UUID;
 
 public class OrCDExtrinsicObjectBuilder extends AbstractExtrinsicObjectBuilder {

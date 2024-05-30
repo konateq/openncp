@@ -1,11 +1,11 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service;
 
 import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.audit.AuditService;
 import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.DateTimeUtil;
 import org.slf4j.Logger;

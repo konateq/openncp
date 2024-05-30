@@ -18,7 +18,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.eadc.EadcEntry;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.EadcUtil;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.EadcUtilWrapper;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.ServiceType;
-import eu.europa.ec.sante.openncp.core.common.util.EventLogUtil;
+import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;

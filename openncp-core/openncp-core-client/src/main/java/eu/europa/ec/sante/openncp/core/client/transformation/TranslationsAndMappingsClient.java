@@ -26,7 +26,7 @@ public class TranslationsAndMappingsClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(TranslationsAndMappingsClient.class);
 
     public static TMResponseStructure translate(Document cdaPivot, String targetLanguage) throws DocumentTransformationException {
-        try(CloseableHttpClient httpclient = HttpClients.createDefault()){
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             LOGGER.debug("TM - TRANSLATION START.");
             var mapper = new ObjectMapper();
             var node = mapper.createObjectNode();
@@ -59,7 +59,7 @@ public class TranslationsAndMappingsClient {
     }
 
     public static TMResponseStructure transcode(Document cdaFriendly) throws DocumentTransformationException {
-        try(CloseableHttpClient httpclient = HttpClients.createDefault()){
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             LOGGER.debug("TM - TRANSCODING START.");
             var mapper = new ObjectMapper();
             var node = mapper.createObjectNode();

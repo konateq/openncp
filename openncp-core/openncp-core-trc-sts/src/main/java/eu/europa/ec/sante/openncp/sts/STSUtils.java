@@ -24,7 +24,7 @@ import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFacto
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import javax.xml.soap.SOAPElement;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

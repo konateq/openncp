@@ -24,16 +24,21 @@ logging:
     ca.uhn.fhir.jaxrs: debug
 fhirserver:
   url: http://localhost:8081/fhir/
+fhir:
+  server:
+    inclusion: true
 spring:
   jpa:
     generate-ddl: true
     hibernate:
       ddl-auto: validate
     open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
   datasource:
-    url: 'jdbc:mysql://localhost:3306/ltrdb'
-    username: root
-    password: Password001
-    driverClassName: com.mysql.cj.jdbc.Driver
-  config:
-    import: classpath:application-tsam.yml
+    jndi:
+      tsam:
+        jndiName: java:comp/env/jdbc/TSAM
+      properties:
+        jndiName: java:comp/env/jdbc/ConfMgr

@@ -3,7 +3,7 @@ package eu.europa.ec.sante.openncp.api.server.handler;
 
 import eu.europa.ec.sante.openncp.api.common.handler.BundleHandler;
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.TMResponseStructure;
-import eu.europa.ec.sante.openncp.core.common.fhir.transformation.transcoding.TranscodingService;
+import eu.europa.ec.sante.openncp.core.server.fhir.transcoding.TranscodingService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Bundle;
 import org.springframework.stereotype.Component;

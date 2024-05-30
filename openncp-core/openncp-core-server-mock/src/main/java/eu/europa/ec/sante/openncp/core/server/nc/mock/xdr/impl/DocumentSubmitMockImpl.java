@@ -13,20 +13,18 @@ import eu.europa.ec.sante.openncp.core.server.nc.mock.common.NationalConnectorGa
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.xml.transform.TransformerException;
 
 /**
  * Mock implementation of the DocumentSubmitInterface, to be replaced nationally.
  */
+@Service
 public class DocumentSubmitMockImpl extends NationalConnectorGateway implements DocumentSubmitInterface {
 
     private final Logger logger = LoggerFactory.getLogger(DocumentSubmitMockImpl.class);
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
-
-    public DocumentSubmitMockImpl() {
-        logger.info("Instantiating DocumentSubmitMockImpl");
-    }
 
     /**
      * Stores a dispensation in the national infrastructure
@@ -50,8 +48,7 @@ public class DocumentSubmitMockImpl extends NationalConnectorGateway implements 
             loggerClinical.debug("eDispensation document content: '{}'", dispensation);
         }
 
-        if (dispensation == null || dispensation.isEmpty()) {
-
+        if (StringUtils.isEmpty(dispensation)) {
             throw new NationalInfrastructureException(OpenNCPErrorCode.ERROR_EP_ALREADY_DISPENSED, null);
         }
 

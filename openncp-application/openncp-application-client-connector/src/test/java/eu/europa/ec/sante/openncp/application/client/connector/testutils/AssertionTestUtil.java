@@ -2,6 +2,7 @@ package eu.europa.ec.sante.openncp.application.client.connector.testutils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -15,13 +16,14 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import eu.europa.ec.sante.openncp.application.client.connector.assertions.STSClientException;
-import eu.europa.ec.sante.openncp.application.client.connector.assertions.TRCAssertionRequest;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.application.client.connector.assertion.AssertionService;
+import eu.europa.ec.sante.openncp.application.client.connector.assertion.ImmutableTrcAssertionRequest;
+import eu.europa.ec.sante.openncp.application.client.connector.assertion.STSClientException;
+import eu.europa.ec.sante.openncp.application.client.connector.assertion.TrcAssertionRequest;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.core.client.PatientId;
-import eu.europa.ec.sante.openncp.core.common.security.key.DatabasePropertiesKeyStoreManager;
-import eu.europa.ec.sante.openncp.core.common.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.common.security.key.DefaultKeyStoreManager;
+import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -82,11 +84,11 @@ public class AssertionTestUtil {
         //  Empty private constructor preventing instantiation.
     }
 
-    public static Assertion createPatientConfirmationPlain(Assertion clinicalAssertion, PatientId patient, String purposeOfUse) throws STSClientException, MarshallingException {
+    public static Assertion createPatientConfirmationPlain(AssertionService assertionService, URL location, Assertion clinicalAssertion, PatientId patient, String purposeOfUse) throws STSClientException, MarshallingException {
         String patientId = patient.getExtension() + "^^^&" + patient.getRoot() + "&ISO";
 
-        var builder = new TRCAssertionRequest.Builder(clinicalAssertion, patientId).purposeOfUse(purposeOfUse);
-        var assertionTRC = builder.build().request();
+        TrcAssertionRequest assertionRequest = ImmutableTrcAssertionRequest.builder().location(location).assertion(clinicalAssertion).checkForHostname(false).validationEnabled(false).purposeOfUse(purposeOfUse).patientId(patientId).build();
+        Assertion assertionTRC = assertionService.request(assertionRequest);
         var marshaller = new AssertionMarshaller();
         Element element = marshaller.marshall(assertionTRC);
         Document document = element.getOwnerDocument();
@@ -295,10 +297,17 @@ public class AssertionTestUtil {
 
         final String signatureKeystorePath = Constants.NCP_SIG_KEYSTORE_PATH;
         final String signatureKeystorePassword = Constants.NCP_SIG_KEYSTORE_PASSWORD;
+        final String truststorePath = Constants.TRUSTSTORE_PATH;
+        final String truststorePassword = Constants.TRUSTSTORE_PASSWORD;
         final String signatureKeyAlias = Constants.NCP_SIG_PRIVATEKEY_ALIAS;
         final String signatureKeyPassword = Constants.NCP_SIG_PRIVATEKEY_PASSWORD;
 
-        final KeyStoreManager keyManager = new DatabasePropertiesKeyStoreManager();
+        final KeyStoreManager keyManager = new DefaultKeyStoreManager(signatureKeystorePath,
+                signatureKeystorePassword,
+                truststorePath,
+                truststorePassword,
+                signatureKeyAlias,
+                signatureKeyPassword);
         final X509Certificate signatureCertificate;
         PrivateKey privateKey = null;
 

@@ -4,31 +4,23 @@ import eu.europa.ec.sante.openncp.common.audit.EventLog;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.query._3.AdhocQueryRequest;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.query._3.AdhocQueryResponse;
-import eu.europa.ec.sante.openncp.core.server.ihe.xca.impl.XCAServiceImpl;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPHeader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 /**
  * XCA_ServiceSkeleton java skeleton for the axisService
  */
+@Service("xcaServiceSkeleton")
 public class XCA_ServiceSkeleton {
 
-    /**
-     * Auto generated method signature
-     *
-     * @param adhocQueryRequest
-     */
-    private XCAServiceInterface service = null;
-
-    public XCA_ServiceSkeleton() {
-    }
+    @Autowired
+    private XCAServiceInterface service;
 
     public AdhocQueryResponse respondingGateway_CrossGatewayQuery(AdhocQueryRequest adhocQueryRequest, SOAPHeader sh,
                                                                   EventLog eventLog) throws Exception {
-
-        if (service == null) {
-            service = new XCAServiceImpl();
-        }
         return service.queryDocument(adhocQueryRequest, sh, eventLog);
     }
 
@@ -39,10 +31,6 @@ public class XCA_ServiceSkeleton {
      */
     public void respondingGateway_CrossGatewayRetrieve(RetrieveDocumentSetRequestType retrieveDocumentSetRequest,
                                                        SOAPHeader soapHeader, EventLog eventLog, OMElement omElement) throws Exception {
-
-        if (service == null) {
-            service = new XCAServiceImpl();
-        }
         service.retrieveDocument(retrieveDocumentSetRequest, soapHeader, eventLog, omElement);
     }
 }

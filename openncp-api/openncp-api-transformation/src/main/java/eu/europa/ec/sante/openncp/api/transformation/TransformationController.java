@@ -2,15 +2,16 @@ package eu.europa.ec.sante.openncp.api.transformation;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import eu.europa.ec.sante.openncp.common.property.Property;
+import eu.europa.ec.sante.openncp.common.property.PropertyService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMStatus;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranscodeRequest;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TranslateRequest;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.persistence.model.Property;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATransformationService;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.PropertyService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -31,17 +32,17 @@ public class TransformationController {
 
     private final CDATransformationService cdaTransformationService;
 
-    public TransformationController(PropertyService propertyService, CDATransformationService cdaTransformationService) {
-        this.propertyService = propertyService;
+    public TransformationController(final PropertyService propertyService, CDATransformationService cdaTransformationService) {
+        this.propertyService = Validate.notNull(propertyService);
         this.cdaTransformationService = cdaTransformationService;
     }
 
     @GetMapping("/languages")
     public Set<String> retrieveAvailableTranslationLanguages() {
         logger.info("Entering retrieveAvailableTranslationLanguages() method");
-        Property property = propertyService.getProperty(AVAILABLE_TRANSLATION_LANGUAGES_PROPERTY_KEY);
+        final Property propertyEntity = propertyService.findByKeyMandatory(AVAILABLE_TRANSLATION_LANGUAGES_PROPERTY_KEY);
         var availableLanguageCodes = new HashSet<String>();
-        StringTokenizer st = new StringTokenizer(property.getValue(), ",");
+        StringTokenizer st = new StringTokenizer(propertyEntity.getValue(), ",");
 
         // checking tokens
         while (st.hasMoreTokens()) {

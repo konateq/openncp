@@ -5,9 +5,9 @@ import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -28,14 +28,16 @@ import java.io.File;
 
         private static final Logger LOGGER = LoggerFactory.getLogger(Validator.class);
         private static final Logger LOGGER_CLINICAL = LoggerFactory.getLogger("LOGGER_CLINICAL");
+        private final SchematronValidator schematronValidator;
 
-        @Autowired
-        private ModelBasedValidator modelBasedValidator;
+        private final ModelBasedValidator modelBasedValidator;
 
-        @Autowired
-        private TMConfiguration configuration;
+        private final TMConfiguration configuration;
 
-        private Validator() {
+        public Validator(final SchematronValidator schematronValidator, final ModelBasedValidator modelBasedValidator, final TMConfiguration configuration) {
+            this.schematronValidator = Validate.notNull(schematronValidator);
+            this.modelBasedValidator = Validate.notNull(modelBasedValidator);
+            this.configuration = Validate.notNull(configuration);
         }
 
         /**
@@ -87,7 +89,6 @@ import java.io.File;
             }
             SchematronResult result;
             String schemaPath;
-            SchematronValidator schValidator = SchematronValidator.getInstance();
 
             // Fix docType for schematron validation.
             // Schematron has special validators for L1 documents, ignoring actual doc type.
@@ -100,9 +101,9 @@ import java.io.File;
             }
 
             if (friendly) {
-                schemaPath = schValidator.getFriendlyType().get(cdaDocumentType);
+                schemaPath = schematronValidator.getFriendlyType().get(cdaDocumentType);
             } else {
-                schemaPath = schValidator.getPivotType().get(cdaDocumentType);
+                schemaPath = schematronValidator.getPivotType().get(cdaDocumentType);
             }
 
             if (schemaPath == null) {
@@ -115,7 +116,7 @@ import java.io.File;
 
                 return result;
             }
-            result = SchematronValidator.validate(new File(StringUtils.trim(schemaPath)), document);
+            result = schematronValidator.validate(new File(StringUtils.trim(schemaPath)), document);
             return result;
         }
 
@@ -130,7 +131,6 @@ import java.io.File;
          */
         @Deprecated
         public ModelValidatorResult validateMDA(String document, String docType, boolean friendly) {
-            ModelBasedValidator modelBasedValidator = new ModelBasedValidator();
             return modelBasedValidator.validate(document, docType, friendly);
         }
 }

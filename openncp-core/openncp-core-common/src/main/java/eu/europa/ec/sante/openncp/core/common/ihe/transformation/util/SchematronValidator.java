@@ -1,13 +1,14 @@
 package eu.europa.ec.sante.openncp.core.common.ihe.transformation.util;
 
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.config.TMConfiguration;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import javax.annotation.PostConstruct;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.transform.*;
@@ -23,11 +24,6 @@ import java.util.Map;
 
 /**
  * Schematron validator. Based on ISO schematron implementation.
- *
- * @author Frantisek Rudik
- * @author Organization: Posam
- * @author mail:frantisek.rudik@posam.sk
- * @version 1.4, 2010, 20 October
  */
 @Service
 public class SchematronValidator implements TMConstants {
@@ -42,31 +38,18 @@ public class SchematronValidator implements TMConstants {
     private static final String SCH_TEMP_DIR = System.getenv("EPSOS_PROPS_PATH") + "validation" +
             File.separatorChar + "schematron";
 
-    private static SchematronValidator instance = null;
     private String xslDirectoryPath;
     private HashMap<String, String> friendlyType;
     private HashMap<String, String> pivotType;
 
-    @Autowired
-    private TMConfiguration config;
 
-    private SchematronValidator() {
+    private final TMConfiguration tmConfiguration;
+
+    public SchematronValidator(TMConfiguration tmConfiguration) {
+        this.tmConfiguration = Validate.notNull(tmConfiguration);
     }
 
-    public static SchematronValidator getInstance() {
-
-        if (instance == null) {
-            instance = new SchematronValidator();
-        }
-        return instance;
-    }
-
-    public static SchematronResult validate(File inputSchemeFile, Document inputXmlDocument) {
-
-        return getInstance().doValidate(inputSchemeFile, inputXmlDocument);
-    }
-
-    private SchematronResult doValidate(File inputSchemeFile, Document inputXmlDocument) {
+    public SchematronResult validate(File inputSchemeFile, Document inputXmlDocument) {
 
         SchematronResult result = new SchematronResult();
         try {
@@ -205,26 +188,24 @@ public class SchematronValidator implements TMConstants {
         return pivotType;
     }
 
-    public void setConfig(TMConfiguration config) {
-        this.config = config;
-    }
 
+    @PostConstruct
     public void afterPropertiesSet() throws Exception {
 
         friendlyType = new HashMap<>();
-        friendlyType.put(PATIENT_SUMMARY3, config.getPatientSummarySchematronFriendlyPath());
-        friendlyType.put(EPRESCRIPTION3, config.getePrescriptionSchematronFriendlyPath());
-        friendlyType.put(EDISPENSATION3, config.geteDispensationSchematronFriendlyPath());
-        friendlyType.put(HCER3, config.getHcerSchematronFriendlyPath());
-        friendlyType.put(MRO3, config.getMroSchematronFriendlyPath());
-        friendlyType.put(SCANNED1, config.getScannedDocFriendlyPath());
+        friendlyType.put(PATIENT_SUMMARY3, tmConfiguration.getPatientSummarySchematronFriendlyPath());
+        friendlyType.put(EPRESCRIPTION3, tmConfiguration.getePrescriptionSchematronFriendlyPath());
+        friendlyType.put(EDISPENSATION3, tmConfiguration.geteDispensationSchematronFriendlyPath());
+        friendlyType.put(HCER3, tmConfiguration.getHcerSchematronFriendlyPath());
+        friendlyType.put(MRO3, tmConfiguration.getMroSchematronFriendlyPath());
+        friendlyType.put(SCANNED1, tmConfiguration.getScannedDocFriendlyPath());
 
         pivotType = new HashMap<>();
-        pivotType.put(PATIENT_SUMMARY3, config.getPatientSummarySchematronPivotPath());
-        pivotType.put(EPRESCRIPTION3, config.getePrescriptionSchematronPivotPath());
-        pivotType.put(EDISPENSATION3, config.geteDispensationSchematronPivotPath());
-        pivotType.put(HCER3, config.getHcerSchematronPivotPath());
-        pivotType.put(MRO3, config.getMroSchematronPivotPath());
-        pivotType.put(SCANNED3, config.getScannedDocPivotPath());
+        pivotType.put(PATIENT_SUMMARY3, tmConfiguration.getPatientSummarySchematronPivotPath());
+        pivotType.put(EPRESCRIPTION3, tmConfiguration.getePrescriptionSchematronPivotPath());
+        pivotType.put(EDISPENSATION3, tmConfiguration.geteDispensationSchematronPivotPath());
+        pivotType.put(HCER3, tmConfiguration.getHcerSchematronPivotPath());
+        pivotType.put(MRO3, tmConfiguration.getMroSchematronPivotPath());
+        pivotType.put(SCANNED3, tmConfiguration.getScannedDocPivotPath());
     }
 }

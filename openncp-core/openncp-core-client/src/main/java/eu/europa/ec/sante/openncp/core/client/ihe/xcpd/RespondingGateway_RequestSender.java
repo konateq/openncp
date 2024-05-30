@@ -12,7 +12,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.org.hl7.v3.PRPAIN201305UV02;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.org.hl7.v3.PRPAIN201306UV02;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.NoPatientIdDiscoveredException;
-import eu.europa.ec.sante.openncp.core.common.util.EventLogClientUtil;
+import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import eu.europa.ec.sante.openncp.core.common.util.OidUtil;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
