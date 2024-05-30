@@ -30,12 +30,7 @@ import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.ws.BindingType;
-import javax.xml.ws.Provider;
-import javax.xml.ws.Service;
-import javax.xml.ws.ServiceMode;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceProvider;
+import javax.xml.ws.*;
 import javax.xml.ws.handler.MessageContext;
 
 import eu.europa.ec.sante.openncp.common.security.SignatureManager;
@@ -51,7 +46,6 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 
 @ServiceMode(value = Service.Mode.MESSAGE)
@@ -70,7 +64,6 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
         this.samlNextOfKinIssuer = Validate.notNull(samlNextOfKinIssuer);
         this.configurationManager = Validate.notNull(configurationManager);
     }
-
 
     @Override
     public SOAPMessage invoke(final SOAPMessage soapMessage) {
