@@ -12,12 +12,12 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 /**
  * XDR_ServiceSkeleton java skeleton for the axisService
  */
-@Service
-public class XDR_ServiceSkeleton extends SpringBeanAutowiringSupport {
+@Service("xdrServiceSkeleton")
+public class XDR_ServiceSkeleton {
 
     @Autowired
     private XDRServiceInterface xdrServiceInterface;
-//
+
     /**
      * Auto generated method signature
      *

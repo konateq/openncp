@@ -7,12 +7,14 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.query._3.AdhocQu
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPHeader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 /**
  * XCA_ServiceSkeleton java skeleton for the axisService
  */
-public class XCA_ServiceSkeleton extends SpringBeanAutowiringSupport {
+@Service("xcaServiceSkeleton")
+public class XCA_ServiceSkeleton {
 
     @Autowired
     private XCAServiceInterface service;

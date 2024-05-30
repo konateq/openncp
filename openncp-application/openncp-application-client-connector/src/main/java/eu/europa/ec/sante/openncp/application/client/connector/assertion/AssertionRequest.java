@@ -59,7 +59,7 @@ public interface AssertionRequest {
             messageIdElem.setTextContent(getId());
 
             final SOAPHeaderElement securityHeaderElem = soapHeader.addHeaderElement(new QName(WS_SEC_NS, "Security", "wsse"));
-            securityHeaderElem.setMustUnderstand(true);
+            securityHeaderElem.setMustUnderstand(false);
 
             final Element assertionElement = AssertionUtil.toElement(getAssertion(), getDocumentBuilder().newDocument()).orElseThrow(() -> new STSClientException("Could not convert the assertion to element"));
             securityHeaderElem.appendChild(soapHeader.getOwnerDocument().importNode(assertionElement, true));

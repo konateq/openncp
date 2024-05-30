@@ -24,6 +24,7 @@ import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -63,9 +64,9 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
     private final PatientSearchInterface patientSearchService;
     private final SAML2Validator saml2Validator;
 
-    public XCPDServiceImpl(PatientSearchInterface patientSearchService, SAML2Validator saml2Validator) {
-        this.patientSearchService = patientSearchService;
-        this.saml2Validator = saml2Validator;
+    public XCPDServiceImpl(final PatientSearchInterface patientSearchService, final SAML2Validator saml2Validator) {
+        this.patientSearchService = Validate.notNull(patientSearchService);
+        this.saml2Validator = Validate.notNull(saml2Validator);
     }
 
     private String getParticipantObjectID(II id) {

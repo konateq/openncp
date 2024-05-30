@@ -16,6 +16,8 @@ hapi:
     openapi:
       enabled: true
       secured: false
+cxf:
+  path: "/"
 management:
   security:
     enabled: false
@@ -26,7 +28,7 @@ fhirserver:
   url: http://localhost:8081/fhir/
 fhir:
   server:
-    inclusion: true
+    inclusion: false
 spring:
   jpa:
     generate-ddl: true

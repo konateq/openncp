@@ -12,7 +12,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 /**
  * XCPD_ServiceSkeleton java skeleton for the axisService
  */
-@Service("xCPD_ServiceSkeleton")
+@Service("xcpdServiceSkeleton")
 public class XCPD_ServiceSkeleton {
 
     @Autowired
