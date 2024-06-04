@@ -19,12 +19,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.MOCK, classes= TestApplication.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.MOCK, classes= TestApplication.class)
 public class DiagnosticReportTranscodingLogicServiceTest extends AbstractTranscodingLogicServiceTest {
 
-//    @Autowired
-//    DiagnosticReportTranscodingLogicService diagnosticReportTranscodingLogicService;
+    @Autowired
+    DiagnosticReportTranscodingLogicService diagnosticReportTranscodingLogicService;
 
     @Test
     public void testTranscode() throws IOException {
@@ -33,11 +33,13 @@ public class DiagnosticReportTranscodingLogicServiceTest extends AbstractTransco
                 this.getClass().getClassLoader().getResourceAsStream("in/diagnosticReport-in.json"),
                 StandardCharsets.UTF_8));
 
+        diagnosticReportTranscodingLogicService.transcode(input);
+
         DiagnosticReport expectedOutput = parser.parseResource(DiagnosticReport.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/diagnosticReport-out.json"),
                 StandardCharsets.UTF_8));
         assertFhirResourcesAreEqual(expectedOutput, input);
 
-        //diagnosticReportTranscodingLogicService.transcode(diagnosticReport);
+
     }
 }
