@@ -3,7 +3,7 @@ package eu.europa.ec.sante.openncp.core.common.fhir.context;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.parser.LenientErrorHandler;
-import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.CompositionLabReportEu;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.CompositionLabReportMyHealthEu;
 
 public class EuFhirContextFactory {
 
@@ -15,7 +15,7 @@ public class EuFhirContextFactory {
         ctx.setParserOptions(parserOptions);
         ctx.setParserErrorHandler(new LenientErrorHandler());
 
-        ctx.setDefaultTypeForProfile(CompositionLabReportEu.PROFILE, CompositionLabReportEu.class);
+        ctx.setDefaultTypeForProfile(CompositionLabReportMyHealthEu.PROFILE, CompositionLabReportMyHealthEu.class);
 
         return ctx;
     }
