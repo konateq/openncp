@@ -1,7 +1,6 @@
 package eu.europa.ec.sante.openncp.common.configuration.util;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -84,10 +83,15 @@ public class Constants {
      * Name of the System Variable containing the path to the folder containing the configuration files.
      */
     private static final String PROPS_ENV_VAR = "EPSOS_PROPS_PATH";
+    private final ConfigurationManager configurationManager;
+
+    public Constants(final ConfigurationManager configurationManager) {
+        this.configurationManager = Validate.notNull(configurationManager);
+    }
 
 
     @PostConstruct
-    public static void postConstruct() {
+    public void postConstruct() {
         String epsosPath = Optional.ofNullable(System.getenv(PROPS_ENV_VAR)).orElseGet(() -> System.getProperty(PROPS_ENV_VAR));
         if (StringUtils.isNotBlank(epsosPath)) {
             if (!epsosPath.endsWith(FileSystems.getDefault().getSeparator())) {
@@ -101,7 +105,6 @@ public class Constants {
 
         LOGGER.info("OpenNCP Util Constants Initialization - EPSOS_PROPS_PATH: '{}'", EPSOS_PROPS_PATH);
 
-        ConfigurationManager configurationManager = Validate.notNull(ConfigurationManagerFactory.getConfigurationManager(), "Configuration manager cannot be null");
         SERVER_IP = configurationManager.getProperty("SERVER_IP");
 
         HOME_COMM_ID = configurationManager.getProperty("HOME_COMM_ID");
@@ -136,9 +139,6 @@ public class Constants {
         ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD");
         ABUSE_SCHEDULER_TIME_INTERVAL = configurationManager.getProperty("ABUSE_SCHEDULER_TIME_INTERVAL");
         ABUSE_SCHEDULER_ENABLE = configurationManager.getProperty("ABUSE_SCHEDULER_ENABLE");
-    }
-
-    private Constants() {
     }
 
     /**
