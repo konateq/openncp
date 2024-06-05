@@ -95,8 +95,6 @@ services:
       - ./ncp_a/ncpa.database.env
       - ./ncp_a/ncpa.env
     volumes:
-      - ./openncp-configuration:/opt/openncp-configuration
-      - ./certificates:/opt/openncp-configuration/keystore
       - ./logs/openncp-server:/usr/local/tomcat/logs
     ports:
       - "${NCP_A_SERVER_CONNECTOR_PORT}:${NCP_A_SERVER_CONNECTOR_PORT}"
@@ -132,8 +130,6 @@ services:
       - ./ncp_b/ncpb.database.env
       - ./ncp_b/ncpb.env
     volumes:
-      - ./openncp-configuration:/opt/openncp-configuration
-      - ./certificates:/opt/openncp-configuration/keystore
       - ./logs/openncp-client:/usr/local/tomcat/logs
     ports:
       - "${NCP_B_SERVER_CONNECTOR_PORT}:${NCP_B_SERVER_CONNECTOR_PORT}"
@@ -190,9 +186,7 @@ services:
         -Dtls_truststore_path=${TLS_TRUSTSTORE_PATH}"
       LOGGING_LEVEL_ROOT: DEBUG
     volumes:
-      - ./openncp-configuration:/opt/openncp-configuration
       - ./logs/openncp-openatna:/usr/local/tomcat/logs
-      - ./certificates:/opt/openncp-configuration/keystore
     networks:
       - openncp
   openncp-trc-sts:
@@ -226,9 +220,7 @@ services:
         -Dorg.apache.cxf.stax.allowInsecureParser=true"
       LOGGING_LEVEL_ROOT: DEBUG
     volumes:
-      - ./openncp-configuration:/opt/openncp-configuration
       - ./logs/openncp-trc-sts:/usr/local/tomcat/logs
-      - ./certificates:/opt/openncp-configuration/keystore
     networks:
       - openncp
   openncp-translations-and-mappings:
@@ -263,9 +255,7 @@ services:
         -Dtls_truststore_path=${TLS_TRUSTSTORE_PATH}"
       LOGGING_LEVEL_ROOT: DEBUG
     volumes:
-      - ./openncp-configuration:/opt/openncp-configuration
       - ./logs/openncp-translations-and-mappings:/usr/local/tomcat/logs
-      - ./certificates:/opt/openncp-configuration/keystore
     networks:
       - openncp
   openncp-web-manager-backend:
@@ -299,8 +289,6 @@ services:
         -Dtls_truststore_path=${TLS_TRUSTSTORE_PATH}"
       LOGGING_LEVEL_ROOT: DEBUG
     volumes:
-      - ./openncp-configuration:/opt/openncp-configuration
-      - ./certificates:/opt/openncp-configuration/keystore
       - ./logs/openncp-web-manager-backend:/usr/local/tomcat/logs
     networks:
       - openncp

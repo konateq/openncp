@@ -9,6 +9,8 @@ COPY openncp-web-manager/openncp-web-manager-backend/tomcat-config-entrypoint.sh
 COPY openncp-web-manager/openncp-web-manager-backend/config /usr/local/tomcat/conf/
 COPY openncp-web-manager/openncp-web-manager-backend/application-docker.yml /opt/config/
 
+COPY openncp-configuration/ $EPSOS_PROPS_PATH
+
 # needed because else we get the error:
 # failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process:
 # exec: "tomcat-config-entrypoint.sh": executable file not found in $PATH: unknown
