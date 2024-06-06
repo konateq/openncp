@@ -19,9 +19,12 @@ public class DiagnosticReportTranslationService extends AbstractTranslationServi
     @Override
     public DiagnosticReportLabMyHealthEu translate(DiagnosticReportLabMyHealthEu diagnosticReportLabMyHealthEu, String targetLanguage) {
 
+        /** Language **/
+
         /** Category - Study type **/
-        for (CodeableConcept codeableConcept: diagnosticReportLabMyHealthEu.getCategory())
-        addTranslation(codeableConcept, targetLanguage);
+        for (CodeableConcept codeableConcept: diagnosticReportLabMyHealthEu.getCategory()) {
+            addTranslation(codeableConcept, targetLanguage);
+        }
 
         /** Code **/
         addTranslation(diagnosticReportLabMyHealthEu.getCode(), targetLanguage);

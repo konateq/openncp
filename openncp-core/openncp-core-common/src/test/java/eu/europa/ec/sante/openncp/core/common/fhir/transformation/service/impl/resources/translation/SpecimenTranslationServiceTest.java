@@ -1,0 +1,57 @@
+package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources.translation;
+
+import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.ServiceRequestLabMyHealthEu;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.SpecimenMyHealthEu;
+import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.resources.IDomainTranslationService;
+import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(MockitoExtension.class)
+class SpecimenTranslationServiceTest extends AbstractTranslationServiceTest {
+
+    @Mock
+    private TerminologyService mockedTerminologyService;
+
+    private IDomainTranslationService<SpecimenMyHealthEu> specimenTranslationService;
+
+
+    @BeforeEach
+    void init() {
+        specimenTranslationService = new SpecimenTranslationService(mockedTerminologyService);
+    }
+
+
+    @Test
+    void translate() throws IOException {
+        assertThat(specimenTranslationService).isNotNull();
+
+        final SpecimenMyHealthEu input = parser.parseResource(SpecimenMyHealthEu.class, IOUtils.toString(
+                this.getClass().getClassLoader().getResourceAsStream("in/specimen-in.json"),
+                StandardCharsets.UTF_8));
+
+        // Type
+        processTranslation(mockedTerminologyService, input.getType().getCoding().iterator().next(), "Bloedmonster");
+
+        // Collection - Body Site
+        processTranslation(mockedTerminologyService, input.getCollection().getBodySite().getCoding().iterator().next(), "Neoaortaklep");
+
+        final SpecimenMyHealthEu translated = specimenTranslationService.translate(input, targetLanguageCode);
+
+        System.out.println(parser.encodeResourceToString(translated));
+
+        final SpecimenMyHealthEu expectedOutput = parser.parseResource(SpecimenMyHealthEu.class, IOUtils.toString(
+                this.getClass().getClassLoader().getResourceAsStream("out/specimen-out.json"),
+                StandardCharsets.UTF_8));
+        assertFhirResourcesAreEqual(expectedOutput, translated);
+    }
+}
