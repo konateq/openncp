@@ -21,20 +21,17 @@
   "status" : "final",
   "category" : [{
     "coding" : [{
-      "system" : "Snomed CT",
-      "code" : "studyType",
-      "display" : "studyType",
-      "id" : "2.16.840.1.113883.6.96",
-      "version" : "2022-07-31"
+      "system" : "http://loinc.org",
+      "code" : "18717-9",
+      "display" : "Blood bank studies (set)"
     }]
   }],
   "code" : {
     "coding" : [{
-      "system" : "Snomed CT",
-      "code" : "code",
-      "display" : "code",
-      "id" : "2.16.840.1.113883.6.96",
-      "version" : "2022-07-31"
+      "system" : "http://loinc.org",
+      "code" : "11502-2",
+      "display" : "Laboratory report",
+
     }]
   },
   "subject" : {

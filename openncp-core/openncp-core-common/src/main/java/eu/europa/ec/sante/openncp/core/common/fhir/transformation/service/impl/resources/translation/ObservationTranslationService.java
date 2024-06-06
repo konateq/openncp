@@ -37,7 +37,7 @@ public class ObservationTranslationService extends AbstractTranslationService im
 //        }
 
         /** ValueCodeableConcept **/
-        addTranslation(observationResultsLaboratoryMyHealthEu.getValueCodeableConcept(), targetLanguage);
+//        addTranslation(observationResultsLaboratoryMyHealthEu.getValueCodeableConcept(), targetLanguage);
 
         /** Interpretation **/
         for (CodeableConcept codeableConcept: observationResultsLaboratoryMyHealthEu.getInterpretation()) {
