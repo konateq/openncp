@@ -48,7 +48,7 @@ class ExportServiceTest {
 
     @Test
     void export_cp_80_kpi_1_2() throws IOException {
-        final ZoneId zone = ZoneId.of("Europe/Paris");
+        final ZoneId zone = ZoneId.systemDefault();
         final Instant now = LocalDateTime.of(2024, Month.JANUARY, 31, 11, 10, 9).atZone(zone).toInstant();
         final Instant yesterday = now.minus(Duration.ofDays(1));
 
