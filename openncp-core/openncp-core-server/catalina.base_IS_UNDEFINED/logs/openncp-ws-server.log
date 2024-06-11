@@ -3761,3 +3761,33 @@ Caused by: javax.naming.NoInitialContextException: Need to specify class name in
 [32m[2024-06-11T16:43:56.217+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
 [32m[2024-06-11T16:43:57.906+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.XmlUtil.logStaxImplementation(74) - FHIR XML procesing will use StAX implementation 'Woodstox' version '6.2.6'
 [32m[2024-06-11T16:43:58.184+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:24:39.175+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-11T17:24:39.191+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:24:42.585+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.XmlUtil.logStaxImplementation(74) - FHIR XML procesing will use StAX implementation 'Woodstox' version '6.2.6'
+[32m[2024-06-11T17:24:42.660+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-11T17:25:29.341+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-11T17:25:29.351+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:25:32.753+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.XmlUtil.logStaxImplementation(74) - FHIR XML procesing will use StAX implementation 'Woodstox' version '6.2.6'
+[32m[2024-06-11T17:25:32.827+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-11T17:25:32.891+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-11T17:26:00.663+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-11T17:26:00.675+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:26:03.990+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.XmlUtil.logStaxImplementation(74) - FHIR XML procesing will use StAX implementation 'Woodstox' version '6.2.6'
+[32m[2024-06-11T17:26:04.063+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-11T17:26:04.283+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-11T17:27:24.106+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-11T17:27:24.120+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:27:27.496+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.XmlUtil.logStaxImplementation(74) - FHIR XML procesing will use StAX implementation 'Woodstox' version '6.2.6'
+[32m[2024-06-11T17:27:27.570+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-11T17:28:15.637+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-11T17:28:15.646+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:28:17.308+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.XmlUtil.logStaxImplementation(74) - FHIR XML procesing will use StAX implementation 'Woodstox' version '6.2.6'
+[32m[2024-06-11T17:28:17.596+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:28:19.521+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-11T17:28:19.636+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:28:59.884+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-11T17:28:59.895+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:29:01.544+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.XmlUtil.logStaxImplementation(74) - FHIR XML procesing will use StAX implementation 'Woodstox' version '6.2.6'
+[32m[2024-06-11T17:29:01.821+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-11T17:29:03.955+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-11T17:29:04.072+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]

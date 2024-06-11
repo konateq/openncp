@@ -51,7 +51,7 @@
                   },
                   {
                     "url": "content",
-                    "valueString": "vertaling"
+                    "valueString": "translation"
                   }
                 ]
               }
@@ -87,7 +87,7 @@
                 },
                 {
                   "url": "content",
-                  "valueString": "vertaling"
+                  "valueString": "translation"
                 }
               ]
             }
