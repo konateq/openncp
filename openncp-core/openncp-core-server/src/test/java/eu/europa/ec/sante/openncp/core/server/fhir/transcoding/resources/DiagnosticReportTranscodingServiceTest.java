@@ -63,8 +63,6 @@ class DiagnosticReportTranscodingServiceTest extends AbstractTranscodingServiceT
 
         final DiagnosticReportLabMyHealthEu transcoded = diagnosticReportResourceTranscodingService.transcode(input);
 
-        System.out.println(parser.encodeResourceToString(transcoded));
-
         final DiagnosticReportLabMyHealthEu output = parser.parseResource(DiagnosticReportLabMyHealthEu.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/diagnosticReport-out.json"),
                 StandardCharsets.UTF_8));

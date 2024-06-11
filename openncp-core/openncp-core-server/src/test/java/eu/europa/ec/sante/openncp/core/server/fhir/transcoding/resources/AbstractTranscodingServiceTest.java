@@ -34,7 +34,7 @@ public abstract class AbstractTranscodingServiceTest {
         tsamResponseStructureTranscoding.setDesignation(targetCodeConcept.getDisplayName().get());
         when(terminologyService.getTargetConcept(codeConcept)).thenReturn(tsamResponseStructureTranscoding);
         final TSAMResponseStructure tsamResponseStructureTranslation = new TSAMResponseStructure(targetCodeConcept);
-        tsamResponseStructureTranslation.setDesignation("vertaling");
+        tsamResponseStructureTranslation.setDesignation("translation");
         final CodeConcept expectedTargetCodeConcept = ImmutableCodeConcept.builder()
                 .code(targetCodeConcept.getCode())
                 .codeSystemVersion(targetCodeConcept.getCodeSystemVersion())
