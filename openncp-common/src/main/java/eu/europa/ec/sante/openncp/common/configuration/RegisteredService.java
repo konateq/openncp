@@ -13,6 +13,7 @@ public enum RegisteredService {
     ORCD_SERVICE("OrCDService", "urn:ehealth:RequestOfData::XCA::CrossGatewayQuery##ITI-38"),
     PATIENT_IDENTIFICATION_SERVICE("PatientIdentificationService", "urn:ehealth:PatientIdentificationAndAuthentication::XCPD::CrossGatewayPatientDiscovery##ITI-55"),
     PATIENT_SERVICE("PatientService", "urn:ehealth:RequestOfData::XCA::CrossGatewayQuery##ITI-38"),
+    FHIR_SERVICE("FhirService", "urn:ehealth:SearchPatient##FHIR"),
     ITI_39("ITI-39", "urn:ehealth:RequestOfData::XCA::CrossGatewayRetrieve##ITI-39"),
     ITI_40("ITI-40", "urn:ehealth:CountryBIdentityProvider::XUA::ProvideX-UserAssertion##ITI-40"),
     ITI_63("ITI-63", "urn:ehealth:RequestOfData::XCF::CrossGatewayFetchRequest##ITI-63"),
@@ -25,12 +26,12 @@ public enum RegisteredService {
     private final String serviceName;
     private final String urn;
 
-    RegisteredService(String serviceName, String urn) {
+    RegisteredService(final String serviceName, final String urn) {
         this.serviceName = serviceName;
         this.urn = urn;
     }
 
-    public static RegisteredService fromName(String name) {
+    public static RegisteredService fromName(final String name) {
         return MAP.get(name);
     }
 

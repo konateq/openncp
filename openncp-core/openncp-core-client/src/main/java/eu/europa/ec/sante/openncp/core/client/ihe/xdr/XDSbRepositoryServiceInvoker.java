@@ -10,11 +10,11 @@ import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.client.transformation.DomUtils;
 import eu.europa.ec.sante.openncp.core.client.transformation.TranslationsAndMappingsClient;
-import eu.europa.ec.sante.openncp.core.common.ihe.DynamicDiscoveryService;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
+import eu.europa.ec.sante.openncp.core.common.dynamicdiscovery.DynamicDiscoveryService;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.*;
@@ -59,15 +59,15 @@ public class XDSbRepositoryServiceInvoker {
      * @throws RemoteException
      */
     public RegistryResponseType provideAndRegisterDocumentSet(final XdrRequest request, final String countryCode,
-                                                              Map<AssertionEnum, Assertion> assertionMap, ClassCode docClassCode)
+                                                              final Map<AssertionEnum, Assertion> assertionMap, final ClassCode docClassCode)
             throws RemoteException, XDRException {
 
         logger.info("[XDSb Repository] XDR Request: '{}', '{}', '{}'", assertionMap.get(AssertionEnum.CLINICIAN).getID(), countryCode, docClassCode);
-        RegistryResponseType response;
-        String submissionSetUuid = Constants.UUID_PREFIX + UUID.randomUUID();
+        final RegistryResponseType response;
+        final String submissionSetUuid = Constants.UUID_PREFIX + UUID.randomUUID();
 
         String endpointReference = null;
-        var dynamicDiscoveryService = new DynamicDiscoveryService();
+        final var dynamicDiscoveryService = new DynamicDiscoveryService();
 
         switch (docClassCode) {
             case ED_CLASSCODE:
@@ -83,7 +83,7 @@ public class XDSbRepositoryServiceInvoker {
                 break;
         }
         // WebService Client stubs
-        DocumentRecipient_ServiceStub documentRecipientServiceStub = new DocumentRecipient_ServiceStub(endpointReference);
+        final DocumentRecipient_ServiceStub documentRecipientServiceStub = new DocumentRecipient_ServiceStub(endpointReference);
         documentRecipientServiceStub._getServiceClient().getOptions().setTo(new EndpointReference(endpointReference));
         documentRecipientServiceStub.setCountryCode(countryCode);
         documentRecipientServiceStub.setClassCode(docClassCode);
@@ -95,51 +95,51 @@ public class XDSbRepositoryServiceInvoker {
         Document document = null;
         try {
             document = XMLUtil.parseContent(request.getCda());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.warn("Could not parse dispense", e);
         }
-        String languageCode = document != null ? getLanguageCode(document) : XDRConstants.EXTRINSIC_OBJECT.LANGUAGE_CODE_DEFAULT_VALUE;
+        final String languageCode = document != null ? getLanguageCode(document) : XDRConstants.EXTRINSIC_OBJECT.LANGUAGE_CODE_DEFAULT_VALUE;
 
         // ProvideAndRegisterDocumentSetRequestType
-        eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ObjectFactory ofXds = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ObjectFactory();
-        eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.lcm._3.ObjectFactory ofLcm = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.lcm._3.ObjectFactory();
+        final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ObjectFactory ofXds = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ObjectFactory();
+        final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.lcm._3.ObjectFactory ofLcm = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.lcm._3.ObjectFactory();
 
-        ProvideAndRegisterDocumentSetRequestType registerDocumentSetRequest = ofXds.createProvideAndRegisterDocumentSetRequestType();
+        final ProvideAndRegisterDocumentSetRequestType registerDocumentSetRequest = ofXds.createProvideAndRegisterDocumentSetRequestType();
         registerDocumentSetRequest.setSubmitObjectsRequest(ofLcm.createSubmitObjectsRequest());
         registerDocumentSetRequest.getSubmitObjectsRequest().setRegistryObjectList(ofRim.createRegistryObjectListType());
 
         //  XDS Document
-        String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
-        ExtrinsicObjectType extrinsicObject = makeExtrinsicObject(request, uuid, docClassCode, languageCode);
+        final String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
+        final ExtrinsicObjectType extrinsicObject = makeExtrinsicObject(request, uuid, docClassCode, languageCode);
         registerDocumentSetRequest.getSubmitObjectsRequest().getRegistryObjectList().getIdentifiable()
                 .add(ofRim.createExtrinsicObject(extrinsicObject));
 
-        RegistryPackageType registryPackage = prepareRegistryPackage(request, docClassCode, submissionSetUuid, assertionMap);
+        final RegistryPackageType registryPackage = prepareRegistryPackage(request, docClassCode, submissionSetUuid, assertionMap);
         registerDocumentSetRequest.getSubmitObjectsRequest().getRegistryObjectList().getIdentifiable()
                 .add(ofRim.createRegistryPackage(registryPackage));
 
-        ClassificationType classification = prepareClassification(submissionSetUuid);
+        final ClassificationType classification = prepareClassification(submissionSetUuid);
         registerDocumentSetRequest.getSubmitObjectsRequest().getRegistryObjectList().getIdentifiable()
                 .add(ofRim.createClassification(classification));
 
-        AssociationType1 association = prepareAssociation(uuid, submissionSetUuid);
+        final AssociationType1 association = prepareAssociation(uuid, submissionSetUuid);
         registerDocumentSetRequest.getSubmitObjectsRequest().getRegistryObjectList().getIdentifiable()
                 .add(ofRim.createAssociation(association));
 
         // XDR Document
-        ProvideAndRegisterDocumentSetRequestType.Document xdrDocument = new ProvideAndRegisterDocumentSetRequestType.Document();
+        final ProvideAndRegisterDocumentSetRequestType.Document xdrDocument = new ProvideAndRegisterDocumentSetRequestType.Document();
         xdrDocument.setId(uuid);
 
-        byte[] cdaBytes = request.getCda().getBytes(StandardCharsets.UTF_8);
+        final byte[] cdaBytes = request.getCda().getBytes(StandardCharsets.UTF_8);
         try {
             /* Validate CDA epSOS Friendly */
             if (OpenNCPValidation.isValidationEnable()) {
                 OpenNCPValidation.validateCdaDocument(request.getCda(), NcpSide.NCP_B, docClassCode, false);
             }
             if (!docClassCode.equals(ClassCode.EDD_CLASSCODE)) {
-                TMResponseStructure tmResponseStructure = TranslationsAndMappingsClient.transcode(DomUtils.byteToDocument(cdaBytes));
-                var base64EncodedDocument = tmResponseStructure.getResponseCDA();
-                byte[] transformedCda = XMLUtils.toOM(Base64Util.decode(base64EncodedDocument).getDocumentElement()).toString().getBytes(StandardCharsets.UTF_8);
+                final TMResponseStructure tmResponseStructure = TranslationsAndMappingsClient.transcode(DomUtils.byteToDocument(cdaBytes));
+                final var base64EncodedDocument = tmResponseStructure.getResponseCDA();
+                final byte[] transformedCda = XMLUtils.toOM(Base64Util.decode(base64EncodedDocument).getDocumentElement()).toString().getBytes(StandardCharsets.UTF_8);
                 xdrDocument.setValue(transformedCda);
 
             } else {
@@ -149,10 +149,10 @@ public class XDSbRepositoryServiceInvoker {
             if (OpenNCPValidation.isValidationEnable()) {
                 OpenNCPValidation.validateCdaDocument(new String(xdrDocument.getValue(), StandardCharsets.UTF_8), NcpSide.NCP_B, docClassCode, true);
             }
-        } catch (DocumentTransformationException ex) {
+        } catch (final DocumentTransformationException ex) {
             logger.error(ex.getLocalizedMessage(), ex);
             xdrDocument.setValue(cdaBytes);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             logger.error(null, ex);
         }
         registerDocumentSetRequest.getDocument().add(xdrDocument);
@@ -167,8 +167,8 @@ public class XDSbRepositoryServiceInvoker {
      * @param value
      * @return
      */
-    private SlotType1 makeSlot(String name, String value) {
-        SlotType1 sl = ofRim.createSlotType1();
+    private SlotType1 makeSlot(final String name, final String value) {
+        final SlotType1 sl = ofRim.createSlotType1();
         sl.setName(name);
         sl.setValueList(ofRim.createValueListType());
         sl.getValueList().getValue().add(value);
@@ -183,11 +183,11 @@ public class XDSbRepositoryServiceInvoker {
      * @param name
      * @return
      */
-    private ClassificationType makeClassification(String classificationScheme, String classifiedObject,
-                                                  String nodeRepresentation, String value, String name) {
+    private ClassificationType makeClassification(final String classificationScheme, final String classifiedObject,
+                                                  final String nodeRepresentation, final String value, final String name) {
 
-        String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
-        var classificationType = ofRim.createClassificationType();
+        final String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
+        final var classificationType = ofRim.createClassificationType();
         classificationType.setId(uuid);
         classificationType.setNodeRepresentation(nodeRepresentation);
         classificationType.setClassificationScheme(classificationScheme);
@@ -205,10 +205,10 @@ public class XDSbRepositoryServiceInvoker {
      * @param nodeRepresentation
      * @return
      */
-    private ClassificationType makeClassification0(String classificationScheme, String classifiedObject, String nodeRepresentation) {
+    private ClassificationType makeClassification0(final String classificationScheme, final String classifiedObject, final String nodeRepresentation) {
 
-        String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
-        var classificationType = ofRim.createClassificationType();
+        final String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
+        final var classificationType = ofRim.createClassificationType();
         classificationType.setId(uuid);
         classificationType.setNodeRepresentation(nodeRepresentation);
         classificationType.setClassificationScheme(classificationScheme);
@@ -220,9 +220,9 @@ public class XDSbRepositoryServiceInvoker {
      * @param value
      * @return
      */
-    private InternationalStringType makeInternationalString(String value) {
+    private InternationalStringType makeInternationalString(final String value) {
 
-        var internationalStringType = new InternationalStringType();
+        final var internationalStringType = new InternationalStringType();
         internationalStringType.getLocalizedString().add(ofRim.createLocalizedStringType());
         internationalStringType.getLocalizedString().get(0).setValue(value);
         return internationalStringType;
@@ -235,11 +235,11 @@ public class XDSbRepositoryServiceInvoker {
      * @param name
      * @return
      */
-    private ExternalIdentifierType makeExternalIdentifier(String identificationScheme, String registryObject,
-                                                          String value, String name) {
+    private ExternalIdentifierType makeExternalIdentifier(final String identificationScheme, final String registryObject,
+                                                          final String value, final String name) {
 
-        String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
-        ExternalIdentifierType ex = ofRim.createExternalIdentifierType();
+        final String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
+        final ExternalIdentifierType ex = ofRim.createExternalIdentifierType();
         ex.setId(uuid);
         ex.setIdentificationScheme(identificationScheme);
         ex.setObjectType(XDRConstants.REGREP_EXT_IDENT);
@@ -257,7 +257,7 @@ public class XDSbRepositoryServiceInvoker {
      * @param docClassCode
      * @return
      */
-    private ExtrinsicObjectType makeExtrinsicObject(XdrRequest request, String uuid, ClassCode docClassCode, String language) {
+    private ExtrinsicObjectType makeExtrinsicObject(final XdrRequest request, final String uuid, final ClassCode docClassCode, final String language) {
         return makeExtrinsicObject(request, uuid, docClassCode, language, Boolean.FALSE);
     }
 
@@ -268,16 +268,16 @@ public class XDSbRepositoryServiceInvoker {
      * @param isPDF
      * @return
      */
-    private ExtrinsicObjectType makeExtrinsicObject(XdrRequest request, String uuid, ClassCode docClassCode, String language, Boolean isPDF) {
+    private ExtrinsicObjectType makeExtrinsicObject(final XdrRequest request, final String uuid, final ClassCode docClassCode, final String language, final Boolean isPDF) {
 
         if (Boolean.TRUE.equals(isPDF)) {
             // TODO A.R. isPDF unfinished...
             logger.warn("PDF document will be processed, but this is not fully supported by current implementation");
         }
 
-        ExtrinsicObjectType result = ofRim.createExtrinsicObjectType();
-        PatientDemographics patient = request.getPatient();
-        var patientId = patient.getIdList().get(0);
+        final ExtrinsicObjectType result = ofRim.createExtrinsicObjectType();
+        final PatientDemographics patient = request.getPatient();
+        final var patientId = patient.getIdList().get(0);
 
         // Attributes handling: identifier, mimeType, objectType and Status.
         result.setId(uuid);
@@ -372,7 +372,7 @@ public class XDSbRepositoryServiceInvoker {
         // result.setHome(Constants.HOME_COMM_ID) and result.setLid(uuid)
 
         // sourcePatientInfo
-        SlotType1 slId = makeSlot(XDRConstants.EXTRINSIC_OBJECT.SRC_PATIENT_INFO_STR, "PID-3|" + patientId);
+        final SlotType1 slId = makeSlot(XDRConstants.EXTRINSIC_OBJECT.SRC_PATIENT_INFO_STR, "PID-3|" + patientId);
         slId.getValueList().getValue().add("PID-5|" + patient.getFamilyName() + "^" + patient.getGivenName());
         slId.getValueList().getValue().add("PID-7|" + new SimpleDateFormat("yyyyMMddkkmmss.SSSZZZZ", Locale.ENGLISH).format(patient.getBirthDate()));
         if (patient.getAdministrativeGender() != null) {
@@ -419,11 +419,11 @@ public class XDSbRepositoryServiceInvoker {
      * @param submissionSetUuid
      * @return
      */
-    private RegistryPackageType prepareRegistryPackage(XdrRequest request, ClassCode docClassCode, String submissionSetUuid,
-                                                       Map<AssertionEnum, Assertion> assertionMap) {
+    private RegistryPackageType prepareRegistryPackage(final XdrRequest request, final ClassCode docClassCode, final String submissionSetUuid,
+                                                       final Map<AssertionEnum, Assertion> assertionMap) {
 
-        var registryPackageType = ofRim.createRegistryPackageType();
-        var patientId = request.getPatient().getIdList().get(0);
+        final var registryPackageType = ofRim.createRegistryPackageType();
+        final var patientId = request.getPatient().getIdList().get(0);
 
         registryPackageType.setId(submissionSetUuid);
         registryPackageType.setObjectType(XDRConstants.REGISTRY_PACKAGE.OBJECT_TYPE_UUID);
@@ -433,7 +433,7 @@ public class XDSbRepositoryServiceInvoker {
         registryPackageType.setName(makeInternationalString(getNameFromClassCode(docClassCode)));
         registryPackageType.setDescription(makeInternationalString(getDescriptionFromClassCode(docClassCode)));
 
-        ClassificationType classification;
+        final ClassificationType classification;
         classification = makeClassification0(XDRConstants.REGISTRY_PACKAGE.AUTHOR_CLASSIFICATION_UUID, submissionSetUuid, "");
         classification.getSlot().add(makeSlot(XDRConstants.REGISTRY_PACKAGE.AUTHOR_INSTITUTION_STR,
                 getAuthorInstitution(request, assertionMap.get(AssertionEnum.CLINICIAN))));
@@ -462,10 +462,10 @@ public class XDSbRepositoryServiceInvoker {
      * @param submissionSetUuid
      * @return
      */
-    private ClassificationType prepareClassification(String submissionSetUuid) {
+    private ClassificationType prepareClassification(final String submissionSetUuid) {
 
-        var classificationType = ofRim.createClassificationType();
-        String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
+        final var classificationType = ofRim.createClassificationType();
+        final String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
         classificationType.setId(uuid);
         classificationType.setClassificationNode(XDRConstants.SUBMISSION_SET_CLASSIFICATION.CLASSIFICATION_NODE_UUID);
         classificationType.setClassifiedObject(submissionSetUuid);
@@ -478,10 +478,10 @@ public class XDSbRepositoryServiceInvoker {
      * @param submissionSetUuid
      * @return
      */
-    private AssociationType1 prepareAssociation(String targetObject, String submissionSetUuid) {
+    private AssociationType1 prepareAssociation(final String targetObject, final String submissionSetUuid) {
 
-        String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
-        var associationType1 = ofRim.createAssociationType1();
+        final String uuid = Constants.UUID_PREFIX + UUID.randomUUID();
+        final var associationType1 = ofRim.createAssociationType1();
         associationType1.setId(uuid);
         associationType1.setAssociationType(XDRConstants.REGREP_HAS_MEMBER);
         associationType1.setSourceObject(submissionSetUuid);
@@ -498,15 +498,15 @@ public class XDSbRepositoryServiceInvoker {
      * @param xdrRequest an XDR Request containing the assertion.
      * @return an HL7 V2.5 representation of the obtained information.
      */
-    private String getAuthorInstitution(final XdrRequest xdrRequest, Assertion clinicianAssertion) {
+    private String getAuthorInstitution(final XdrRequest xdrRequest, final Assertion clinicianAssertion) {
 
-        String result;
+        final String result;
 
         var organization = "General Hospital";
         var organizationId = "1.2.3.4.5.6.7.8.9.1789.45";
 
-        List<AttributeStatement> attrStatements;
-        List<Attribute> attrs;
+        final List<AttributeStatement> attrStatements;
+        final List<Attribute> attrs;
 
         attrStatements = clinicianAssertion.getAttributeStatements();
 
@@ -516,7 +516,7 @@ public class XDSbRepositoryServiceInvoker {
 
         attrs = attrStatements.get(0).getAttributes();
 
-        for (Attribute attr : attrs) {
+        for (final Attribute attr : attrs) {
             if (attr.getName().equals("urn:oasis:names:tc:xspa:1.0:subject:organization")) {
                 organization = Objects.requireNonNull(attr.getAttributeValues().get(0).getDOM()).getTextContent();
             }
@@ -528,7 +528,7 @@ public class XDSbRepositoryServiceInvoker {
         if (organizationId.startsWith(Constants.OID_PREFIX)) {
             result = organization + "^^^^^^^^^" + organizationId.split(":")[2];
         } else if (organizationId.startsWith(Constants.HL7II_PREFIX)) {
-            String[] organizationIds = organizationId.split(":");
+            final String[] organizationIds = organizationId.split(":");
             result = organization + "^^^^^&" + organizationIds[2] + "&ISO^^^^" + organizationIds[3];
         } else {
             result = organization + "^^^^^^^^^" + organizationId;
@@ -544,15 +544,15 @@ public class XDSbRepositoryServiceInvoker {
      * @param xdrRequest an XDR Request containing the assertion.
      * @return an HL7 V2.5 representation of the obtained information.
      */
-    private String getAuthorPerson(final XdrRequest xdrRequest, Assertion clinicianAssertion) {
+    private String getAuthorPerson(final XdrRequest xdrRequest, final Assertion clinicianAssertion) {
 
-        String result;
+        final String result;
 
         var authorIdentifier = "Welby Marcus";
         var assigningAuthorityId = "1.2.3.4.5.6.7.8.9.1789.45";
 
-        List<AttributeStatement> attrStatements;
-        List<Attribute> attrs;
+        final List<AttributeStatement> attrStatements;
+        final List<Attribute> attrs;
 
         attrStatements = clinicianAssertion.getAttributeStatements();
 
@@ -561,7 +561,7 @@ public class XDSbRepositoryServiceInvoker {
         }
         attrs = attrStatements.get(0).getAttributes();
 
-        for (Attribute attr : attrs) {
+        for (final Attribute attr : attrs) {
             if (attr.getName().equals("urn:oasis:names:tc:xspa:1.0:subject:subject-id")) {
                 authorIdentifier = Objects.requireNonNull(attr.getAttributeValues().get(0).getDOM()).getTextContent();
             }
@@ -573,7 +573,7 @@ public class XDSbRepositoryServiceInvoker {
         if (assigningAuthorityId.startsWith(Constants.OID_PREFIX)) {
             result = authorIdentifier + "^^^&" + assigningAuthorityId.split(":")[2] + "&ISO";
         } else if (assigningAuthorityId.startsWith(Constants.HL7II_PREFIX)) {
-            String[] assigningAuthorityIds = assigningAuthorityId.split(":");
+            final String[] assigningAuthorityIds = assigningAuthorityId.split(":");
             result = authorIdentifier + "^^^&" + assigningAuthorityIds[2] + ":" + assigningAuthorityIds[3] + "&ISO";
         } else {
             result = authorIdentifier + "^^^&" + assigningAuthorityId + "&ISO";
@@ -588,7 +588,7 @@ public class XDSbRepositoryServiceInvoker {
      * @param document the consent CDA
      * @return the EventCode
      */
-    private String getConsentOptName(String document) {
+    private String getConsentOptName(final String document) {
 
         if (document.contains(XDRConstants.EXTRINSIC_OBJECT.EVENT_CODE_NODE_REPRESENTATION_OPT_OUT)) {
             return XDRConstants.EXTRINSIC_OBJECT.EVENT_CODE_NODE_NAME_OPT_OUT;
@@ -606,7 +606,7 @@ public class XDSbRepositoryServiceInvoker {
      * @param document the consent CDA
      * @return the EventCode
      */
-    private String getConsentOptCode(String document) {
+    private String getConsentOptCode(final String document) {
 
         if (document.contains(XDRConstants.EXTRINSIC_OBJECT.EVENT_CODE_NODE_REPRESENTATION_OPT_OUT)) {
             return XDRConstants.EXTRINSIC_OBJECT.EVENT_CODE_NODE_REPRESENTATION_OPT_OUT;
@@ -622,7 +622,7 @@ public class XDSbRepositoryServiceInvoker {
      * @param classCode
      * @return
      */
-    private String getNameFromClassCode(ClassCode classCode) {
+    private String getNameFromClassCode(final ClassCode classCode) {
 
         switch (classCode) {
             case HCER_CLASSCODE:
@@ -643,7 +643,7 @@ public class XDSbRepositoryServiceInvoker {
      * @param classCode
      * @return
      */
-    private String getDescriptionFromClassCode(ClassCode classCode) {
+    private String getDescriptionFromClassCode(final ClassCode classCode) {
 
         switch (classCode) {
             case HCER_CLASSCODE:
@@ -664,7 +664,7 @@ public class XDSbRepositoryServiceInvoker {
      * @param classCode
      * @return
      */
-    private String getSubmissionSetFromClassCode(ClassCode classCode) {
+    private String getSubmissionSetFromClassCode(final ClassCode classCode) {
 
         switch (classCode) {
             case HCER_CLASSCODE:
@@ -687,10 +687,10 @@ public class XDSbRepositoryServiceInvoker {
      * @param document - CDA document as DOM object.
      * @return ISO language code of the document.
      */
-    private String getLanguageCode(Document document) {
-        List<Node> nodeList = XMLUtil.getNodeList(document, "ClinicalDocument/languageCode");
+    private String getLanguageCode(final Document document) {
+        final List<Node> nodeList = XMLUtil.getNodeList(document, "ClinicalDocument/languageCode");
         String languageCode = XDRConstants.EXTRINSIC_OBJECT.LANGUAGE_CODE_DEFAULT_VALUE;
-        for (Node node : nodeList) {
+        for (final Node node : nodeList) {
             if (node.getNodeType() == Node.ELEMENT_NODE && node.getAttributes().getNamedItem("code") != null) {
                 languageCode = node.getAttributes().getNamedItem("code").getTextContent();
             }
