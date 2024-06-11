@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.api.common.resourceProvider;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.EuRequestDetails;
 import eu.europa.ec.sante.openncp.core.common.fhir.services.DispatchingService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -33,7 +34,7 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
 
     @Search(allowUnknownParams = true)
     public IBaseBundle search(final HttpServletRequest theServletRequest, final HttpServletResponse theServletResponse,
-                              final RequestDetails theRequestDetails) {
+                              final EuRequestDetails theRequestDetails) {
         final Bundle serverResponse = dispatchingService.dispatchSearch(theRequestDetails);
 
         return serverResponse;

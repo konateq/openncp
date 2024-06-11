@@ -1,22 +1,18 @@
-package eu.europa.eu.sante.openncp.core.common.tsam.repository;
+package eu.europa.ec.sante.openncp.core.common.tsam.repository;
 
+import eu.europa.ec.sante.openncp.core.common.DummyApplication;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.CodeSystem;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.CodeSystemConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.CodeSystemVersion;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.Designation;
-import eu.europa.ec.sante.openncp.core.common.tsam.repository.CodeSystemConceptRepository;
-import eu.europa.ec.sante.openncp.core.common.tsam.repository.CodeSystemRepository;
-import eu.europa.eu.sante.openncp.core.common.DummyApplication;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = DummyApplication.class)

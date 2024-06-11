@@ -30,7 +30,7 @@ class SpecimenTranslationServiceTest extends AbstractTranslationServiceTest {
 
 
     @Test
-    void translate() throws IOException {
+    void testTranslate() throws IOException {
         assertThat(specimenTranslationService).isNotNull();
 
         final SpecimenMyHealthEu input = parser.parseResource(SpecimenMyHealthEu.class, IOUtils.toString(
@@ -44,8 +44,6 @@ class SpecimenTranslationServiceTest extends AbstractTranslationServiceTest {
         mockTranslation(mockedTerminologyService, input.getCollection().getBodySite().getCoding().iterator().next(), "Neoaortaklep");
 
         final SpecimenMyHealthEu translated = specimenTranslationService.translate(input, targetLanguageCode);
-
-        System.out.println(parser.encodeResourceToString(translated));
 
         final SpecimenMyHealthEu expectedOutput = parser.parseResource(SpecimenMyHealthEu.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/specimen-out.json"),

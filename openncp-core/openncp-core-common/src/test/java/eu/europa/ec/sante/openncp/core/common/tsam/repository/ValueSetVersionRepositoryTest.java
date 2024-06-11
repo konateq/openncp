@@ -1,10 +1,8 @@
-package eu.europa.eu.sante.openncp.core.common.tsam.repository;
+package eu.europa.ec.sante.openncp.core.common.tsam.repository;
 
+import eu.europa.ec.sante.openncp.core.common.DummyApplication;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.ValueSet;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.ValueSetVersion;
-import eu.europa.ec.sante.openncp.core.common.tsam.repository.ValueSetRepository;
-import eu.europa.ec.sante.openncp.core.common.tsam.repository.ValueSetVersionRepository;
-import eu.europa.eu.sante.openncp.core.common.DummyApplication;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
