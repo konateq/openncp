@@ -145,6 +145,8 @@ services:
       #        condition: service_completed_successfully
     #      openncp-tsam-sync:
     #        condition: service_completed_successfully
+    dns:
+      - 8.8.8.8
     environment:
       CATALINA_OPTS: "
         -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties

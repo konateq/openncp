@@ -12,6 +12,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.TokenAndListParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import eu.europa.ec.sante.openncp.api.common.handler.BundleHandler;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.ImmutableEuRequestDetails;
 import eu.europa.ec.sante.openncp.core.common.fhir.services.DispatchingService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -46,19 +47,19 @@ public class PatientResourceProvider implements IResourceProvider {
 
     @Search(allowUnknownParams = true)
     public IBaseBundle search(final HttpServletRequest theServletRequest, final HttpServletResponse theServletResponse,
-                                  final RequestDetails theRequestDetails,
-                                  @Description(shortDefinition = "The patient's date of birth") @OptionalParam(
-                                          name = "birthdate") final DateRangeParam theBirthdate,
-                                  @Description(shortDefinition = "A patient identifier") @OptionalParam(
-                                          name = "identifier") final TokenAndListParam theIdentifier, @Description(
+                              final RequestDetails theRequestDetails,
+                              @Description(shortDefinition = "The patient's date of birth") @OptionalParam(
+                                      name = "birthdate") final DateRangeParam theBirthdate,
+                              @Description(shortDefinition = "A patient identifier") @OptionalParam(
+                                      name = "identifier") final TokenAndListParam theIdentifier, @Description(
             shortDefinition = "Only return resources which were last updated as specified by the given range") @OptionalParam(
             name = "_lastUpdated") final DateRangeParam theLastUpdated, @IncludeParam final Set<Include> theIncludes,
-                                  @IncludeParam(reverse = true) final Set<Include> theRevIncludes, @Sort final SortSpec theSort,
-                                  @Count final Integer theCount, @Offset final Integer theOffset, final SummaryEnum theSummaryMode,
-                                  final SearchTotalModeEnum theSearchTotalMode, final SearchContainedModeEnum theSearchContainedMode,
-                                  @RawParam final Map<String, List<String>> theAdditionalRawParams) {
+                              @IncludeParam(reverse = true) final Set<Include> theRevIncludes, @Sort final SortSpec theSort,
+                              @Count final Integer theCount, @Offset final Integer theOffset, final SummaryEnum theSummaryMode,
+                              final SearchTotalModeEnum theSearchTotalMode, final SearchContainedModeEnum theSearchContainedMode,
+                              @RawParam final Map<String, List<String>> theAdditionalRawParams) {
 
-        final Bundle serverResponse = dispatchingService.dispatchSearch(theRequestDetails);
+        final Bundle serverResponse = dispatchingService.dispatchSearch(ImmutableEuRequestDetails.of(theRequestDetails));
         final Bundle handledBundle = bundleHandler.handle(serverResponse);
 
         return handledBundle;

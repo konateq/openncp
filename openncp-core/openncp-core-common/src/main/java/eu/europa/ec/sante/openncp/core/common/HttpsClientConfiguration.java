@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.ssl;
+package eu.europa.ec.sante.openncp.core.common;
 
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import org.apache.http.client.HttpClient;
@@ -27,7 +27,7 @@ public class HttpsClientConfiguration {
     public static SSLContext buildSSLContext() throws NoSuchAlgorithmException, KeyManagementException, IOException,
             CertificateException, KeyStoreException, UnrecoverableKeyException {
 
-        SSLContextBuilder builder = SSLContextBuilder.create();
+        final SSLContextBuilder builder = SSLContextBuilder.create();
         builder.setKeyStoreType("JKS");
         builder.setKeyManagerFactoryAlgorithm("SunX509");
         builder.loadKeyMaterial(ResourceUtils.getFile(Constants.SC_KEYSTORE_PATH),
@@ -43,13 +43,11 @@ public class HttpsClientConfiguration {
     public static HttpClient getSSLClient() throws UnrecoverableKeyException, CertificateException,
             NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
 
-        SSLContext sslContext = buildSSLContext();
-        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(
+        final SSLContext sslContext = buildSSLContext();
+        final SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(
                 sslContext, new String[]{"TLSv1.2", "TLSv1.3"}, null, NoopHostnameVerifier.INSTANCE);
-        HttpClientBuilder builder = HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory);
-        builder.setSSLContext(sslContext);
-        builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-
+        final HttpClientBuilder builder = HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory);
+        
         return builder.build();
     }
 }

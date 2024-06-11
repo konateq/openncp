@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.ihe;
+package eu.europa.ec.sante.openncp.core.common.dynamicdiscovery;
 
 import eu.europa.ec.dynamicdiscovery.DynamicDiscovery;
 import eu.europa.ec.dynamicdiscovery.core.locator.dns.impl.DefaultDNSLookup;
@@ -24,6 +24,7 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceEndpointList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -41,6 +42,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+@Service
 public class DynamicDiscoveryService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicDiscoveryService.class);
@@ -51,6 +53,7 @@ public class DynamicDiscoveryService {
     private static final String PARTICIPANT_IDENTIFIER_SCHEME = "ehealth-participantid-qns";
     private static final String PARTICIPANT_IDENTIFIER_VALUE = "urn:ehealth:%2s:ncp-idp";
     private static final String DOCUMENT_IDENTIFIER_SCHEME = "ehealth-resid-qns";
+    private ConfigurationManager configurationManager;
 
     /**
      * The certificate of the remote endpoint.
@@ -67,26 +70,45 @@ public class DynamicDiscoveryService {
      */
     private Document extension;
 
-    private static void sendAuditQuery(String sc_fullname, String sc_email, String sp_fullname, String sp_email,
-                                       String partid, String sourceip, String targetip, String objectID,
-                                       String EM_PatricipantObjectID, byte[] EM_PatricipantObjectDetail, String smpServer) {
+    /**
+     * @deprecated Use new {@link DynamicDiscoveryService#DynamicDiscoveryService(ConfigurationManager)} instead or via Spring beans
+     */
+    @Deprecated
+    public DynamicDiscoveryService() {
+    }
+
+    public DynamicDiscoveryService(final ConfigurationManager configurationManager) {
+        this.configurationManager = Validate.notNull(configurationManager, "ConfigurationManager must not be null");
+    }
+
+    private ConfigurationManager getConfigurationManager() {
+        if (configurationManager == null) {
+            configurationManager = ConfigurationManagerFactory.getConfigurationManager();
+        }
+
+        return configurationManager;
+    }
+
+    private static void sendAuditQuery(final String sc_fullname, final String sc_email, final String sp_fullname, final String sp_email,
+                                       final String partid, final String sourceip, final String targetip, final String objectID,
+                                       final String EM_PatricipantObjectID, final byte[] EM_PatricipantObjectDetail, final String smpServer) {
 
         LOGGER.info("sendAuditQuery('{}', '{}','{}','{}','{}','{}','{}','{}','{}','{}')", sc_fullname, sc_email,
                 sp_fullname, sp_email, partid, sourceip, targetip, objectID, "EM_PatricipantObjectID", "EM_PatricipantObjectDetail");
         try {
-            AuditService asd = AuditServiceFactory.getInstance();
-            GregorianCalendar c = new GregorianCalendar();
+            final AuditService asd = AuditServiceFactory.getInstance();
+            final GregorianCalendar c = new GregorianCalendar();
             c.setTime(new Date());
             XMLGregorianCalendar date2 = null;
             try {
                 date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-            } catch (DatatypeConfigurationException ex) {
+            } catch (final DatatypeConfigurationException ex) {
                 LOGGER.error(null, ex);
             }
-            String serviceConsumerUserId = HttpUtil.getSubjectDN(false);
-            String serviceProviderUserId = HttpUtil.getTlsCertificateCommonName(smpServer);
+            final String serviceConsumerUserId = HttpUtil.getSubjectDN(false);
+            final String serviceProviderUserId = HttpUtil.getTlsCertificateCommonName(smpServer);
 
-            EventLog eventLog1 = EventLog.createEventLogPatientPrivacy(TransactionName.SMP_QUERY, EventActionCode.EXECUTE,
+            final EventLog eventLog1 = EventLog.createEventLogPatientPrivacy(TransactionName.SMP_QUERY, EventActionCode.EXECUTE,
                     date2, EventOutcomeIndicator.FULL_SUCCESS, null, null, null,
                     serviceConsumerUserId, serviceProviderUserId, partid, null, EM_PatricipantObjectID,
                     EM_PatricipantObjectDetail, objectID, null, new byte[1], null,
@@ -98,12 +120,12 @@ public class DynamicDiscoveryService {
             // facility = 13 --> log audit | severity = 2 --> Critical: critical conditions
             asd.write(eventLog1, "13", "2");
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Error sending audit for eHealth SMP Query: '{}'", e.getMessage(), e);
         }
     }
 
-    public String getEndpointUrl(String countryCode, RegisteredService service) {
+    public String getEndpointUrl(final String countryCode, final RegisteredService service) {
 
         return getEndpointUrl(countryCode, service, false);
     }
@@ -112,7 +134,7 @@ public class DynamicDiscoveryService {
         return certificate;
     }
 
-    public void setCertificate(X509Certificate certificate) {
+    public void setCertificate(final X509Certificate certificate) {
         this.certificate = certificate;
     }
 
@@ -120,7 +142,7 @@ public class DynamicDiscoveryService {
         return address;
     }
 
-    public void setAddress(URL address) {
+    public void setAddress(final URL address) {
         this.address = address;
     }
 
@@ -128,21 +150,21 @@ public class DynamicDiscoveryService {
         return extension;
     }
 
-    public void setExtension(Document extension) {
+    public void setExtension(final Document extension) {
         this.extension = extension;
     }
 
-    public String getEndpointUrl(String countryCode, RegisteredService service, boolean refresh) {
+    public String getEndpointUrl(final String countryCode, final RegisteredService service, final boolean refresh) {
 
         Validate.notNull(countryCode, "countryCode must not be null!");
         Validate.notNull(service, "service must not be null!");
         LOGGER.info("getEndpointUrl('{}', '{}')", countryCode, service.getServiceName());
-        String key = countryCode.toLowerCase() + "." + service.getServiceName() + ".WSE";
+        final String key = countryCode.toLowerCase() + "." + service.getServiceName() + ".WSE";
         try {
             if (!refresh) {
                 try {
-                    return ConfigurationManagerFactory.getConfigurationManager().getProperty(key);
-                } catch (PropertyNotFoundException e) {
+                    return getConfigurationManager().getProperty(key);
+                } catch (final PropertyNotFoundException e) {
                     LOGGER.warn("PropertyNotFoundException: '{}'", e.getMessage());
                     lookup(countryCode, service.getUrn(), key);
                     return getAddress().toExternalForm();
@@ -150,66 +172,66 @@ public class DynamicDiscoveryService {
             }
             lookup(countryCode, service.getUrn(), key);
             return getAddress().toExternalForm();
-        } catch (ConfigurationManagerException e) {
+        } catch (final ConfigurationManagerException e) {
             LOGGER.error("SMLSMPClientException: '{}'", e.getMessage(), e);
             throw new ConfigurationManagerException("An internal error occurred while retrieving the endpoint URL", e);
         }
     }
 
-    private void lookup(String countryCode, String documentType, String key) throws ConfigurationManagerException {
+    private void lookup(final String countryCode, final String documentType, final String key) throws ConfigurationManagerException {
 
         LOGGER.info("SML Client: '{}'-'{}'", countryCode, documentType);
         try {
 
-            String participantIdentifierValue = String.format(PARTICIPANT_IDENTIFIER_VALUE, countryCode);
+            final String participantIdentifierValue = String.format(PARTICIPANT_IDENTIFIER_VALUE, countryCode);
             LOGGER.debug("****** participantIdentifierValue '{}'.", participantIdentifierValue);
             LOGGER.debug("****** NAPTR Hash: '{}'", HashUtil.getSHA256HashBase32(participantIdentifierValue));
             LOGGER.debug("****** CNAME Hash: '{}'", StringUtils.lowerCase("b-" + HashUtil.getMD5Hash(participantIdentifierValue)));
-            KeyStore ks = KeyStore.getInstance("JKS");
+            final KeyStore ks = KeyStore.getInstance("JKS");
 
-            File file = new File(ConfigurationManagerFactory.getConfigurationManager().getProperty("TRUSTSTORE_PATH"));
-            FileInputStream fileInputStream = new FileInputStream(file);
-            ks.load(fileInputStream, ConfigurationManagerFactory.getConfigurationManager().getProperty("TRUSTSTORE_PASSWORD").toCharArray());
+            final File file = new File(getConfigurationManager().getProperty("TRUSTSTORE_PATH"));
+            final FileInputStream fileInputStream = new FileInputStream(file);
+            ks.load(fileInputStream, getConfigurationManager().getProperty("TRUSTSTORE_PASSWORD").toCharArray());
 
-            DynamicDiscovery smpClient = ConfigurationManagerFactory.getConfigurationManager().initializeDynamicDiscoveryFetcher()
-                    .locator(new DefaultBDXRLocator(ConfigurationManagerFactory.getConfigurationManager().getProperty("SML_DOMAIN"), new DefaultDNSLookup()))
+            final DynamicDiscovery smpClient = getConfigurationManager().initializeDynamicDiscoveryFetcher()
+                    .locator(new DefaultBDXRLocator(getConfigurationManager().getProperty("SML_DOMAIN"), new DefaultDNSLookup()))
                     .reader(new DefaultBDXRReader(new DefaultSignatureValidator(ks)))
                     .build();
 
-            DocumentIdentifier documentIdentifier = new DocumentIdentifier(documentType, DOCUMENT_IDENTIFIER_SCHEME);
-            ParticipantIdentifier participantIdentifier = new ParticipantIdentifier(participantIdentifierValue, PARTICIPANT_IDENTIFIER_SCHEME);
+            final DocumentIdentifier documentIdentifier = new DocumentIdentifier(documentType, DOCUMENT_IDENTIFIER_SCHEME);
+            final ParticipantIdentifier participantIdentifier = new ParticipantIdentifier(participantIdentifierValue, PARTICIPANT_IDENTIFIER_SCHEME);
 
-            ServiceMetadata serviceMetadata = smpClient.getServiceMetadata(participantIdentifier, documentIdentifier);
+            final ServiceMetadata serviceMetadata = smpClient.getServiceMetadata(participantIdentifier, documentIdentifier);
             LOGGER.info("ServiceMetadata '{}'.", serviceMetadata.toString());
-            ProcessListType processListType = serviceMetadata.getOriginalServiceMetadata().getServiceMetadata().getServiceInformation().getProcessList();
-            for (ProcessType processType : processListType.getProcess()) {
+            final ProcessListType processListType = serviceMetadata.getOriginalServiceMetadata().getServiceMetadata().getServiceInformation().getProcessList();
+            for (final ProcessType processType : processListType.getProcess()) {
 
                 LOGGER.info("ProcessType: '{}' - '{}'", processType.getProcessIdentifier().getValue(), processType.getProcessIdentifier().getScheme());
-                ServiceEndpointList serviceEndpointList = processType.getServiceEndpointList();
-                for (EndpointType endpointType : serviceEndpointList.getEndpoint()) {
+                final ServiceEndpointList serviceEndpointList = processType.getServiceEndpointList();
+                for (final EndpointType endpointType : serviceEndpointList.getEndpoint()) {
                     LOGGER.info("Endpoint: '{}'", endpointType.getEndpointURI());
                 }
-                List<EndpointType> endpoints = serviceEndpointList.getEndpoint();
+                final List<EndpointType> endpoints = serviceEndpointList.getEndpoint();
 
                 /*
                  * Constraint: here I think I have just one endpoint
                  */
-                int size = endpoints.size();
+                final int size = endpoints.size();
                 if (size != 1) {
                     throw new Exception(
                             "Invalid number of endpoints found (" + size + "). This implementation works just with 1.");
                 }
 
-                EndpointType e = endpoints.get(0);
-                String address = e.getEndpointURI();
+                final EndpointType e = endpoints.get(0);
+                final String address = e.getEndpointURI();
                 if (StringUtils.isEmpty(address)) {
                     throw new Exception("No address found for: " + documentType + ":" + participantIdentifierValue);
                 }
-                URL urlAddress = new URL(address);
+                final URL urlAddress = new URL(address);
 
-                InputStream inStream = new ByteArrayInputStream(e.getCertificate());
-                CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                X509Certificate certificate = (X509Certificate) cf.generateCertificate(inStream);
+                final InputStream inStream = new ByteArrayInputStream(e.getCertificate());
+                final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                final X509Certificate certificate = (X509Certificate) cf.generateCertificate(inStream);
 
                 if (certificate == null) {
                     throw new Exception("no certificate found for endpoint: " + e.getEndpointURI());
@@ -219,34 +241,34 @@ public class DynamicDiscoveryService {
                 setCertificate(certificate);
             }
 
-            URL endpointUrl = getAddress();
+            final URL endpointUrl = getAddress();
             if (endpointUrl == null) {
                 throw new PropertyNotFoundException("Property '" + key + "' not found!");
             }
 
-            String value = endpointUrl.toExternalForm();
+            final String value = endpointUrl.toExternalForm();
             LOGGER.info("Storing endpoint to database: '{}' - '{}'", key, value);
-            ConfigurationManagerFactory.getConfigurationManager().setProperty(key, value);
+            getConfigurationManager().setProperty(key, value);
 
-            X509Certificate certificate = getCertificate();
+            final X509Certificate certificate = getCertificate();
             if (certificate != null) {
-                String endpointId = countryCode.toLowerCase() + "_" + StringUtils.substringAfter(documentType, "##");
+                final String endpointId = countryCode.toLowerCase() + "_" + StringUtils.substringAfter(documentType, "##");
                 storeEndpointCertificate(endpointId, certificate);
             }
 
             //Audit vars
-            String ncp = ConfigurationManagerFactory.getConfigurationManager().getProperty("ncp.country");
-            String ncpemail = ConfigurationManagerFactory.getConfigurationManager().getProperty("ncp.email");
-            String country = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
+            final String ncp = getConfigurationManager().getProperty("ncp.country");
+            final String ncpemail = getConfigurationManager().getProperty("ncp.email");
+            final String country = getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
 
-            String localIp = IPUtil.getPrivateServerIp();
-            String smp = ConfigurationManagerFactory.getConfigurationManager().getProperty("SMP_SUPPORT");
-            String smpemail = ConfigurationManagerFactory.getConfigurationManager().getProperty("SMP_SUPPORT_EMAIL");
+            final String localIp = IPUtil.getPrivateServerIp();
+            final String smp = getConfigurationManager().getProperty("SMP_SUPPORT");
+            final String smpemail = getConfigurationManager().getProperty("SMP_SUPPORT_EMAIL");
             //ET_ObjectID --> Base64 of url
-            String objectID = getAddress().toString(); //ParticipantObjectID
+            final String objectID = getAddress().toString(); //ParticipantObjectID
             LOGGER.info("No address found for: '{}'", getAddress());
             LOGGER.info("objectID: '{}'", objectID);
-            byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
+            final byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
             if (encodedObjectID != null) {
                 LOGGER.info("encodedObjectID not NULL");
             } else {
@@ -254,45 +276,45 @@ public class DynamicDiscoveryService {
             }
             LOGGER.info("Sending audit trail");
             //TODO: Request Audit SMP Query
-            URI smpURI = smpClient.getService().getMetadataLocator().lookup(participantIdentifier);
+            final URI smpURI = smpClient.getService().getMetadataLocator().lookup(participantIdentifier);
             LOGGER.info("DNS: '{}'", smpURI);
             sendAuditQuery(ncp, ncpemail, smp, smpemail, country, localIp, smpURI.getHost(), new String(encodedObjectID),
                     null, null, smpURI.toASCIIString());
 
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception: '{}'", e.getMessage(), e);
             throw new ConfigurationManagerException(e);
         }
     }
 
-    private void storeEndpointCertificate(String endpointId, X509Certificate certificate) {
+    private void storeEndpointCertificate(final String endpointId, final X509Certificate certificate) {
 
         // Store the endpoint certificate in the truststore
-        String trustStorePath = ConfigurationManagerFactory.getConfigurationManager().getProperty(StandardProperties.NCP_TRUSTSTORE);
-        char[] trustStorePassword = ConfigurationManagerFactory.getConfigurationManager().getProperty(StandardProperties.NCP_TRUSTSTORE_PASSWORD).toCharArray();
+        final String trustStorePath = getConfigurationManager().getProperty(StandardProperties.NCP_TRUSTSTORE);
+        final char[] trustStorePassword = getConfigurationManager().getProperty(StandardProperties.NCP_TRUSTSTORE_PASSWORD).toCharArray();
 
         try {
-            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            try (InputStream is = new FileInputStream(trustStorePath)) {
+            final KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            try (final InputStream is = new FileInputStream(trustStorePath)) {
                 trustStore.load(is, trustStorePassword);
             }
-            String alias = Base64.encodeBase64String(DigestUtils.md5(certificate.getSubjectDN().getName()));
+            final String alias = Base64.encodeBase64String(DigestUtils.md5(certificate.getSubjectDN().getName()));
             trustStore.setCertificateEntry(alias, certificate);
-            try (OutputStream os = new FileOutputStream(trustStorePath)) {
+            try (final OutputStream os = new FileOutputStream(trustStorePath)) {
                 trustStore.store(os, trustStorePassword);
             }
-        } catch (GeneralSecurityException | IOException e) {
+        } catch (final GeneralSecurityException | IOException e) {
             throw new ConfigurationManagerException("An error occurred while storing the endpoint certificate in the truststore!", e);
         }
 
         // Store the endpoint certificate in the file system
-        File certificateFile = new File(ConfigurationManagerFactory.getConfigurationManager().getProperty(
+        final File certificateFile = new File(getConfigurationManager().getProperty(
                 StandardProperties.NCP_CERTIFICATES_DIRECTORY), endpointId + ".der");
-        try (OutputStream os = new FileOutputStream(certificateFile)) {
+        try (final OutputStream os = new FileOutputStream(certificateFile)) {
             os.write(certificate.getEncoded());
 
-        } catch (CertificateException | IOException e) {
+        } catch (final CertificateException | IOException e) {
             throw new ConfigurationManagerException("An error occurred while storing the endpoint certificate in the file system!", e);
         }
     }
