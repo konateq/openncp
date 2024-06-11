@@ -38,14 +38,8 @@ public class TerminologyServiceImpl implements TerminologyService {
         DebugUtils.showTransactionStatus("getDesignationByEpSOSConcept()");
         TSAMResponseStructure response = new TSAMResponseStructure(codeConcept);
         try {
-            CodeSystem system = dao.getCodeSystem(codeConcept.getCodeSystemOid());
-            checkCodeSystemName(system, codeConcept.getCodeSystemName(), response);
+            Optional<CodeSystemConcept> concept = retrieveCodeSystemConcept(codeConcept, response);
 
-            // obtain CodeSystemVersion
-            CodeSystemVersion codeSystemVersion = dao.getVersion(codeConcept.getCodeSystemVersion(), system);
-
-            // obtain Concept
-            Optional<CodeSystemConcept> concept = dao.getConcept(codeConcept.getCode(), codeSystemVersion);
             if (concept.isEmpty()) {
                 return response;
             } else {
@@ -72,6 +66,22 @@ public class TerminologyServiceImpl implements TerminologyService {
         return response;
     }
 
+    private Optional<CodeSystemConcept> retrieveCodeSystemConcept(CodeConcept codeConcept, TSAMResponseStructure response) throws TSAMException {
+        final CodeSystem codeSystem = dao.getCodeSystem(codeConcept);
+        codeConcept.getCodeSystemName().ifPresent(codeSystemName -> checkCodeSystemName(codeSystem, codeSystemName, response));
+
+        // obtain CodeSystemVersion
+        Optional<CodeSystemConcept> concept;
+        if (StringUtils.isNotBlank(codeConcept.getCodeSystemVersion())) {
+            CodeSystemVersion codeSystemVersion = dao.getVersion(codeConcept.getCodeSystemVersion(), codeSystem);
+            concept = dao.getConcept(codeConcept.getCode(), codeSystemVersion);
+        } else {
+            List<Long> codeSystemVersionIds = dao.getCodeSystemVersionIds(codeConcept.getCodeSystemOid().get());
+            concept = dao.getConceptByCodeSystemVersionIds(codeConcept.getCode(), codeSystemVersionIds);
+        }
+        return concept;
+    }
+
     public TSAMResponseStructure getTargetConcept(CodeConcept codeConcept) {
 
         logger.debug("getTargetConcept BEGIN ('{}')", codeConcept);
@@ -82,19 +92,7 @@ public class TerminologyServiceImpl implements TerminologyService {
             if (logger.isDebugEnabled()) {
                 logger.debug("Searching Concept [{}]", codeConcept);
             }
-            Optional<CodeSystemConcept> concept;
-            // obtain CodeSystem
-            CodeSystem codeSystem = dao.getCodeSystem(codeConcept.getCodeSystemOid());
-            checkCodeSystemName(codeSystem, codeConcept.getCodeSystemName(), response);
-
-            // obtain a Concept by CodeSystemVersion or if it exists in any others versions available.
-            if (StringUtils.isNotBlank(codeConcept.getCodeSystemVersion())) {
-                CodeSystemVersion codeSystemVersion = dao.getVersion(codeConcept.getCodeSystemVersion(), codeSystem);
-                concept = dao.getConcept(codeConcept.getCode(), codeSystemVersion);
-            } else {
-                List<Long> codeSystemVersionIds = dao.getCodeSystemVersionIds(codeConcept.getCodeSystemOid());
-                concept = dao.getConceptByCodeSystemVersionIds(codeConcept.getCode(), codeSystemVersionIds);
-            }
+            Optional<CodeSystemConcept> concept = retrieveCodeSystemConcept(codeConcept, response);
 
             if (concept.isEmpty()) {
                 return response;
@@ -297,14 +295,13 @@ public class TerminologyServiceImpl implements TerminologyService {
         this.config = config;
     }
 
-    public Map<CodeSystemConcept, CodeSystemConcept> getNationalCodeSystemMappedConcepts(String oid, String version) {
-        logger.debug("OID: {} | Version: {}", oid, version);
+    public Map<CodeSystemConcept, CodeSystemConcept> getNationalCodeSystemMappedConcepts(CodeConcept codeConcept, String version) {
+        logger.debug("OID: {} | Version: {}", codeConcept.getCodeSystemOid(), version);
         Map<CodeSystemConcept, CodeSystemConcept> mappedConcepts = null;
 
         try {
-
             // First we get the national CodeSystem from its OID
-            CodeSystem nationalCodeSystem = dao.getCodeSystem(oid);
+            CodeSystem nationalCodeSystem = dao.getCodeSystem(codeConcept);
             logger.debug("National CodeSystem: ID: {} | OID: {} | Name: {}", nationalCodeSystem.getId(), nationalCodeSystem.getOid(), nationalCodeSystem.getName());
 
             // Then we get the national CodeSystem version

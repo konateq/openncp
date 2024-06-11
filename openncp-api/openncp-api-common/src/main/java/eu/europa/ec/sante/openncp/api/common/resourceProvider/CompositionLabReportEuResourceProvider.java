@@ -8,8 +8,8 @@ import ca.uhn.fhir.rest.api.*;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.CompositionLabReportEu;
 import eu.europa.ec.sante.openncp.api.common.handler.BundleHandler;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.CompositionLabReportMyHealthEu;
 import eu.europa.ec.sante.openncp.core.common.fhir.services.DispatchingService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -42,15 +42,15 @@ public class CompositionLabReportEuResourceProvider implements IResourceProvider
     }
 
     @Override
-    public Class<CompositionLabReportEu> getResourceType() {
-        return CompositionLabReportEu.class;
+    public Class<CompositionLabReportMyHealthEu> getResourceType() {
+        return CompositionLabReportMyHealthEu.class;
     }
 
 
     @Read
-    public CompositionLabReportEu find(@IdParam final IdType id, final HttpServletRequest theServletRequest, final HttpServletResponse theServletResponse,
+    public CompositionLabReportMyHealthEu find(@IdParam final IdType id, final HttpServletRequest theServletRequest, final HttpServletResponse theServletResponse,
                                        final RequestDetails theRequestDetails) {
-        final CompositionLabReportEu handledCompositionLabReportEu = dispatchingService.dispatchRead(theRequestDetails);
+        final CompositionLabReportMyHealthEu handledCompositionLabReportEu = dispatchingService.dispatchRead(theRequestDetails);
 //        final CompositionLabReportEu handledCompositionLabReportEu = compositionLabReportEuHandler.handle(serverResponse);
 
         return handledCompositionLabReportEu;

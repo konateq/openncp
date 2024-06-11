@@ -49,7 +49,8 @@ public enum TSAMError implements ITMTSAMError, ErrorCode {
     WARNING_MANY_DESIGNATIONS("2506", "More than one Display Name was found in status \"Current\" and none of them has IS_PREFERRED tag set"),
     WARNING_VS_DOESNT_MATCH("2507", "ValueSet doesn't match for selected CodeSystemConcept"),
     WARNING_CODE_SYSTEM_NAME_DOESNT_MATCH("2508", "CodeSystem name doesn't match provided name"),
-    WARNING_CONCEPT_STATUS_NOT_CURRENT("2509", "Concept STATUS is not \"Current\"");
+    WARNING_CONCEPT_STATUS_NOT_CURRENT("2509", "Concept STATUS is not \"Current\""),
+    ERROR_OID_OR_URL_MUST_BE_PROVIDED_TO_FIND_CODE_SYSTEM("2510", "OID or URL MUST be provided to find code system"),;
 
     /**
      * Exception code

@@ -1,5 +1,7 @@
 package eu.europa.ec.sante.openncp.core.common.tsam.dao;
 
+import com.vladsch.flexmark.ast.Code;
+import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.RetrievedConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.TSAMException;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.*;
@@ -136,8 +138,18 @@ public class TsamDaoImpl implements TsamDao {
     }
 
     @Override
-    public CodeSystem getCodeSystem(String oid) throws TSAMException {
-        return codeSystemRepository.findByOid(oid).orElseThrow(() -> new TSAMException(TSAMError.ERROR_CODE_SYSTEM_NOTFOUND, oid));
+    public CodeSystem getCodeSystem(CodeConcept codeConcept) throws TSAMException {
+        final CodeSystem system;
+        if (codeConcept.getCodeSystemOid().isPresent()) {
+            String oid = codeConcept.getCodeSystemOid().get();
+            system = codeSystemRepository.findByOid(oid).orElseThrow(() -> new TSAMException(TSAMError.ERROR_CODE_SYSTEM_NOTFOUND, oid));
+        } else if (codeConcept.getCodeSystemUrl().isPresent()){
+            String url = codeConcept.getCodeSystemUrl().get();
+            system = codeSystemRepository.findByUrl(url).orElseThrow(() -> new TSAMException(TSAMError.ERROR_CODE_SYSTEM_NOTFOUND, url));
+        } else {
+            throw new TSAMException(TSAMError.ERROR_OID_OR_URL_MUST_BE_PROVIDED_TO_FIND_CODE_SYSTEM);
+        }
+        return system;
     }
 
     @Override

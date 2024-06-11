@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.tsam.dao;
 
+import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.RetrievedConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.TSAMException;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.CodeSystem;
@@ -77,11 +78,11 @@ public interface TsamDao {
     /**
      * Retrieve CodeSystem by OID
      *
-     * @param oid
+     * @param codeConcept
      * @return CodeSystem
      * @throws TSAMException if CodeSystem is not found
      */
-    CodeSystem getCodeSystem(String oid) throws TSAMException;
+    CodeSystem getCodeSystem(CodeConcept codeConcept) throws TSAMException;
 
     /**
      * Retrieve CodeSystemVersion IDs list by OID
