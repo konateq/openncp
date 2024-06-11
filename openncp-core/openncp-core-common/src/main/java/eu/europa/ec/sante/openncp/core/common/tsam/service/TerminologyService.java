@@ -46,10 +46,10 @@ public interface TerminologyService {
      * (i.e., it does not return the full national CodeSystem, since that is not available within the LTR database. What is available
      * is the set of national concepts from a national CodeSystem that are mapped to international concepts of a ValueSet) 
      * 
-     * @param oid The OID of the national CodeSystem
+     * @param codeConcept The codeConcept of the national CodeSystem
      * @param version The version of the national CodeSystem. If no version is provided (version is null),
      * method looks for versions of CodeSystem with status "current".
      * @return The list of the national CodeSystem concepts 
      */
-    Map<CodeSystemConcept,CodeSystemConcept> getNationalCodeSystemMappedConcepts(String oid, String version);
+    Map<CodeSystemConcept,CodeSystemConcept> getNationalCodeSystemMappedConcepts(CodeConcept codeConcept, String version);
 }

@@ -1,6 +1,6 @@
 package eu.europa.eu.sante.openncp.core.common.fhir.transformation.service.impl.resources.translation;
 
-import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources.translation.PatientTranslationService;
+import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources.PatientResourceTranslationService;
 import eu.europa.eu.sante.openncp.core.common.DummyApplication;
 import org.hl7.fhir.r4.model.*;
 import org.junit.Assert;
@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
@@ -18,7 +17,7 @@ import java.util.Collections;
 public class PatientTranslationServiceTest {
 
     @Autowired
-    PatientTranslationService patientTranslationService;
+    PatientResourceTranslationService patientTranslationService;
 
     @Test
     public void testTranslate() {

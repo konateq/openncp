@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.tsam;
 
+import eu.europa.ec.sante.openncp.common.immutables.Domain;
 import eu.europa.ec.sante.openncp.core.common.ihe.tsam.util.CodedElement;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Coding;
@@ -8,19 +9,22 @@ import org.w3c.dom.Element;
 
 import java.util.Optional;
 
-@Value.Immutable
+@Domain
 public interface CodeConcept {
-    String getCodeSystemOid();
+
+    String getCode();
 
     String getCodeSystemVersion();
 
-    String getCodeSystemName();
+    Optional<String> getCodeSystemOid();
+
+    Optional<String> getCodeSystemUrl();
+
+    Optional<String> getCodeSystemName();
 
     Optional<String> getValueSetOid();
 
     Optional<String> getValueSetVersion();
-
-    String getCode();
 
     Optional<String> getDisplayName();
 
@@ -28,8 +32,9 @@ public interface CodeConcept {
         Validate.notNull(codedElement);
         return ImmutableCodeConcept.builder()
                 .code(codedElement.getCode())
-                .codeSystemName(codedElement.getCodeSystem())
                 .codeSystemVersion(codedElement.getVersion())
+                .codeSystemName(codedElement.getCodeSystem())
+                .displayName(codedElement.getDisplayName())
                 .valueSetOid(codedElement.getVsOid())
                 .valueSetVersion(codedElement.getValueSetVersion())
                 .build();
@@ -42,8 +47,8 @@ public interface CodeConcept {
 
         return ImmutableCodeConcept.builder()
                 .code(iheElement.getAttribute("code"))
-                .codeSystemName(iheElement.getAttribute("codeSystemName"))
                 .codeSystemVersion(iheElement.getAttribute("codeSystemVersion"))
+                .codeSystemName(iheElement.getAttribute("codeSystemName"))
                 .codeSystemOid(iheElement.getAttribute("codeSystem"))
                 .displayName(iheElement.getAttribute("displayName"))
                 .valueSetOid(valueSetOid)
@@ -55,9 +60,10 @@ public interface CodeConcept {
         Validate.notNull(coding);
         return ImmutableCodeConcept.builder()
                 .code(coding.getCode())
-                .codeSystemName(coding.getSystem())
-                .codeSystemOid(coding.getId())
                 .codeSystemVersion(coding.getVersion())
+                .codeSystemName(Optional.ofNullable(coding.getSystem()))
+                .codeSystemUrl(Optional.ofNullable(coding.getSystem()))
+                .displayName(Optional.ofNullable(coding.getDisplay()))
                 .build();
     }
 

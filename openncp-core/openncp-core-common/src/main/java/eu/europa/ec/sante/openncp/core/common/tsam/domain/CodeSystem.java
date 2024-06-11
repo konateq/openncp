@@ -24,6 +24,13 @@ public class CodeSystem {
     private String oid;
 
     /**
+     * An identifier that uniquely identified the Code System (in the form of an
+     * URL)
+     */
+    @Column(name="url")
+    private String url;
+
+    /**
      * A name given in MVC / MTC that is usually the same as official code
      * system name
      */
@@ -55,6 +62,14 @@ public class CodeSystem {
 
     public void setOid(String oid) {
         this.oid = oid;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getName() {

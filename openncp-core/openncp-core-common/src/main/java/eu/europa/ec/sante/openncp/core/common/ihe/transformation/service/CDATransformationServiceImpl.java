@@ -555,22 +555,22 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                 // check - no repeated attributed in translation element by
                 // transcoding
                 // if codeSystem && code for source and target are same
-                if (StringUtils.isNotEmpty(tsamResponse.getCodeSystem()) && StringUtils.isNotEmpty(codeConcept.getCodeSystemOid())
-                        && !codeConcept.getCodeSystemOid().equalsIgnoreCase(tsamResponse.getCodeSystem())
-                        || (codeConcept.getCodeSystemOid().equalsIgnoreCase(tsamResponse.getCodeSystem())
+                if (StringUtils.isNotEmpty(tsamResponse.getCodeSystem()) && codeConcept.getCodeSystemOid().isPresent()
+                        && !codeConcept.getCodeSystemOid().get().equalsIgnoreCase(tsamResponse.getCodeSystem())
+                        || (codeConcept.getCodeSystemOid().get().equalsIgnoreCase(tsamResponse.getCodeSystem())
                         && !codeConcept.getCode().equals(tsamResponse.getCode()))) {
                     // code
                     if (StringUtils.isNotEmpty(codeConcept.getCode())) {
                         newTranslation.setAttribute(CODE, codeConcept.getCode());
                     }
                     // codeSystem
-                    if (StringUtils.isNotEmpty(codeConcept.getCodeSystemOid())) {
-                        newTranslation.setAttribute(CODE_SYSTEM, codeConcept.getCodeSystemOid());
-                    }
+                    codeConcept.getCodeSystemOid()
+                            .filter(StringUtils::isNotEmpty)
+                            .ifPresent(codeSystemOid -> newTranslation.setAttribute(CODE_SYSTEM, codeSystemOid));
                     // codeSystemName
-                    if (StringUtils.isNotEmpty(codeConcept.getCodeSystemName())) {
-                        newTranslation.setAttribute(CODE_SYSTEM_NAME, codeConcept.getCodeSystemName());
-                    }
+                    codeConcept.getCodeSystemName()
+                            .filter(StringUtils::isNotEmpty)
+                            .ifPresent(codeSystemName -> newTranslation.setAttribute(CODE_SYSTEM_NAME, codeSystemName));
                     // codeSystemVersion
                     if (StringUtils.isNotEmpty(codeConcept.getCodeSystemVersion())) {
                         newTranslation.setAttribute(CODE_SYSTEM_VERSION, codeConcept.getCodeSystemVersion());
@@ -585,13 +585,13 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                         newTranslation.setAttribute(CODE, codeConcept.getCode());
                     }
 
-                    if (StringUtils.isNotEmpty(codeConcept.getCodeSystemOid())) {
-                        newTranslation.setAttribute(CODE_SYSTEM, codeConcept.getCodeSystemOid());
+                    if (codeConcept.getCodeSystemOid().isPresent()) {
+                        newTranslation.setAttribute(CODE_SYSTEM, codeConcept.getCodeSystemOid().get());
                     }
 
-                    if (StringUtils.isNotEmpty(codeConcept.getCodeSystemName())) {
-                        newTranslation.setAttribute(CODE_SYSTEM_NAME, codeConcept.getCodeSystemName());
-                    }
+                    codeConcept.getCodeSystemName()
+                            .filter(StringUtils::isNotEmpty)
+                            .ifPresent(codeSystemName -> newTranslation.setAttribute(CODE_SYSTEM_NAME, codeSystemName));
                     attributesFilled = true;
                 } else {
                     logger.debug("Translation is same as original: '{}'", tsamResponse.getDesignation());
