@@ -30,7 +30,7 @@ class DiagnosticReportTranslationServiceTest extends AbstractTranslationServiceT
 
 
     @Test
-    void translate() throws IOException {
+    void testTranslate() throws IOException {
         assertThat(diagnosticReportTranslationService).isNotNull();
 
         final DiagnosticReportLabMyHealthEu input = parser.parseResource(DiagnosticReportLabMyHealthEu.class, IOUtils.toString(

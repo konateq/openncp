@@ -30,7 +30,7 @@ class ObservationTranslationServiceTest extends AbstractTranslationServiceTest {
 
 
     @Test
-    void translate() throws IOException {
+    void testTranslate() throws IOException {
         assertThat(observationTranslationService).isNotNull();
 
         final ObservationResultsLaboratoryMyHealthEu input = parser.parseResource(ObservationResultsLaboratoryMyHealthEu.class, IOUtils.toString(

@@ -30,7 +30,7 @@ class DeviceSpecimenResourceTranslationServiceTest extends AbstractTranslationSe
 
 
     @Test
-    void translate() throws IOException {
+    void testTranslate() throws IOException {
         assertThat(deviceSpecimenTranslationService).isNotNull();
 
         final DeviceSpecimenMyHealthEu input = parser.parseResource(DeviceSpecimenMyHealthEu.class, IOUtils.toString(

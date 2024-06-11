@@ -1,4 +1,4 @@
-package eu.europa.eu.sante.openncp.core.common;
+package eu.europa.ec.sante.openncp.core.common;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

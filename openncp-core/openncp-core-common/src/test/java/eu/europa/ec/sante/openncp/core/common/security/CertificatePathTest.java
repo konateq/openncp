@@ -1,7 +1,7 @@
-package eu.europa.eu.sante.openncp.core.common.security;
+package eu.europa.ec.sante.openncp.core.common.security;
 
 import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
-import eu.europa.eu.sante.openncp.core.common.security.key.impl.TianiTestKeyStoreManager;
+import eu.europa.ec.sante.openncp.core.common.security.key.impl.TianiTestKeyStoreManager;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
