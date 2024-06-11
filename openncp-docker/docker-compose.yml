@@ -145,6 +145,8 @@ services:
       #        condition: service_completed_successfully
     #      openncp-tsam-sync:
     #        condition: service_completed_successfully
+    dns:
+      - 8.8.8.8
     environment:
       CATALINA_OPTS: "
         -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
@@ -222,7 +224,8 @@ services:
         -Dtls_keystore_pwd=${TLS_KEYSTORE_PWD}
         -Dtls_keystore_path=${TLS_KEYSTORE_PATH}
         -Dtls_truststore_pwd=${TLS_TRUSTSTORE_PWD}
-        -Dtls_truststore_path=${TLS_TRUSTSTORE_PATH}"
+        -Dtls_truststore_path=${TLS_TRUSTSTORE_PATH}
+        -Dorg.apache.cxf.stax.allowInsecureParser=true"
       LOGGING_LEVEL_ROOT: DEBUG
     volumes:
       - ./openncp-configuration:/opt/openncp-configuration
