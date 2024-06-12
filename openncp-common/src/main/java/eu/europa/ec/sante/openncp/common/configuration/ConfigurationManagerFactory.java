@@ -1,5 +1,7 @@
 package eu.europa.ec.sante.openncp.common.configuration;
 
+import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,7 +21,8 @@ public class ConfigurationManagerFactory {
         return configurationManager;
     }
 
-    public ConfigurationManagerFactory (ConfigurationManager configurationManager) {
-        this.configurationManager = configurationManager;
+    @Autowired
+    public void setConfigurationManager(final ConfigurationManager configurationManager) {
+        ConfigurationManagerFactory.configurationManager = Validate.notNull(configurationManager);
     }
 }
