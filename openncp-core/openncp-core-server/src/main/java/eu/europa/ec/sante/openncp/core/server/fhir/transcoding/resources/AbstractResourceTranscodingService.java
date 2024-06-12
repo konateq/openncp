@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Resource;
 
+import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractResourceTranscodingService<R extends Resource> implements ResourceTranscodingService<R> {
@@ -38,7 +39,7 @@ public abstract class AbstractResourceTranscodingService<R extends Resource> imp
 
     protected abstract R transcodeTypedResource(R typedResource);
 
-    protected Optional<Coding> getTranscoding(final Coding coding) {
+    private Optional<Coding> getTranscoding(final Coding coding) {
         final TSAMResponseStructure tsamTranscodingResponse = terminologyService.getTargetConcept(CodeConcept.from(coding));
         final Coding targetCoding = new Coding(CodeSystem.getUrlBasedOnOid(tsamTranscodingResponse.getCodeSystem()),
                                                tsamTranscodingResponse.getCode(), tsamTranscodingResponse.getDesignation()).setVersion(tsamTranscodingResponse.getCodeSystemVersion());
@@ -57,5 +58,16 @@ public abstract class AbstractResourceTranscodingService<R extends Resource> imp
                               .filter(Coding::getUserSelected)
                               .findFirst()
                               .or(() -> codeableConcept.getCoding().stream().findFirst());
+    }
+
+    protected void transcodeCodeableConcept(final CodeableConcept codeableConcept) {
+        final Optional<Coding> coding = getTranscoding(codeableConcept.getCoding().iterator().next());
+        coding.ifPresent(transcoding -> codeableConcept.getCoding().add(transcoding));
+    }
+
+    protected void transcodeCodeableConceptsList(final List<CodeableConcept> codeableConcepts) {
+        for (final CodeableConcept codeableConcept : codeableConcepts) {
+            transcodeCodeableConcept(codeableConcept);
+        }
     }
 }

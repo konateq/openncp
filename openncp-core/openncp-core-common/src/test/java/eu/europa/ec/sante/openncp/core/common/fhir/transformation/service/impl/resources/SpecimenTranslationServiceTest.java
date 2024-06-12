@@ -25,7 +25,7 @@ class SpecimenTranslationServiceTest extends AbstractTranslationServiceTest {
 
     @BeforeEach
     void init() {
-        specimenTranslationService = new SpecimenResourceTranslationService(mockedTerminologyService);
+        specimenTranslationService = new SpecimenTranslationService(mockedTerminologyService);
     }
 
 

@@ -6,20 +6,17 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SpecimenResourceTranslationService extends AbstractResourceTranslationService<SpecimenMyHealthEu> {
+public class SpecimenTranslationService extends AbstractResourceTranslationService<SpecimenMyHealthEu> {
 
-    public SpecimenResourceTranslationService(TerminologyService terminologyService) {
+    public SpecimenTranslationService(final TerminologyService terminologyService) {
         super(terminologyService);
     }
 
     @Override
-    public SpecimenMyHealthEu translateTypedResource(SpecimenMyHealthEu specimenMyHealthEu, String targetLanguage) {
+    public SpecimenMyHealthEu translateTypedResource(final SpecimenMyHealthEu specimenMyHealthEu, final String targetLanguage) {
 
-        /** Type **/
-        addTranslation(specimenMyHealthEu.getType(), targetLanguage);
-
-        /** Collection - BodySite **/
-        addTranslation(specimenMyHealthEu.getCollection().getBodySite(), targetLanguage);
+        translateCodeableConcept(specimenMyHealthEu.getType(), targetLanguage);
+        translateCodeableConcept(specimenMyHealthEu.getCollection().getBodySite(), targetLanguage);
 
         return specimenMyHealthEu;
     }

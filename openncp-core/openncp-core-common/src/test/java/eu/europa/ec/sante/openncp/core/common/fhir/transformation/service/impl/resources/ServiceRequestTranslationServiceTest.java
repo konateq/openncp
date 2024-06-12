@@ -25,7 +25,7 @@ class ServiceRequestTranslationServiceTest extends AbstractTranslationServiceTes
 
     @BeforeEach
     void init() {
-        serviceRequestTranslationService = new ServiceRequestResourceTranslationService(mockedTerminologyService);
+        serviceRequestTranslationService = new ServiceRequestTranslationService(mockedTerminologyService);
     }
 
 

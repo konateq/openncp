@@ -34,8 +34,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
 
     @Search(allowUnknownParams = true)
     public IBaseBundle search(final HttpServletRequest theServletRequest, final HttpServletResponse theServletResponse,
-                              final EuRequestDetails theRequestDetails) {
-        final Bundle serverResponse = dispatchingService.dispatchSearch(theRequestDetails);
+                              final RequestDetails theRequestDetails) {
+        final Bundle serverResponse = dispatchingService.dispatchSearch(EuRequestDetails.of(theRequestDetails));
 
         return serverResponse;
     }

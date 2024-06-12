@@ -3791,3 +3791,41 @@ Caused by: javax.naming.NoInitialContextException: Need to specify class name in
 [32m[2024-06-11T17:29:01.821+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
 [32m[2024-06-11T17:29:03.955+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
 [32m[2024-06-11T17:29:04.072+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T10:31:14.822+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T10:31:14.834+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T10:31:16.619+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.XmlUtil.logStaxImplementation(74) - FHIR XML procesing will use StAX implementation 'Woodstox' version '6.2.6'
+[32m[2024-06-12T10:31:16.896+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T10:31:18.858+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-12T10:31:18.977+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T11:31:48.905+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T11:31:48.916+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T11:31:51.966+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element deviceName - Expected ARRAY and found OBJECT
+[32m[2024-06-12T11:35:50.438+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T11:35:50.450+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T11:35:53.826+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element deviceName - Expected ARRAY and found OBJECT
+[32m[2024-06-12T11:39:06.599+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T11:39:06.609+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T11:39:09.676+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element deviceName - Expected ARRAY and found OBJECT
+[32m[2024-06-12T11:44:43.631+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T11:44:43.642+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T11:44:46.724+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element deviceName - Expected ARRAY and found OBJECT
+[32m[2024-06-12T11:48:05.696+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T11:48:05.705+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T11:48:08.738+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element deviceName - Expected ARRAY and found OBJECT
+[32m[2024-06-12T11:48:35.537+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T11:48:35.548+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T11:48:38.283+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element deviceName - Expected ARRAY and found OBJECT
+[32m[2024-06-12T11:49:42.266+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T11:49:42.277+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T11:49:45.255+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element deviceName - Expected ARRAY and found OBJECT
+[32m[2024-06-12T11:50:41.683+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T11:50:41.692+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T11:50:44.818+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element deviceName - Expected ARRAY and found OBJECT
+[32m[2024-06-12T16:17:58.685+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.VersionUtil.initialize(84) - HAPI FHIR version 6.6.0 - Rev 3191cea181
+[32m[2024-06-12T16:17:58.697+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T16:18:00.369+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.util.XmlUtil.logStaxImplementation(74) - FHIR XML procesing will use StAX implementation 'Woodstox' version '6.2.6'
+[32m[2024-06-12T16:18:00.675+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T16:18:02.628+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element reasonCode - Expected ARRAY and found OBJECT
+[32m[2024-06-12T16:18:02.745+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]
+[32m[2024-06-12T16:18:02.820+02:00][0;39m [36m[main][0;39m [31mWARN [0;39m c.u.fhir.parser.LenientErrorHandler.incorrectJsonType(85) - Found incorrect type for element deviceName - Expected ARRAY and found OBJECT
+[32m[2024-06-12T16:18:02.836+02:00][0;39m [36m[main][0;39m [34mINFO [0;39m ca.uhn.fhir.context.FhirContext.<init>(210) - Creating new FHIR context for FHIR version [R4]

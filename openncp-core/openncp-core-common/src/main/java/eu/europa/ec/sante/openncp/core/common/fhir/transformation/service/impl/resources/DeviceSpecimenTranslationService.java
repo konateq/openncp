@@ -6,17 +6,16 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DeviceSpecimenResourceTranslationService extends AbstractResourceTranslationService<DeviceSpecimenMyHealthEu>  {
+public class DeviceSpecimenTranslationService extends AbstractResourceTranslationService<DeviceSpecimenMyHealthEu> {
 
-    public DeviceSpecimenResourceTranslationService(TerminologyService terminologyService) {
+    public DeviceSpecimenTranslationService(final TerminologyService terminologyService) {
         super(terminologyService);
     }
 
     @Override
-    public DeviceSpecimenMyHealthEu translateTypedResource(DeviceSpecimenMyHealthEu deviceSpecimenMyHealthEu, String targetLanguage) {
+    public DeviceSpecimenMyHealthEu translateTypedResource(final DeviceSpecimenMyHealthEu deviceSpecimenMyHealthEu, final String targetLanguage) {
 
-        /** Type **/
-        addTranslation(deviceSpecimenMyHealthEu.getType(), targetLanguage);
+        translateCodeableConcept(deviceSpecimenMyHealthEu.getType(), targetLanguage);
 
         return deviceSpecimenMyHealthEu;
     }
@@ -25,5 +24,4 @@ public class DeviceSpecimenResourceTranslationService extends AbstractResourceTr
     public ResourceType getResourceType() {
         return ResourceType.Device;
     }
-
 }
