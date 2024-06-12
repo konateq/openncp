@@ -155,6 +155,7 @@
                         WEB-INF/lib/log4j-jcl-2.17.2.jar,
                     </dependentWarExcludes>
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
                     <nonFilteredFileExtensions>
                         <nonFilteredFileExtension>aar</nonFilteredFileExtension>
                     </nonFilteredFileExtensions>
