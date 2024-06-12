@@ -17,4 +17,8 @@ public interface EuRequestDetails {
     default RestOperationTypeEnum getRestOperationType() {
         return getHapiRequestDetails().getRestOperationType();
     }
+
+    static EuRequestDetails of(RequestDetails requestDetails) {
+        return ImmutableEuRequestDetails.of(requestDetails);
+    }
 }

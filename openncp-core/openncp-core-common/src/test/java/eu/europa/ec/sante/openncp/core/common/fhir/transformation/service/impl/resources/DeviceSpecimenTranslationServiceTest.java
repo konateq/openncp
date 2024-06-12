@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class DeviceSpecimenResourceTranslationServiceTest extends AbstractTranslationServiceTest {
+class DeviceSpecimenTranslationServiceTest extends AbstractTranslationServiceTest {
 
     @Mock
     private TerminologyService mockedTerminologyService;
@@ -25,7 +25,7 @@ class DeviceSpecimenResourceTranslationServiceTest extends AbstractTranslationSe
 
     @BeforeEach
     void init() {
-        deviceSpecimenTranslationService = new DeviceSpecimenResourceTranslationService(mockedTerminologyService);
+        deviceSpecimenTranslationService = new DeviceSpecimenTranslationService(mockedTerminologyService);
     }
 
 

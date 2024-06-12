@@ -25,7 +25,7 @@ class DiagnosticReportTranslationServiceTest extends AbstractTranslationServiceT
 
     @BeforeEach
     void init() {
-        diagnosticReportTranslationService = new DiagnosticReportResourceTranslationService(mockedTerminologyService);
+        diagnosticReportTranslationService = new DiagnosticReportTranslationService(mockedTerminologyService);
     }
 
 

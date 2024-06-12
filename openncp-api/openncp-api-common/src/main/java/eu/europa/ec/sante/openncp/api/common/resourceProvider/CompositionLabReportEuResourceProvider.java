@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import eu.europa.ec.sante.openncp.api.common.handler.BundleHandler;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.EuRequestDetails;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.ImmutableEuRequestDetails;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.CompositionLabReportMyHealthEu;
 import eu.europa.ec.sante.openncp.core.common.fhir.services.DispatchingService;
@@ -51,7 +52,7 @@ public class CompositionLabReportEuResourceProvider implements IResourceProvider
     @Read
     public CompositionLabReportMyHealthEu find(@IdParam final IdType id, final HttpServletRequest theServletRequest, final HttpServletResponse theServletResponse,
                                        final RequestDetails theRequestDetails) {
-        final CompositionLabReportMyHealthEu handledCompositionLabReportEu = dispatchingService.dispatchRead(ImmutableEuRequestDetails.of(theRequestDetails));
+        final CompositionLabReportMyHealthEu handledCompositionLabReportEu = dispatchingService.dispatchRead(EuRequestDetails.of(theRequestDetails));
 //        final CompositionLabReportEu handledCompositionLabReportEu = compositionLabReportEuHandler.handle(serverResponse);
 
         return handledCompositionLabReportEu;
