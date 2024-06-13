@@ -9,8 +9,6 @@ import org.openhealthtools.openatna.audit.persistence.PersistencePolicies;
 import org.openhealthtools.openatna.audit.persistence.dao.*;
 import org.openhealthtools.openatna.audit.persistence.model.*;
 import org.openhealthtools.openatna.audit.persistence.model.codes.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -22,7 +20,32 @@ import java.util.*;
 @Transactional(rollbackFor = AtnaPersistenceException.class)
 public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> implements MessageDao {
 
-    private static Logger logger = LoggerFactory.getLogger(HibernateMessageDao.class);
+    private static final String EVENT_ID = "eventId";
+    private static final String CODE = "code";
+    private static final String CODE_SYSTEM = "codeSystem";
+    private static final String CODE_SYSTEM_NAME = "codeSystemName";
+    private static final String SOURCE_ADDRESS = "sourceAddress";
+    private static final String EVENT_TYPE_CODES = "eventTypeCodes";
+    private static final String EVENT_OUTCOME = "eventOutcome";
+    private static final String EVENT_ACTION_CODE = "eventActionCode";
+    private static final String MESSAGE_PARTICIPANTS = "messageParticipants";
+    private static final String PARTICIPANT = "participant";
+    private static final String USER_ID = "userId";
+    private static final String ALT_USER_ID = "altUserId";
+    private static final String PARTICIPANT_TYPE_CODES = "participantTypeCodes";
+    private static final String MESSAGE_SOURCES = "messageSources";
+    private static final String SOURCE = "source";
+    private static final String SOURCE_ID = "sourceId";
+    private static final String ENTERPRISE_SITE_ID = "enterpriseSiteId";
+    private static final String SOURCE_TYPE_CODES = "sourceTypeCodes";
+    private static final String MESSAGE_OBJECTS = "messageObjects";
+    private static final String OBJECT = "object";
+    private static final String OBJECT_ID = "objectId";
+    private static final String OBJECT_ID_TYPE_CODE = "objectIdTypeCode";
+    private static final String OBJECT_TYPE_CODE = "objectTypeCode";
+    private static final String ERROR_BAD_OBJECT_DETAIL_KEY = "bad object detail key.";
+    private static final String ERROR_NO_AUDIT_SOURCE_DEFINED = "no audit source defined.";
+    private static final String ERROR_AUDIT_MESSAGES_CANNOT_BE_MODIFIED = "audit messages cannot be modified.";
 
     public HibernateMessageDao(SessionFactory sessionFactory) {
         super(MessageEntity.class, sessionFactory);
@@ -52,105 +75,105 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
 
     public List<? extends MessageEntity> getByEventId(EventIdCodeEntity codeEntity) {
 
-        return list(criteria().createCriteria("eventId").add(Restrictions.eq("code", codeEntity.getCode()))
-                .add(Restrictions.eq("codeSystem", codeEntity.getCodeSystem()))
-                .add(Restrictions.eq("codeSystemName", codeEntity.getCodeSystemName())));
+        return list(criteria().createCriteria(EVENT_ID).add(Restrictions.eq(CODE, codeEntity.getCode()))
+                .add(Restrictions.eq(CODE_SYSTEM, codeEntity.getCodeSystem()))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
     public List<? extends MessageEntity> getBySourceAddress(String address) {
 
-        return list(criteria().add(Restrictions.eq("sourceAddress", address)));
+        return list(criteria().add(Restrictions.eq(SOURCE_ADDRESS, address)));
     }
 
     public List<? extends MessageEntity> getByEventType(EventTypeCodeEntity codeEntity) {
 
-        return list(criteria().createCriteria("eventTypeCodes").add(Restrictions.eq("code", codeEntity.getCode()))
-                .add(Restrictions.eq("codeSystem", codeEntity.getCodeSystem()))
-                .add(Restrictions.eq("codeSystemName", codeEntity.getCodeSystemName())));
+        return list(criteria().createCriteria(EVENT_TYPE_CODES).add(Restrictions.eq(CODE, codeEntity.getCode()))
+                .add(Restrictions.eq(CODE_SYSTEM, codeEntity.getCodeSystem()))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
     public List<? extends MessageEntity> getByEventOutcome(Integer outcome) {
 
-        return list(criteria().add(Restrictions.eq("eventOutcome", outcome)));
+        return list(criteria().add(Restrictions.eq(EVENT_OUTCOME, outcome)));
     }
 
     public List<? extends MessageEntity> getByEventAction(String action) {
 
-        return list(criteria().add(Restrictions.eq("eventActionCode", action)));
+        return list(criteria().add(Restrictions.eq(EVENT_ACTION_CODE, action)));
     }
 
     public List<? extends MessageEntity> getByParticipantUserId(String id) {
 
-        return list(criteria().createCriteria("messageParticipants").createCriteria("participant")
-                .add(Restrictions.eq("userId", id)));
+        return list(criteria().createCriteria(MESSAGE_PARTICIPANTS).createCriteria(PARTICIPANT)
+                .add(Restrictions.eq(USER_ID, id)));
     }
 
     public List<? extends MessageEntity> getByParticipantAltUserId(String id) {
 
-        return list(criteria().createCriteria("messageParticipants").createCriteria("participant")
-                .add(Restrictions.eq("altUserId", id)));
+        return list(criteria().createCriteria(MESSAGE_PARTICIPANTS).createCriteria(PARTICIPANT)
+                .add(Restrictions.eq(ALT_USER_ID, id)));
     }
 
     public List<? extends MessageEntity> getByParticipantCode(ParticipantCodeEntity codeEntity) {
 
-        return list(criteria().createCriteria("messageParticipants").createCriteria("participant")
-                .createCriteria("participantTypeCodes")
-                .add(Restrictions.eq("code", codeEntity.getCode()))
-                .add(Restrictions.eq("codeSystem", codeEntity.getCodeSystem()))
-                .add(Restrictions.eq("codeSystemName", codeEntity.getCodeSystemName())));
+        return list(criteria().createCriteria(MESSAGE_PARTICIPANTS).createCriteria(PARTICIPANT)
+                .createCriteria(PARTICIPANT_TYPE_CODES)
+                .add(Restrictions.eq(CODE, codeEntity.getCode()))
+                .add(Restrictions.eq(CODE_SYSTEM, codeEntity.getCodeSystem()))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
     public List<? extends MessageEntity> getByAuditSourceId(String id) {
 
-        return list(criteria().createCriteria("messageSources").createCriteria("source")
-                .add(Restrictions.eq("sourceId", id)));
+        return list(criteria().createCriteria(MESSAGE_SOURCES).createCriteria(SOURCE)
+                .add(Restrictions.eq(SOURCE_ID, id)));
     }
 
     public List<? extends MessageEntity> getByAuditSourceEnterpriseId(String id) {
 
-        return list(criteria().createCriteria("messageSources").createCriteria("source")
-                .add(Restrictions.eq("enterpriseSiteId", id)));
+        return list(criteria().createCriteria(MESSAGE_SOURCES).createCriteria(SOURCE)
+                .add(Restrictions.eq(ENTERPRISE_SITE_ID, id)));
 
     }
 
     public List<? extends MessageEntity> getByAuditSourceCode(SourceCodeEntity codeEntity) {
 
-        return list(criteria().createCriteria("messageSources").createCriteria("source")
-                .createCriteria("sourceTypeCodes")
-                .add(Restrictions.eq("code", codeEntity.getCode()))
-                .add(Restrictions.eq("codeSystem", codeEntity.getCodeSystem()))
-                .add(Restrictions.eq("codeSystemName", codeEntity.getCodeSystemName())));
+        return list(criteria().createCriteria(MESSAGE_SOURCES).createCriteria(SOURCE)
+                .createCriteria(SOURCE_TYPE_CODES)
+                .add(Restrictions.eq(CODE, codeEntity.getCode()))
+                .add(Restrictions.eq(CODE_SYSTEM, codeEntity.getCodeSystem()))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
     public List<? extends MessageEntity> getByObjectId(String id) {
 
-        return list(criteria().createCriteria("messageObjects").createCriteria("object")
-                .add(Restrictions.eq("objectId", id)));
+        return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT)
+                .add(Restrictions.eq(OBJECT_ID, id)));
     }
 
     public List<? extends MessageEntity> getByObjectIdTypeCode(ObjectIdTypeCodeEntity codeEntity) {
 
-        return list(criteria().createCriteria("messageObjects").createCriteria("object")
-                .createCriteria("objectIdTypeCode")
-                .add(Restrictions.eq("code", codeEntity.getCode()))
-                .add(Restrictions.eq("codeSystem", codeEntity.getCodeSystem()))
-                .add(Restrictions.eq("codeSystemName", codeEntity.getCodeSystemName())));
+        return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT)
+                .createCriteria(OBJECT_ID_TYPE_CODE)
+                .add(Restrictions.eq(CODE, codeEntity.getCode()))
+                .add(Restrictions.eq(CODE_SYSTEM, codeEntity.getCodeSystem()))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
     public List<? extends MessageEntity> getByObjectTypeCode(Short code) {
 
-        return list(criteria().createCriteria("messageObjects").createCriteria("object")
-                .add(Restrictions.eq("objectTypeCode", code)));
+        return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT)
+                .add(Restrictions.eq(OBJECT_TYPE_CODE, code)));
     }
 
     public List<? extends MessageEntity> getByObjectTypeCodeRole(Short code) {
 
-        return list(criteria().createCriteria("messageObjects").createCriteria("object").add(Restrictions.eq("objectTypeCodeRole", code)));
+        return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT).add(Restrictions.eq("objectTypeCodeRole", code)));
     }
 
     public List<? extends MessageEntity> getByObjectSensitivity(String sensitivity) {
 
-        return list(criteria().createCriteria("messageObjects").createCriteria("object").add(Restrictions.eq("objectSensitivity", sensitivity)));
+        return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT).add(Restrictions.eq("objectSensitivity", sensitivity)));
     }
 
     /**
@@ -173,14 +196,12 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
     private void normalize(MessageEntity messageEntity, PersistencePolicies policies) throws AtnaPersistenceException {
 
         if (messageEntity.getEventId() == null) {
-            throw new AtnaPersistenceException("no audit source defined.",
+            throw new AtnaPersistenceException(ERROR_NO_AUDIT_SOURCE_DEFINED,
                     AtnaPersistenceException.PersistenceError.NO_EVENT_ID);
         }
-        if (messageEntity.getId() != null) {
-            if (!policies.isAllowModifyMessages()) {
-                throw new AtnaPersistenceException("audit messages cannot be modified.",
-                        AtnaPersistenceException.PersistenceError.UNMODIFIABLE);
-            }
+        if (messageEntity.getId() != null && !policies.isAllowModifyMessages()) {
+            throw new AtnaPersistenceException(ERROR_AUDIT_MESSAGES_CANNOT_BE_MODIFIED,
+                    AtnaPersistenceException.PersistenceError.UNMODIFIABLE);
         }
         EventIdCodeEntity ce = messageEntity.getEventId();
         CodeDao dao = AtnaFactory.codeDao();
@@ -254,7 +275,7 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
         }
         if (ap.getId() != null) {
             if (!policies.isAllowModifyMessages()) {
-                throw new AtnaPersistenceException("audit messages cannot be modified.",
+                throw new AtnaPersistenceException(ERROR_AUDIT_MESSAGES_CANNOT_BE_MODIFIED,
                         AtnaPersistenceException.PersistenceError.UNMODIFIABLE);
             }
         }
@@ -321,7 +342,7 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
         if (!update.getObjectDetailTypes().equals(existing.getObjectDetailTypes())) {
             return false;
         }
-        //TODO: doesn't include SopClasses
+        // TODO: doesn't include SopClasses
         return update.getObjectDescriptions().equals(existing.getObjectDescriptions());
     }
 
@@ -363,7 +384,7 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
             for (ObjectDetailEntity detail : details) {
                 if (!update.containsDetailType(detail.getType())
                         && !policies.isAllowUnknownDetailTypes()) {
-                    throw new AtnaPersistenceException("bad object detail key.",
+                    throw new AtnaPersistenceException(ERROR_BAD_OBJECT_DETAIL_KEY,
                             AtnaPersistenceException.PersistenceError.UNKNOWN_DETAIL_TYPE);
                 }
             }
@@ -375,14 +396,12 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
     private void normalize(MessageSourceEntity as, PersistencePolicies policies) throws AtnaPersistenceException {
 
         if (as.getSource() == null) {
-            throw new AtnaPersistenceException("no audit source defined.",
+            throw new AtnaPersistenceException(ERROR_NO_AUDIT_SOURCE_DEFINED,
                     AtnaPersistenceException.PersistenceError.NO_SOURCE);
         }
-        if (as.getId() != null) {
-            if (!policies.isAllowModifyMessages()) {
-                throw new AtnaPersistenceException("audit messages cannot be modified.",
-                        AtnaPersistenceException.PersistenceError.UNMODIFIABLE);
-            }
+        if (as.getId() != null && !policies.isAllowModifyMessages()) {
+            throw new AtnaPersistenceException(ERROR_AUDIT_MESSAGES_CANNOT_BE_MODIFIED,
+                    AtnaPersistenceException.PersistenceError.UNMODIFIABLE);
         }
         SourceEntity se = as.getSource();
         SourceDao dao = AtnaFactory.sourceDao();
@@ -391,7 +410,7 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
             if (policies.isAllowNewSources()) {
                 dao.save(se, policies);
             } else {
-                throw new AtnaPersistenceException("no audit source defined.",
+                throw new AtnaPersistenceException(ERROR_NO_AUDIT_SOURCE_DEFINED,
                         AtnaPersistenceException.PersistenceError.NON_EXISTENT_SOURCE);
             }
         } else {
@@ -404,11 +423,9 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
             throw new AtnaPersistenceException("no participant object defined.",
                     AtnaPersistenceException.PersistenceError.NO_OBJECT);
         }
-        if (ao.getId() != null) {
-            if (!policies.isAllowModifyMessages()) {
-                throw new AtnaPersistenceException("audit messages cannot be modified.",
-                        AtnaPersistenceException.PersistenceError.UNMODIFIABLE);
-            }
+        if (ao.getId() != null && !policies.isAllowModifyMessages()) {
+            throw new AtnaPersistenceException(ERROR_AUDIT_MESSAGES_CANNOT_BE_MODIFIED,
+                    AtnaPersistenceException.PersistenceError.UNMODIFIABLE);
         }
         ObjectEntity oe = ao.getObject();
         ObjectDao dao = AtnaFactory.objectDao();
@@ -426,7 +443,7 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
             for (ObjectDetailEntity detail : details) {
                 if (!existing.containsDetailType(detail.getType())
                         && !policies.isAllowUnknownDetailTypes()) {
-                    throw new AtnaPersistenceException("bad object detail key.",
+                    throw new AtnaPersistenceException(ERROR_BAD_OBJECT_DETAIL_KEY,
                             AtnaPersistenceException.PersistenceError.UNKNOWN_DETAIL_TYPE);
                 }
             }
