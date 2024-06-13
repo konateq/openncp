@@ -23,7 +23,7 @@ logging:
   level:
     ca.uhn.fhir.jaxrs: debug
 fhirserver:
-  url: http://localhost:9081/fhir/
+  url: https://sandbox.hl7europe.eu/laboratory/fhir
 fhir:
   server:
     inclusion: true

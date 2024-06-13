@@ -23,6 +23,6 @@ public class ServiceRequestTranslationService extends AbstractResourceTranslatio
 
     @Override
     public ResourceType getResourceType() {
-        return ResourceType.Patient;
+        return ResourceType.ServiceRequest;
     }
 }

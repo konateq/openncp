@@ -48,15 +48,32 @@ public class PatientResourceProvider implements IResourceProvider {
     @Search(allowUnknownParams = true)
     public IBaseBundle search(final HttpServletRequest theServletRequest, final HttpServletResponse theServletResponse,
                               final RequestDetails theRequestDetails,
+
                               @Description(shortDefinition = "The patient's date of birth") @OptionalParam(
                                       name = "birthdate") final DateRangeParam theBirthdate,
+
                               @Description(shortDefinition = "A patient identifier") @OptionalParam(
-                                      name = "identifier") final TokenAndListParam theIdentifier, @Description(
-            shortDefinition = "Only return resources which were last updated as specified by the given range") @OptionalParam(
-            name = "_lastUpdated") final DateRangeParam theLastUpdated, @IncludeParam final Set<Include> theIncludes,
-                              @IncludeParam(reverse = true) final Set<Include> theRevIncludes, @Sort final SortSpec theSort,
-                              @Count final Integer theCount, @Offset final Integer theOffset, final SummaryEnum theSummaryMode,
-                              final SearchTotalModeEnum theSearchTotalMode, final SearchContainedModeEnum theSearchContainedMode,
+                                      name = "identifier") final TokenAndListParam theIdentifier,
+
+                              @Description(shortDefinition = "Only return resources which were last updated as specified by the given range") @OptionalParam(
+                                      name = "_lastUpdated") final DateRangeParam theLastUpdated,
+
+                              @IncludeParam final Set<Include> theIncludes,
+
+                              @IncludeParam(reverse = true) final Set<Include> theRevIncludes,
+
+                              @Sort final SortSpec theSort,
+
+                              @Count final Integer theCount,
+
+                              @Offset final Integer theOffset,
+
+                              final SummaryEnum theSummaryMode,
+
+                              final SearchTotalModeEnum theSearchTotalMode,
+
+                              final SearchContainedModeEnum theSearchContainedMode,
+
                               @RawParam final Map<String, List<String>> theAdditionalRawParams) {
 
         final Bundle serverResponse = dispatchingService.dispatchSearch(EuRequestDetails.of(theRequestDetails));

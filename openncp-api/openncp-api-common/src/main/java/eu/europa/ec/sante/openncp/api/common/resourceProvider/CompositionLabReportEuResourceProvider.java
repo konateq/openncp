@@ -37,7 +37,6 @@ public class CompositionLabReportEuResourceProvider implements IResourceProvider
     private final DispatchingService dispatchingService;
     private final BundleHandler bundleHandler;
 
-
     public CompositionLabReportEuResourceProvider(final DispatchingService dispatchingService, final BundleHandler bundleHandler) {
         this.dispatchingService = Validate.notNull(dispatchingService);
         this.bundleHandler = bundleHandler;
