@@ -353,6 +353,7 @@ public class DocumentSearchMockImpl extends NationalConnectorGateway implements 
     private Document loadCDADocument(String content) throws ParserConfigurationException, SAXException, IOException {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
         InputSource inputSource = new InputSource();

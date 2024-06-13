@@ -176,6 +176,7 @@ public class ETSIREMObligationHandler implements ObligationHandler {
 
         // Imp is the signature
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.newDocument();
 
@@ -217,6 +218,7 @@ public class ETSIREMObligationHandler implements ObligationHandler {
         // Imp is the signature
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.newDocument();
 
@@ -258,6 +260,7 @@ public class ETSIREMObligationHandler implements ObligationHandler {
 
         // Imp is the signature
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.newDocument();
 

@@ -88,6 +88,7 @@ public class TransactionHelper {
 
         /* BODY */
         dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
         result = dbf.newDocumentBuilder().newDocument(); // Create document to hold Transaction
 

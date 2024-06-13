@@ -100,6 +100,7 @@ public class XmlUtil implements TMConstants {
         try {
             // Parse a XML document into a DOM tree
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+            documentFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             documentFactory.setNamespaceAware(namespaceAware);
             DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 
@@ -123,6 +124,7 @@ public class XmlUtil implements TMConstants {
         factory.setNamespaceAware(namespaceAware);
         DocumentBuilder builder;
         try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             builder = factory.newDocumentBuilder();
             return builder.parse(new ByteArrayInputStream(xml));
 
@@ -223,6 +225,7 @@ public class XmlUtil implements TMConstants {
     public static Document stringToDom(String xmlSource) throws SAXException, ParserConfigurationException, IOException {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(new InputSource(new StringReader(xmlSource)));
@@ -244,6 +247,7 @@ public class XmlUtil implements TMConstants {
     public static Document parseContent(String content) throws ParserConfigurationException, SAXException, IOException {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         documentBuilderFactory.setNamespaceAware(true);
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         StringReader lReader = new StringReader(content);

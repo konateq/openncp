@@ -71,6 +71,7 @@ public class Utils {
         // Instantiate the document to be signed
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbFactory.setNamespaceAware(true);
             doc = dbFactory.newDocumentBuilder().parse(Utils.stringToStream(inputFile));
         } catch (Exception e) {

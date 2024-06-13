@@ -22,5 +22,6 @@ public class TransportTokenInInterceptor extends AbstractPhaseInterceptor<Messag
     }
 
     public void handleFault(final Message messageParam) {
+        // to be implemented
     }
 }

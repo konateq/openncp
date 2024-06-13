@@ -264,6 +264,7 @@ public class SMPDeleteFileController {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             builder = factory.newDocumentBuilder();
             Document doc = builder.parse(bais);
@@ -385,6 +386,7 @@ public class SMPDeleteFileController {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             builder = factory.newDocumentBuilder();
             Document doc = builder.parse(bais);

@@ -65,7 +65,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <java.optimize>true</java.optimize>
+        <!--java.optimize>true</java.optimize-->
         <joda-time.version>2.10.13</joda-time.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-codec.version>1.15</commons-codec.version>
@@ -757,7 +757,7 @@
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
-                        <optimize>${java.optimize}</optimize>
+                        <!--optimize>${java.optimize}</optimize-->
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <showDeprecation>true</showDeprecation>
                         <release>${java.version}</release>

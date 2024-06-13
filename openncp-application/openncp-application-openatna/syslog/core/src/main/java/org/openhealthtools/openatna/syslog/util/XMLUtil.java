@@ -49,6 +49,7 @@ public class XMLUtil {
             return null;
         }
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         org.w3c.dom.Document theDocument = db.newDocument();
         theDocument.appendChild(theDocument.importNode(node, true));
@@ -59,6 +60,7 @@ public class XMLUtil {
 
         String content = new String(byteContent);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
 
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
@@ -71,6 +73,7 @@ public class XMLUtil {
 
         org.w3c.dom.Document doc;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
         StringReader lReader = new StringReader(content);
@@ -137,6 +140,7 @@ public class XMLUtil {
             marshaller.setSchema(schema);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.newDocument();

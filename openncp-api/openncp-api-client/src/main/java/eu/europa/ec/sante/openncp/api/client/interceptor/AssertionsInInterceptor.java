@@ -46,6 +46,8 @@ public class AssertionsInInterceptor extends AbstractSoapInterceptor {
                 case "urn:ehdsi:assertions:trc":
                     assertionEnumMap.put(AssertionEnum.TREATMENT, assertion);
                     break;
+                default:
+                    break;
             }
         }
         return assertionEnumMap;

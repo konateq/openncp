@@ -266,6 +266,7 @@ public class SMPUploadFileController {
             byte[] bytes = baos.toByteArray();
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             DocumentBuilder builder;
             try {
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytes);

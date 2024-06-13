@@ -84,31 +84,31 @@
                     <text><![CDATA[Sensitivity]]></text>
                 </staticText>
 
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="20" y="30" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{objectId}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="120" y="30" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{objectName}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="220" y="30" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.Short">
                         $F{objectTypeCode}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="320" y="30" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.Short">
                         $F{objectTypeCodeRole}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="420" y="30" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{objectSensitivity}

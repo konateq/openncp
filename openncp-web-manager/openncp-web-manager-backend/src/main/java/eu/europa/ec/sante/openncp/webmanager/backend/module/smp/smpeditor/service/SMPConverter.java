@@ -654,6 +654,7 @@ public class SMPConverter {
     private DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
         return dbf.newDocumentBuilder();
     }
@@ -664,6 +665,7 @@ public class SMPConverter {
         dbf.setNamespaceAware(true);
         Document doc = null;
         try {
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             doc = db.parse(new ByteArrayInputStream(document.getBytes(StandardCharsets.UTF_8)));
         } catch (SAXException e) {

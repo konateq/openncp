@@ -23,6 +23,7 @@ import javax.xml.crypto.dsig.dom.DOMSignContext;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicConstant;
@@ -142,6 +143,7 @@ public class SignatureManager {
 
         try {
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbf.setNamespaceAware(true);
             final var xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
 
@@ -164,7 +166,7 @@ public class SignatureManager {
             if (!coreValidity) {
                 throw new SMgrException("Invalid Signature: Mathematical check failed");
             }
-        } catch (final XMLSignatureException | MarshalException ex) {
+        } catch (final XMLSignatureException | MarshalException | ParserConfigurationException ex) {
             throw new SMgrException("Signature Invalid: " + ex.getMessage(), ex);
         }
     }

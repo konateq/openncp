@@ -34,6 +34,7 @@ public class XmlFileReader {
 
         LOGGER.info("Trying to initialize the XmlFileReader singleton object");
         DocumentBuilderFactory objDocBuilderFactory = DocumentBuilderFactory.newInstance();
+        objDocBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         objDocBuilderFactory.setNamespaceAware(true);
         objDocBuilderFactory.setValidating(false);
         try {

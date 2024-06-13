@@ -72,6 +72,7 @@ public class DescriptionLoader {
             throws SAXException, IOException, ParserConfigurationException {
         // Create a builder factory and a builder, and get the document.
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setValidating(false);
         Document doc = factory.newDocumentBuilder().parse(file);
         // Get all the connection descriptions from the root node.
@@ -242,6 +243,7 @@ public class DescriptionLoader {
             throws SAXException, IOException, ParserConfigurationException {
         // Create a builder factory and a builder, and get the document.
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setValidating(false);
         Document doc = factory.newDocumentBuilder().parse(stream);
         // Process the children of this include as if they were in the connection description

@@ -20,6 +20,7 @@ abstract class AbstractValidator {
     protected static Document transformStringToDocument(String documentAsString) throws ParserConfigurationException {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setValidating(false);
         factory.setNamespaceAware(true);
         factory.setFeature("http://xml.org/sax/features/namespaces", false);

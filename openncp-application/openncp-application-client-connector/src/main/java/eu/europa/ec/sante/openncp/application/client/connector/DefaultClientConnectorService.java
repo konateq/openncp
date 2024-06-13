@@ -49,6 +49,8 @@ public class DefaultClientConnectorService implements ClientConnectorService {
     // URL of the targeted NCP-B - ClientConnectorService.wsdl
     private final String endpointReference;
 
+    private static final String DCCS_SC_KEYSTORE_PASSWORD = "SC_KEYSTORE_PASSWORD";
+
     private final ObjectFactory objectFactory = new ObjectFactory();
 
     private final ClientConnectorServicePortTypeWrapper clientConnectorService;
@@ -106,7 +108,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
             throw new ClientConnectorException("Could not find the keystore", e);
         }
         try {
-            keyStore.load(keystoreStream, configurationManager.getProperty("SC_KEYSTORE_PASSWORD").toCharArray());
+            keyStore.load(keystoreStream, configurationManager.getProperty(DCCS_SC_KEYSTORE_PASSWORD).toCharArray());
         } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
             throw new ClientConnectorException("Error loading the keystore", e);
         }
@@ -119,7 +121,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
             throw new ClientConnectorException("Could not create the key manager factory", e);
         }
         try {
-            keyManagerFactory.init(keyStore, configurationManager.getProperty("SC_KEYSTORE_PASSWORD").toCharArray());
+            keyManagerFactory.init(keyStore, configurationManager.getProperty(DCCS_SC_KEYSTORE_PASSWORD).toCharArray());
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             throw new ClientConnectorException("Could not initialize the keystore", e);
         }
@@ -144,7 +146,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
             throw new ClientConnectorException("Could not find the truststore", e);
         }
         try {
-            trustStore.load(trustStoreStream, configurationManager.getProperty("SC_KEYSTORE_PASSWORD").toCharArray());
+            trustStore.load(trustStoreStream, configurationManager.getProperty(DCCS_SC_KEYSTORE_PASSWORD).toCharArray());
         } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
             throw new ClientConnectorException("Error loading the truststore", e);
         }

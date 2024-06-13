@@ -139,6 +139,7 @@ public class SecurityMgr {
 
             // Instantiate the document to be signed
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbFactory.setNamespaceAware(true);
             Document doc = dbFactory.newDocumentBuilder().newDocument();
 

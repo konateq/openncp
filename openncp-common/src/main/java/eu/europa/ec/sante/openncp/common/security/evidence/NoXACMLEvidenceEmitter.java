@@ -69,6 +69,7 @@ public class NoXACMLEvidenceEmitter implements EvidenceEmitter {
         te.merge(context, sw);
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new ByteArrayInputStream(sw.toString().getBytes()));
@@ -106,6 +107,7 @@ public class NoXACMLEvidenceEmitter implements EvidenceEmitter {
         te.merge(context, sw);
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new ByteArrayInputStream(sw.toString().getBytes()));

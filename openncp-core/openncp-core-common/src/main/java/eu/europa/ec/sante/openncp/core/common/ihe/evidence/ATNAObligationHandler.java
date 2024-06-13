@@ -90,6 +90,7 @@ public class ATNAObligationHandler implements ObligationHandler {
          * The idea is to call here the OpenNCP implementation. This is just a placeholder
          */
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document audit = db.newDocument();

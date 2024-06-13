@@ -61,7 +61,7 @@ public class AuditServiceImpl implements AuditService {
             for (String atnaProcessor : ap) {
                 try {
                     AtnaProcessor proc = (AtnaProcessor) Class.forName(atnaProcessor, true,
-                            getClass().getClassLoader()).newInstance();
+                            getClass().getClassLoader()).getDeclaredConstructor().newInstance();
                     chain.addNext(proc, phase);
                 } catch (Exception e) {
                     logger.warn("Could not load processor: '{}'", atnaProcessor, e);

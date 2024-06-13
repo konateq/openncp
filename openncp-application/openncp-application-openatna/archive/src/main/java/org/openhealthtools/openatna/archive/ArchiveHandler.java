@@ -243,6 +243,9 @@ public class ArchiveHandler {
         if (f.isDirectory()) {
             return f;
         }
+        if (!f.toPath().normalize().startsWith(destDir.toPath())) { // Fix Zip Slip vulnerability
+            throw new IOException("Bad file entry");
+        }
         try (FileOutputStream out = new FileOutputStream(f)) {
             byte[] bytes = new byte[8192];
             int c;
