@@ -15,9 +15,9 @@ public interface ProvisionalDao {
 
     void delete(ProvisionalEntity pe) throws AtnaPersistenceException;
 
-    List<? extends ProvisionalEntity> getAll() throws AtnaPersistenceException;
+    List<ProvisionalEntity> getAll() throws AtnaPersistenceException;
 
-    List<? extends ProvisionalEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
+    List<ProvisionalEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
 
     void save(ProvisionalEntity pe) throws AtnaPersistenceException;
 }

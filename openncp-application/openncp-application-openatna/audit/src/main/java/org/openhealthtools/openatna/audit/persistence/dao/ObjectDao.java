@@ -19,19 +19,19 @@ public interface ObjectDao {
 
     ObjectEntity get(ObjectEntity other) throws AtnaPersistenceException;
 
-    List<? extends ObjectEntity> getByName(String name) throws AtnaPersistenceException;
+    List<ObjectEntity> getByName(String name) throws AtnaPersistenceException;
 
-    List<? extends ObjectEntity> getByTypeCode(Short type) throws AtnaPersistenceException;
+    List<ObjectEntity> getByTypeCode(Short type) throws AtnaPersistenceException;
 
-    List<? extends ObjectEntity> getByTypeCodeRole(Short type) throws AtnaPersistenceException;
+    List<ObjectEntity> getByTypeCodeRole(Short type) throws AtnaPersistenceException;
 
-    List<? extends ObjectEntity> getBySensitivity(String sensitivity) throws AtnaPersistenceException;
+    List<ObjectEntity> getBySensitivity(String sensitivity) throws AtnaPersistenceException;
 
-    List<? extends ObjectEntity> getAll() throws AtnaPersistenceException;
+    List<ObjectEntity> getAll() throws AtnaPersistenceException;
 
-    List<? extends ObjectEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
+    List<ObjectEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
 
-    List<? extends ObjectEntity> getByObjectIdTypeCode(ObjectIdTypeCodeEntity code) throws AtnaPersistenceException;
+    List<ObjectEntity> getByObjectIdTypeCode(ObjectIdTypeCodeEntity code) throws AtnaPersistenceException;
 
     void save(ObjectEntity entity, PersistencePolicies policies) throws AtnaPersistenceException;
 

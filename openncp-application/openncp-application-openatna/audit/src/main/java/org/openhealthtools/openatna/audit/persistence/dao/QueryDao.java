@@ -15,9 +15,9 @@ public interface QueryDao {
 
     void delete(QueryEntity pe) throws AtnaPersistenceException;
 
-    List<? extends QueryEntity> getAll() throws AtnaPersistenceException;
+    List<QueryEntity> getAll() throws AtnaPersistenceException;
 
-    List<? extends QueryEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
+    List<QueryEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
 
     void save(QueryEntity pe) throws AtnaPersistenceException;
 }

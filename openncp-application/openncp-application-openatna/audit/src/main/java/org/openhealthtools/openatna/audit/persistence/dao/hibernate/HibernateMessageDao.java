@@ -46,12 +46,13 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
     private static final String ERROR_BAD_OBJECT_DETAIL_KEY = "bad object detail key.";
     private static final String ERROR_NO_AUDIT_SOURCE_DEFINED = "no audit source defined.";
     private static final String ERROR_AUDIT_MESSAGES_CANNOT_BE_MODIFIED = "audit messages cannot be modified.";
+    private static final String NO_EVENT_ID_CODE_DEFINED = "no event id code defined.";
 
     public HibernateMessageDao(SessionFactory sessionFactory) {
         super(MessageEntity.class, sessionFactory);
     }
 
-    public List<? extends MessageEntity> getByQuery(Query query) {
+    public List<MessageEntity> getByQuery(Query query) {
 
         HibernateQueryBuilder builder = new HibernateQueryBuilder(this);
         Criteria c = builder.build(query);
@@ -65,56 +66,56 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
         return get(id);
     }
 
-    public List<? extends MessageEntity> getAll() throws AtnaPersistenceException {
+    public List<MessageEntity> getAll() throws AtnaPersistenceException {
         return all();
     }
 
-    public List<? extends MessageEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
+    public List<MessageEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
         return all(offset, amount);
     }
 
-    public List<? extends MessageEntity> getByEventId(EventIdCodeEntity codeEntity) {
+    public List<MessageEntity> getByEventId(EventIdCodeEntity codeEntity) {
 
         return list(criteria().createCriteria(EVENT_ID).add(Restrictions.eq(CODE, codeEntity.getCode()))
                 .add(Restrictions.eq(CODE_SYSTEM, codeEntity.getCodeSystem()))
                 .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
-    public List<? extends MessageEntity> getBySourceAddress(String address) {
+    public List<MessageEntity> getBySourceAddress(String address) {
 
         return list(criteria().add(Restrictions.eq(SOURCE_ADDRESS, address)));
     }
 
-    public List<? extends MessageEntity> getByEventType(EventTypeCodeEntity codeEntity) {
+    public List<MessageEntity> getByEventType(EventTypeCodeEntity codeEntity) {
 
         return list(criteria().createCriteria(EVENT_TYPE_CODES).add(Restrictions.eq(CODE, codeEntity.getCode()))
                 .add(Restrictions.eq(CODE_SYSTEM, codeEntity.getCodeSystem()))
                 .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
-    public List<? extends MessageEntity> getByEventOutcome(Integer outcome) {
+    public List<MessageEntity> getByEventOutcome(Integer outcome) {
 
         return list(criteria().add(Restrictions.eq(EVENT_OUTCOME, outcome)));
     }
 
-    public List<? extends MessageEntity> getByEventAction(String action) {
+    public List<MessageEntity> getByEventAction(String action) {
 
         return list(criteria().add(Restrictions.eq(EVENT_ACTION_CODE, action)));
     }
 
-    public List<? extends MessageEntity> getByParticipantUserId(String id) {
+    public List<MessageEntity> getByParticipantUserId(String id) {
 
         return list(criteria().createCriteria(MESSAGE_PARTICIPANTS).createCriteria(PARTICIPANT)
                 .add(Restrictions.eq(USER_ID, id)));
     }
 
-    public List<? extends MessageEntity> getByParticipantAltUserId(String id) {
+    public List<MessageEntity> getByParticipantAltUserId(String id) {
 
         return list(criteria().createCriteria(MESSAGE_PARTICIPANTS).createCriteria(PARTICIPANT)
                 .add(Restrictions.eq(ALT_USER_ID, id)));
     }
 
-    public List<? extends MessageEntity> getByParticipantCode(ParticipantCodeEntity codeEntity) {
+    public List<MessageEntity> getByParticipantCode(ParticipantCodeEntity codeEntity) {
 
         return list(criteria().createCriteria(MESSAGE_PARTICIPANTS).createCriteria(PARTICIPANT)
                 .createCriteria(PARTICIPANT_TYPE_CODES)
@@ -123,20 +124,20 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
                 .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
-    public List<? extends MessageEntity> getByAuditSourceId(String id) {
+    public List<MessageEntity> getByAuditSourceId(String id) {
 
         return list(criteria().createCriteria(MESSAGE_SOURCES).createCriteria(SOURCE)
                 .add(Restrictions.eq(SOURCE_ID, id)));
     }
 
-    public List<? extends MessageEntity> getByAuditSourceEnterpriseId(String id) {
+    public List<MessageEntity> getByAuditSourceEnterpriseId(String id) {
 
         return list(criteria().createCriteria(MESSAGE_SOURCES).createCriteria(SOURCE)
                 .add(Restrictions.eq(ENTERPRISE_SITE_ID, id)));
 
     }
 
-    public List<? extends MessageEntity> getByAuditSourceCode(SourceCodeEntity codeEntity) {
+    public List<MessageEntity> getByAuditSourceCode(SourceCodeEntity codeEntity) {
 
         return list(criteria().createCriteria(MESSAGE_SOURCES).createCriteria(SOURCE)
                 .createCriteria(SOURCE_TYPE_CODES)
@@ -145,13 +146,13 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
                 .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
-    public List<? extends MessageEntity> getByObjectId(String id) {
+    public List<MessageEntity> getByObjectId(String id) {
 
         return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT)
                 .add(Restrictions.eq(OBJECT_ID, id)));
     }
 
-    public List<? extends MessageEntity> getByObjectIdTypeCode(ObjectIdTypeCodeEntity codeEntity) {
+    public List<MessageEntity> getByObjectIdTypeCode(ObjectIdTypeCodeEntity codeEntity) {
 
         return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT)
                 .createCriteria(OBJECT_ID_TYPE_CODE)
@@ -160,18 +161,18 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
                 .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
-    public List<? extends MessageEntity> getByObjectTypeCode(Short code) {
+    public List<MessageEntity> getByObjectTypeCode(Short code) {
 
         return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT)
                 .add(Restrictions.eq(OBJECT_TYPE_CODE, code)));
     }
 
-    public List<? extends MessageEntity> getByObjectTypeCodeRole(Short code) {
+    public List<MessageEntity> getByObjectTypeCodeRole(Short code) {
 
         return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT).add(Restrictions.eq("objectTypeCodeRole", code)));
     }
 
-    public List<? extends MessageEntity> getByObjectSensitivity(String sensitivity) {
+    public List<MessageEntity> getByObjectSensitivity(String sensitivity) {
 
         return list(criteria().createCriteria(MESSAGE_OBJECTS).createCriteria(OBJECT).add(Restrictions.eq("objectSensitivity", sensitivity)));
     }
@@ -207,42 +208,16 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
         CodeDao dao = AtnaFactory.codeDao();
         CodeEntity existing = dao.get(ce);
         if (existing == null) {
-            if (policies.isAllowNewCodes()) {
-                dao.save(ce, policies);
-            } else {
-                throw new AtnaPersistenceException("no event id code defined.",
-                        AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
-            }
+            saveNewCodeEntityDao(policies, dao, ce);
         } else {
-            if (existing instanceof EventIdCodeEntity) {
-                messageEntity.setEventId((EventIdCodeEntity) existing);
-            } else {
-                throw new AtnaPersistenceException("code is defined but is of a different type.",
-                        AtnaPersistenceException.PersistenceError.WRONG_CODE_TYPE);
-            }
+            setMessageEventId(messageEntity, existing);
         }
 
         Set<EventTypeCodeEntity> codes = messageEntity.getEventTypeCodes();
         if (!codes.isEmpty()) {
             EventTypeCodeEntity[] arr = codes.toArray(new EventTypeCodeEntity[codes.size()]);
             for (int i = 0; i < arr.length; i++) {
-                EventTypeCodeEntity code = arr[i];
-                CodeEntity codeEnt = dao.get(code);
-                if (codeEnt == null) {
-                    if (policies.isAllowNewCodes()) {
-                        dao.save(code, policies);
-                    } else {
-                        throw new AtnaPersistenceException(code.toString(),
-                                AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
-                    }
-                } else {
-                    if (codeEnt instanceof EventTypeCodeEntity) {
-                        arr[i] = ((EventTypeCodeEntity) codeEnt);
-                    } else {
-                        throw new AtnaPersistenceException("code is defined but is of a different type.",
-                                AtnaPersistenceException.PersistenceError.WRONG_CODE_TYPE);
-                    }
-                }
+                manageCodeEntity(policies, arr, i, dao);
             }
             messageEntity.setEventTypeCodes(new HashSet<>(Arrays.asList(arr)));
         }
@@ -267,28 +242,67 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
         }
     }
 
+    private static void manageCodeEntity(PersistencePolicies policies, EventTypeCodeEntity[] arr, int i, CodeDao dao) throws AtnaPersistenceException {
+        EventTypeCodeEntity code = arr[i];
+        CodeEntity codeEnt = dao.get(code);
+        if (codeEnt == null) {
+            saveNewTypeCodeEntityDao(policies, dao, code, code.toString());
+        } else {
+            setEventTypeCodeEntity(codeEnt, arr, i);
+        }
+    }
+
+    private static void setEventTypeCodeEntity(CodeEntity codeEnt, EventTypeCodeEntity[] arr, int i) throws AtnaPersistenceException {
+        if (codeEnt instanceof EventTypeCodeEntity) {
+            arr[i] = ((EventTypeCodeEntity) codeEnt);
+        } else {
+            throw new AtnaPersistenceException("code is defined but is of a different type.",
+                    AtnaPersistenceException.PersistenceError.WRONG_CODE_TYPE);
+        }
+    }
+
+    private static void setMessageEventId(MessageEntity messageEntity, CodeEntity existing) throws AtnaPersistenceException {
+        if (existing instanceof EventIdCodeEntity) {
+            messageEntity.setEventId((EventIdCodeEntity) existing);
+        } else {
+            throw new AtnaPersistenceException("code is defined but is of a different type.",
+                    AtnaPersistenceException.PersistenceError.WRONG_CODE_TYPE);
+        }
+    }
+
+    private static void saveNewCodeEntityDao(PersistencePolicies policies, CodeDao dao, EventIdCodeEntity ce) throws AtnaPersistenceException {
+        if (policies.isAllowNewCodes()) {
+            dao.save(ce, policies);
+        } else {
+            throw new AtnaPersistenceException(HibernateMessageDao.NO_EVENT_ID_CODE_DEFINED,
+                    AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
+        }
+    }
+
+    private static void saveNewTypeCodeEntityDao(PersistencePolicies policies, CodeDao dao, EventTypeCodeEntity code, String errorMessage) throws AtnaPersistenceException {
+        if (policies.isAllowNewCodes()) {
+            dao.save(code, policies);
+        } else {
+            throw new AtnaPersistenceException(errorMessage,
+                    AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
+        }
+    }
+
     private void normalize(MessageParticipantEntity ap, PersistencePolicies policies) throws AtnaPersistenceException {
 
         if (ap.getParticipant() == null) {
             throw new AtnaPersistenceException("no active participant defined.",
                     AtnaPersistenceException.PersistenceError.NO_PARTICIPANT);
         }
-        if (ap.getId() != null) {
-            if (!policies.isAllowModifyMessages()) {
-                throw new AtnaPersistenceException(ERROR_AUDIT_MESSAGES_CANNOT_BE_MODIFIED,
-                        AtnaPersistenceException.PersistenceError.UNMODIFIABLE);
-            }
+        if (ap.getId() != null && !policies.isAllowModifyMessages()) {
+            throw new AtnaPersistenceException(ERROR_AUDIT_MESSAGES_CANNOT_BE_MODIFIED,
+                    AtnaPersistenceException.PersistenceError.UNMODIFIABLE);
         }
         ParticipantEntity pe = ap.getParticipant();
         ParticipantDao dao = AtnaFactory.participantDao();
         ParticipantEntity existing = dao.get(pe);
         if (existing == null) {
-            if (policies.isAllowNewParticipants()) {
-                dao.save(pe, policies);
-            } else {
-                throw new AtnaPersistenceException("unknown participant.",
-                        AtnaPersistenceException.PersistenceError.NON_EXISTENT_PARTICIPANT);
-            }
+            saveNewParticipantDao(policies, dao, pe);
         } else {
             ap.setParticipant(existing);
         }
@@ -296,16 +310,29 @@ public class HibernateMessageDao extends AbstractHibernateDao<MessageEntity> imp
         if (net != null) {
             NetworkAccessPointDao netdao = AtnaFactory.networkAccessPointDao();
             NetworkAccessPointEntity there = netdao.getByTypeAndIdentifier(net.getType(), net.getIdentifier());
-            if (there == null) {
-                if (policies.isAllowNewNetworkAccessPoints()) {
-                    netdao.save(net, policies);
-                } else {
-                    throw new AtnaPersistenceException("unknown network access point.",
-                            AtnaPersistenceException.PersistenceError.NON_EXISTENT_NETWORK_ACCESS_POINT);
-                }
+            saveNewParticipantNetDao(ap, policies, there, netdao, net);
+        }
+    }
+
+    private static void saveNewParticipantNetDao(MessageParticipantEntity ap, PersistencePolicies policies, NetworkAccessPointEntity there, NetworkAccessPointDao netdao, NetworkAccessPointEntity net) throws AtnaPersistenceException {
+        if (there == null) {
+            if (policies.isAllowNewNetworkAccessPoints()) {
+                netdao.save(net, policies);
             } else {
-                ap.setNetworkAccessPoint(there);
+                throw new AtnaPersistenceException("unknown network access point.",
+                        AtnaPersistenceException.PersistenceError.NON_EXISTENT_NETWORK_ACCESS_POINT);
             }
+        } else {
+            ap.setNetworkAccessPoint(there);
+        }
+    }
+
+    private static void saveNewParticipantDao(PersistencePolicies policies, ParticipantDao dao, ParticipantEntity pe) throws AtnaPersistenceException {
+        if (policies.isAllowNewParticipants()) {
+            dao.save(pe, policies);
+        } else {
+            throw new AtnaPersistenceException("unknown participant.",
+                    AtnaPersistenceException.PersistenceError.NON_EXISTENT_PARTICIPANT);
         }
     }
 

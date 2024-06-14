@@ -29,19 +29,19 @@ public class HibernateNetworkAccessPointDao extends AbstractHibernateDao<Network
                 .add(Restrictions.eq("identifier", identifier)));
     }
 
-    public List<? extends NetworkAccessPointEntity> getByType(Short type) {
+    public List<NetworkAccessPointEntity> getByType(Short type) {
         return list(criteria().add(Restrictions.eq("type", type)));
     }
 
-    public List<? extends NetworkAccessPointEntity> getByIdentifier(String identifier) {
+    public List<NetworkAccessPointEntity> getByIdentifier(String identifier) {
         return list(criteria().add(Restrictions.eq("identifier", identifier)));
     }
 
-    public List<? extends NetworkAccessPointEntity> getAll() throws AtnaPersistenceException {
+    public List<NetworkAccessPointEntity> getAll() throws AtnaPersistenceException {
         return all();
     }
 
-    public List<? extends NetworkAccessPointEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
+    public List<NetworkAccessPointEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
         return all(offset, amount);
     }
 
