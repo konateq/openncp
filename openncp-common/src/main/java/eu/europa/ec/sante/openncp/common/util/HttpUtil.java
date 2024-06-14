@@ -82,7 +82,7 @@ public class HttpUtil {
                 }
 
                 @Override
-                public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
+                public void checkClientTrusted(X509Certificate[] certificates, String authType) {
                     //  No implemented.
                 }
 
@@ -160,9 +160,7 @@ public class HttpUtil {
                 URL url;
                 url = new URL(endpoint);
                 urlConnection = (HttpsURLConnection) url.openConnection();
-                //TODO: not sustainable solution: EHNCP-1363
                 urlConnection.setHostnameVerifier((hostname, session) -> true);
-                // End EHNCP-1363
                 urlConnection.setSSLSocketFactory(sslSocketFactory);
                 urlConnection.connect();
                 Certificate[] certs = urlConnection.getServerCertificates();

@@ -31,7 +31,7 @@ public class UserResource {
     }
 
     @PostMapping("/user/register")
-    public ResponseEntity registerUser(@Valid @RequestBody User newUser) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody User newUser) {
         List<User> users = userService.findAll();
         long lastId = 0L;
 
@@ -79,7 +79,7 @@ public class UserResource {
     }
 
     @DeleteMapping("/user/delete")
-    public ResponseEntity deleteUser(@RequestParam() User user) {
+    public ResponseEntity<String> deleteUser(@RequestParam() User user) {
 
         user.setRoles(null);
         userService.deleteUser(user);
@@ -124,6 +124,6 @@ public class UserResource {
                     .body("Current password does not match");
         }
 
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

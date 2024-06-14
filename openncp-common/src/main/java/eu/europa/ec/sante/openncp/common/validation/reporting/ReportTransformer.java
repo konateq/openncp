@@ -41,8 +41,8 @@ public class ReportTransformer {
         StreamResult out = new StreamResult(writer);
 
         TransformerFactory factory = TransformerFactory.newInstance();
-
         try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer transformer = factory.newTransformer(xsl);
             transformer.transform(in, out);

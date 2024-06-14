@@ -70,10 +70,10 @@ public class AssertionServiceImpl implements AssertionService {
             if (httpConnection instanceof HttpsURLConnection) {  // Going SSL
                 ((HttpsURLConnection) httpConnection).setSSLSocketFactory(getSSLSocketFactory());
                 if (!assertionRequest.checkForHostname()) {
-                    ((HttpsURLConnection) httpConnection).setHostnameVerifier((hostname, sslSession) -> {
+                    ((HttpsURLConnection) httpConnection).setHostnameVerifier((hostname, sslSession) ->
                         // do add some logic to verify the hostname
-                        return true;
-                    });
+                        hostname != null && !hostname.isEmpty()
+                    );
                 }
             }
 
@@ -112,7 +112,6 @@ public class AssertionServiceImpl implements AssertionService {
         } catch (UnsupportedOperationException ex) {
             throw new STSClientException("Unsupported Operation: " + ex.getMessage(), ex);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
             throw new STSClientException(e.getMessage(), e);
         }
     }

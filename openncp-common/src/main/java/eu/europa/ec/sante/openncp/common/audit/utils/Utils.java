@@ -94,6 +94,7 @@ public class Utils {
             return false;
         }
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         StreamSource streamSource = new StreamSource(streamXsd);
         Schema schema;
         try {

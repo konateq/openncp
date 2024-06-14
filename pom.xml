@@ -135,6 +135,10 @@
         <commons-fileupload.version>1.5</commons-fileupload.version>
         <cxf.version>3.6.3</cxf.version>
         <bcprov.version>1.70</bcprov.version>
+
+        <sonar.organization>abc123s</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
     </properties>
 
     <dependencyManagement>
