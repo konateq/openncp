@@ -16,7 +16,7 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.AuditMan
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.DynamicDiscoveryService;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.DynamicDiscoveryClient;
-import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.SslUtility;
+import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.SslUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,72 +59,69 @@ public class SMPDeleteFileController {
     private final DynamicDiscoveryClient dynamicDiscoveryClient;
     private final ReadSMPProperties readProperties;
     private final Environment env;
-    private ConfigurationManager configurationManager;
-    private SSLContext sslContext;
 
     @Autowired
-    public SMPDeleteFileController(final DynamicDiscoveryClient dynamicDiscoveryClient, final ReadSMPProperties readProperties, final Environment env) {
+    public SMPDeleteFileController(DynamicDiscoveryClient dynamicDiscoveryClient, ReadSMPProperties readProperties, Environment env) {
         this.dynamicDiscoveryClient = dynamicDiscoveryClient;
         this.readProperties = readProperties;
         this.env = env;
-
     }
 
     @GetMapping(path = "smpeditor/smpfileinfo")
-    public ResponseEntity<List<ReferenceCollection>> getFilesToDeleteInfo(final String countryName) {
+    public ResponseEntity<List<ReferenceCollection>> getFilesToDeleteInfo(String countryName) {
 
-        final String partID = "urn:ehealth:" + countryName + ":ncp-idp";
-        final String partScheme = env.getProperty("ParticipantIdentifier.Scheme");
+        String partID = "urn:ehealth:" + countryName + ":ncp-idp";
+        String partScheme = env.getProperty("ParticipantIdentifier.Scheme");
 
         boolean success = true;
         String errorType = "";
-        final ParticipantIdentifier participantIdentifier = new ParticipantIdentifier(partID, partScheme);
+        ParticipantIdentifier participantIdentifier = new ParticipantIdentifier(partID, partScheme);
         DynamicDiscovery smpClient = null;
 
         try {
             smpClient = dynamicDiscoveryClient.getInstance();
-        } catch (final ConnectionException ex) {
+        } catch (ConnectionException ex) {
             success = false;
             errorType = "ConnectionException";
             logger.error("\n ConnectionException - " + SimpleErrorHandler.printExceptionStackTrace(ex));
-        } catch (final TechnicalException | CertificateException | KeyStoreException | IOException |
-                       NoSuchAlgorithmException e) {
+        } catch (TechnicalException | CertificateException | KeyStoreException | IOException |
+                 NoSuchAlgorithmException e) {
             logger.error("Technical Exception: '{}'", e.getMessage(), e);
         }
 
         List<DocumentIdentifier> documentIdentifiers = null;
         try {
             documentIdentifiers = smpClient.getService().getServiceGroup(participantIdentifier).getDocumentIdentifiers();
-        } catch (final TechnicalException ex) {
+        } catch (TechnicalException ex) {
             success = false;
             errorType = "TechnicalException";
             logger.error("TechnicalException - '{}'", SimpleErrorHandler.printExceptionStackTrace(ex));
         }
 
         URI serviceGroup = null;
-        final List<ReferenceCollection> referenceCollection = new ArrayList<>();
+        List<ReferenceCollection> referenceCollection = new ArrayList<>();
         URI smpURI = null;
         int i = 0;
 
         if (!documentIdentifiers.isEmpty()) {
-            for (final DocumentIdentifier documentIdentifier : documentIdentifiers) {
+            for (DocumentIdentifier documentIdentifier : documentIdentifiers) {
                 String smptype = "Unknown type";
                 String documentID = "";
-                final Map<String, String> propertiesMap = readProperties.readPropertiesFile();
-                final Set set2 = propertiesMap.entrySet();
-                for (final Object aSet2 : set2) {
-                    final Map.Entry mentry2 = (Map.Entry) aSet2;
+                Map<String, String> propertiesMap = readProperties.readPropertiesFile();
+                Set set2 = propertiesMap.entrySet();
+                for (Object aSet2 : set2) {
+                    Map.Entry mentry2 = (Map.Entry) aSet2;
                     if (StringUtils.equalsIgnoreCase(documentIdentifier.getIdentifier(), mentry2.getKey().toString())) {
-                        final String[] docs = mentry2.getValue().toString().split("\\.");
+                        String[] docs = mentry2.getValue().toString().split("\\.");
                         documentID = docs[0];
                         break;
                     }
                 }
-                final String smpType = documentID;
+                String smpType = documentID;
                 logger.debug("\n******** DOC ID - '{}'", documentIdentifier.getIdentifier());
                 logger.debug("\n******** SMP Type - '{}'", smpType);
 
-                for (final SMPType smptype1 : SMPType.values()) {
+                for (SMPType smptype1 : SMPType.values()) {
                     if (smptype1.name().equals(smpType)) {
                         smptype = smptype1.getDescription();
                         break;
@@ -133,13 +130,13 @@ public class SMPDeleteFileController {
 
                 try {
                     smpURI = smpClient.getService().getMetadataLocator().lookup(participantIdentifier);
-                } catch (final TechnicalException ex) {
+                } catch (TechnicalException ex) {
                     success = false;
                     errorType = "TechnicalException";
                     logger.error("\n TechnicalException - " + SimpleErrorHandler.printExceptionStackTrace(ex));
                 }
-                final URI uri = smpClient.getService().getMetadataProvider().resolveServiceMetadata(smpURI, participantIdentifier, documentIdentifier);
-                final ReferenceCollection reference = new ReferenceCollection();
+                URI uri = smpClient.getService().getMetadataProvider().resolveServiceMetadata(smpURI, participantIdentifier, documentIdentifier);
+                ReferenceCollection reference = new ReferenceCollection();
                 reference.setReference(uri.toString());
                 reference.setSmpType(smptype);
                 reference.setSmpUri(smpURI.toString());
@@ -155,8 +152,8 @@ public class SMPDeleteFileController {
         }
 
         //Audit
-        final String objectID = serviceGroup.toString();
-        final byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
+        String objectID = serviceGroup.toString();
+        byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
 
         if (success) {
             AuditManager.handleDynamicDiscoveryQuery(smpURI.toString(), new String(encodedObjectID), null, null);
@@ -168,12 +165,12 @@ public class SMPDeleteFileController {
     }
 
     @DeleteMapping(value = "smpeditor/smpfile")
-    public ResponseEntity deleteSmpFile(@RequestBody final ReferenceCollection ref) {
+    public ResponseEntity deleteSmpFile(@RequestBody ReferenceCollection ref) {
 
         logger.info("[REST Api] Delete SMP file: '{}' from server: '{}'", ref.getReference(), ref.getSmpUri());
+        ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
 
-
-        String urlServer = getConfigurationManager().getProperty(StandardProperties.SMP_SML_ADMIN_URL);
+        String urlServer = configurationManager.getProperty(StandardProperties.SMP_SML_ADMIN_URL);
         if (urlServer.endsWith("/")) {
             urlServer = urlServer.substring(0, urlServer.length() - 1);
         }
@@ -183,7 +180,7 @@ public class SMPDeleteFileController {
         }
 
         String reference = ref.getReference();
-        final String smpType = ref.getSmpType();
+        String smpType = ref.getSmpType();
         logger.debug("SMP Type- '{}', reference - '{}'", smpType, reference);
 
         if (reference.startsWith("http://") || reference.startsWith("https://")) {
@@ -193,37 +190,40 @@ public class SMPDeleteFileController {
         reference = java.net.URLDecoder.decode(reference, StandardCharsets.UTF_8);
         logger.debug("references decoded UTF-8 - {}", reference);
 
-        final URI uri;
+        URI uri;
         try {
             uri = new URIBuilder().setScheme("https").setHost(urlServer).setPath(reference).build();
             logger.debug("\n ************** URI - {}", uri);
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "URISyntaxException");
         }
 
-        //DELETE
-        final HttpDelete httpdelete = new HttpDelete(uri);
+        // Trust own CA and all self-signed certs
+        SSLContext sslcontext = SslUtil.createSSLContext();
 
-        final CloseableHttpResponse response;
+        //DELETE
+        HttpDelete httpdelete = new HttpDelete(uri);
+
+        CloseableHttpResponse response;
         try {
-            response = DynamicDiscoveryService.buildHttpClient(SslUtility.getSslContext(getConfigurationManager())).execute(httpdelete);
-        } catch (final IOException ex) {
+            response = DynamicDiscoveryService.buildHttpClient(sslcontext).execute(httpdelete);
+        } catch (IOException ex) {
             logger.error("\n IOException - " + SimpleErrorHandler.printExceptionStackTrace(ex));
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "IOException - " + SimpleErrorHandler.printExceptionStackTrace(ex));
         }
 
         /*Get response*/
-        final int responseStatus = response.getStatusLine().getStatusCode();
-        final String responseReason = response.getStatusLine().getReasonPhrase();
+        int responseStatus = response.getStatusLine().getStatusCode();
+        String responseReason = response.getStatusLine().getReasonPhrase();
         logger.debug("Delete Response Status - {}, Reason - {} ", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
 
-        final HttpEntity entity = response.getEntity();
+        HttpEntity entity = response.getEntity();
 
         //Audit vars
-        final String remoteIp = getConfigurationManager().getProperty("SMP_ADMIN_URL");
+        String remoteIp = ConfigurationManagerFactory.getConfigurationManager().getProperty("SMP_ADMIN_URL");
         //ET_ObjectID --> Base64 of url
-        final String objectID = uri.toString();
-        final byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
+        String objectID = uri.toString();
+        byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
 
         switch (responseStatus) {
             case 503:
@@ -251,38 +251,38 @@ public class SMPDeleteFileController {
         /* Get BusinessCode and ErrorDescription from response */
 
         //Save InputStream of response in ByteArrayOutputStream in order to read it more than once.
-        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             IOUtils.copy(entity.getContent(), byteArrayOutputStream);
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "\n IOException response - " + SimpleErrorHandler.printExceptionStackTrace(ex));
-        } catch (final UnsupportedOperationException ex) {
+        } catch (UnsupportedOperationException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "\n UnsupportedOperationException response - " + SimpleErrorHandler.printExceptionStackTrace(ex));
         }
-        final byte[] bytes = byteArrayOutputStream.toByteArray();
+        byte[] bytes = byteArrayOutputStream.toByteArray();
 
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder builder;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
         try {
-            final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             builder = factory.newDocumentBuilder();
-            final Document doc = builder.parse(bais);
-            final Element element = doc.getDocumentElement();
-            final NodeList nodes = element.getChildNodes();
+            Document doc = builder.parse(bais);
+            Element element = doc.getDocumentElement();
+            NodeList nodes = element.getChildNodes();
             for (int j = 0; j < nodes.getLength(); j++) {
                 if (nodes.item(j).getNodeName().equals("BusinessCode")) {
-                    final String businessCode = nodes.item(j).getTextContent();
+                    String businessCode = nodes.item(j).getTextContent();
                 }
                 if (nodes.item(j).getNodeName().equals("ErrorDescription")) {
-                    final String errorDescription = nodes.item(j).getTextContent();
+                    String errorDescription = nodes.item(j).getTextContent();
                 }
             }
-        } catch (final ParserConfigurationException | IOException | SAXException ex) {
+        } catch (ParserConfigurationException | IOException | SAXException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getClass().getName() + " - " + SimpleErrorHandler.printExceptionStackTrace(ex));
         }
 
         /*transform xml to string in order to send in Audit*/
-        final String errorResult = AuditManager.prepareEventLog(bytes);
+        String errorResult = AuditManager.prepareEventLog(bytes);
         logger.debug("\n ***************** ERROR RESULT - '{}'", errorResult);
         //Audit error
         AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
@@ -292,8 +292,10 @@ public class SMPDeleteFileController {
     }
 
     @PostMapping(value = "smpeditor/deleteSmpFile")
-    public ResponseEntity postDeleteSmpFile(@RequestBody final ReferenceCollection ref) {
-        String urlServer = getConfigurationManager().getProperty(StandardProperties.SMP_SML_ADMIN_URL);
+    public ResponseEntity postDeleteSmpFile(@RequestBody ReferenceCollection ref) {
+
+        ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
+        String urlServer = configurationManager.getProperty(StandardProperties.SMP_SML_ADMIN_URL);
         if (urlServer.endsWith("/")) {
             urlServer = urlServer.substring(0, urlServer.length() - 1);
         }
@@ -303,7 +305,7 @@ public class SMPDeleteFileController {
         }
 
         String reference = ref.getReference();
-        final String smpType = ref.getSmpType();
+        String smpType = ref.getSmpType();
         logger.debug("SMP Type- '{}', reference - '{}'", smpType, reference);
 
         if (reference.startsWith("http://") || reference.startsWith("https://")) {
@@ -317,32 +319,36 @@ public class SMPDeleteFileController {
         try {
             uri = new URIBuilder().setScheme("https").setHost(urlServer).setPath(reference).build();
             logger.debug("\n ************** URI - {}", uri);
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "URISyntaxException");
         }
 
-        //DELETE
-        final HttpDelete httpdelete = new HttpDelete(uri);
+        // Trust own CA and all self-signed certs
+        SSLContext sslcontext = SslUtil.createSSLContext();
 
-        final CloseableHttpResponse response;
+        //DELETE
+        HttpDelete httpdelete = new HttpDelete(uri);
+
+        CloseableHttpResponse response;
+
         try {
-            response = DynamicDiscoveryService.buildHttpClient(SslUtility.getSslContext(getConfigurationManager())).execute(httpdelete);
-        } catch (final IOException e) {
+            response = DynamicDiscoveryService.buildHttpClient(sslcontext).execute(httpdelete);
+        } catch (IOException e) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "\n IOException - " + SimpleErrorHandler.printExceptionStackTrace(e));
         }
 
         //  Get response
-        final int responseStatus = response.getStatusLine().getStatusCode();
-        final String responseReason = response.getStatusLine().getReasonPhrase();
+        int responseStatus = response.getStatusLine().getStatusCode();
+        String responseReason = response.getStatusLine().getReasonPhrase();
         logger.debug("Delete Response Status - {}, Reason - {} ", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
 
-        final HttpEntity entity = response.getEntity();
+        HttpEntity entity = response.getEntity();
 
         //  Audit vars
-        final String remoteIp = getConfigurationManager().getProperty("SMP_ADMIN_URL");
+        String remoteIp = ConfigurationManagerFactory.getConfigurationManager().getProperty("SMP_ADMIN_URL");
         //  ET_ObjectID --> Base64 of url
-        final String objectID = uri.toString();
-        final byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
+        String objectID = uri.toString();
+        byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
 
         switch (responseStatus) {
             case 503:
@@ -368,36 +374,36 @@ public class SMPDeleteFileController {
         /* Get BusinessCode and ErrorDescription from response */
 
         //Save InputStream of response in ByteArrayOutputStream in order to read it more than once.
-        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             IOUtils.copy(entity.getContent(), byteArrayOutputStream);
-        } catch (final IOException | UnsupportedOperationException ex) {
+        } catch (IOException | UnsupportedOperationException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getClass().getName() + " - " + SimpleErrorHandler.printExceptionStackTrace(ex));
         }
-        final byte[] bytes = byteArrayOutputStream.toByteArray();
+        byte[] bytes = byteArrayOutputStream.toByteArray();
 
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder builder;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
         try {
-            final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             builder = factory.newDocumentBuilder();
-            final Document doc = builder.parse(bais);
-            final Element element = doc.getDocumentElement();
-            final NodeList nodes = element.getChildNodes();
+            Document doc = builder.parse(bais);
+            Element element = doc.getDocumentElement();
+            NodeList nodes = element.getChildNodes();
             for (int j = 0; j < nodes.getLength(); j++) {
                 if (nodes.item(j).getNodeName().equals("BusinessCode")) {
-                    final String businessCode = nodes.item(j).getTextContent();
+                    String businessCode = nodes.item(j).getTextContent();
                 }
                 if (nodes.item(j).getNodeName().equals("ErrorDescription")) {
-                    final String errorDescription = nodes.item(j).getTextContent();
+                    String errorDescription = nodes.item(j).getTextContent();
                 }
             }
-        } catch (final ParserConfigurationException | IOException | SAXException ex) {
+        } catch (ParserConfigurationException | IOException | SAXException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getClass().getName() + " - " + SimpleErrorHandler.printExceptionStackTrace(ex));
         }
 
         /*transform xml to string in order to send in Audit*/
-        final String errorResult = AuditManager.prepareEventLog(bytes);
+        String errorResult = AuditManager.prepareEventLog(bytes);
         logger.debug("\n ***************** ERROR RESULT - '{}'", errorResult);
         //Audit error
         AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
@@ -406,11 +412,4 @@ public class SMPDeleteFileController {
         return ResponseEntity.status(responseStatus).build();
     }
 
-    private ConfigurationManager getConfigurationManager() {
-        if (configurationManager == null) {
-            configurationManager = ConfigurationManagerFactory.getConfigurationManager();
-        }
-
-        return configurationManager;
-    }
 }

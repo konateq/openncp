@@ -17,7 +17,7 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleEr
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.BdxSmpValidator;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.DynamicDiscoveryClient;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.SMPConverter;
-import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.SslUtility;
+import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.SslUtil;
 import eu.europa.ec.sante.openncp.webmanager.backend.service.PermissionUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -61,38 +61,37 @@ import java.util.regex.Pattern;
 @RequestMapping(path = "/api")
 public class SMPUploadFileController {
 
-    private ConfigurationManager configurationManager;
     private final Logger logger = LoggerFactory.getLogger(SMPUploadFileController.class);
     private final SMPConverter smpconverter;
     private final Environment environment;
     private final DynamicDiscoveryClient dynamicDiscoveryClient;
 
-    public SMPUploadFileController(final SMPConverter smpconverter, final Environment environment, final DynamicDiscoveryClient dynamicDiscoveryClient) {
+    public SMPUploadFileController(SMPConverter smpconverter, Environment environment, DynamicDiscoveryClient dynamicDiscoveryClient) {
         this.dynamicDiscoveryClient = dynamicDiscoveryClient;
         this.smpconverter = smpconverter;
         this.environment = environment;
     }
 
     @PostMapping(path = "/smpeditor/uploader/fromSmpFileOps")
-    public ResponseEntity<SMPHttp> createSMPFileOps(@RequestBody final SMPFileOps smpFileOps) {
+    public ResponseEntity<SMPHttp> createSMPFileOps(@RequestBody SMPFileOps smpFileOps) {
 
         if (smpFileOps.getGeneratedFile() == null) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "The requested file does not exists");
         }
-        final File file = new File(smpFileOps.getGeneratedFile().getPath());
-        final SMPHttp smpHttp = new SMPHttp();
+        File file = new File(smpFileOps.getGeneratedFile().getPath());
+        SMPHttp smpHttp = new SMPHttp();
         smpHttp.setSmpFile(file);
         return ResponseEntity.ok(smpHttp);
     }
 
     @PostMapping(path = "/smpeditor/uploader/fileToUpload")
-    public ResponseEntity<SMPHttp> createSMPHttp(@RequestPart final MultipartFile multipartFile) {
-        final SMPHttp smpHttp = new SMPHttp();
+    public ResponseEntity<SMPHttp> createSMPHttp(@RequestPart MultipartFile multipartFile) {
+        SMPHttp smpHttp = new SMPHttp();
         PermissionUtil.initializeFolders(Constants.SMP_DIR_PATH);
-        final File convFile = new File(Constants.SMP_DIR_PATH + File.separator + multipartFile.getOriginalFilename());
+        File convFile = new File(Constants.SMP_DIR_PATH + File.separator + multipartFile.getOriginalFilename());
         try {
             multipartFile.transferTo(convFile);
-        } catch (final IOException | IllegalStateException ex) {
+        } catch (IOException | IllegalStateException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getClass().getName());
         }
         smpHttp.setSmpFile(convFile);
@@ -101,10 +100,10 @@ public class SMPUploadFileController {
     }
 
     @PostMapping(path = "smpeditor/uploader/upload")
-    public ResponseEntity<SMPHttp> uploadToServer(@RequestBody final SMPHttp smpHttp) throws Exception {
+    public ResponseEntity<SMPHttp> uploadToServer(@RequestBody SMPHttp smpHttp) throws Exception {
 
-        final String contentFile = new String(Files.readAllBytes(Paths.get(smpHttp.getSmpFile().getPath())));
-        final boolean fileDeleted;
+        String contentFile = new String(Files.readAllBytes(Paths.get(smpHttp.getSmpFile().getPath())));
+        boolean fileDeleted;
 
         if (!BdxSmpValidator.validateFile(contentFile)) {
             fileDeleted = smpHttp.getSmpFile().delete();
@@ -115,14 +114,14 @@ public class SMPUploadFileController {
         }
 
 
-        final Object fileConverted = smpconverter.convertFromXml(smpHttp.getSmpFile());
+        Object fileConverted = smpconverter.convertFromXml(smpHttp.getSmpFile());
         if (smpconverter.isSignedServiceMetadata(fileConverted)) {
             fileDeleted = smpHttp.getSmpFile().delete();
             logger.debug("Converted File deleted: '{}'", fileDeleted);
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("warning.isSigned.sigmenu"));
         }
 
-        final ServiceMetadata serviceMetadata = smpconverter.getServiceMetadata(fileConverted);
+        ServiceMetadata serviceMetadata = smpconverter.getServiceMetadata(fileConverted);
 
         String participantID = "";
         String documentTypeID = "";
@@ -139,13 +138,13 @@ public class SMPUploadFileController {
             }
 
             /* Check if url of redirect is correct */
-            final String href = serviceMetadata.getRedirect().getHref();
-            final Pattern pattern = Pattern.compile("ehealth-participantid-qns.*");
-            final Matcher matcher = pattern.matcher(href);
+            String href = serviceMetadata.getRedirect().getHref();
+            Pattern pattern = Pattern.compile("ehealth-participantid-qns.*");
+            Matcher matcher = pattern.matcher(href);
             if (matcher.find()) {
                 String result = matcher.group(0);
                 result = java.net.URLDecoder.decode(result, StandardCharsets.UTF_8);
-                final String[] ids = result.split("/services/");
+                String[] ids = result.split("/services/");
                 participantID = ids[0];
                 documentTypeID = ids[1];
             } else {
@@ -168,12 +167,12 @@ public class SMPUploadFileController {
             documentTypeID = docScheme + "::" + docID;
         }
 
-        String urlServer = getConfigurationManager().getProperty("SMP_ADMIN_URL");
+        String urlServer = ConfigurationManagerFactory.getConfigurationManager().getProperty("SMP_ADMIN_URL");
         if (urlServer.endsWith("/")) {
             urlServer = urlServer.substring(0, urlServer.length() - 1);
         }
 
-        final String serviceMetdataUrl = "/" + participantID + "/services/" + documentTypeID;
+        String serviceMetdataUrl = "/" + participantID + "/services/" + documentTypeID;
 
         // Removes https:// from entered by the user so it won't repeat in uri set scheme
         if (urlServer.startsWith("https")) {
@@ -186,66 +185,67 @@ public class SMPUploadFileController {
         try {
 
             uri = new URIBuilder().setScheme("https").setHost(urlServer).setPath(serviceMetdataUrl).build();
-        } catch (final URISyntaxException ex) {
+        } catch (URISyntaxException ex) {
             logger.error("URISyntaxException: '{}", SimpleErrorHandler.printExceptionStackTrace(ex));
         }
 
         logger.info("SMP Uri endpoint: '{}'", uri);
 
         String content = "";
-        try (final Scanner scanner = new Scanner(smpHttp.getSmpFile(), StandardCharsets.UTF_8.name())) {
+        try (Scanner scanner = new Scanner(smpHttp.getSmpFile(), StandardCharsets.UTF_8.name())) {
             content = scanner.useDelimiter("\\Z").next();
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             logger.error("IOException: '{}'", SimpleErrorHandler.printExceptionStackTrace(ex));
         }
 
-        final StringEntity entityPut = new StringEntity(content, ContentType.create("application/xml", "UTF-8"));
+        StringEntity entityPut = new StringEntity(content, ContentType.create("application/xml", "UTF-8"));
         if (logger.isDebugEnabled()) {
             logger.debug("Entity that will be put on the SMP server : '{}'", IOUtils.toString(entityPut.getContent(), StandardCharsets.UTF_8));
         }
 
         // Trust own CA and all self-signed certs
-        final SSLContext sslcontext = SslUtility.getSslContext(getConfigurationManager());
+        SSLContext sslcontext = SslUtil.createSSLContext();
 
         //PUT
-        final HttpPut httpput = new HttpPut(uri);
+        HttpPut httpput = new HttpPut(uri);
         httpput.setEntity(entityPut);
-        final CloseableHttpResponse response;
+        CloseableHttpResponse response;
         try {
             response = DynamicDiscoveryService.buildHttpClient(sslcontext).execute(httpput);
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("error.server.failed"));
         }
 
         // Get Http Client response
         smpHttp.setStatusCode(response.getStatusLine().getStatusCode());
-        final org.apache.http.HttpEntity entity = response.getEntity();
+        org.apache.http.HttpEntity entity = response.getEntity();
 
         logger.debug("Http Client Response Status Code: '{}' - Reason: '{}'", response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase());
 
         //Audit vars
-        final String ncp = getConfigurationManager().getProperty("ncp.country");
-        final String ncpemail = getConfigurationManager().getProperty("ncp.email");
-        final String country = getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
-        final String serverSMPUrl = getConfigurationManager().getProperty(StandardProperties.SMP_SML_ADMIN_URL);//Source Gateway
-        final String smp = getConfigurationManager().getProperty(StandardProperties.SMP_SML_SUPPORT);
-        final String smpemail = getConfigurationManager().getProperty(StandardProperties.SMP_SML_SUPPORT_EMAIL);
+        ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
+        String ncp = configurationManager.getProperty("ncp.country");
+        String ncpemail = configurationManager.getProperty("ncp.email");
+        String country = configurationManager.getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
+        String serverSMPUrl = configurationManager.getProperty(StandardProperties.SMP_SML_ADMIN_URL);//Source Gateway
+        String smp = configurationManager.getProperty(StandardProperties.SMP_SML_SUPPORT);
+        String smpemail = configurationManager.getProperty(StandardProperties.SMP_SML_SUPPORT_EMAIL);
 
         //ET_ObjectID --> Base64 of url
-        final String objectID = uri.toString(); //ParticipantObjectID
-        final byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
+        String objectID = uri.toString(); //ParticipantObjectID
+        byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
 
         logger.info("SMP Put request response code: '{}'", smpHttp.getStatusCode());
         if (smpHttp.getStatusCode() == 404 || smpHttp.getStatusCode() == 503 || smpHttp.getStatusCode() == 405) {
             //Audit Error
-            final byte[] encodedObjectDetail = Base64.encodeBase64(response.getStatusLine().getReasonPhrase().getBytes());
+            byte[] encodedObjectDetail = Base64.encodeBase64(response.getStatusLine().getReasonPhrase().getBytes());
             AuditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
                     Integer.toString(response.getStatusLine().getStatusCode()), encodedObjectDetail);
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("error.server.failed"));
         } else if (smpHttp.getStatusCode() == 401) {
             //Audit Error
-            final byte[] encodedObjectDetail = Base64.encodeBase64(response.getStatusLine().getReasonPhrase().getBytes());
+            byte[] encodedObjectDetail = Base64.encodeBase64(response.getStatusLine().getReasonPhrase().getBytes());
             AuditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
                     Integer.toString(response.getStatusLine().getStatusCode()), encodedObjectDetail);
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("error.nouser"));
@@ -255,44 +255,44 @@ public class SMPUploadFileController {
             /* Get BusinessCode and ErrorDescription from response */
 
             //Save InputStream of response in ByteArrayOutputStream in order to read it more than once.
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
                 IOUtils.copy(entity.getContent(), baos);
-            } catch (final IOException ex) {
+            } catch (IOException ex) {
                 logger.error("IOException response: '{}", SimpleErrorHandler.printExceptionStackTrace(ex));
-            } catch (final UnsupportedOperationException ex) {
+            } catch (UnsupportedOperationException ex) {
                 logger.error("UnsupportedOperationException response: '{}", SimpleErrorHandler.printExceptionStackTrace(ex));
             }
-            final byte[] bytes = baos.toByteArray();
+            byte[] bytes = baos.toByteArray();
 
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder builder;
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder;
             try {
-                final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
                 builder = factory.newDocumentBuilder();
-                final Document doc = builder.parse(bais);
-                final Element element = doc.getDocumentElement();
-                final NodeList nodes = element.getChildNodes();
+                Document doc = builder.parse(bais);
+                Element element = doc.getDocumentElement();
+                NodeList nodes = element.getChildNodes();
                 for (int j = 0; j < nodes.getLength(); j++) {
                     if (nodes.item(j).getNodeName().equals("BusinessCode")) {
-                        final String businessCode = nodes.item(j).getTextContent();
+                        String businessCode = nodes.item(j).getTextContent();
                         smpHttp.setBusinessCode(businessCode);
                     }
                     if (nodes.item(j).getNodeName().equals("ErrorDescription")) {
-                        final String errorDescription = nodes.item(j).getTextContent();
+                        String errorDescription = nodes.item(j).getTextContent();
                         smpHttp.setErrorDescription(errorDescription);
                     }
                 }
-            } catch (final ParserConfigurationException ex) {
+            } catch (ParserConfigurationException ex) {
                 logger.error("ParserConfigurationException: '{}", SimpleErrorHandler.printExceptionStackTrace(ex));
-            } catch (final SAXException ex) {
+            } catch (SAXException ex) {
                 logger.error("SAXException: '{}", SimpleErrorHandler.printExceptionStackTrace(ex));
-            } catch (final IOException ex) {
+            } catch (IOException ex) {
                 logger.error("IOException: '{}", SimpleErrorHandler.printExceptionStackTrace(ex));
             }
 
             // Transform XML to String in order to send in Audit
-            final String errorResult = AuditManager.prepareEventLog(bytes);
+            String errorResult = AuditManager.prepareEventLog(bytes);
             logger.debug("Error Result: '{}", errorResult);
             //Audit error
             AuditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
@@ -308,11 +308,11 @@ public class SMPUploadFileController {
         //GET
         boolean success = true;
         String errorType = "";
-        final ParticipantIdentifier participantIdentifier = new ParticipantIdentifier(partID, partScheme);
-        final DocumentIdentifier documentIdentifier = new DocumentIdentifier(docID, docScheme);
+        ParticipantIdentifier participantIdentifier = new ParticipantIdentifier(partID, partScheme);
+        DocumentIdentifier documentIdentifier = new DocumentIdentifier(docID, docScheme);
 
         logger.info("Instantiating DynamicDiscovery: '{}', '{}', '{}', '{}'", partID, partScheme, docID, docScheme);
-        final DynamicDiscovery smpClient = dynamicDiscoveryClient.getInstance();
+        DynamicDiscovery smpClient = dynamicDiscoveryClient.getInstance();
 
         if (smpClient == null) {
             throw new Exception("Cannot instantiate SMPClient!!!!");
@@ -320,14 +320,14 @@ public class SMPUploadFileController {
         URI smpURI = null;
         try {
             smpURI = smpClient.getService().getMetadataLocator().lookup(participantIdentifier);
-        } catch (final TechnicalException ex) {
+        } catch (TechnicalException ex) {
             success = false;
             errorType = "TechnicalException";
             logger.error("TechnicalException: '{}", SimpleErrorHandler.printExceptionStackTrace(ex));
         }
 
-        final URI serviceGroup = smpClient.getService().getMetadataProvider().resolveDocumentIdentifiers(smpURI, participantIdentifier);
-        final URI serviceMetadataUri = smpClient.getService().getMetadataProvider().resolveServiceMetadata(smpURI, participantIdentifier, documentIdentifier);
+        URI serviceGroup = smpClient.getService().getMetadataProvider().resolveDocumentIdentifiers(smpURI, participantIdentifier);
+        URI serviceMetadataUri = smpClient.getService().getMetadataProvider().resolveServiceMetadata(smpURI, participantIdentifier, documentIdentifier);
 
         logger.info("URI ServiceGroup: '{}'\nURI serviceMetadataUri: '{}'", serviceGroup.toASCIIString(), serviceMetadataUri.toASCIIString());
 
@@ -341,20 +341,12 @@ public class SMPUploadFileController {
 
 
     @PostMapping(value = "smpeditor/uploader/clean")
-    public ResponseEntity cleanFile(@RequestBody final SMPHttp smpHttp) {
+    public ResponseEntity cleanFile(@RequestBody SMPHttp smpHttp) {
         if (smpHttp.getSmpFile() != null) {
-            final boolean delete = smpHttp.getSmpFile().delete();
+            boolean delete = smpHttp.getSmpFile().delete();
             logger.debug("\n****DELETED ? '{}'", delete);
         }
 
         return ResponseEntity.ok().build();
-    }
-
-    private ConfigurationManager getConfigurationManager() {
-        if (configurationManager == null) {
-            configurationManager = ConfigurationManagerFactory.getConfigurationManager();
-        }
-
-        return configurationManager;
     }
 }

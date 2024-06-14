@@ -18,14 +18,14 @@ public class DisplayTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DisplayTest.class);
 
     //	@Test
-    private void fileTest(String input, TRANSFORMATION type) throws UITransformationException, IOException {
+    private void fileTest(final String input, final TRANSFORMATION type) throws UITransformationException, IOException {
 
         LOGGER.info("Transforming file: " + input);
 
         String cda = "";
         try {
             cda = CdaXSLTransformer.getInstance().readFile(input);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("File not found");
         }
         String out = "";
@@ -42,47 +42,47 @@ public class DisplayTest {
                 out = CdaXSLTransformer.getInstance().transformWithOutputAndUserHomePath(cda, "fr-BE", "");
 
         }
-        String filename = Paths.get(input).getFileName().toString();
-        String stripExt = filename.substring(0, filename.lastIndexOf("."));
-        String pt = Paths.get(System.getenv("EPSOS_PROPS_PATH"), "EpsosRepository", "out", stripExt + ".html").toString();
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pt), StandardCharsets.UTF_8))) {
+        final String filename = Paths.get(input).getFileName().toString();
+        final String stripExt = filename.substring(0, filename.lastIndexOf("."));
+        final String pt = Paths.get(System.getenv("EPSOS_PROPS_PATH"), "EpsosRepository", "out", stripExt + ".html").toString();
+        try (final Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pt), StandardCharsets.UTF_8))) {
             writer.write(out);
         }
     }
 
     //	@Test
-    private void folderTest(String input, final TRANSFORMATION type) {
-        Path path = Paths.get(input);
+    private void folderTest(final String input, final TRANSFORMATION type) {
+        final Path path = Paths.get(input);
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
                     if (!attrs.isDirectory()) {
                         try {
                             fileTest(file.toString(), type);
-                        } catch (UITransformationException e) {
+                        } catch (final UITransformationException e) {
                             LOGGER.error("{}: '{}'", e.getClass(), e.getMessage(), e);
                         }
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("{}: '{}'", e.getClass(), e.getMessage(), e);
         }
     }
 
     @Test
     public void runFile() throws UITransformationException, IOException {
-        fileTest("/Users/mathiasghys/Downloads/2-1234-W7.xml", TRANSFORMATION.WithOutputAndDefinedPath);
+        fileTest("/Users/mathiasghys/Downloads/EHEALTH-11619.xml", TRANSFORMATION.WithOutputAndDefinedPath);
     }
 
     @Test
     public void readFile() throws TerminologyFileNotFoundException, IOException, UITransformationException {
 
-        String out = CdaXSLTransformer.getInstance().readFile("samples/1-5678.xml");
-        String pt = Paths.get(System.getenv("EPSOS_PROPS_PATH"), "EpsosRepository", "out", "readfile.txt").toString();
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pt), StandardCharsets.UTF_8))) {
+        final String out = CdaXSLTransformer.getInstance().readFile("samples/1-5678.xml");
+        final String pt = Paths.get(System.getenv("EPSOS_PROPS_PATH"), "EpsosRepository", "out", "readfile.txt").toString();
+        try (final Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pt), StandardCharsets.UTF_8))) {
             writer.write(out);
         }
     }
