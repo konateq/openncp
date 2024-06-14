@@ -32,6 +32,7 @@ import java.util.Set;
 public class PatientResourceProvider implements IResourceProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PatientResourceProvider.class);
+
     private final DispatchingService dispatchingService;
     private final BundleHandler bundleHandler;
 
