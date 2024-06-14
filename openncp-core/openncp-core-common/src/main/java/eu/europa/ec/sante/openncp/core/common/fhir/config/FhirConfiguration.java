@@ -70,6 +70,8 @@ public class FhirConfiguration {
             npmPackageSupport.loadPackageFromClasspath("classpath:package/eulab_0.1.0-ballot.tgz");
             LOG.info("Loading ips.r4_1.1.0.tgz package");
             npmPackageSupport.loadPackageFromClasspath("classpath:package/ips.r4_1.1.0.tgz");
+            LOG.info("Loading myhealtheu_lab_0.0.1.tgz package");
+            npmPackageSupport.loadPackageFromClasspath("classpath:package/myhealtheu_lab_0.0.1.tgz");
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
