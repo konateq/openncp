@@ -46,7 +46,7 @@ public class PatientResourceProvider implements IResourceProvider {
         return Patient.class;
     }
 
-    @Search(allowUnknownParams = true)
+    @Search(allowUnknownParams = false)
     public IBaseBundle search(final HttpServletRequest theServletRequest, final HttpServletResponse theServletResponse,
                               final RequestDetails theRequestDetails,
 

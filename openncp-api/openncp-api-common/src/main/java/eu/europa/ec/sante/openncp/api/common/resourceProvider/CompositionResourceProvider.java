@@ -20,6 +20,7 @@ import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.IdType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +44,8 @@ public class CompositionResourceProvider implements IResourceProvider {
     }
 
     @Override
-    public Class<CompositionLabReportMyHealthEu> getResourceType() {
-        return CompositionLabReportMyHealthEu.class;
+    public Class<Composition> getResourceType() {
+        return Composition.class;
     }
 
 

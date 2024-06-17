@@ -1,5 +1,5 @@
 {
-  "resourceType" : "DiagnosticReportLabMyHealthEu",
+  "resourceType": "DiagnosticReport",
   "id" : "SampleDiagnosticReport",
   "meta" : {
     "profile" : ["http://fhir.ehdsi.eu/laboratory/StructureDefinition/DiagnosticReport-lab-myhealtheu"]
