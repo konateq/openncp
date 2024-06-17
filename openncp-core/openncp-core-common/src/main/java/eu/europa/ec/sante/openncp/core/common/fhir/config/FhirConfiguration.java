@@ -125,7 +125,8 @@ public class FhirConfiguration {
         public FhirRestfulServerConfiguration(final FhirProperties properties, final FhirContext fhirContext,
                                               final ObjectProvider<List<IResourceProvider>> resourceProviders,
                                               final ObjectProvider<List<IServerInterceptor>> interceptors,
-                                              final ObjectProvider<IPagingProvider> pagingProvider, final OpenApiInterceptor openApiInterceptor) {
+                                              final ObjectProvider<IPagingProvider> pagingProvider,
+                                              final OpenApiInterceptor openApiInterceptor) {
             this.properties = properties;
             this.fhirContext = fhirContext;
             this.resourceProviders = resourceProviders.getIfAvailable();
