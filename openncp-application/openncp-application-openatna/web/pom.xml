@@ -158,9 +158,6 @@
                                     <directory>src/main/profiled-resource/all</directory>
                                 </resource>
                             </webResources>
-                            <!-- <packagingExcludes>-->
-                            <!--     WEB-INF/lib/xercesImpl-${xerces.version}.jar,-->
-                            <!-- </packagingExcludes>-->
                         </configuration>
                     </plugin>
                 </plugins>
@@ -184,9 +181,6 @@
                                 </resource>
                             </webResources>
                             <includeEmptyDirectories>false</includeEmptyDirectories>
-                            <!-- <packagingExcludes>-->
-                            <!--     WEB-INF/lib/xercesImpl-${xerces.version}.jar,-->
-                            <!-- </packagingExcludes>-->
                         </configuration>
                     </plugin>
                 </plugins>
@@ -209,9 +203,6 @@
                                     <directory>src/main/profiled-resource/web</directory>
                                 </resource>
                             </webResources>
-                            <!-- <packagingExcludes>-->
-                            <!--     WEB-INF/lib/xercesImpl-${xerces.version}.jar,-->
-                            <!-- </packagingExcludes>-->
                         </configuration>
                     </plugin>
                 </plugins>

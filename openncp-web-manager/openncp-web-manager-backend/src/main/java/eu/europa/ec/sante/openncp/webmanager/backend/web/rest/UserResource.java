@@ -47,7 +47,8 @@ public class UserResource {
                 lastId = user.getId() + 1;
             }
             if (user.equals(newUser)) {
-                logger.info("[Gateway] User Already exists! {}", newUser.getUsername());
+                String userName = sanitizeString(newUser.getUsername());
+                logger.info("[Gateway] User Already exists! {}", userName);
                 return ResponseEntity.badRequest().body("{ \"body\": \"User Already exists!\", \"statusCode\": \"NOT_ACCEPTED\", \"statusCodeValue\": 403 }");
             }
             if (user.getId().equals(newUser.getId())) {
@@ -55,7 +56,8 @@ public class UserResource {
                 return ResponseEntity.badRequest().body("{ \"body\": \"ID Already exists!\", \"statusCode\": \"NOT_ACCEPTED\", \"statusCodeValue\": 403 }");
             }
             if (user.getUsername().equals(newUser.getUsername())) {
-                logger.info("[Gateway] Username Already exists! {}", newUser.getUsername());
+                String userName = sanitizeString(newUser.getUsername());
+                logger.info("[Gateway] Username Already exists! {}", userName);
                 return ResponseEntity.badRequest().body("{ \"body\": \"Username Already exists!\", \"statusCode\": \"NOT_ACCEPTED\", \"statusCodeValue\": 403 }");
             }
         }
@@ -125,5 +127,9 @@ public class UserResource {
         }
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    private static String sanitizeString(String stringToSanitize) {
+        return stringToSanitize != null ? stringToSanitize.replaceAll("[\n\r]", "_") : "";
     }
 }

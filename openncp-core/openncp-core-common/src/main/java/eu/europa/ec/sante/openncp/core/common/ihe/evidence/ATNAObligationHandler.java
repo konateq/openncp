@@ -11,18 +11,48 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 
-public class ATNAObligationHandler implements ObligationHandler {
+public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandler {
 
     private static final String ATNA_PREFIX = "urn:eSENS:obligations:nrr:ATNA";
+    private static final String EVENT_ACTION_CODE = "EventActionCode";
+    private static final String EVENT_DATE_TIME = "EventDateTime";
+    private static final String EVENT_OUTCOME_INDICATOR = "EventOutcomeIndicator";
+    private static final String EVENT_ID = "EventID";
+    private static final String CODE = "code";
+    private static final String CODE_SYSTEM = "codeSystem";
+    private static final String CODE_SYSTEM_NAME = "codeSystemName";
+    private static final String DISPLAY_NAME = "displayName";
+    private static final String EVENT_TYPE_CODE = "EventTypeCode";
+    private static final String ACTIVE_PARTICIPANT = "ActiveParticipant";
+    private static final String ALTERNATIVE_USER_ID = "AlternativeUserID";
+    private static final String NETWORK_ACCESS_POINT_ID = "NetworkAccessPointID";
+    private static final String NETWORK_ACCESS_POINT_TYPE_CODE = "NetworkAccessPointTypeCode";
+    private static final String USER_ID = "UserID";
+    private static final String USER_IS_REQUESTOR = "UserIsRequestor";
+    private static final String USER_NAME = "UserName";
+    private static final String ROLE_ID_CODE = "RoleIDCode";
+    private static final String SOURCE = "Source";
+    private static final String AUDIT_ENTERPRISE_SITE_ID = "AuditEnterpriseSiteID";
+    private static final String AUDIT_SOURCE_IDENTIFICATION = "AuditSourceIdentification";
+    private static final String AUDIT_SOURCE_ID = "AuditSourceID";
+    private static final String AUDIT_SOURCE_TYPE_CODE = "AuditSourceTypeCode";
+    private static final String PARTICIPANT_OBJECT_IDENTIFICATION = "ParticipantObjectIdentification";
+    private static final String PARTICIPANT_OBJECT_DATA_LIFE_CYCLE = "ParticipantObjectDataLifeCycle";
+    private static final String PARTICIPANT_OBJECT_ID = "ParticipantObjectID";
+    private static final String PARTICIPANT_OBJECT_TYPE_CODE = "ParticipantObjectTypeCode";
+    private static final String PARTICIPANT_OBJECT_TYPE_CODE_ROLE = "ParticipantObjectTypeCodeRole";
+    private static final String PARTICIPANT_OBJECT_ID_TYPE_CODE = "ParticipantObjectIDTypeCode";
+    private static final String N_A = "N/A";
+
     private final HashMap<String, String> auditValueMap = new HashMap<>();
-    private final IHEMessageType messageType;
-    private final List<ESensObligation> obligations;
+    private final eu.europa.ec.sante.openncp.core.common.evidence.IHEMessageType messageType;
+    private final List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations;
     private final Context context;
     private Document audit = null;
 
-    public ATNAObligationHandler(MessageType messageType, List<ESensObligation> obligations, Context context) {
+    public ATNAObligationHandler(MessageType messageType, List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations, Context context) {
 
-        this.messageType = (IHEMessageType) messageType;
+        this.messageType = (eu.europa.ec.sante.openncp.core.common.evidence.IHEMessageType) messageType;
         this.obligations = obligations;
         this.context = context;
     }
@@ -35,51 +65,55 @@ public class ATNAObligationHandler implements ObligationHandler {
      */
 
     @Override
-    public void discharge() throws ObligationDischargeException {
+    public void discharge() throws eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException {
 
         // Here I need to check the IHE message type. It can be XCA, XCF, whatever
-        if (messageType instanceof IHEXCARetrieve) {
+        if (messageType instanceof eu.europa.ec.sante.openncp.core.common.evidence.IHEXCARetrieve) {
             try {
-                makeIHEXCARetrieveAudit((IHEXCARetrieve) messageType, obligations);
+                makeIHEXCARetrieveAudit(obligations);
             } catch (ParserConfigurationException e) {
-                throw new ObligationDischargeException(e);
+                throw new eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException(e);
             }
         } else {
-            throw new ObligationDischargeException("Unkwnon message type");
+            throw new eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException("Unkwnon message type");
         }
     }
 
-    private void makeIHEXCARetrieveAudit(IHEXCARetrieve messageType2, List<ESensObligation> obligations2) throws ParserConfigurationException {
-        int size = obligations2.size();
+    private void makeIHEXCARetrieveAudit(List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations2)
+                        throws ParserConfigurationException {
 
-        for (ESensObligation eSensObl : obligations2) {
+        for (eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation eSensObl : obligations2) {
             // Here I am in the ATNA handler, thus I have to check if it is prefixed by ATNA
             if (eSensObl.getObligationID().startsWith(ATNA_PREFIX)) {
-                String outcome;
-                if (eSensObl instanceof PERMITEsensObligation) {
-                    outcome = "SUCCESS";
-                } else {
-                    outcome = "MINOR FAILURE";
-                }
+                String outcome = getOutcome(eSensObl);
+
                 // Here the real mapping happens: are we NRR or NRO? I think both, and it depends on the policy
                 List<AttributeAssignmentType> attributeAssignments = eSensObl.getAttributeAssignments();
 
                 if (attributeAssignments != null) {
-                    int attributeSize = attributeAssignments.size();
-
                     for (AttributeAssignmentType aat : attributeAssignments) {
                         if (aat.getAttributeId().startsWith(ATNA_PREFIX)) {
                             fillHash(aat.getAttributeId(), aat.getContent());
                         }
                     }
                 }
-                makeAuditXml(outcome);
+                makeAuditXml();
             }
             // else skip, it's not an ATNA obligation
         }
     }
 
-    private void makeAuditXml(String outcome) throws ParserConfigurationException {
+    private String getOutcome(eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation eSensObl) {
+        String outcome;
+        if (eSensObl instanceof eu.europa.ec.sante.openncp.core.common.evidence.PERMITEsensObligation) {
+            outcome = "SUCCESS";
+        } else {
+            outcome = "MINOR FAILURE";
+        }
+        return outcome;
+    }
+
+    private void makeAuditXml() throws ParserConfigurationException {
 
         /*
          * Read the values that you need from the auditValueMap and fill the XML.
@@ -90,133 +124,134 @@ public class ATNAObligationHandler implements ObligationHandler {
          * The idea is to call here the OpenNCP implementation. This is just a placeholder
          */
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setXIncludeAware(false);
         dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
-        Document audit = db.newDocument();
+        Document auditDocument = db.newDocument();
 
-        Element auditMessage = audit.createElement("AuditMessage");
-        audit.appendChild(auditMessage);
-        Element eventIdentification = audit.createElement("EventIdentification");
-        eventIdentification.setAttribute("EventActionCode", auditValueMap.get("EventActionCode").trim() != null ? auditValueMap.get("EventActionCode").trim() : "N/A");
-        eventIdentification.setAttribute("EventDateTime", Instant.now().toString());
-        eventIdentification.setAttribute("EventOutcomeIndicator", auditValueMap.get("EventOutcomeIndicator").trim() != null ? auditValueMap.get("EventOutcomeIndicator").trim() : "N/A"); // by default, we fail
+        Element auditMessage = auditDocument.createElement("AuditMessage");
+        auditDocument.appendChild(auditMessage);
+        Element eventIdentification = auditDocument.createElement("EventIdentification");
+        eventIdentification.setAttribute(EVENT_ACTION_CODE, auditValueMap.get(EVENT_ACTION_CODE).trim().isEmpty() ? N_A : auditValueMap.get(EVENT_ACTION_CODE).trim());
+        eventIdentification.setAttribute(EVENT_DATE_TIME, Instant.now().toString());
+        eventIdentification.setAttribute(EVENT_OUTCOME_INDICATOR, auditValueMap.get(EVENT_OUTCOME_INDICATOR).trim().isEmpty() ? N_A : auditValueMap.get(EVENT_OUTCOME_INDICATOR).trim()); // by default, we fail
 
-        Element eventId = audit.createElement("EventID");
+        Element eventId = auditDocument.createElement(EVENT_ID);
         eventIdentification.appendChild(eventId);
-        eventId.setAttribute("code", auditValueMap.get("EventID").trim() != null ? auditValueMap.get("EventID").trim() : "N/A");
-        eventId.setAttribute("codeSystem", "");
-        eventId.setAttribute("codeSystemName", "DCM");
-        eventId.setAttribute("displayName", "Export");
+        eventId.setAttribute(CODE, auditValueMap.get(EVENT_ID).isEmpty() ? N_A : auditValueMap.get(EVENT_ID).trim());
+        eventId.setAttribute(CODE_SYSTEM, "");
+        eventId.setAttribute(CODE_SYSTEM_NAME, "DCM");
+        eventId.setAttribute(DISPLAY_NAME, "Export");
 
         //What have been done?
-        Element eventTypeCode = audit.createElement("EventTypeCode");
+        Element eventTypeCode = auditDocument.createElement(EVENT_TYPE_CODE);
         eventIdentification.appendChild(eventTypeCode);
-        eventTypeCode.setAttribute("code", auditValueMap.get("EventTypeCode").trim() != null ? auditValueMap.get("EventTypeCode").trim() : "N/A");
-        eventTypeCode.setAttribute("codeSystem", "");
-        eventTypeCode.setAttribute("codeSystemName", "IHE Transactions");
-        eventTypeCode.setAttribute("displayName", "Retrieve Document Set");
+        eventTypeCode.setAttribute(CODE, auditValueMap.get(EVENT_TYPE_CODE).trim().isEmpty() ? N_A : auditValueMap.get(EVENT_TYPE_CODE).trim());
+        eventTypeCode.setAttribute(CODE_SYSTEM, "");
+        eventTypeCode.setAttribute(CODE_SYSTEM_NAME, "IHE Transactions");
+        eventTypeCode.setAttribute(DISPLAY_NAME, "Retrieve Document Set");
 
         auditMessage.appendChild(eventIdentification);
 
         // Initiated from where
-        Element activeParticipant1 = audit.createElement("ActiveParticipant");
-        activeParticipant1.setAttribute("AlternativeUserID", context.getUsername().trim() != null ? context.getUsername().trim() : "N/A");
-        activeParticipant1.setAttribute("NetworkAccessPointID", context.getCurrentHost().trim() != null ? context.getCurrentHost().trim() : "N/A");
-        activeParticipant1.setAttribute("NetworkAccessPointTypeCode", "2");
-        activeParticipant1.setAttribute("UserID", "1.2.3.4.5.1.1000.990.1.1.1.22");
-        activeParticipant1.setAttribute("UserIsRequestor", "false");
-        activeParticipant1.setAttribute("UserName", "");
-        Element roleIdCode1 = audit.createElement("RoleIDCode");
+        Element activeParticipant1 = auditDocument.createElement(ACTIVE_PARTICIPANT);
+        activeParticipant1.setAttribute(ALTERNATIVE_USER_ID, context.getUsername().isEmpty() ? N_A : context.getUsername().trim());
+        activeParticipant1.setAttribute(NETWORK_ACCESS_POINT_ID, context.getCurrentHost().isEmpty() ? N_A : context.getCurrentHost().trim());
+        activeParticipant1.setAttribute(NETWORK_ACCESS_POINT_TYPE_CODE, "2");
+        activeParticipant1.setAttribute(USER_ID, "1.2.3.4.5.1.1000.990.1.1.1.22");
+        activeParticipant1.setAttribute(USER_IS_REQUESTOR, "false");
+        activeParticipant1.setAttribute(USER_NAME, "");
+        Element roleIdCode1 = auditDocument.createElement(ROLE_ID_CODE);
         activeParticipant1.appendChild(roleIdCode1);
-        roleIdCode1.setAttribute("code", "110153");
-        roleIdCode1.setAttribute("codeSystem", "");
-        roleIdCode1.setAttribute("codeSystemName", "DCM");
-        roleIdCode1.setAttribute("displayName", "Source");
+        roleIdCode1.setAttribute(CODE, "110153");
+        roleIdCode1.setAttribute(CODE_SYSTEM, "");
+        roleIdCode1.setAttribute(CODE_SYSTEM_NAME, "DCM");
+        roleIdCode1.setAttribute(DISPLAY_NAME, SOURCE);
 
         // What is the recipient?
-        Element activeParticipant2 = audit.createElement("ActiveParticipant");
-        activeParticipant2.setAttribute("NetworkAccessPointID", context.getRemoteHost().trim() != null ? context.getRemoteHost().trim() : "N/A");
-        activeParticipant2.setAttribute("NetworkAccessPointTypeCode", "2");
-        activeParticipant2.setAttribute("UserID", "http://www.w3.org/2005/08/addressing/anonymous");
-        activeParticipant2.setAttribute("UserIsRequestor", "true");
-        activeParticipant2.setAttribute("UserName", "");
-        Element roleIdCode2 = audit.createElement("RoleIDCode");
+        Element activeParticipant2 = auditDocument.createElement(ACTIVE_PARTICIPANT);
+        activeParticipant2.setAttribute(NETWORK_ACCESS_POINT_ID, context.getRemoteHost().trim().isEmpty() ? N_A : context.getRemoteHost().trim());
+        activeParticipant2.setAttribute(NETWORK_ACCESS_POINT_TYPE_CODE, "2");
+        activeParticipant2.setAttribute(USER_ID, "http://www.w3.org/2005/08/addressing/anonymous");
+        activeParticipant2.setAttribute(USER_IS_REQUESTOR, "true");
+        activeParticipant2.setAttribute(USER_NAME, "");
+        Element roleIdCode2 = auditDocument.createElement(ROLE_ID_CODE);
         activeParticipant2.appendChild(roleIdCode2);
-        roleIdCode2.setAttribute("code", "110152");
-        roleIdCode2.setAttribute("codeSystem", "");
-        roleIdCode2.setAttribute("codeSystemName", "DCM");
-        roleIdCode2.setAttribute("displayName", "Destination");
+        roleIdCode2.setAttribute(CODE, "110152");
+        roleIdCode2.setAttribute(CODE_SYSTEM, "");
+        roleIdCode2.setAttribute(CODE_SYSTEM_NAME, "DCM");
+        roleIdCode2.setAttribute(DISPLAY_NAME, "Destination");
 
         // Who is the physician?
-        Element activeParticipant3 = audit.createElement("ActiveParticipant");
-        activeParticipant3.setAttribute("UserID", context.getUsername().trim() != null ? context.getUsername().trim() : "N/A");
-        activeParticipant3.setAttribute("UserIsRequestor", "true");
-        activeParticipant3.setAttribute("UserName", "");
-        Element roleIdCode3 = audit.createElement("RoleIDCode");
+        Element activeParticipant3 = auditDocument.createElement(ACTIVE_PARTICIPANT);
+        activeParticipant3.setAttribute(USER_ID, context.getUsername().trim().isEmpty() ? N_A : context.getUsername().trim());
+        activeParticipant3.setAttribute(USER_IS_REQUESTOR, "true");
+        activeParticipant3.setAttribute(USER_NAME, "");
+        Element roleIdCode3 = auditDocument.createElement(ROLE_ID_CODE);
         activeParticipant3.appendChild(roleIdCode3);
-        roleIdCode3.setAttribute("code", "USR");
-        roleIdCode3.setAttribute("codeSystem", "1.3.6.1.4.1.21998.2.1.5");
-        roleIdCode3.setAttribute("codeSystemName", "Tiani-Spirit Audit Participant Role ID Codes");
-        roleIdCode3.setAttribute("displayName", "User");
+        roleIdCode3.setAttribute(CODE, "USR");
+        roleIdCode3.setAttribute(CODE_SYSTEM, "1.3.6.1.4.1.21998.2.1.5");
+        roleIdCode3.setAttribute(CODE_SYSTEM_NAME, "Tiani-Spirit Audit Participant Role ID Codes");
+        roleIdCode3.setAttribute(DISPLAY_NAME, "User");
 
         auditMessage.appendChild(activeParticipant1);
         auditMessage.appendChild(activeParticipant2);
         auditMessage.appendChild(activeParticipant3);
 
         // Who is the audit client?
-        Element auditSourceIdentification = audit.createElement("AuditSourceIdentification");
-        auditSourceIdentification.setAttribute("AuditEnterpriseSiteID", auditValueMap.get("AuditEnterpriseSiteID").trim() != null ? auditValueMap.get("AuditEnterpriseSiteID").trim() : "N/A");
-        auditSourceIdentification.setAttribute("AuditSourceID", "urn:epsos:ncpa");
-        Element auditSourceTypeCode = audit.createElement("AuditSourceTypeCode");
+        Element auditSourceIdentification = auditDocument.createElement(AUDIT_SOURCE_IDENTIFICATION);
+        auditSourceIdentification.setAttribute(AUDIT_ENTERPRISE_SITE_ID, auditValueMap.get(AUDIT_ENTERPRISE_SITE_ID).trim().isEmpty() ? N_A : auditValueMap.get(AUDIT_ENTERPRISE_SITE_ID).trim());
+        auditSourceIdentification.setAttribute(AUDIT_SOURCE_ID, "urn:epsos:ncpa");
+        Element auditSourceTypeCode = auditDocument.createElement(AUDIT_SOURCE_TYPE_CODE);
         auditSourceIdentification.appendChild(auditSourceTypeCode);
-        auditSourceTypeCode.setAttribute("code", "DOC_REPOSITORY");
-        auditSourceTypeCode.setAttribute("codeSystem", "");
-        auditSourceTypeCode.setAttribute("codeSystemName", "IHE Actors");
-        auditSourceTypeCode.setAttribute("displayName", "IHE Document Repository");
+        auditSourceTypeCode.setAttribute(CODE, "DOC_REPOSITORY");
+        auditSourceTypeCode.setAttribute(CODE_SYSTEM, "");
+        auditSourceTypeCode.setAttribute(CODE_SYSTEM_NAME, "IHE Actors");
+        auditSourceTypeCode.setAttribute(DISPLAY_NAME, "IHE Document Repository");
 
         auditMessage.appendChild(auditSourceIdentification);
 
         //To which patient?
-        Element participantObjectIdentification1 = audit.createElement("ParticipantObjectIdentification");
-        participantObjectIdentification1.setAttribute("ParticipantObjectDataLifeCycle", "1");
-        participantObjectIdentification1.setAttribute("ParticipantObjectID", "");
-        participantObjectIdentification1.setAttribute("ParticipantObjectTypeCode", "1");
-        participantObjectIdentification1.setAttribute("ParticipantObjectTypeCodeRole", "1");
-        Element participantObjectIdTypeCode1 = audit.createElement("ParticipantObjectIDTypeCode");
+        Element participantObjectIdentification1 = auditDocument.createElement(PARTICIPANT_OBJECT_IDENTIFICATION);
+        participantObjectIdentification1.setAttribute(PARTICIPANT_OBJECT_DATA_LIFE_CYCLE, "1");
+        participantObjectIdentification1.setAttribute(PARTICIPANT_OBJECT_ID, "");
+        participantObjectIdentification1.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE, "1");
+        participantObjectIdentification1.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE_ROLE, "1");
+        Element participantObjectIdTypeCode1 = auditDocument.createElement(PARTICIPANT_OBJECT_ID_TYPE_CODE);
         participantObjectIdentification1.appendChild(participantObjectIdTypeCode1);
-        participantObjectIdTypeCode1.setAttribute("code", "2");
-        participantObjectIdTypeCode1.setAttribute("codeSystem", "");
-        participantObjectIdTypeCode1.setAttribute("codeSystemName", "RFC-3881");
-        participantObjectIdTypeCode1.setAttribute("displayName", "Patient Number");
+        participantObjectIdTypeCode1.setAttribute(CODE, "2");
+        participantObjectIdTypeCode1.setAttribute(CODE_SYSTEM, "");
+        participantObjectIdTypeCode1.setAttribute(CODE_SYSTEM_NAME, "RFC-3881");
+        participantObjectIdTypeCode1.setAttribute(DISPLAY_NAME, "Patient Number");
 
         // To which resource?
-        Element participantObjectIdentification2 = audit.createElement("ParticipantObjectIdentification");
-        participantObjectIdentification2.setAttribute("ParticipantObjectID", "1.2.40.0.13.1.1.2117081378.20130402104335703.34529");
-        participantObjectIdentification2.setAttribute("ParticipantObjectTypeCode", "2");
-        participantObjectIdentification2.setAttribute("ParticipantObjectTypeCodeRole", "3");
-        Element participantObjectIdTypeCode2 = audit.createElement("ParticipantObjectIDTypeCode");
+        Element participantObjectIdentification2 = auditDocument.createElement(PARTICIPANT_OBJECT_IDENTIFICATION);
+        participantObjectIdentification2.setAttribute(PARTICIPANT_OBJECT_ID, "1.2.40.0.13.1.1.2117081378.20130402104335703.34529");
+        participantObjectIdentification2.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE, "2");
+        participantObjectIdentification2.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE_ROLE, "3");
+        Element participantObjectIdTypeCode2 = auditDocument.createElement(PARTICIPANT_OBJECT_ID_TYPE_CODE);
         participantObjectIdentification2.appendChild(participantObjectIdTypeCode2);
-        participantObjectIdTypeCode2.setAttribute("code", "9");
-        participantObjectIdTypeCode2.setAttribute("codeSystem", "");
-        participantObjectIdTypeCode2.setAttribute("codeSystemName", "RFC-3881");
-        participantObjectIdTypeCode2.setAttribute("displayName", "Report Number");
+        participantObjectIdTypeCode2.setAttribute(CODE, "9");
+        participantObjectIdTypeCode2.setAttribute(CODE_SYSTEM, "");
+        participantObjectIdTypeCode2.setAttribute(CODE_SYSTEM_NAME, "RFC-3881");
+        participantObjectIdTypeCode2.setAttribute(DISPLAY_NAME, "Report Number");
 
-        Element participantObjectIdentification3 = audit.createElement("ParticipantObjectIdentification");
-        participantObjectIdentification3.setAttribute("ParticipantObjectDataLifeCycle", "9");
-        participantObjectIdentification3.setAttribute("ParticipantObjectID", "17d77343-88b5-4aad-8d37-ce68ce720060");
-        participantObjectIdentification3.setAttribute("ParticipantObjectTypeCode", "2");
-        participantObjectIdentification3.setAttribute("ParticipantObjectTypeCodeRole", "3");
-        Element participantObjectIdTypeCode3 = audit.createElement("ParticipantObjectIDTypeCode");
+        Element participantObjectIdentification3 = auditDocument.createElement(PARTICIPANT_OBJECT_IDENTIFICATION);
+        participantObjectIdentification3.setAttribute(PARTICIPANT_OBJECT_DATA_LIFE_CYCLE, "9");
+        participantObjectIdentification3.setAttribute(PARTICIPANT_OBJECT_ID, "17d77343-88b5-4aad-8d37-ce68ce720060");
+        participantObjectIdentification3.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE, "2");
+        participantObjectIdentification3.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE_ROLE, "3");
+        Element participantObjectIdTypeCode3 = auditDocument.createElement(PARTICIPANT_OBJECT_ID_TYPE_CODE);
         participantObjectIdentification3.appendChild(participantObjectIdTypeCode3);
-        participantObjectIdTypeCode3.setAttribute("code", auditValueMap.get("EventTypeCode").trim() != null ? auditValueMap.get("EventTypeCode").trim() : "N/A");
-        participantObjectIdTypeCode3.setAttribute("codeSystem", "");
-        participantObjectIdTypeCode3.setAttribute("codeSystemName", "IHE Transactions");
-        participantObjectIdTypeCode3.setAttribute("displayName", "Retrieve Document Set");
-        Element participantObjectName = audit.createElement("ParticipantObjectName");
+        participantObjectIdTypeCode3.setAttribute(CODE, auditValueMap.get(EVENT_TYPE_CODE).trim().isEmpty() ? N_A : auditValueMap.get(EVENT_TYPE_CODE).trim());
+        participantObjectIdTypeCode3.setAttribute(CODE_SYSTEM, "");
+        participantObjectIdTypeCode3.setAttribute(CODE_SYSTEM_NAME, "IHE Transactions");
+        participantObjectIdTypeCode3.setAttribute(DISPLAY_NAME, "Retrieve Document Set");
+        Element participantObjectName = auditDocument.createElement("ParticipantObjectName");
         participantObjectName.setTextContent("Transaction ID");
         participantObjectIdentification3.appendChild(participantObjectName);
-        Element participantObjectDetail = audit.createElement("ParticipantObjectDetail");
+        Element participantObjectDetail = auditDocument.createElement("ParticipantObjectDetail");
         participantObjectDetail.setAttribute("type", "DURATION");
         participantObjectDetail.setAttribute("value", "Mg==");
 

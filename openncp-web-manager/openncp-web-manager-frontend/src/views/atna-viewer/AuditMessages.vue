@@ -61,10 +61,6 @@
                   ></v-text-field>
                 </template>
                 <v-spacer></v-spacer>
-                <!-- <v-date-picker
-                  v-model="searchEventStartDate"
-                  @change="searchStartDateMenu = false"
-                ></v-date-picker> -->
                 <input type="datetime-local" v-model="searchEventStartDate" />
               </v-menu>
             </v-col>
@@ -96,11 +92,6 @@
                   ></v-text-field>
                 </template>
                 <v-spacer></v-spacer>
-                <!--<v-date-picker
-                  :min="searchEventStartDate"
-                  v-model="searchEventEndDate"
-                  @change="searchEndDateMenu = false"
-                ></v-date-picker>-->
                 <input type="datetime-local" v-model="searchEventEndDate" />
               </v-menu>
             </v-col>

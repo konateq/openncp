@@ -59,7 +59,7 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
      */
     public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
         if (certificates != null) {
-            boolean isAuthDN = authorizedDns.size() == 0;
+            boolean isAuthDN = authorizedDns.isEmpty();
             for (int c = 0; c < certificates.length; c++) {
                 X509Certificate cert = certificates[c];
                 if (!isAuthDN) {
@@ -69,19 +69,18 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
                         }
                     }
                 }
-                log.info(" Client certificate " + (c + 1) + ":");
-                log.info("  Subject DN: " + cert.getSubjectDN());
-                log.info("  Signature Algorithm: " + cert.getSigAlgName());
-                log.info("  Valid from: " + cert.getNotBefore());
-                log.info("  Valid until: " + cert.getNotAfter());
-                log.info("  Issuer: " + cert.getIssuerDN());
+                log.info(" Client certificate: {}", + (c + 1));
+                log.info("  Subject DN: {}", cert.getSubjectDN());
+                log.info("  Signature Algorithm: {}", cert.getSigAlgName());
+                log.info("  Valid from: {}", cert.getNotBefore());
+                log.info("  Valid until: {}", cert.getNotAfter());
+                log.info("  Issuer: {}", cert.getIssuerDN());
             }
             if (!isAuthDN) {
                 throw new CertificateException("Subject DN is not authorized to perform the requested action.");
             }
             trustManager.checkClientTrusted(certificates, authType);
         }
-
     }
 
     /**
@@ -91,12 +90,12 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
         if (certificates != null) {
             for (int c = 0; c < certificates.length; c++) {
                 X509Certificate cert = certificates[c];
-                log.info(" Server certificate " + (c + 1) + ":");
-                log.info("  Subject DN: " + cert.getSubjectDN());
-                log.info("  Signature Algorithm: " + cert.getSigAlgName());
-                log.info("  Valid from: " + cert.getNotBefore());
-                log.info("  Valid until: " + cert.getNotAfter());
-                log.info("  Issuer: " + cert.getIssuerDN());
+                log.info(" Server certificate: {}", (c + 1));
+                log.info("  Subject DN: {}", cert.getSubjectDN());
+                log.info("  Signature Algorithm: {}", cert.getSigAlgName());
+                log.info("  Valid from: {}", cert.getNotBefore());
+                log.info("  Valid until: {}", cert.getNotAfter());
+                log.info("  Issuer: {}", cert.getIssuerDN());
             }
         }
 

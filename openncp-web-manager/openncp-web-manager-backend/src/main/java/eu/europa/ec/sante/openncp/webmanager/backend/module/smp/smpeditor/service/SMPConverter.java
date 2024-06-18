@@ -220,7 +220,9 @@ public class SMPConverter {
             //    Endpoint Extension file parse
             if (StringUtils.isNotBlank(extension)) {
                 nullExtension = false;
-                logger.info("XML Extension Content:\n'{}'", extension);
+                if(logger.isInfoEnabled()) {
+                    logger.info("XML Extension Content:\n'{}'", sanitizeString(extension));
+                }
                 Document docOriginal = parseStringToDocument(extension);
                 if (docOriginal != null) {
                     //Adding ISM Extension to SMP file.
@@ -646,6 +648,7 @@ public class SMPConverter {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setXIncludeAware(false);
         dbf.setNamespaceAware(true);
         return dbf.newDocumentBuilder();
     }
@@ -657,6 +660,7 @@ public class SMPConverter {
         Document doc = null;
         try {
             dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbf.setXIncludeAware(false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             doc = db.parse(new ByteArrayInputStream(document.getBytes(StandardCharsets.UTF_8)));
         } catch (SAXException e) {
@@ -667,5 +671,9 @@ public class SMPConverter {
             logger.error("ParserConfigurationException: ", e);
         }
         return doc;
+    }
+
+    private static String sanitizeString(String stringToSanitize) {
+        return stringToSanitize != null ? stringToSanitize.replaceAll("[\n\r]", "_") : "";
     }
 }

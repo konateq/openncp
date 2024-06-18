@@ -96,7 +96,7 @@ public class AdhocQueryResponse
      */
     public BigInteger getStartIndex() {
         if (startIndex == null) {
-            return new BigInteger("0");
+            return BigInteger.ZERO;
         } else {
             return startIndex;
         }

@@ -34,7 +34,9 @@ public class RoleResource {
 
         for (Role role : roles) {
             if (role.equals(newRole)) {
-                logger.info("[Gateway] Role Already exists! {}", newRole.getName());
+                if (logger.isInfoEnabled()) {
+                    logger.info("[Gateway] Role Already exists! {}", sanitizeString(newRole.getName()));
+                }
                 return ResponseEntity.badRequest().body("{ \"body\": \"Role already exists!\", " +
                         STATUS_CODE_NOT_ACCEPTED_STATUS_CODE_VALUE_403);
             }
@@ -58,4 +60,9 @@ public class RoleResource {
         roleService.deleteRole(role);
         return ResponseEntity.ok().build();
     }
+
+    private static String sanitizeString(String stringToSanitize) {
+        return stringToSanitize != null ? stringToSanitize.replaceAll("[\n\r]", "_") : "";
+    }
+
 }

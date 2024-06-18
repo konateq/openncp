@@ -6,8 +6,7 @@ import eu.europa.ec.sante.openncp.core.common.tsam.domain.*;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.repository.*;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Projections;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -147,9 +146,12 @@ public class TsamDaoImpl implements TsamDao {
 
     @Override
     public List<RetrievedConcept> getConcepts(String valueSetOid, String valueSetVersionName, String language) {
+        valueSetOid = sanitizeString(valueSetOid);
+        valueSetVersionName = sanitizeString(valueSetVersionName);
+        language = sanitizeString(language);
         logger.debug("[TsamDao] getConcepts('{}', '{}', '{}')", valueSetOid, valueSetVersionName, language);
         ValueSetVersion valueSetVersion;
-        if (valueSetVersionName != null) {
+        if (!valueSetVersionName.isEmpty()) {
             valueSetVersion = valueSetVersionRepository.findValueSetVersionByDescriptionAndValueSetOid(valueSetVersionName, valueSetOid);
         } else {
             valueSetVersion = valueSetVersionRepository.findValueSetVersionByStatusAndValueSetOid(CURRENT_STATUS, valueSetOid);
@@ -258,5 +260,9 @@ public class TsamDaoImpl implements TsamDao {
 
     public List<String> getLtrLanguages() {
         return designationRepository.findAllAvailableLanguageCodes();
+    }
+
+    private static @NotNull String sanitizeString(String stringToSanitize) {
+        return stringToSanitize != null ? stringToSanitize.replaceAll("[\n\r]", "_") : "";
     }
 }

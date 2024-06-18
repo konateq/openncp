@@ -70,6 +70,7 @@ public class NoXACMLEvidenceEmitter implements EvidenceEmitter {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setXIncludeAware(false);
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new ByteArrayInputStream(sw.toString().getBytes()));
@@ -108,6 +109,7 @@ public class NoXACMLEvidenceEmitter implements EvidenceEmitter {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setXIncludeAware(false);
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new ByteArrayInputStream(sw.toString().getBytes()));

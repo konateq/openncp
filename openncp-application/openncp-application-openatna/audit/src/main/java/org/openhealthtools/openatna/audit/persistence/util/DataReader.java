@@ -31,6 +31,7 @@ import java.util.*;
 public class DataReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataReader.class);
+    private static final String NO_OBJECT_ID_TYPE_DEFINED_NOT_LOADING = "no object id type defined. Not loading...";
 
     private final Document document;
 
@@ -47,14 +48,14 @@ public class DataReader {
     private final Map<String, ObjectEntity> objects = new HashMap<>();
     private final Set<MessageEntity> messages = new HashSet<>();
 
-    public DataReader(InputStream in) {
+    public DataReader(InputStream in) throws IOException {
 
         try {
             document = newDocument(in);
             in.close();
         } catch (IOException e) {
             LOGGER.error("IOException: '{}'", e.getMessage(), e);
-            throw new RuntimeException("Could not load data file");
+            throw new IOException("Could not load data file");
         }
     }
 
@@ -63,7 +64,8 @@ public class DataReader {
         Document document = null;
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            //documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             document = documentBuilder.parse(stream);
@@ -421,14 +423,14 @@ public class DataReader {
                 if (ele.getLocalName().equals(DataConstants.OBJECT_ID_TYPE)) {
                     String ref = ele.getAttribute(DataConstants.CODE);
                     if (nill(ref)) {
-                        LOGGER.info("no object id type defined. Not loading...");
+                        LOGGER.info(NO_OBJECT_ID_TYPE_DEFINED_NOT_LOADING);
                         return;
                     }
                     CodeEntity code = objTypes.get(ref);
                     if (code instanceof ObjectIdTypeCodeEntity) {
                         objectEntity.setObjectIdTypeCode((ObjectIdTypeCodeEntity) code);
                     } else {
-                        LOGGER.info("no object id type defined. Not loading...");
+                        LOGGER.info(NO_OBJECT_ID_TYPE_DEFINED_NOT_LOADING);
                         return;
                     }
                 } else if (ele.getLocalName().equals(DataConstants.OBJECT_DETAIL_KEY)) {
@@ -440,7 +442,7 @@ public class DataReader {
             }
         }
         if (objectEntity.getObjectIdTypeCode() == null) {
-            LOGGER.info("no object id type defined. Not loading...");
+            LOGGER.info(NO_OBJECT_ID_TYPE_DEFINED_NOT_LOADING);
             return;
         }
         objects.put(obId, objectEntity);

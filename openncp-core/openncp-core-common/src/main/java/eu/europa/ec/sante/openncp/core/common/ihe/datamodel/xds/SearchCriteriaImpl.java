@@ -62,7 +62,8 @@ public class SearchCriteriaImpl implements SearchCriteria {
 
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setXIncludeAware(false);
+            //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             StringBuilder stringBuilder = new StringBuilder();

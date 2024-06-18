@@ -16,7 +16,7 @@ public abstract class AbstractTranscodingLogicService<R extends Resource> implem
 
     private final TerminologyService terminologyService;
 
-    public AbstractTranscodingLogicService(final TerminologyService terminologyService) {
+    protected AbstractTranscodingLogicService(final TerminologyService terminologyService) {
         this.terminologyService = Validate.notNull(terminologyService);
     }
 

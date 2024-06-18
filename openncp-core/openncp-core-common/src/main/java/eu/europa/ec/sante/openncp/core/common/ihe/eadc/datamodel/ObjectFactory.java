@@ -43,7 +43,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Transaction_QNAME = new QName("com:spirit:SpiritProxy", "Transaction");
+    private static final QName _Transaction_QNAME = new QName("com:spirit:SpiritProxy", "Transaction");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of

@@ -23,9 +23,15 @@ import java.util.List;
  */
 public class DescriptionLoader {
 
+    private DescriptionLoader() {
+    }
     /* Logger for debugging messages */
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DescriptionLoader.class);
+    private static final String NAME = "name";
+    private static final String VALUE = "value";
+    private static final String KEYSTORE_ELEMENT_IN_NON_SECURE_CONNECTION = "KEYSTORE element in non secure connection.";
+    private static final String ENTRY = "ENTRY";
 
     /**
      * Load connection descriptions from the given filename.  The filename
@@ -72,11 +78,12 @@ public class DescriptionLoader {
             throws SAXException, IOException, ParserConfigurationException {
         // Create a builder factory and a builder, and get the document.
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setXIncludeAware(false);
         factory.setValidating(false);
         Document doc = factory.newDocumentBuilder().parse(file);
         // Get all the connection descriptions from the root node.
-        //TODO check that the root node is NETOWRKCONFIGURATION.
+        // Check that the root node is NETOWRKCONFIGURATION.
         NodeList allDescriptionElements = doc.getDocumentElement().getChildNodes();
         // Process each one
         for (int elementIndex = 0; elementIndex < allDescriptionElements.getLength(); elementIndex++) {
@@ -90,7 +97,7 @@ public class DescriptionLoader {
                 }
             } else if (name.equalsIgnoreCase("INCLUDEFILE")) {
                 // A top-level include file, it will contain more connection descriptions
-                String filename = getAttributeValue(currentDescriptionElement, "name");
+                String filename = getAttributeValue(currentDescriptionElement, NAME);
                 if (filename == null) {
                     filename = getNodeAsText(currentDescriptionElement);
                 }
@@ -102,7 +109,7 @@ public class DescriptionLoader {
                         logIncludeFileError(filename, null, e);
                     }
                 } else {
-                    logMissingAttributeWarning(name, "name", null);
+                    logMissingAttributeWarning(name, NAME, null);
                 }
             } else if (currentDescriptionElement instanceof Element) {
                 // An XML element, if we don't know what kind, it probably shouldn't be there
@@ -125,7 +132,7 @@ public class DescriptionLoader {
         }
         // Load all of its properties from the XML
         if (connection != null) {
-            connection.setName(getAttributeValue(description, "name"));
+            connection.setName(getAttributeValue(description, NAME));
             processDescription(connection, description.getChildNodes(), parent);
         }
         // Done
@@ -171,7 +178,7 @@ public class DescriptionLoader {
                     processIdentifier(description, item);
                 } else if (itemName.equalsIgnoreCase("INCLUDEFILE")) {
                     // A nested file inclusion, process it
-                    String filename = getAttributeValue(item, "name");
+                    String filename = getAttributeValue(item, NAME);
                     if (filename == null) {
                         filename = getNodeAsText(item);
                     }
@@ -179,19 +186,19 @@ public class DescriptionLoader {
                         File includeFile = new File(parent.getParentFile(), filename);
                         processDescriptionIncludeFile(description, includeFile);
                     } else {
-                        logMissingAttributeWarning(itemName, "name", description);
+                        logMissingAttributeWarning(itemName, NAME, description);
                     }
                 } else if (itemName.equalsIgnoreCase("PROPERTY")) {
                     // A property to associate with this connection
-                    String propertyName = getAttributeValue(item, "name");
-                    String propertyValue = getAttributeValue(item, "value");
+                    String propertyName = getAttributeValue(item, NAME);
+                    String propertyValue = getAttributeValue(item, VALUE);
                     if (propertyValue == null) {
                         propertyValue = getNodeAsText(item);
                     }
                     if (propertyName != null) {
                         description.setProperty(propertyName, propertyValue);
                     } else {
-                        logMissingAttributeWarning(itemName, "name", description);
+                        logMissingAttributeWarning(itemName, NAME, description);
                     }
                 } else if (itemName.equalsIgnoreCase("OBJECTMAP")) {
                     //An object map from Misys Connect to a participating system
@@ -243,7 +250,8 @@ public class DescriptionLoader {
             throws SAXException, IOException, ParserConfigurationException {
         // Create a builder factory and a builder, and get the document.
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setXIncludeAware(false);
         factory.setValidating(false);
         Document doc = factory.newDocumentBuilder().parse(stream);
         // Process the children of this include as if they were in the connection description
@@ -307,16 +315,16 @@ public class DescriptionLoader {
                 if (secure != null) {
                     secure.setKeyStore(keyFile.getAbsolutePath());
                 } else {
-                    LOGGER.error("KEYSTORE element in non secure connection.");
+                    LOGGER.error(KEYSTORE_ELEMENT_IN_NON_SECURE_CONNECTION);
                 }
             } else {
-                logMissingAttributeWarning(itemName, "name", description);
+                logMissingAttributeWarning(itemName, NAME, description);
             }
         } else if (itemName.equalsIgnoreCase("KEYPASS")) {
             if (secure != null) {
                 secure.setKeyStorePassword(getNodeAsText(item));
             } else {
-                LOGGER.error("KEYSTORE element in non secure connection.");
+                LOGGER.error(KEYSTORE_ELEMENT_IN_NON_SECURE_CONNECTION);
             }
         } else if (itemName.equalsIgnoreCase("TRUSTSTORE")) {
             String filename = getNodeAsText(item);
@@ -331,16 +339,16 @@ public class DescriptionLoader {
                 if (secure != null) {
                     secure.setTrustStore(keyFile.getAbsolutePath());
                 } else {
-                    LOGGER.error("KEYSTORE element in non secure connection.");
+                    LOGGER.error(KEYSTORE_ELEMENT_IN_NON_SECURE_CONNECTION);
                 }
             } else {
-                logMissingAttributeWarning(itemName, "name", description);
+                logMissingAttributeWarning(itemName, NAME, description);
             }
         } else if (itemName.equalsIgnoreCase("TRUSTPASS")) {
             if (secure != null) {
                 secure.setTrustStorePassword(getNodeAsText(item));
             } else {
-                LOGGER.error("KEYSTORE element in non secure connection.");
+                LOGGER.error(KEYSTORE_ELEMENT_IN_NON_SECURE_CONNECTION);
             }
         } else {
             handled = false;
@@ -366,11 +374,11 @@ public class DescriptionLoader {
      * @param codeType   The DOM element of the "CodeType" entry
      */
     private static void processCodingScheme(StandardConnectionDescription connection, Node codeType) {
-        String typeName = getAttributeValue(codeType, "name");
+        String typeName = getAttributeValue(codeType, NAME);
         String classScheme = getAttributeValue(codeType, "classScheme");
         if (typeName == null) {
             // No class scheme, can't save codes
-            logMissingAttributeWarning(codeType.getNodeName(), "name", connection);
+            logMissingAttributeWarning(codeType.getNodeName(), NAME, connection);
         } else {
             // Get the coding scheme for this entry
             CodeSet scheme = connection.getCodeSet(typeName);
@@ -446,7 +454,7 @@ public class DescriptionLoader {
             NodeList entries = enumMap.getChildNodes();
             for (int i = 0; i < entries.getLength(); i++) {
                 Node entry = entries.item(i);
-                if (entry.getNodeName().equalsIgnoreCase("ENTRY")) {
+                if (entry.getNodeName().equalsIgnoreCase(ENTRY)) {
                     String enumValue = getAttributeValue(entry, "enum");
                     if (enumValue == null) {
                         // No code, nothing to save
@@ -482,10 +490,10 @@ public class DescriptionLoader {
      * @param stringMap  The DOM element of the "StringMap" entry
      */
     private static void processStringMap(StandardConnectionDescription connection, Node stringMap) {
-        String mapName = getAttributeValue(stringMap, "name");
+        String mapName = getAttributeValue(stringMap, NAME);
         if (mapName == null) {
             // No class scheme, can't save codes
-            logMissingAttributeWarning(stringMap.getNodeName(), "name", connection);
+            logMissingAttributeWarning(stringMap.getNodeName(), NAME, connection);
         } else {
             // Create a string map for this entry
             StringMap theMap = new StringMap(mapName);
@@ -494,7 +502,7 @@ public class DescriptionLoader {
             NodeList entries = stringMap.getChildNodes();
             for (int i = 0; i < entries.getLength(); i++) {
                 Node entry = entries.item(i);
-                if (entry.getNodeName().equalsIgnoreCase("ENTRY")) {
+                if (entry.getNodeName().equalsIgnoreCase(ENTRY)) {
                     String stringValue = getAttributeValue(entry, "string");
                     if (stringValue == null) {
                         // No code, nothing to save
@@ -530,10 +538,10 @@ public class DescriptionLoader {
      * @param propertySet The DOM element of the "PropertySet" entry
      */
     private static void processPropertySet(StandardConnectionDescription connection, Node propertySet) {
-        String setName = getAttributeValue(propertySet, "name");
+        String setName = getAttributeValue(propertySet, NAME);
         if (setName == null) {
             // No property set name, can't save values
-            logMissingAttributeWarning(propertySet.getNodeName(), "name", connection);
+            logMissingAttributeWarning(propertySet.getNodeName(), NAME, connection);
         } else {
             // Create a property set for this entry
             PropertySet theSet = new PropertySet(setName);
@@ -542,16 +550,16 @@ public class DescriptionLoader {
             NodeList entries = propertySet.getChildNodes();
             for (int i = 0; i < entries.getLength(); i++) {
                 Node entry = entries.item(i);
-                if (entry.getNodeName().equalsIgnoreCase("ENTRY")) {
-                    String stringValue = getAttributeValue(entry, "name");
+                if (entry.getNodeName().equalsIgnoreCase(ENTRY)) {
+                    String stringValue = getAttributeValue(entry, NAME);
                     if (stringValue == null) {
                         // No code, nothing to save
-                        logMissingAttributeWarning(entry.getNodeName(), "name", connection);
+                        logMissingAttributeWarning(entry.getNodeName(), NAME, connection);
                     } else {
                         // Grab the other attributes
-                        String codeValue = getAttributeValue(entry, "value");
+                        String codeValue = getAttributeValue(entry, VALUE);
                         if (codeValue == null) {
-                            logMissingAttributeWarning(entry.getNodeName(), "value", connection);
+                            logMissingAttributeWarning(entry.getNodeName(), VALUE, connection);
                         } else {
                             // Save away the entry
                             theSet.addValue(stringValue, codeValue);
@@ -579,12 +587,12 @@ public class DescriptionLoader {
      * @param authority  The DOM element of the "AssigningAuthority" entry
      */
     private static void processIdentifier(StandardConnectionDescription connection, Node authority) {
-        String setName = getAttributeValue(authority, "name");
+        String setName = getAttributeValue(authority, NAME);
         String type = getAttributeValue(authority, "type");
 
         if (setName == null) {
             // No authority name, can't save values
-            logMissingAttributeWarning(authority.getNodeName(), "name", connection);
+            logMissingAttributeWarning(authority.getNodeName(), NAME, connection);
         } else {
             // Get the expected parts
             String namespaceId = null;
@@ -636,10 +644,10 @@ public class DescriptionLoader {
      * @param objectMap  The DOM element of the "ObjectMap" entry
      */
     private static void processObjectMap(StandardConnectionDescription connection, Node objectMap) {
-        String mapName = getAttributeValue(objectMap, "name");
+        String mapName = getAttributeValue(objectMap, NAME);
         if (mapName == null) {
             // No class scheme, can't save codes
-            logMissingAttributeWarning(objectMap.getNodeName(), "name", connection);
+            logMissingAttributeWarning(objectMap.getNodeName(), NAME, connection);
         } else {
             // Create a object map for this entry
             ObjectMap theMap = new ObjectMap(mapName);
@@ -648,7 +656,7 @@ public class DescriptionLoader {
             NodeList entries = objectMap.getChildNodes();
             for (int i = 0; i < entries.getLength(); i++) {
                 Node entry = entries.item(i);
-                if (entry.getNodeName().equalsIgnoreCase("ENTRY")) {
+                if (entry.getNodeName().equalsIgnoreCase(ENTRY)) {
                     String connectValue = getAttributeValue(entry, "connect");
                     if (connectValue == null) {
                         // No connect, nothing to save
@@ -705,10 +713,10 @@ public class DescriptionLoader {
         if (!Boolean.parseBoolean(enabled)) {
             return; //if enabled="false", do not process
         }
-        String name = getAttributeValue(objectList, "name");
+        String name = getAttributeValue(objectList, NAME);
         if (name == null) {
             // No class scheme, can't save codes
-            logMissingAttributeWarning(objectList.getNodeName(), "name", connection);
+            logMissingAttributeWarning(objectList.getNodeName(), NAME, connection);
         } else {
             // Create a object list for this entry
             ObjectList theList = new ObjectList(name);
@@ -756,10 +764,10 @@ public class DescriptionLoader {
         if (!Boolean.parseBoolean(enabled)) {
             return; //if enabled="false", do not process
         }
-        String name = getAttributeValue(object, "name");
+        String name = getAttributeValue(object, NAME);
         if (name == null) {
             // No class scheme, can't save codes
-            logMissingAttributeWarning(object.getNodeName(), "name", connection);
+            logMissingAttributeWarning(object.getNodeName(), NAME, connection);
         } else {
             // Create an object entry
             ObjectEntry theObject = new ObjectEntry(name);
@@ -788,15 +796,15 @@ public class DescriptionLoader {
         for (int j = 0; j < fields.getLength(); j++) {
             Node field = fields.item(j);
             if (field.getNodeName().equalsIgnoreCase("FIELD")) {
-                String fieldName = getAttributeValue(field, "name");
+                String fieldName = getAttributeValue(field, NAME);
                 if (fieldName == null) {
                     // No name, nothing to save
-                    logMissingAttributeWarning(field.getNodeName(), "name", connection);
+                    logMissingAttributeWarning(field.getNodeName(), NAME, connection);
                 } else {
                     // Grab the other attributes
-                    String fieldValue = getAttributeValue(field, "value");
+                    String fieldValue = getAttributeValue(field, VALUE);
                     if (fieldValue == null) {
-                        logMissingAttributeWarning(field.getNodeName(), "value", connection);
+                        logMissingAttributeWarning(field.getNodeName(), VALUE, connection);
                     } else {
                         String fieldType = getAttributeValue(field, "type");
                         String fieldFormat = getAttributeValue(field, "format");
@@ -832,10 +840,10 @@ public class DescriptionLoader {
         if (name != null) {
             name = name.trim();
         }
-        if ((name == null) || (name.equals(""))) {
-            LOGGER.warn("Unexpected '" + tagName + "' element in connection description");
+        if ((name == null) || (name.isEmpty())) {
+            LOGGER.warn("Unexpected '{}' element in connection description", tagName);
         } else {
-            LOGGER.warn("Unexpected '" + tagName + "' element in connection description \"" + name + "\"");
+            LOGGER.warn("Unexpected '{}' element in connection description \"{}\"", tagName, name);
         }
     }
 
@@ -855,9 +863,9 @@ public class DescriptionLoader {
             name = name.trim();
         }
         if ((name == null) || (name.equals(""))) {
-            LOGGER.warn("Missing attribute '" + attribute + "' in '" + tagName + "' element in connection description");
+            LOGGER.warn("Missing attribute '{}' in '{}' element in connection description", attribute, tagName);
         } else {
-            LOGGER.warn("Missing attribute '" + attribute + "' in '" + tagName + "' element in connection description \"" + name + "\"");
+            LOGGER.warn("Missing attribute '{}' in '{}' element in connection description \"{}\"", attribute, tagName, name);
         }
     }
 
@@ -877,9 +885,9 @@ public class DescriptionLoader {
             name = name.trim();
         }
         if ((name == null) || (name.equals(""))) {
-            LOGGER.warn("Missing subelement '" + element + "' in '" + tagName + "' element in connection description");
+            LOGGER.warn("Missing subelement '{}' in '{}' element in connection description", element, tagName);
         } else {
-            LOGGER.warn("Missing subelement '" + element + "' in '" + tagName + "' element in connection description \"" + name + "\"");
+            LOGGER.warn("Missing subelement '{}' in '{}' element in connection description \"{}\"", element, tagName, name);
         }
     }
 
@@ -894,13 +902,13 @@ public class DescriptionLoader {
         if ((filename == null) || (filename.equals(""))) {
             LOGGER.error("Error reading file included in connection description", e);
         } else if (description == null) {
-            LOGGER.error("Error reading connection description include file: \"" + filename + "\"", e);
+            LOGGER.error("Error reading connection description include file: \"{}\"", filename, e);
         } else {
             String name = description.getName();
             if (name != null) {
                 name = name.trim();
             }
-            LOGGER.warn("Error reading connection description \"" + name + "\" include file: \"" + filename + "\"", e);
+            LOGGER.warn("Error reading connection description \"{}\" include file: \"{}\"", name, filename, e);
         }
     }
 
@@ -919,7 +927,7 @@ public class DescriptionLoader {
             if (name != null) {
                 name = name.trim();
             }
-            LOGGER.warn("Error reading connection description \"" + name + "\" enum map \"" + enumClassName + "\"", e);
+            LOGGER.warn("Error reading connection description \"{}\" enum map \"{}\"", name, enumClassName, e);
         }
     }
 

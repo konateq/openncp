@@ -143,7 +143,6 @@ public class ArchiveHandler {
         }
         if (src.isDirectory()) {
             if (!dest.exists()) {
-
                 if (!dest.mkdirs()) {
                     LOGGER.error("Cannot create directory: '{}''", dest.getAbsolutePath());
                 }

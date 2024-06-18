@@ -7,7 +7,6 @@ import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 

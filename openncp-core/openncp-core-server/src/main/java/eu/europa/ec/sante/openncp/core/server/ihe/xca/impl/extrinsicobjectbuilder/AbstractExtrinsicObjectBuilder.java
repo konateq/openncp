@@ -95,7 +95,7 @@ public abstract class AbstractExtrinsicObjectBuilder {
                 uuid, documentMetaData.getClassCode().getCode(), CodeSystem.LOINC.getOID(), title));
 
         // Healthcare facility code
-        // TODO: Get healthcare facility info from national implementation
+        // Get healthcare facility info from national implementation
         eot.getClassification().add(ClassificationBuilder.build(ClassificationScheme.HEALTHCARE_FACILITY_CODE.getUuid(),
                 uuid, Constants.COUNTRY_CODE, CodeSystem.ISO_COUNTRY_CODES.getOID(), Constants.COUNTRY_NAME));
 

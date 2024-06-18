@@ -30,6 +30,7 @@ public class CdaXSLTransformer {
     private static final Path PATH = Paths.get(System.getenv("EPSOS_PROPS_PATH"), "EpsosRepository");
     private static final Logger LOGGER = LoggerFactory.getLogger(CdaXSLTransformer.class);
     private static CdaXSLTransformer instance = null;
+    private static final String HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
 
     private CdaXSLTransformer() {
         // Private constructor of the singleton.
@@ -122,7 +123,8 @@ public class CdaXSLTransformer {
             xslSource.setSystemId(systemId);
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            //transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            //transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer transformer = transformerFactory.newTransformer(xslSource);
             transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());

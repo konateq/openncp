@@ -38,12 +38,15 @@ import java.util.UUID;
  *
  * @author max
  */
-public class ETSIREMObligationHandler implements ObligationHandler {
+public class ETSIREMObligationHandler implements eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandler {
 
     // Prefixes, that matches the XACML policy
     private static final String REM_NRR_PREFIX = "urn:eSENS:obligations:nrr:ETSIREM";
     private static final String REM_NRO_PREFIX = "urn:eSENS:obligations:nro:ETSIREM";
     private static final String REM_NRD_PREFIX = "urn:eSENS:obligations:nrd:ETSIREM";
+    private static final String VERSION = ":version";
+    private static final String POLICY_ID = ":PolicyID";
+    private static final String HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
     private static JAXBContext jaxbContext;
 
     static {
@@ -55,11 +58,11 @@ public class ETSIREMObligationHandler implements ObligationHandler {
     }
 
     private final Logger logger = LoggerFactory.getLogger(ETSIREMObligationHandler.class);
-    private List<ESensObligation> obligations;
+    private List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations;
     private Document audit = null;
     private Context context;
 
-    public ETSIREMObligationHandler(MessageType messageType, List<ESensObligation> obligations, Context context) {
+    public ETSIREMObligationHandler(MessageType messageType, List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations, Context context) {
         this.obligations = obligations;
         this.context = context;
     }
@@ -71,32 +74,23 @@ public class ETSIREMObligationHandler implements ObligationHandler {
      * @see ObligationHandler#discharge()
      */
     @Override
-    public void discharge() throws ObligationDischargeException {
+    public void discharge() throws eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException {
 
         StopWatch watch = new StopWatch();
         watch.start();
 
         //  Here I need to check the IHE message type. It can be XCA, XCF, whatever
-        // if (messageType instanceof IHEXCARetrieve) {
-        // try {
-        // makeIHEXCARetrieveAudit((IHEXCARetrieve) messageType,
-        // obligations);
-        // } catch (DatatypeConfigurationException e) {
-        // throw new ObligationDischargeException(e);
-        // }
-        // } else {
-        // throw new ObligationDischargeException("Unkwnon message type");
-        // }
+        //
 
         //  For the e-SENS pilot we issue the NRO and NRR token to all the incoming messages -> This is the per hop protocol.
         try {
             makeETSIREM();
         } catch (Exception e) {
             watch.stop();
-            throw new ObligationDischargeException(e);
+            throw new eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException(e);
         }
         watch.stop();
-        logger.info("Time Elapsed: '{}ms'", watch.getTime());
+        logger.info("Time Elapsed: '{} ms'", watch.getTime());
     }
 
     /**
@@ -112,7 +106,7 @@ public class ETSIREMObligationHandler implements ObligationHandler {
     private void makeETSIREM() throws DatatypeConfigurationException, JAXBException, CertificateEncodingException,
             NoSuchAlgorithmException, SOAPException, ParserConfigurationException, XMLSecurityException, TransformerException {
 
-        for (ESensObligation eSensObligation : obligations) {
+        for (eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation eSensObligation : obligations) {
 
             logger.info("ObligationID: '{}'", eSensObligation.getObligationID());
             switch (eSensObligation.getObligationID()) {
@@ -144,21 +138,21 @@ public class ETSIREMObligationHandler implements ObligationHandler {
      * @throws TransformerException
      * @throws XMLSecurityException
      */
-    private Document processNonRepudiationOfDelivery(ESensObligation eSensObligation) throws ParserConfigurationException,
+    private Document processNonRepudiationOfDelivery(eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation eSensObligation) throws ParserConfigurationException,
             JAXBException, CertificateEncodingException, NoSuchAlgorithmException, DatatypeConfigurationException,
             SOAPException, TransformerException, XMLSecurityException {
 
         ObjectFactory of = new ObjectFactory();
         REMEvidenceType type = new REMEvidenceType();
         String outcome;
-        if (eSensObligation instanceof PERMITEsensObligation) {
+        if (eSensObligation instanceof eu.europa.ec.sante.openncp.core.common.evidence.PERMITEsensObligation) {
             outcome = "Delivery";
         } else {
             outcome = "DeliveryExpiration";
         }
         List<AttributeAssignmentType> listAttr = eSensObligation.getAttributeAssignments();
 
-        type.setVersion(find(REM_NRD_PREFIX + ":version", listAttr));
+        type.setVersion(find(REM_NRD_PREFIX + VERSION, listAttr));
         type.setEventCode(outcome);
         type.setEvidenceIdentifier(UUID.randomUUID().toString());
 
@@ -166,7 +160,7 @@ public class ETSIREMObligationHandler implements ObligationHandler {
          * ISO Token mappings
          */
         // This is the Pol field of the ISO13888 token
-        String policyUrl = find(REM_NRD_PREFIX + ":PolicyID", listAttr);
+        String policyUrl = find(REM_NRD_PREFIX + POLICY_ID, listAttr);
         if (policyUrl != null) {
             EvidenceIssuerPolicyID eipid = new EvidenceIssuerPolicyID();
             eipid.getPolicyIDs().add(policyUrl);
@@ -176,7 +170,8 @@ public class ETSIREMObligationHandler implements ObligationHandler {
 
         // Imp is the signature
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setXIncludeAware(false);
+        dbf.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.newDocument();
 
@@ -187,21 +182,21 @@ public class ETSIREMObligationHandler implements ObligationHandler {
         return document;
     }
 
-    private Document processNonRepudiationOfOrigin(ESensObligation eSensObligation) throws ParserConfigurationException,
+    private Document processNonRepudiationOfOrigin(eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation eSensObligation) throws ParserConfigurationException,
             JAXBException, CertificateEncodingException, NoSuchAlgorithmException, DatatypeConfigurationException,
             SOAPException, TransformerException, XMLSecurityException {
 
         ObjectFactory of = new ObjectFactory();
         REMEvidenceType type = new REMEvidenceType();
         String outcome;
-        if (eSensObligation instanceof PERMITEsensObligation) {
+        if (eSensObligation instanceof eu.europa.ec.sante.openncp.core.common.evidence.PERMITEsensObligation) {
             outcome = "Acceptance";
         } else {
             outcome = "Rejection";
         }
         List<AttributeAssignmentType> listAttr = eSensObligation.getAttributeAssignments();
 
-        type.setVersion(find(REM_NRO_PREFIX + ":version", listAttr));
+        type.setVersion(find(REM_NRO_PREFIX + VERSION, listAttr));
         type.setEventCode(outcome);
         type.setEvidenceIdentifier(UUID.randomUUID().toString());
 
@@ -210,7 +205,7 @@ public class ETSIREMObligationHandler implements ObligationHandler {
          */
         // This is the Pol field of the ISO13888 token
         EvidenceIssuerPolicyID eipid = new EvidenceIssuerPolicyID();
-        eipid.getPolicyIDs().add(find(REM_NRO_PREFIX + ":PolicyID", listAttr));
+        eipid.getPolicyIDs().add(find(REM_NRO_PREFIX + POLICY_ID, listAttr));
         type.setEvidenceIssuerPolicyID(eipid);
 
         mapToIso(type);
@@ -218,7 +213,8 @@ public class ETSIREMObligationHandler implements ObligationHandler {
         // Imp is the signature
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setXIncludeAware(false);
+        dbf.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.newDocument();
 
@@ -229,21 +225,21 @@ public class ETSIREMObligationHandler implements ObligationHandler {
         return document;
     }
 
-    private Document processNonRepudiationOfReceipt(ESensObligation eSensObligation) throws ParserConfigurationException,
+    private Document processNonRepudiationOfReceipt(eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation eSensObligation) throws ParserConfigurationException,
             JAXBException, CertificateEncodingException, NoSuchAlgorithmException, DatatypeConfigurationException,
             SOAPException, TransformerException, XMLSecurityException {
 
         ObjectFactory of = new ObjectFactory();
         REMEvidenceType type = new REMEvidenceType();
         String outcome;
-        if (eSensObligation instanceof PERMITEsensObligation) {
+        if (eSensObligation instanceof eu.europa.ec.sante.openncp.core.common.evidence.PERMITEsensObligation) {
             outcome = "Acceptance";
         } else {
             outcome = "Rejection";
         }
         List<AttributeAssignmentType> listAttr = eSensObligation.getAttributeAssignments();
 
-        type.setVersion(find(REM_NRR_PREFIX + ":version", listAttr));
+        type.setVersion(find(REM_NRR_PREFIX + VERSION, listAttr));
         type.setEventCode(outcome);
 
         type.setEvidenceIdentifier(UUID.randomUUID().toString());
@@ -253,14 +249,15 @@ public class ETSIREMObligationHandler implements ObligationHandler {
          */
         // This is the Policy field of the ISO13888 token
         EvidenceIssuerPolicyID eipid = new EvidenceIssuerPolicyID();
-        eipid.getPolicyIDs().add(find(REM_NRR_PREFIX + ":PolicyID", listAttr));
+        eipid.getPolicyIDs().add(find(REM_NRR_PREFIX + POLICY_ID, listAttr));
         type.setEvidenceIssuerPolicyID(eipid);
 
         mapToIso(type);
 
         // Imp is the signature
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setXIncludeAware(false);
+        dbf.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.newDocument();
 
@@ -269,10 +266,6 @@ public class ETSIREMObligationHandler implements ObligationHandler {
         marshaller.marshal(back, document);
         signObligation(document, context.getIssuerCertificate(), context.getSigningKey());
         return document;
-    }
-
-    private Document marshallREMEvidence(JAXBElement<REMEvidenceType> evidence) {
-        return null;
     }
 
     /**
@@ -363,10 +356,10 @@ public class ETSIREMObligationHandler implements ObligationHandler {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         if (context.getIncomingMsg() != null) {
-            Utilities.serialize(context.getIncomingMsg().getSOAPBody().getOwnerDocument().getDocumentElement(), baos);
+            eu.europa.ec.sante.openncp.core.common.evidence.Utilities.serialize(context.getIncomingMsg().getSOAPBody().getOwnerDocument().getDocumentElement(), baos);
 
         } else if (context.getIncomingMsgAsDocument() != null) {
-            Utilities.serialize(context.getIncomingMsgAsDocument().getDocumentElement(), baos);
+            eu.europa.ec.sante.openncp.core.common.evidence.Utilities.serialize(context.getIncomingMsgAsDocument().getDocumentElement(), baos);
 
         } else {
             throw new IllegalStateException("Not valid incoming Message passed");

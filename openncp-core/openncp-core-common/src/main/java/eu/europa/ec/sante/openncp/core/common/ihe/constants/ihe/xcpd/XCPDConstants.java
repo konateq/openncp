@@ -33,8 +33,8 @@ public class XCPDConstants {
     public class LOG {
 
         /* ProvideAndRegister */
-        public static final String OUTGOING_XCPD_MESSAGE = "Outgoing XCPD request message to NCP-A:";
-        public static final String INCOMING_XCPD_MESSAGE = "Incoming XCPD response message from NCP-A:";
+        public static final String OUTGOING_XCPD_MESSAGE = "Outgoing XCPD request message to NCP-A: {}";
+        public static final String INCOMING_XCPD_MESSAGE = "Incoming XCPD response message from NCP-A: {}";
     }
 
     public class CONTROL_ACT_PROCESS {

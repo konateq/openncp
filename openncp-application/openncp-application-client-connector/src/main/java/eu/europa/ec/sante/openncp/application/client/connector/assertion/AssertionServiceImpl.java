@@ -44,7 +44,8 @@ public class AssertionServiceImpl implements AssertionService {
 
         try {
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            //documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
             this.documentBuilder = documentBuilderFactory.newDocumentBuilder();
         } catch (final ParserConfigurationException ex) {

@@ -94,7 +94,7 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
             if (defaultTrustManager != null) {
                 defaultTrustManager.checkServerTrusted(certificates, authType);
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Default Trust Manager validated: '{}'", defaultTrustManager.toString());
+                    LOGGER.debug("Default Trust Manager validated: '{}'", defaultTrustManager);
                 }
             }
         } catch (CertificateException e) {

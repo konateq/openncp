@@ -181,7 +181,6 @@ public class BsdMessageFactory extends SyslogMessageFactory {
             return new BsdMessage(facility, severity, timestamp, host, logMessage, tag);
 
         } catch (IOException e) {
-
             LOGGER.error("IOException: '{}'", e.getMessage(), e);
             throw new SyslogException(e);
         }

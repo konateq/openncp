@@ -37,8 +37,6 @@ import org.junit.Test;
 
 
 /**
- * TODO - make complete
- *
  * @author Andrew Harrison
  * @version $Revision:$
  * @created Sep 5, 2009: 8:38:33 PM
@@ -48,7 +46,7 @@ import org.junit.Test;
 public class AnomTest {
 
     @Test
-    public void testAnom() throws IOException, AtnaException {
+    public void testAnom() {
 
         AtnaCode evtCode = AtnaCode.eventIdCode("abc", "SYS_CODE", "SYS_CODENAME", null, null);
 
@@ -58,12 +56,8 @@ public class AnomTest {
                 .addObject(new AtnaMessageObject(new AtnaObject("obj-id", AtnaCode.objectIdTypeCode("obj-code", null, null, null, null))));
         msg.getObject("obj-id").addObjectDetail(new AtnaObjectDetail().setType("detail").setValue("THIS IS DETAIL".getBytes()));
 
-
-        assertEquals(msg.getEventOutcome(), EventOutcome.SUCCESS);
-        assertEquals(msg.getSource("source").getSourceTypeCodes().get(0).getCode(), "4");
-        assertEquals(new String(msg.getObject("obj-id").getObjectDetails().get(0).getValue()), "THIS IS DETAIL");
-
+        assertEquals(EventOutcome.SUCCESS, msg.getEventOutcome());
+        assertEquals("4", msg.getSource("source").getSourceTypeCodes().get(0).getCode());
+        assertEquals("THIS IS DETAIL", new String(msg.getObject("obj-id").getObjectDetails().get(0).getValue()));
     }
-
-
 }

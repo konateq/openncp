@@ -49,6 +49,7 @@ import java.util.*;
 public class XCPDServiceImpl implements XCPDServiceInterface {
 
     private static final DatatypeFactory DATATYPE_FACTORY;
+    private static final String INSTANCE = "INSTANCE";
 
     static {
         try {
@@ -90,7 +91,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         eventLog.setPC_RoleID(Helper.getPC_RoleID(soapHeader));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
 
-        //TODO: Update audit with Patient ID returned
+        // Update audit with Patient ID returned
         II sourceII;
         II targetII;
         if (!inputMessage.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().isEmpty()) {
@@ -101,7 +102,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                 targetII = outputMessage.getControlActProcess().getSubject().get(0).getRegistrationEvent().getSubject1()
                         .getPatient().getId().get(0);
             } else {
-                // TODO: To be reviewed - No Patient details return then audit message is reporting Patient search criteria
+                // To be reviewed - No Patient details return then audit message is reporting Patient search criteria
                 targetII = sourceII;
             }
         } else {
@@ -110,10 +111,9 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         }
         eventLog.setPT_ParticipantObjectID(getParticipantObjectID(targetII));
 
-        // TODO: Check if patient id mapping has occurred, prepare event log for patient audit mapping in this case
+        // Check if patient id mapping has occurred, prepare event log for patient audit mapping in this case
         if (!sourceII.getRoot().equals(targetII.getRoot()) || !sourceII.getExtension().equals(targetII.getExtension())) {
             logger.warn("Patient Source and Target are different: Identifier has been mapped, Patient Mapping audit scheme might be used");
-            //  eventLog.setPS_ParticipantObjectID(getParticipantObjectID(sourceII));
         }
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
         if (!outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()) {
@@ -181,7 +181,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         // Set registrationEvent/Subject/Patient/patientPerson
         var prpamt201310UV02Person = objectFactory.createPRPAMT201310UV02Person();
         prpamt201310UV02Person.getClassCode().add("PSN");
-        prpamt201310UV02Person.setDeterminerCode("INSTANCE");
+        prpamt201310UV02Person.setDeterminerCode(INSTANCE);
         prpamt201310UV02Person.setAdministrativeGenderCode(getAdministrativeCode(patientDemographics));
         prpamt201310UV02Person.setBirthTime(getBirthTime(patientDemographics));
         prpamt201310UV02Person.getName().add(getName(patientDemographics));
@@ -379,11 +379,9 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
             acknowledgementDetail.setCode(codeCE);
 
             acknowledgementDetail.setText(objectFactory.createED());
-            //acknowledgementDetail.getText().setContent(openncpErrorCode.getDescription());
             acknowledgementDetail.getText().setContent(context);
 
             ST location = objectFactory.createST();
-            //location.setContent(context);
             location.setContent(locationText);
             acknowledgementDetail.getLocation().add(location);
 
@@ -489,9 +487,6 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                 } catch (Exception e) {
                     logger.warn("Unable to parse patient id", e);
                 }
-
-                //TODO Email
-                //TODO Telephone
             }
         }
 
@@ -628,13 +623,13 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                 List<PRPAMT201306UV02LivingSubjectName> livingSubjectNames =
                         inputQBP.getParameterList().getLivingSubjectName();
                 if (!CollectionUtils.isEmpty(livingSubjectNames)) {
-                    // TODO: Implementation to be finalized.
+                    // Implementation to be finalized.
                     logger.info("Patient Names must be added to the NRO message");
                 }
 
                 List<PRPAMT201306UV02PatientAddress> patientAddresses = inputQBP.getParameterList().getPatientAddress();
                 if (!CollectionUtils.isEmpty(patientAddresses)) {
-                    // TODO: Implementation to be finalized.
+                    // Implementation to be finalized.
                     logger.info("Patient Addresses must be added to the NRO message");
                 }
                 stringBuilderNRO.append("</patient>");
@@ -645,7 +640,8 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                 // Joao: we have an adhoc XML document, so we can generate this evidence correctly
                 try {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                    //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                    factory.setXIncludeAware(false);
                     factory.setNamespaceAware(true);
                     DocumentBuilder builder = factory.newDocumentBuilder();
                     Document doc = builder.parse(new InputSource(new StringReader(stringBuilderNRO.toString())));
@@ -693,7 +689,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                     if (cIndex > 0) {
                         countryCode = distinguishName.substring(cIndex + 2, cIndex + 4);
                     }
-                    // TODO: Might be necessary to remove later, although it does no harm in reality!
+                    // Might be necessary to remove later, although it does no harm in reality!
                     // This part is added for handling consents when the call is not HTTPS.
                     // In this case, we check the country code of the signature certificate that ships within the HCP assertion
                     else {
@@ -708,7 +704,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
 
                     /*
                      *  Then, it is the Policy Decision Point (PDP) that decides according to the consents of the patients
-                     *  TODO: Uncomment when PDP works. You may also need to pass the whole PatientID
+                     *  Uncomment when PDP works. You may also need to pass the whole PatientID
                      *  (both the root and extension) to PDP, if required by PDP procedures.
                      */
                     for (var i = 0; i < demographicsList.size(); i++) {
@@ -761,7 +757,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         var mccimt000300UV01Receiver = objectFactory.createMCCIMT000300UV01Receiver();
         mccimt000300UV01Receiver.setTypeCode(CommunicationFunctionType.RCV);
         mccimt000300UV01Receiver.setDevice(objectFactory.createMCCIMT000300UV01Device());
-        mccimt000300UV01Receiver.getDevice().setDeterminerCode("INSTANCE");
+        mccimt000300UV01Receiver.getDevice().setDeterminerCode(INSTANCE);
         mccimt000300UV01Receiver.getDevice().setClassCode(EntityClassDevice.DEV);
         mccimt000300UV01Receiver.getDevice().getId().add(inputMessage.getSender().getDevice().getId().get(0));
         // Set asAgent
@@ -782,7 +778,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         var mccimt000300UV01Sender = objectFactory.createMCCIMT000300UV01Sender();
         mccimt000300UV01Sender.setTypeCode(CommunicationFunctionType.SND);
         mccimt000300UV01Sender.setDevice(objectFactory.createMCCIMT000300UV01Device());
-        mccimt000300UV01Sender.getDevice().setDeterminerCode("INSTANCE");
+        mccimt000300UV01Sender.getDevice().setDeterminerCode(INSTANCE);
         mccimt000300UV01Sender.getDevice().setClassCode(EntityClassDevice.DEV);
         mccimt000300UV01Sender.getDevice().getId().add(objectFactory.createII());
         mccimt000300UV01Sender.getDevice().getId().get(0).setRoot(Constants.HOME_COMM_ID);
