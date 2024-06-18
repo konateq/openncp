@@ -98,8 +98,8 @@ ALTER TABLE object_details MODIFY value LONGBLOB;
 ALTER TABLE provisional_messages MODIFY content LONGBLOB;
 
 --  Changeset src/main/resources/openncp-atna/db.changelog.xml::3::subigje
-ALTER TABLE participants MODIFY userId VARCHAR2(1000);
+ALTER TABLE participants MODIFY userId VARCHAR(1000);
 
 --  Changeset src/main/resources/openncp-atna/db.changelog.xml::4::karouja
-ALTER TABLE messages ADD messageType VARCHAR2(31) NOT NULL;
+ALTER TABLE messages ADD messageType VARCHAR(31) NOT NULL;
 
