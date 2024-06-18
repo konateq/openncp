@@ -1,9 +1,12 @@
 package eu.europa.ec.sante.openncp.core.server.fhir.transcoding.resources;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.DiagnosticReportLabMyHealthEu;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DiagnosticReportTranscodingService extends AbstractResourceTranscodingService<DiagnosticReportLabMyHealthEu> {
@@ -18,10 +21,12 @@ public class DiagnosticReportTranscodingService extends AbstractResourceTranscod
     }
 
     @Override
-    public DiagnosticReportLabMyHealthEu transcodeTypedResource(final DiagnosticReportLabMyHealthEu diagnosticReportLabMyHealthEu) {
+    public DiagnosticReportLabMyHealthEu transcodeTypedResource(final DiagnosticReportLabMyHealthEu diagnosticReportLabMyHealthEu,
+                                                                final List<ITMTSAMError> errors,
+                                                                final List<ITMTSAMError> warnings) {
 
-        transcodeCodeableConceptsList(diagnosticReportLabMyHealthEu.getCategory());
-        transcodeCodeableConcept(diagnosticReportLabMyHealthEu.getCode());
+        transcodeCodeableConceptsList(diagnosticReportLabMyHealthEu.getCategory(), errors, warnings);
+        transcodeCodeableConcept(diagnosticReportLabMyHealthEu.getCode(), errors, warnings);
 
         return diagnosticReportLabMyHealthEu;
     }

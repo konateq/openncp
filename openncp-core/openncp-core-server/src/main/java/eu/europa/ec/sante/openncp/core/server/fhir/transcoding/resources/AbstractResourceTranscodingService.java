@@ -4,6 +4,7 @@ import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.CodeSys
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.utils.ToolingExtensions;
 import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -28,24 +29,30 @@ public abstract class AbstractResourceTranscodingService<R extends Resource> imp
     }
 
     @Override
-    public R transcode(final Resource resource) {
+    public R transcode(final Resource resource, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
         Validate.notNull(resource);
-        return this.transcodeTypedResource(getTypedResource(resource));
+        return this.transcodeTypedResource(getTypedResource(resource), errors, warnings);
     }
 
     private R getTypedResource(final Resource resource) {
         return (R) resource;
     }
 
-    protected abstract R transcodeTypedResource(R typedResource);
+    protected abstract R transcodeTypedResource(R typedResource, List<ITMTSAMError> errors, List<ITMTSAMError> warnings);
 
-    private Optional<Coding> getTranscoding(final Coding coding) {
+    private Optional<Coding> getTranscoding(final Coding coding, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
         final TSAMResponseStructure tsamTranscodingResponse = terminologyService.getTargetConcept(CodeConcept.from(coding));
+        Validate.notNull(tsamTranscodingResponse);
+        errors.addAll(tsamTranscodingResponse.getErrors());
+        warnings.addAll(tsamTranscodingResponse.getWarnings());
         final Coding targetCoding = new Coding(CodeSystem.getUrlBasedOnOid(tsamTranscodingResponse.getCodeSystem()),
                                                tsamTranscodingResponse.getCode(), tsamTranscodingResponse.getDesignation()).setVersion(tsamTranscodingResponse.getCodeSystemVersion());
         targetCoding.setUserSelected(false);
 
         final TSAMResponseStructure tsamTranslationResponse = terminologyService.getDesignation(CodeConcept.from(targetCoding), "en-GB");
+        Validate.notNull(tsamTranslationResponse);
+        errors.addAll(tsamTranslationResponse.getErrors());
+        warnings.addAll(tsamTranslationResponse.getWarnings());
         ToolingExtensions.addLanguageTranslation(targetCoding.getDisplayElement(), "en-GB", tsamTranslationResponse.getDesignation());
         return Optional.of(targetCoding);
     }
@@ -60,14 +67,14 @@ public abstract class AbstractResourceTranscodingService<R extends Resource> imp
                               .or(() -> codeableConcept.getCoding().stream().findFirst());
     }
 
-    protected void transcodeCodeableConcept(final CodeableConcept codeableConcept) {
-        final Optional<Coding> coding = getTranscoding(codeableConcept.getCoding().iterator().next());
+    protected void transcodeCodeableConcept(final CodeableConcept codeableConcept, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
+        final Optional<Coding> coding = getTranscoding(codeableConcept.getCoding().iterator().next(), errors, warnings);
         coding.ifPresent(transcoding -> codeableConcept.getCoding().add(transcoding));
     }
 
-    protected void transcodeCodeableConceptsList(final List<CodeableConcept> codeableConcepts) {
+    protected void transcodeCodeableConceptsList(final List<CodeableConcept> codeableConcepts, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
         for (final CodeableConcept codeableConcept : codeableConcepts) {
-            transcodeCodeableConcept(codeableConcept);
+            transcodeCodeableConcept(codeableConcept, errors, warnings);
         }
     }
 }

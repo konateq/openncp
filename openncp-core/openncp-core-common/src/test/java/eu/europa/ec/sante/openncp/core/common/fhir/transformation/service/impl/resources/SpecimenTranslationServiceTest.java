@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.SpecimenMyHealthEu;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +46,10 @@ class SpecimenTranslationServiceTest extends AbstractTranslationServiceTest {
         // Collection - Body Site
         mockTranslation(mockedTerminologyService, input.getCollection().getBodySite().getCoding().iterator().next(), "Neoaortaklep");
 
-        final SpecimenMyHealthEu translated = specimenTranslationService.translate(input, targetLanguageCode);
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
+
+        final SpecimenMyHealthEu translated = specimenTranslationService.translate(input, errors, warnings, targetLanguageCode);
 
         final SpecimenMyHealthEu expectedOutput = parser.parseResource(SpecimenMyHealthEu.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/specimen-out.json"),

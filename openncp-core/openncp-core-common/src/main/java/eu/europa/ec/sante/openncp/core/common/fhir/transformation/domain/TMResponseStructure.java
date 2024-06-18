@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain;
 
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,19 +16,19 @@ public class TMResponseStructure {
     /**
      * List of TM Errors
      */
-    private List<String> errors;
+    private List<ITMTSAMError> errors;
 
     /**
      * List of TM Warnings
      */
-    private List<String> warnings;
+    private List<ITMTSAMError> warnings;
 
     /**
      * failure or success
      */
     private String status;
 
-    public TMResponseStructure(Bundle fhirDocument, String status, List<String> errors, List<String> warnings) {
+    public TMResponseStructure(final Bundle fhirDocument, final String status, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
         this.fhirDocument = fhirDocument;
         this.errors = errors;
         this.warnings = warnings;
@@ -38,23 +39,23 @@ public class TMResponseStructure {
         return fhirDocument;
     }
 
-    public void setFhirDocument(Bundle fhirDocument) {
+    public void setFhirDocument(final Bundle fhirDocument) {
         this.fhirDocument = fhirDocument;
     }
 
-    public List<String> getErrors() {
+    public List<ITMTSAMError> getErrors() {
         return errors;
     }
 
-    public void setErrors(List<String> errors) {
+    public void setErrors(final List<ITMTSAMError> errors) {
         this.errors = errors;
     }
 
-    public List<String> getWarnings() {
+    public List<ITMTSAMError> getWarnings() {
         return warnings;
     }
 
-    public void setWarnings(List<String> warnings) {
+    public void setWarnings(final List<ITMTSAMError> warnings) {
         this.warnings = warnings;
     }
 
@@ -62,7 +63,7 @@ public class TMResponseStructure {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 }

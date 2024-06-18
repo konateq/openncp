@@ -1,9 +1,12 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources;
 
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PatientTranslationService extends AbstractResourceTranslationService<Patient> {
@@ -14,7 +17,10 @@ public class PatientTranslationService extends AbstractResourceTranslationServic
     }
 
     @Override
-    public Patient translateTypedResource(final Patient patient, final String targetLanguage) {
+    public Patient translateTypedResource(final Patient patient,
+                                          final List<ITMTSAMError> errors,
+                                          final List<ITMTSAMError> warnings,
+                                          final String targetLanguage) {
         return patient;
     }
 

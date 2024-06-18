@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.core.server.fhir.transcoding.resources;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.DeviceSpecimenMyHealthEu;
 import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.ImmutableCodeConcept;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,7 +52,9 @@ class DeviceSpecimenTranscodingServiceTest extends AbstractTranscodingServiceTes
                 .build();
         mockTranscoding(mockedTerminologyService, input.getType().getCoding().iterator().next(), targetType, "en-GB");
 
-        final DeviceSpecimenMyHealthEu transcoded = deviceSpecimenTranscodingService.transcode(input);
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
+        final DeviceSpecimenMyHealthEu transcoded = deviceSpecimenTranscodingService.transcode(input, errors, warnings);
 
         System.out.println(parser.encodeResourceToString(transcoded));
 

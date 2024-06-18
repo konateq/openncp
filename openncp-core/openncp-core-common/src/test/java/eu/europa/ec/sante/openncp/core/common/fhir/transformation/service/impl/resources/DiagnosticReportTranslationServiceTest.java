@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.DiagnosticReportLabMyHealthEu;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +46,10 @@ class DiagnosticReportTranslationServiceTest extends AbstractTranslationServiceT
         // Code
         mockTranslation(mockedTerminologyService, input.getCode().getCoding().iterator().next(), "Bloedbankonderzoeken (set)");
 
-        final DiagnosticReportLabMyHealthEu translated = diagnosticReportTranslationService.translate(input, targetLanguageCode);
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
+
+        final DiagnosticReportLabMyHealthEu translated = diagnosticReportTranslationService.translate(input, errors, warnings, targetLanguageCode);
 
         final DiagnosticReportLabMyHealthEu expectedOutput = parser.parseResource(DiagnosticReportLabMyHealthEu.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/diagnosticReport-out.json"),

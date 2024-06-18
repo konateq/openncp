@@ -31,26 +31,6 @@ public class TranslateBundleHandler implements BundleHandler {
         final String targetLanguage = configurationManager.getProperty(Constant.LANGUAGE_CODE);
         LOGGER.info("Translating FHIR bundle from MyHealth@EU format into national language [{}]", targetLanguage);
         final TMResponseStructure translatedBundle = translationService.translate(bundle, targetLanguage);
-        Validate.notNull(translatedBundle);
-        logErrors(translatedBundle);
-        logWarnings(translatedBundle);
-
-        return translatedBundle.getFhirDocument();
-    }
-
-    private static void logErrors(final TMResponseStructure translatedBundle) {
-        if (!translatedBundle.getErrors().isEmpty()) {
-            for (final String error : translatedBundle.getErrors()) {
-                LOGGER.error(error);
-            }
-        }
-    }
-
-    private static void logWarnings(final TMResponseStructure translatedBundle) {
-        if (!translatedBundle.getWarnings().isEmpty()) {
-            for (final String warning : translatedBundle.getWarnings()) {
-                LOGGER.warn(warning);
-            }
-        }
+        return Validate.notNull(translatedBundle.getFhirDocument());
     }
 }

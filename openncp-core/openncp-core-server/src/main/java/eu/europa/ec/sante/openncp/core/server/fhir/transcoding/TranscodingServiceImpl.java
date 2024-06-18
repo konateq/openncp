@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.core.server.fhir.transcoding;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.TMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.server.fhir.transcoding.resources.ResourceTranscodingService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Bundle;
@@ -26,13 +27,15 @@ public class TranscodingServiceImpl implements TranscodingService {
 
     @Override
     public TMResponseStructure transcode(final Bundle fhirDocument) {
+        final List<ITMTSAMError> errors = Collections.emptyList();
+        final List<ITMTSAMError> warnings = Collections.emptyList();
         fhirDocument.getEntry().forEach(bundleEntryComponent -> {
             final Resource resource = bundleEntryComponent.getResource();
-            retrieveTranscodingLogic(resource).ifPresentOrElse(resourceTranscodingService -> resourceTranscodingService.transcode(resource),
+            retrieveTranscodingLogic(resource).ifPresentOrElse(resourceTranscodingService -> resourceTranscodingService.transcode(resource, errors, warnings),
                                                                () -> LOGGER.warn("No transcoding logic service found for resource [{}]", resource));
         });
 
-        return new TMResponseStructure(fhirDocument, "success", Collections.emptyList(), Collections.emptyList());
+        return new TMResponseStructure(fhirDocument, "success", errors, warnings);
     }
 
     private Optional<ResourceTranscodingService<?>> retrieveTranscodingLogic(final Resource resource) {

@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.ServiceRequestLabMyHealthEu;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +46,11 @@ class ServiceRequestTranslationServiceTest extends AbstractTranslationServiceTes
         // ReasonCode
         mockTranslation(mockedTerminologyService, input.getReasonCode().iterator().next().getCoding().iterator().next(), "Gele koorts");
 
-        final ServiceRequestLabMyHealthEu translated = serviceRequestTranslationService.translate(input, targetLanguageCode);
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
+
+
+        final ServiceRequestLabMyHealthEu translated = serviceRequestTranslationService.translate(input, errors, warnings, targetLanguageCode);
 
         System.out.println(parser.encodeResourceToString(translated));
 

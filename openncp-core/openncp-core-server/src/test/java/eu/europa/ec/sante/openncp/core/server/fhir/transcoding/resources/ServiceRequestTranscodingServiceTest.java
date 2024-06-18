@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.core.server.fhir.transcoding.resources;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.ServiceRequestLabMyHealthEu;
 import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.ImmutableCodeConcept;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,7 +62,9 @@ class ServiceRequestTranscodingServiceTest extends AbstractTranscodingServiceTes
                 .build();
         mockTranscoding(mockedTerminologyService, input.getReasonCode().iterator().next().getCoding().iterator().next(), targetReasonCode, "en-GB");
 
-        final ServiceRequestLabMyHealthEu transcoded = serviceRequestTranscodingService.transcode(input);
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
+        final ServiceRequestLabMyHealthEu transcoded = serviceRequestTranscodingService.transcode(input, errors, warnings);
 
         final ServiceRequestLabMyHealthEu output = parser.parseResource(ServiceRequestLabMyHealthEu.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/serviceRequest-out.json"),

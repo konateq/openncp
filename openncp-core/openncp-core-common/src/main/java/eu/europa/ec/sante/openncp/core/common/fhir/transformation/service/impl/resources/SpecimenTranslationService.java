@@ -1,9 +1,12 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.SpecimenMyHealthEu;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class SpecimenTranslationService extends AbstractResourceTranslationService<SpecimenMyHealthEu> {
@@ -13,10 +16,13 @@ public class SpecimenTranslationService extends AbstractResourceTranslationServi
     }
 
     @Override
-    public SpecimenMyHealthEu translateTypedResource(final SpecimenMyHealthEu specimenMyHealthEu, final String targetLanguage) {
+    public SpecimenMyHealthEu translateTypedResource(final SpecimenMyHealthEu specimenMyHealthEu,
+                                                     final List<ITMTSAMError> errors,
+                                                     final List<ITMTSAMError> warnings,
+                                                     final String targetLanguage) {
 
-        translateCodeableConcept(specimenMyHealthEu.getType(), targetLanguage);
-        translateCodeableConcept(specimenMyHealthEu.getCollection().getBodySite(), targetLanguage);
+        translateCodeableConcept(specimenMyHealthEu.getType(), errors, warnings, targetLanguage);
+        translateCodeableConcept(specimenMyHealthEu.getCollection().getBodySite(), errors, warnings, targetLanguage);
 
         return specimenMyHealthEu;
     }

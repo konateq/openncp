@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.DeviceSpecimenMyHealthEu;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,7 +43,10 @@ class DeviceSpecimenTranslationServiceTest extends AbstractTranslationServiceTes
         // Type
         mockTranslation(mockedTerminologyService, input.getType().getCoding().iterator().next(), "Cardiale septum prothese");
 
-        final DeviceSpecimenMyHealthEu translated = deviceSpecimenTranslationService.translate(input, targetLanguageCode);
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
+
+        final DeviceSpecimenMyHealthEu translated = deviceSpecimenTranslationService.translate(input, errors, warnings, targetLanguageCode);
 
         final DeviceSpecimenMyHealthEu expectedOutput = parser.parseResource(DeviceSpecimenMyHealthEu.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/deviceSpecimen-out.json"),

@@ -4,6 +4,7 @@ package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.utils.ToolingExtensions;
 import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -29,31 +30,33 @@ public abstract class AbstractResourceTranslationService<R extends Resource> imp
     }
 
     @Override
-    public R translate(final Resource resource, final String targetLanguage) {
+    public R translate(final Resource resource, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings, final String targetLanguage) {
         Validate.notNull(resource);
-        return this.translateTypedResource(getTypedResource(resource), targetLanguage);
+        return this.translateTypedResource(getTypedResource(resource), errors, warnings, targetLanguage);
     }
 
     private R getTypedResource(final Resource resource) {
         return (R) resource;
     }
 
-    protected abstract R translateTypedResource(R typedResource, String targetLanguage);
+    protected abstract R translateTypedResource(R typedResource, List<ITMTSAMError> errors, List<ITMTSAMError> warnings, String targetLanguage);
 
-    private void addTranslation(final CodeableConcept codeableConcept, final String targetLanguage) {
+    private void addTranslation(final CodeableConcept codeableConcept, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings, final String targetLanguage) {
         if (codeableConcept != null) {
             final Optional<Coding> coding = retrieveCoding(codeableConcept);
             coding.ifPresent(value -> {
                 final var translatedValue = getTranslation(value, targetLanguage);
-                ToolingExtensions.addLanguageTranslation(value.getDisplayElement(), targetLanguage, translatedValue);
+                Validate.notNull(translatedValue);
+                errors.addAll(translatedValue.getErrors());
+                warnings.addAll(translatedValue.getWarnings());
+                ToolingExtensions.addLanguageTranslation(value.getDisplayElement(), targetLanguage, translatedValue.getDesignation());
             });
         }
     }
 
-    String getTranslation(final Coding coding, final String targetLanguageCode) {
+    private TSAMResponseStructure getTranslation(final Coding coding, final String targetLanguageCode) {
         final CodeConcept codeConcept = CodeConcept.from(coding);
-        final TSAMResponseStructure tsamResponse = terminologyService.getDesignation(codeConcept, targetLanguageCode);
-        return tsamResponse.getDesignation();
+        return terminologyService.getDesignation(codeConcept, targetLanguageCode);
     }
 
     Optional<Coding> retrieveCoding(final CodeableConcept codeableConcept) {
@@ -65,13 +68,13 @@ public abstract class AbstractResourceTranslationService<R extends Resource> imp
                 .or(() -> codeableConcept.getCoding().stream().findFirst());
     }
 
-    protected void translateCodeableConcept(final CodeableConcept codeableConcept, final String targetLanguage) {
-        addTranslation(codeableConcept, targetLanguage);
+    protected void translateCodeableConcept(final CodeableConcept codeableConcept, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings, final String targetLanguage) {
+        addTranslation(codeableConcept, errors, warnings, targetLanguage);
     }
 
-    protected void translateCodeableConceptsList(final List<CodeableConcept> codeableConcepts, final String targetLanguage) {
+    protected void translateCodeableConceptsList(final List<CodeableConcept> codeableConcepts, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings, final String targetLanguage) {
         for (final CodeableConcept codeableConcept : codeableConcepts) {
-            translateCodeableConcept(codeableConcept, targetLanguage);
+            translateCodeableConcept(codeableConcept, errors, warnings, targetLanguage);
         }
     }
 }

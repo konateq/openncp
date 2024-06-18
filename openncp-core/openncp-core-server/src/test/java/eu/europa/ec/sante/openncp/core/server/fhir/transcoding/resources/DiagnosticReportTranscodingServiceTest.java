@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.core.server.fhir.transcoding.resources;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.r4.resources.DiagnosticReportLabMyHealthEu;
 import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.ImmutableCodeConcept;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,8 +63,9 @@ class DiagnosticReportTranscodingServiceTest extends AbstractTranscodingServiceT
                 .codeSystemOid("2.16.840.1.113883.6.1")
                 .build();
         mockTranscoding(mockedTerminologyService, input.getCode().getCoding().iterator().next(), targetCode, "en-GB");
-
-        final DiagnosticReportLabMyHealthEu transcoded = diagnosticReportResourceTranscodingService.transcode(input);
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
+        final DiagnosticReportLabMyHealthEu transcoded = diagnosticReportResourceTranscodingService.transcode(input, errors, warnings);
 
         final DiagnosticReportLabMyHealthEu output = parser.parseResource(DiagnosticReportLabMyHealthEu.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/diagnosticReport-out.json"),

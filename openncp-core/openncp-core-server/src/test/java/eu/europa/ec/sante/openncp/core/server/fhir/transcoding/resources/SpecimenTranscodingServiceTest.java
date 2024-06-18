@@ -13,14 +13,13 @@ public class SpecimenTranscodingServiceTest extends AbstractTranscodingServiceTe
     @Test
     public void testTranscode() throws IOException {
 
-        Specimen input = parser.parseResource(Specimen.class, IOUtils.toString(
+        final Specimen input = parser.parseResource(Specimen.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("in/specimen-in.json"),
                 StandardCharsets.UTF_8));
 
-        Specimen expectedOutput = parser.parseResource(Specimen.class, IOUtils.toString(
+        final Specimen expectedOutput = parser.parseResource(Specimen.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/specimen-out.json"),
                 StandardCharsets.UTF_8));
         assertFhirResourcesAreEqual(expectedOutput, input);
-
     }
 }

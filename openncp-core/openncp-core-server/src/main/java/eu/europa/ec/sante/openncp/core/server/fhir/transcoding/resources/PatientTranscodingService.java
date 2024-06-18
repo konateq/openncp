@@ -1,9 +1,12 @@
 package eu.europa.ec.sante.openncp.core.server.fhir.transcoding.resources;
 
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PatientTranscodingService extends AbstractResourceTranscodingService<Patient> {
@@ -18,7 +21,9 @@ public class PatientTranscodingService extends AbstractResourceTranscodingServic
     }
 
     @Override
-    public Patient transcodeTypedResource(final Patient patient) {
+    public Patient transcodeTypedResource(final Patient patient,
+                                          final List<ITMTSAMError> errors,
+                                          final List<ITMTSAMError> warnings) {
         return patient;
     }
 }

@@ -25,26 +25,6 @@ public class TranscodingBundleHandler implements BundleHandler {
     public Bundle handle(final Bundle bundle) {
         LOGGER.info("Transcoding FHIR bundle from national format to MyHealth@EU format");
         final TMResponseStructure transcodedBundle = transcodingService.transcode(bundle);
-        Validate.notNull(transcodedBundle);
-        logErrors(transcodedBundle);
-        logWarnings(transcodedBundle);
-
-        return transcodedBundle.getFhirDocument();
-    }
-
-    private static void logErrors(final TMResponseStructure translatedBundle) {
-        if (!translatedBundle.getErrors().isEmpty()) {
-            for (final String error : translatedBundle.getErrors()) {
-                LOGGER.error(error);
-            }
-        }
-    }
-
-    private static void logWarnings(final TMResponseStructure translatedBundle) {
-        if (!translatedBundle.getWarnings().isEmpty()) {
-            for (final String warning : translatedBundle.getWarnings()) {
-                LOGGER.warn(warning);
-            }
-        }
+        return Validate.notNull(transcodedBundle.getFhirDocument());
     }
 }

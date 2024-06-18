@@ -1,7 +1,9 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.TMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.fhir.transformation.exception.TranslationException;
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.service.impl.resources.ResourceTranslationService;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
@@ -26,13 +28,16 @@ public class TranslationServiceImpl implements TranslationService {
 
     @Override
     public TMResponseStructure translate(final Bundle fhirDocument, final String targetLanguage) {
+        final List<ITMTSAMError> errors = Collections.emptyList();
+        final List<ITMTSAMError> warnings = Collections.emptyList();
         fhirDocument.getEntry().forEach(bundleEntryComponent -> {
             final Resource resource = bundleEntryComponent.getResource();
-            retrieveTranslationLogic(resource).ifPresentOrElse(resourceTranslationService -> resourceTranslationService.translate(resource, targetLanguage),
-                    () -> LOGGER.warn("No transcoding logic service found for resource [{}]", resource));
+            retrieveTranslationLogic(resource)
+                    .map(resourceTranslationService -> resourceTranslationService.translate(resource, errors, warnings, targetLanguage))
+                    .orElseThrow(() -> new TranslationException(String.format("No transcoding logic service found for resource [%s]", resource)));
         });
 
-        return new TMResponseStructure(fhirDocument, "success", Collections.emptyList(), Collections.emptyList());
+        return new TMResponseStructure(fhirDocument, "success", errors, warnings);
     }
 
     private Optional<ResourceTranslationService<?>> retrieveTranslationLogic(final Resource resource) {
