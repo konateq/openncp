@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -33,6 +34,8 @@ import java.util.Map;
 public class XMLUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLUtil.class);
+    private static final String HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
+    private static final String EXCEPTION = "Exception: '{}'";
 
     /**
      * Creates a new instance of XMLUtil
@@ -49,18 +52,26 @@ public class XMLUtil {
             return null;
         }
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+        dbf.setXIncludeAware(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         org.w3c.dom.Document theDocument = db.newDocument();
         theDocument.appendChild(theDocument.importNode(node, true));
         return theDocument.getDocumentElement();
     }
 
-    public static org.w3c.dom.Document parseContent(byte[] byteContent) throws ParserConfigurationException, SAXException, IOException {
+    public static org.w3c.dom.Document parseContent(byte[] byteContent)
+            throws ParserConfigurationException, SAXException, IOException {
 
-        String content = new String(byteContent);
+        return parseContent(new String(byteContent));
+    }
+
+    public static org.w3c.dom.Document parseContent(String content)
+            throws ParserConfigurationException, SAXException, IOException {
+
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+        dbf.setXIncludeAware(false);
         dbf.setNamespaceAware(true);
 
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
@@ -69,24 +80,13 @@ public class XMLUtil {
         return docBuilder.parse(inputSource);
     }
 
-    public static org.w3c.dom.Document parseContent(String content) throws ParserConfigurationException, SAXException, IOException {
-
-        org.w3c.dom.Document doc;
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        dbf.setNamespaceAware(true);
-        DocumentBuilder docBuilder = dbf.newDocumentBuilder();
-        StringReader lReader = new StringReader(content);
-        InputSource inputSource = new InputSource(lReader);
-        doc = docBuilder.parse(inputSource);
-        return doc;
-    }
-
     public static String prettyPrint(Node node) throws TransformerException {
 
         StringWriter stringWriter = new StringWriter();
         TransformerFactory tf = TransformerFactory.newInstance();
         tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
@@ -99,7 +99,7 @@ public class XMLUtil {
 
     public static byte[] convertToByteArray(Node node) throws TransformerException {
 
-        /** FIXME: We assume that Transfor deals with encoding/charset internally */
+        // We assume that Transformer deals with encoding/charset internally
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -113,7 +113,7 @@ public class XMLUtil {
     public static Map<String, String> parseNamespaceBindings(String namespaceBindings) {
 
         if (namespaceBindings == null) {
-            return null;
+            return Collections.emptyMap();
         }
         String namespacesParsed = namespaceBindings.substring(1, namespaceBindings.length() - 1);
         String[] bindings = namespacesParsed.split(",");
@@ -140,7 +140,8 @@ public class XMLUtil {
             marshaller.setSchema(schema);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbf.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+            dbf.setXIncludeAware(false);
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.newDocument();
@@ -148,7 +149,7 @@ public class XMLUtil {
             Locale.setDefault(oldLocale);
             return doc;
         } catch (Exception ex) {
-            LOGGER.error("Exception: '{}'", ex.getMessage(), ex);
+            LOGGER.error(EXCEPTION, ex.getMessage(), ex);
         }
         Locale.setDefault(oldLocale);
         return null;
@@ -169,7 +170,7 @@ public class XMLUtil {
             Locale.setDefault(oldLocale);
             return obj;
         } catch (Exception ex) {
-            LOGGER.error("Exception: '{}'", ex.getMessage(), ex);
+            LOGGER.error(EXCEPTION, ex.getMessage(), ex);
         }
         Locale.setDefault(oldLocale);
         return null;
@@ -183,12 +184,12 @@ public class XMLUtil {
             JAXBContext jc = JAXBContext.newInstance(context);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(new File(schemaLocation));
+            schemaFactory.newSchema(new File(schemaLocation));
             Object obj = unmarshaller.unmarshal(new StringReader(content));
             Locale.setDefault(oldLocale);
             return obj;
         } catch (Exception ex) {
-            LOGGER.error("Exception: '{}'", ex.getMessage(), ex);
+            LOGGER.error(EXCEPTION, ex.getMessage(), ex);
         }
         Locale.setDefault(oldLocale);
         return null;
@@ -200,7 +201,7 @@ public class XMLUtil {
             String xmlString = "<RegistryResponse xmlns=\"urn:oasis:names:tc:ebxml-regrep:registry:xsd:2.1\" status=\"Success\"><Slot/></RegistryResponse>";
             XMLUtil.parseContent(xmlString.getBytes());
         } catch (Exception ex) {
-            LOGGER.error("Exception: '{}'", ex.getMessage(), ex);
+            LOGGER.error(EXCEPTION, ex.getMessage(), ex);
         }
     }
 }

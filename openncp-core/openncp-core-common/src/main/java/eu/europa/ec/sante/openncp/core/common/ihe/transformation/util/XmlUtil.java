@@ -27,6 +27,9 @@ import java.util.List;
 public class XmlUtil implements TMConstants {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XmlUtil.class);
+    private static final String TRANSFORMER_EXCEPTION = "TransformerException: '{}'";
+    private static final String EXCEPTION = "Exception: '{}'";
+    private static final String HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
 
     private XmlUtil() {
     }
@@ -50,7 +53,7 @@ public class XmlUtil implements TMConstants {
             transformer.transform(source, result);
             return stringWriter.getBuffer().toString();
         } catch (TransformerException e) {
-            LOGGER.error("TransformerException: '{}'", e.getMessage());
+            LOGGER.error(TRANSFORMER_EXCEPTION, e.getMessage());
         }
         return null;
     }
@@ -72,7 +75,7 @@ public class XmlUtil implements TMConstants {
 
             return stringWriter.getBuffer().toString();
         } catch (TransformerException e) {
-            LOGGER.error("TransformerException: '{}'", e.getMessage());
+            LOGGER.error(TRANSFORMER_EXCEPTION, e.getMessage());
         }
         return null;
     }
@@ -89,7 +92,7 @@ public class XmlUtil implements TMConstants {
         try {
             return getDocument(new FileInputStream(file), namespaceAware);
         } catch (FileNotFoundException e) {
-            LOGGER.error("Exception: '{}'", e.getMessage(), e);
+            LOGGER.error(EXCEPTION, e.getMessage(), e);
             return null;
         }
     }
@@ -100,13 +103,14 @@ public class XmlUtil implements TMConstants {
         try {
             // Parse a XML document into a DOM tree
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-            documentFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            documentFactory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+            documentFactory.setXIncludeAware(false);
             documentFactory.setNamespaceAware(namespaceAware);
             DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 
             document = documentBuilder.parse(inputStream);
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error("Exception: '{}'", e.getMessage(), e);
+            LOGGER.error(EXCEPTION, e.getMessage(), e);
         }
         return document;
     }
@@ -124,12 +128,13 @@ public class XmlUtil implements TMConstants {
         factory.setNamespaceAware(namespaceAware);
         DocumentBuilder builder;
         try {
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+            factory.setXIncludeAware(false);
             builder = factory.newDocumentBuilder();
             return builder.parse(new ByteArrayInputStream(xml));
 
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.error("Exception: '{}'", e.getMessage(), e);
+            LOGGER.error(EXCEPTION, e.getMessage(), e);
         }
         return null;
     }
@@ -153,7 +158,7 @@ public class XmlUtil implements TMConstants {
             transformer.transform(source, result);
             return out.toByteArray();
         } catch (TransformerException e) {
-            LOGGER.error("TransformerException: '{}'", e.getMessage(), e);
+            LOGGER.error(TRANSFORMER_EXCEPTION, e.getMessage(), e);
         }
         return new byte[]{};
     }
@@ -225,7 +230,8 @@ public class XmlUtil implements TMConstants {
     public static Document stringToDom(String xmlSource) throws SAXException, ParserConfigurationException, IOException {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+        factory.setXIncludeAware(false);
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(new InputSource(new StringReader(xmlSource)));
@@ -247,7 +253,8 @@ public class XmlUtil implements TMConstants {
     public static Document parseContent(String content) throws ParserConfigurationException, SAXException, IOException {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        documentBuilderFactory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+        documentBuilderFactory.setXIncludeAware(false);
         documentBuilderFactory.setNamespaceAware(true);
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         StringReader lReader = new StringReader(content);
@@ -299,7 +306,7 @@ public class XmlUtil implements TMConstants {
                     }
                 }
             }
-            if (e.getPrefix() != null && e.getPrefix().length() > 0) {
+            if (e.getPrefix() != null && !e.getPrefix().isEmpty()) {
                 name = e.getPrefix() + ":" + name;
             }
             if (pos > 1 || more) {

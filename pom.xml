@@ -129,7 +129,7 @@
         <mail.version>1.6.2</mail.version>
         <ibatis-sqlmap.version>2.3.4.726</ibatis-sqlmap.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
-        <axis2.version>1.8.1</axis2.version>
+        <axis2.version>1.8.2</axis2.version>
         <axiom-api.version>1.4.0</axiom-api.version>
         <hapi.fhir.version>6.6.0</hapi.fhir.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
