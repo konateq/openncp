@@ -134,7 +134,7 @@ public class RespondingGateway_ServiceStub extends Stub {
                     .setProperty(HTTPConstants.REUSE_HTTP_CLIENT, false);
         } catch (final NoSuchAlgorithmException | KeyManagementException | IOException | CertificateException |
                        KeyStoreException | UnrecoverableKeyException e) {
-            throw new RuntimeException("SSL Context cannot be initialized");
+            throw new RuntimeException("SSL Context cannot be initialized", e);
         }
     }
 

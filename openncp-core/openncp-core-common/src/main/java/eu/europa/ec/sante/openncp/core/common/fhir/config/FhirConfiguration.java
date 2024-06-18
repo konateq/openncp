@@ -56,6 +56,7 @@ public class FhirConfiguration {
     public FhirContext fhirContext() {
         return EuFhirContextFactory.createFhirContext();
     }
+
     @Bean
     @ConditionalOnExpression("${hapi.fhir.openapi.enabled:false} == true && ${hapi.fhir.openapi.secured:false} == true")
     public OpenApiInterceptor getSecuredOpenApiInterceptor() {
@@ -78,9 +79,9 @@ public class FhirConfiguration {
         }
 
         final ValidationSupportChain validationSupportChain = new ValidationSupportChain(new DefaultProfileValidationSupport(fhirContext),
-                                                                                         new CommonCodeSystemsTerminologyService(fhirContext),
-                                                                                         new InMemoryTerminologyServerValidationSupport(fhirContext),
-                                                                                         npmPackageSupport);
+                new CommonCodeSystemsTerminologyService(fhirContext),
+                new InMemoryTerminologyServerValidationSupport(fhirContext),
+                npmPackageSupport);
 
         final FhirInstanceValidator instanceValidator = new FhirInstanceValidator(validationSupportChain);
 
@@ -142,7 +143,7 @@ public class FhirConfiguration {
         @Bean
         public ServletRegistrationBean<RestfulServer> fhirServerRegistrationBean() {
             final ServletRegistrationBean<RestfulServer> registration = new ServletRegistrationBean<>(this,
-                                                                                                      this.properties.getServer().getServletPath());
+                    this.properties.getServer().getServletPath());
             registration.setLoadOnStartup(1);
             return registration;
         }
