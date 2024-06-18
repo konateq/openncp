@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.UUID;
@@ -142,7 +143,7 @@ public class AssertionTestUtil {
         }
     }
 
-    public static Assertion createHCPAssertion(final String username, final String fullName, final String email, final String countryCode,
+    public static Assertion createHCPAssertion(final String fullName, final String email, final String countryCode,
                                                final String countryName, final String homeCommId, final Concept role, final String organization,
                                                final String organizationId, final String facilityType, final String purposeOfUse,
                                                final String locality, final List<String> permissions, final String onBehalfId) {
@@ -211,68 +212,60 @@ public class AssertionTestUtil {
 
             // Set HC Identifier
             final var attrHCID = createAttribute(builderFactory, "HCI Identifier", "urn:ihe:iti:xca:2010:homeCommunityId", "urn:oid:" + homeCommId,
-                                                 "", "");
+                                                 "");
             attrStmt.getAttributes().add(attrHCID);
 
             // Set NP Identifier
-            final var attrNPID = createAttribute(builderFactory, "NPI Identifier", "urn:oasis:names:tc:xspa:1.0:subject:npi", countryName, "", "");
+            final var attrNPID = createAttribute(builderFactory, "NPI Identifier", "urn:oasis:names:tc:xspa:1.0:subject:npi", countryName, "");
             attrStmt.getAttributes().add(attrNPID);
 
             // XSPA Subject
-            final var attrPID = createAttribute(builderFactory, "XSPA Subject", "urn:oasis:names:tc:xspa:1.0:subject:subject-id", fullName, "", "");
+            final var attrPID = createAttribute(builderFactory, "XSPA Subject", "urn:oasis:names:tc:xspa:1.0:subject:subject-id", fullName, "");
             attrStmt.getAttributes().add(attrPID);
 
             // XSPA Role
-            final var structuralRole = createAttributeXSPARole(builderFactory, "XSPA Role", "urn:oasis:names:tc:xacml:2.0:subject:role", role, "",
-                                                               "");
+            final var structuralRole = createAttributeXSPARole(builderFactory, "XSPA Role", "urn:oasis:names:tc:xacml:2.0:subject:role", role);
             attrStmt.getAttributes().add(structuralRole);
-
-            //            var attrFunctionalRole = createAttribute(builderFactory, "XSPA Functional Role",
-            //                    "urn:oasis:names:tc:xspa:1.0:subject:functional-role", functionalRole, "", "");
-            //            attrStmt.getAttributes().add(attrFunctionalRole);
 
             // XSPA Organization - Optional Field (eHDSI SAML Profile 2.2.0)
             if (StringUtils.isNotBlank(organization)) {
                 final var attrPID3 = createAttribute(builderFactory, "XSPA Organization", "urn:oasis:names:tc:xspa:1.0:subject:organization",
-                                                     organization, "", "");
+                                                     organization, "");
                 attrStmt.getAttributes().add(attrPID3);
             }
 
             // XSPA Organization ID - Optional Field (eHDSI SAML Profile 2.2.0)
             if (StringUtils.isNotBlank(organizationId)) {
                 final var attrPID4 = createAttribute(builderFactory, "XSPA Organization ID", "urn:oasis:names:tc:xspa:1.0:subject:organization-id",
-                                                     organizationId, "", "");
+                                                     organizationId, "");
                 attrStmt.getAttributes().add(attrPID4);
             }
             // // On behalf of
             if (StringUtils.isNotBlank(onBehalfId)) {
                 final var attrPID41 = createAttribute(builderFactory, "OnBehalfOf", "urn:epsos:names:wp3.4:subject:on-behalf-of", onBehalfId,
-                                                      role.getDisplayName(), "");
+                                                      role.getDisplayName());
                 attrStmt.getAttributes().add(attrPID41);
                 attrStmt.getAttributes().add(attrPID41);
             }
 
             // eHealth DSI Healthcare Facility Type
-            //var attrPID5 = createAttribute(builderFactory, "eHealth DSI Healthcare Facility Type",
-            //      "urn:epsos:names:wp3.4:subject:healthcare-facility-type", facilityType, "", "");
+            // var attrPID5 = createAttribute(builderFactory, "eHealth DSI Healthcare Facility Type",
             final var attrPID5 = createAttribute(builderFactory, "eHealth DSI Healthcare Facility Type",
-                                                 "urn:ehdsi:names:subject:healthcare-facility-type", facilityType, "", "");
+                                                 "urn:ehdsi:names:subject:healthcare-facility-type", facilityType, "");
             attrStmt.getAttributes().add(attrPID5);
 
             // XSPA Purpose of Use
-            final var attrPID6 = createAttributePurposeOfUse(builderFactory, "XSPA Purpose Of Use",
-                                                             "urn:oasis:names:tc:xspa:1.0:subject:purposeofuse", purposeOfUse, "", "");
+            final var attrPID6 = createAttributePurposeOfUse(builderFactory, "XSPA Purpose Of Use","urn:oasis:names:tc:xspa:1.0:subject:purposeofuse", purposeOfUse);
             attrStmt.getAttributes().add(attrPID6);
 
             // XSPA Locality
-            final var attrPID7 = createAttribute(builderFactory, "XSPA Locality", "urn:oasis:names:tc:xspa:1.0:environment:locality", locality, "",
-                                                 "");
+            final var attrPID7 = createAttribute(builderFactory, "XSPA Locality", "urn:oasis:names:tc:xspa:1.0:environment:locality", locality, "");
             attrStmt.getAttributes().add(attrPID7);
 
             // HL7 Permissions
             var attrPID8 = createAttribute("Hl7 Permissions", "urn:oasis:names:tc:xspa:1.0:subject:hl7:permission");
             for (final Object permission : permissions) {
-                attrPID8 = AddAttributeValue(builderFactory, attrPID8, permission.toString(), "", "");
+                attrPID8 = AddAttributeValue(builderFactory, attrPID8, permission.toString());
             }
             attrStmt.getAttributes().add(attrPID8);
 
@@ -361,7 +354,7 @@ public class AssertionTestUtil {
     }
 
     private static <T> T create(final Class<T> cls, final QName qname) {
-
+        LOGGER.info("Creating class {}", cls.getName());
         return (T) (XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(qname)).buildObject(qname);
     }
 
@@ -374,8 +367,7 @@ public class AssertionTestUtil {
         return attrPID;
     }
 
-    private static Attribute AddAttributeValue(final XMLObjectBuilderFactory builderFactory, final Attribute attribute, final String value,
-                                               final String namespace, final String xmlschema) {
+    private static Attribute AddAttributeValue(final XMLObjectBuilderFactory builderFactory, final Attribute attribute, final String value) {
 
         final XMLObjectBuilder stringBuilder = builderFactory.getBuilder(XSString.TYPE_NAME);
         final XSString attrValPID = (XSString) stringBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, XSString.TYPE_NAME);
@@ -385,7 +377,7 @@ public class AssertionTestUtil {
     }
 
     private static Attribute createAttribute(final XMLObjectBuilderFactory builderFactory, final String FriendlyName, final String oasisName,
-                                             final String value, final String namespace, final String xmlschema) {
+                                             final String value, final String namespace) {
 
         final Attribute attrPID = create(Attribute.class, Attribute.DEFAULT_ELEMENT_NAME);
         attrPID.setFriendlyName(FriendlyName);
@@ -413,7 +405,7 @@ public class AssertionTestUtil {
     }
 
     private static Attribute createAttributeXSPARole(final XMLObjectBuilderFactory builderFactory, final String FriendlyName, final String oasisName,
-                                                     final Concept conceptRole, final String namespace, final String xmlschema) {
+                                                     final Concept conceptRole) {
 
         final Attribute attrPID = create(Attribute.class, Attribute.DEFAULT_ELEMENT_NAME);
         attrPID.setFriendlyName(FriendlyName);
@@ -427,7 +419,6 @@ public class AssertionTestUtil {
         role.getUnknownAttributes().put(new QName("codeSystem"), conceptRole.getCodeSystem());
         role.getUnknownAttributes().put(new QName("codeSystemName"), conceptRole.getCodeSystemName());
         role.getUnknownAttributes().put(new QName("displayName"), conceptRole.getDisplayName());
-        //role.setTextContent(value);
         final XSAny roleAttributeValue = xsAnyBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME);
         roleAttributeValue.getUnknownXMLObjects().add(role);
         attrPID.getAttributeValues().add(roleAttributeValue);
@@ -435,7 +426,7 @@ public class AssertionTestUtil {
     }
 
     private static Attribute createAttributePurposeOfUse(final XMLObjectBuilderFactory builderFactory, final String FriendlyName,
-                                                         final String oasisName, final String value, final String namespace, final String xmlschema) {
+                                                         final String oasisName, final String value) {
 
         final Attribute attrPID = create(Attribute.class, Attribute.DEFAULT_ELEMENT_NAME);
         attrPID.setFriendlyName(FriendlyName);
@@ -449,7 +440,6 @@ public class AssertionTestUtil {
         pou.getUnknownAttributes().put(new QName("codeSystem"), "3bc18518-d305-46c2-a8d6-94bd59856e9e");
         pou.getUnknownAttributes().put(new QName("codeSystemName"), "eHDSI XSPA PurposeOfUse");
         pou.getUnknownAttributes().put(new QName("displayName"), value);
-        //pou.setTextContent(value);
         final XSAny pouAttributeValue = xsAnyBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME);
         pouAttributeValue.getUnknownXMLObjects().add(pou);
         attrPID.getAttributeValues().add(pouAttributeValue);
@@ -462,6 +452,8 @@ public class AssertionTestUtil {
         try {
             final DOMSource domSource = new DOMSource(document);
             final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             final Transformer transformer = transformerFactory.newTransformer();
             final String omit;
