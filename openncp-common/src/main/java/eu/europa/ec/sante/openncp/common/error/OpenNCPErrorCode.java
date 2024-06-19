@@ -26,6 +26,11 @@ public enum OpenNCPErrorCode implements ErrorCode {
     WARNING_PI_GENERIC("WARNING_PI_GENERIC", "Patient Identification generic warning"),
     ERROR_PI_NO_MATCH("ERROR_PI_NO_MATCH", "The identification and authentication used in the Country of Treatment (Country B) are not correctly provided or does not match any existing patient."),
     ERROR_PI_MULTIPLE_MATCHES("ERROR_PI_MULTIPLE_MATCHES", "The identification and authentication used in the Country of Treatment (Country B) match multiple patients, instead of only one patient."),
+    ERROR_PI_INCORRECT_FORMATTING("ERROR_PI_INCORRECT_FORMATTING", "The patient identifier does not have the right format."),
+    ERROR_PI_MISSING_REQUIRED_FIELDS("ERROR_PI_MISSING_REQUIRED_FIELDS", "Some fields of the patient search mask are missing."),
+    ERROR_PI_REGISTRY_NOT_AVAILABLE("ERROR_PI_REGISTRY_NOT_AVAILABLE", "The patient identification service is unavailable."),
+    ERROR_PI_INTERNAL_ERROR("ERROR_PI_INTERNAL_ERROR", "The application encountered an unexpected error."),
+    WARNING_PI_NO_CONSENT("WARNING_PI_NO_CONSENT", "The patient has not given consent to the service."),
 
     // 05. Make Patient Summary available to HP
     ERROR_PS_GENERIC("ERROR_PS_GENERIC", "Patient Summary generic error"),
@@ -36,6 +41,13 @@ public enum OpenNCPErrorCode implements ErrorCode {
     WARNING_PS_MISSING_EXPECTED_MAPPING("WARNING_PS_MISSING_EXPECTED_MAPPING", "A needed code mapping is missing for the patient summary."),
     WARNING_PS_MISSING_EXPECTED_TRANSLATION("EHDSI_WARNING_PS_MISSING_EXPECTED_TRANSLATION", "An expected translation of the Patient Summary is missing."),
     ERROR_PS_PDF_FORMAT_NOT_PROVIDED("ERROR_PS_PDF_FORMAT_NOT_PROVIDED", "A PDF has not been provided."),
+    ERROR_PS_INCORRECT_FORMATTING("ERROR_PS_INCORRECT_FORMATTING", "The request contains a syntax error."),
+    ERROR_PS_MISSING_REQUIRED_FIELDS("ERROR_PS_MISSING_REQUIRED_FIELDS", "The request is missing values that are needed to process the request."),
+    //ERROR_PS_NOT_FOUND("ERROR_PS_NOT_FOUND", "The request is not containing a proper PS identifier."),
+    ERROR_PS_INTERNAL_ERROR("ERROR_PS_INTERNAL_ERROR", "The application encountered an unexpected error."),
+    ERROR_PS_REGISTRY_NOT_AVAILABLE("ERROR_PS_REGISTRY_NOT_AVAILABLE", "The national PS registry service is unavailable."),
+    ERROR_PS_MISSING_BASIC_DATA("ERROR_PS_MISSING_BASIC_DATA", "The Patient Summary is missing required information and can not be provided."),
+    ERROR_PS_NO_CONSENT("ERROR_PS_NO_CONSENT", "The patient has not given consent to the service."),
 
     // 06. Make ePrescription available to HP
     ERROR_EP_GENERIC("ERROR_EP_GENERIC", "ePrescription generic error"),
