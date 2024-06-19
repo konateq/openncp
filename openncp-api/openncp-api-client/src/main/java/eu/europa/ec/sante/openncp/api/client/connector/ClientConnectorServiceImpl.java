@@ -72,7 +72,7 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
                 .request(queryDocumentRequest)
                 .build();
         List<EpsosDocument> epsosDocuments = clientService.queryDocuments(queryDocumentOperation);
-        LOGGER.info("epsosDocuments : " + epsosDocuments);
+        LOGGER.info("epsosDocuments : {}", epsosDocuments);
         return epsosDocuments;
     }
 

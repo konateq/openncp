@@ -86,7 +86,6 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
             final String messageId = getMessageIdFromHeader(header);
 
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            //documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
 

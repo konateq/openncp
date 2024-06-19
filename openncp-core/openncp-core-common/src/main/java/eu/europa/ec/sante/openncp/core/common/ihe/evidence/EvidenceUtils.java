@@ -459,7 +459,6 @@ public class EvidenceUtils {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setXIncludeAware(false);
-        //documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         documentBuilderFactory.setNamespaceAware(true);
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         return documentBuilder.parse(new File(file));
@@ -469,7 +468,6 @@ public class EvidenceUtils {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setXIncludeAware(false);
-        //documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         documentBuilderFactory.setNamespaceAware(true);
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         return documentBuilder.parse(xml);

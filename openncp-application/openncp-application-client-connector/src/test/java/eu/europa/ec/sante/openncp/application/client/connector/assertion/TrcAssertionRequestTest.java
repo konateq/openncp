@@ -4,13 +4,11 @@ import eu.europa.ec.sante.openncp.application.client.connector.testutils.Asserti
 import org.junit.jupiter.api.Test;
 import org.opensaml.saml.saml2.core.Assertion;
 
-import javax.xml.soap.SOAPMessage;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+// import static org.assertj.core.api.Assertions.assertThat;
 
 class TrcAssertionRequestTest {
     @Test
