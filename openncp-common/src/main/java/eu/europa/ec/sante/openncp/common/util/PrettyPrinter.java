@@ -72,7 +72,7 @@ public class PrettyPrinter extends DefaultHandler {
         try {
             PrettyPrinter pretty = new PrettyPrinter();
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            //factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+            factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
             factory.setFeature(NS_SAX_FEATURES_PREFIXES, true);
             factory.newSAXParser().parse(new ByteArrayInputStream(content), pretty);
             return pretty.toString();
@@ -90,7 +90,7 @@ public class PrettyPrinter extends DefaultHandler {
         try {
             PrettyPrinter pretty = new PrettyPrinter();
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            //factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+            factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
             factory.setFeature(NS_SAX_FEATURES_PREFIXES, true);
             factory.newSAXParser().parse(content, pretty);
             return pretty.toString();
@@ -108,7 +108,7 @@ public class PrettyPrinter extends DefaultHandler {
         try {
             PrettyPrinter pretty = new PrettyPrinter();
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            //factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+            factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
             factory.setFeature(NS_SAX_FEATURES_PREFIXES, true);
             factory.newSAXParser().parse(content, pretty);
             return pretty.toString();

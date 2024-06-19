@@ -18,7 +18,6 @@ public class ReportTransformer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportTransformer.class);
 
-    private static final String HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
     private static final String XSL_FILE = "xsl//resultStylesheet.xsl";
     private String validationResult;
     private String validatedObject;
@@ -42,10 +41,9 @@ public class ReportTransformer {
         StreamResult out = new StreamResult(writer);
 
         TransformerFactory factory = TransformerFactory.newInstance();
-        //factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        //factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         try {
-            //factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer transformer = factory.newTransformer(xsl);
             transformer.transform(in, out);

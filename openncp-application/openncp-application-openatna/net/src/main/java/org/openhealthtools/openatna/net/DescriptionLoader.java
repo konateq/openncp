@@ -78,7 +78,7 @@ public class DescriptionLoader {
             throws SAXException, IOException, ParserConfigurationException {
         // Create a builder factory and a builder, and get the document.
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setXIncludeAware(false);
         factory.setValidating(false);
         Document doc = factory.newDocumentBuilder().parse(file);
@@ -250,7 +250,7 @@ public class DescriptionLoader {
             throws SAXException, IOException, ParserConfigurationException {
         // Create a builder factory and a builder, and get the document.
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setXIncludeAware(false);
         factory.setValidating(false);
         Document doc = factory.newDocumentBuilder().parse(stream);

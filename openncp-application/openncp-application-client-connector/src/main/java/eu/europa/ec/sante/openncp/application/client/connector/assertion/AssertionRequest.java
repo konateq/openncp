@@ -43,7 +43,7 @@ public interface AssertionRequest {
     default DocumentBuilder getDocumentBuilder() {
         try {
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            //documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
             return documentBuilderFactory.newDocumentBuilder();

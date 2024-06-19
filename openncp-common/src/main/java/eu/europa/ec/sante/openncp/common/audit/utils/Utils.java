@@ -71,7 +71,7 @@ public class Utils {
         // Instantiate the document to be signed
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            //dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbFactory.setXIncludeAware(false);
             dbFactory.setNamespaceAware(true);
             doc = dbFactory.newDocumentBuilder().parse(Utils.stringToStream(inputFile));
@@ -95,7 +95,7 @@ public class Utils {
             return false;
         }
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
         StreamSource streamSource = new StreamSource(streamXsd);
         Schema schema;

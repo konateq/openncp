@@ -65,7 +65,7 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             canonicalizer.canonicalizeSubtree(document, outputStream);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            //documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
             return documentBuilderFactory.newDocumentBuilder().parse(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -141,7 +141,7 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
 
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            //documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -484,9 +484,9 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
             throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
 
-        String displayName = source.getAuditSourceTypeCode().size() > 0 ? source.getAuditSourceTypeCode().get(0).getDisplayName() : "";
-        String codeSystemName = source.getAuditSourceTypeCode().size() > 0 ? source.getAuditSourceTypeCode().get(0).getCodeSystemName() : "";
-        String originalText = source.getAuditSourceTypeCode().size() > 0 ? source.getAuditSourceTypeCode().get(0).getOriginalText() : "";
+        String displayName = !source.getAuditSourceTypeCode().isEmpty() ? source.getAuditSourceTypeCode().get(0).getDisplayName() : "";
+        String codeSystemName = !source.getAuditSourceTypeCode().isEmpty() ? source.getAuditSourceTypeCode().get(0).getCodeSystemName() : "";
+        String originalText = !source.getAuditSourceTypeCode().isEmpty() ? source.getAuditSourceTypeCode().get(0).getOriginalText() : "";
         return new AtnaCode(type, code, displayName, codeSystemName, displayName, originalText);
     }
 
@@ -523,7 +523,6 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
         }
         RoleIDCode type = new RoleIDCode();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());
@@ -536,7 +535,6 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
         }
         ParticipantObjectIDTypeCode type = new ParticipantObjectIDTypeCode();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());
@@ -550,7 +548,6 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
         }
         EventTypeCode type = new EventTypeCode();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());
@@ -564,7 +561,6 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
         }
         EventID type = new EventID();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());
@@ -578,7 +574,6 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
         }
         EventID type = new EventID();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());
