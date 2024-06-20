@@ -47,7 +47,7 @@ public abstract class SyslogMessageFactory {
 
     private static Class<? extends LogMessage> defaultMessage = StringLogMessage.class;
 
-    private static SyslogMessageFactory currFactory = new GenericMessageFactory();
+    private static SyslogMessageFactory currFactory = null;
 
     public static void registerLogMessage(String msgId, Class<? extends LogMessage> cls) {
         messages.put(msgId, cls);
@@ -58,6 +58,9 @@ public abstract class SyslogMessageFactory {
     }
 
     public static SyslogMessageFactory getFactory() {
+        if(currFactory == null) {
+            currFactory = new GenericMessageFactory();
+        }
         return currFactory;
     }
 
@@ -68,7 +71,7 @@ public abstract class SyslogMessageFactory {
     public static LogMessage getLogMessage(String msgId) throws SyslogException {
 
         Class<? extends LogMessage> m;
-        if (msgId == null || msgId.length() == 0 || msgId.equals("-")) {
+        if (msgId == null || msgId.isEmpty() || msgId.equals("-")) {
             m = defaultMessage;
         } else {
             m = messages.get(msgId);

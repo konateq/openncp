@@ -5,6 +5,7 @@ import org.openhealthtools.openatna.audit.persistence.util.DataReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -18,6 +19,7 @@ import java.io.InputStream;
 public class Populate {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Populate.class);
+    private static final String ERROR = "ERROR: '{}'";
 
     public static void main(String[] args) {
         try {
@@ -25,7 +27,9 @@ public class Populate {
             DataReader reader = new DataReader(in);
             reader.parse();
         } catch (AtnaPersistenceException e) {
-            LOGGER.error("ERROR: '{}'", e.getError());
+            LOGGER.error(ERROR, e.getError());
+        } catch (IOException e) {
+            LOGGER.error(ERROR, e.getMessage());
         }
     }
 }

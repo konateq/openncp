@@ -42,6 +42,8 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
 
     private final ClientService clientService;
 
+    private static final String CLIENT_CONNECTOR_EXCEPTION_MESSAGE = "No assertion context found";
+
     public ClientConnectorServiceImpl(final ClientService clientService) {
         this.clientService = Validate.notNull(clientService);
     }
@@ -50,7 +52,7 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
     public String submitDocument(final SubmitDocumentRequest submitDocumentRequest) {
         final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
                 .orElseThrow(() -> new ClientConnectorException(
-                        "No assertion context found"))
+                        CLIENT_CONNECTOR_EXCEPTION_MESSAGE))
                 .getAssertions();
         final SubmitDocumentOperation submitDocumentOperation = ImmutableSubmitDocumentOperation.builder()
                 .assertions(assertionMap)
@@ -63,14 +65,14 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
     public List<EpsosDocument> queryDocuments(final QueryDocumentRequest queryDocumentRequest) {
         final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
                 .orElseThrow(() -> new ClientConnectorException(
-                        "No assertion context found"))
+                        CLIENT_CONNECTOR_EXCEPTION_MESSAGE))
                 .getAssertions();
         final QueryDocumentOperation queryDocumentOperation = ImmutableQueryDocumentOperation.builder()
                 .assertions(assertionMap)
                 .request(queryDocumentRequest)
                 .build();
         List<EpsosDocument> epsosDocuments = clientService.queryDocuments(queryDocumentOperation);
-        LOGGER.info("epsosDocuments : " + epsosDocuments);
+        LOGGER.info("epsosDocuments : {}", epsosDocuments);
         return epsosDocuments;
     }
 
@@ -78,7 +80,7 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
     public EpsosDocument retrieveDocument(final RetrieveDocumentRequest retrieveDocumentRequest) {
         final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
                 .orElseThrow(() -> new ClientConnectorException(
-                        "No assertion context found"))
+                        CLIENT_CONNECTOR_EXCEPTION_MESSAGE))
                 .getAssertions();
         final RetrieveDocumentOperation retrieveDocumentOperation = ImmutableRetrieveDocumentOperation.builder()
                 .assertions(assertionMap)
@@ -91,7 +93,7 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
     public List<PatientDemographics> queryPatient(final QueryPatientRequest queryPatientRequest) {
         final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
                 .orElseThrow(() -> new ClientConnectorException(
-                        "No assertion context found"))
+                        CLIENT_CONNECTOR_EXCEPTION_MESSAGE))
                 .getAssertions();
         final QueryPatientOperation queryPatientOperation = ImmutableQueryPatientOperation.builder()
                 .assertions(assertionMap)
@@ -104,7 +106,7 @@ public class ClientConnectorServiceImpl implements ClientConnectorServicePortTyp
     public String sayHello(final String name) {
         final Map<AssertionEnum, Assertion> assertionMap = AssertionContextProvider.getAssertionContext()
                 .orElseThrow(() -> new ClientConnectorException(
-                        "No assertion context found"))
+                        CLIENT_CONNECTOR_EXCEPTION_MESSAGE))
                 .getAssertions();
         final AssertionInfoMap assertionInfoMap = PhaseInterceptorChain.getCurrentMessage().get(AssertionInfoMap.class);
 

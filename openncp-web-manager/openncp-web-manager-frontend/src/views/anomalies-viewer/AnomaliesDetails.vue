@@ -9,14 +9,6 @@
     </div>
     <v-tabs v-model="tab">
       <v-tab href="#tab-event-identification">Anomaly Identification</v-tab>
-      <!--v-tab href="#tab-active-participants">Active Participants</v-tab>
-      <v-tab href="#tab-audit-source-identification"
-        >Audit Source Identification</v-tab
-      >
-      <v-tab href="#tab-participant-object-identifications"
-        >Participant Object Identifications</v-tab
-      >
-      <v-tab href="#tab-xml-message">View XML</v-tab-->
     </v-tabs>
     <div v-if="anomaly">
       <v-tabs-items v-model="tab">

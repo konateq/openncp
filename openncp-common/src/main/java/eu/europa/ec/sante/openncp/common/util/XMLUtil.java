@@ -2,7 +2,9 @@ package eu.europa.ec.sante.openncp.common.util;
 
 import eu.europa.ec.sante.openncp.common.validation.util.security.CryptographicConstant;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xml.security.c14n.CanonicalizationException;
 import org.apache.xml.security.c14n.Canonicalizer;
+import org.apache.xml.security.c14n.InvalidCanonicalizerException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -38,6 +40,7 @@ import java.util.*;
 public class XMLUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLUtil.class);
+    private static final String HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
 
     private XMLUtil() {
     }
@@ -51,6 +54,8 @@ public class XMLUtil {
             return null;
         }
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+        documentBuilderFactory.setXIncludeAware(false);
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.newDocument();
         document.appendChild(document.importNode(node, true));
@@ -66,34 +71,37 @@ public class XMLUtil {
      * @return the canonicalized document
      * @throws Exception either the document is null, there is no available DOM factory, or a generic c14n error
      */
-    public static Document canonicalize(Document document) throws Exception {
+    public static Document canonicalize(Document document)
+            throws SAXException, IOException, ParserConfigurationException,
+                    InvalidCanonicalizerException, CanonicalizationException {
 
         Canonicalizer canonicalizer = Canonicalizer.getInstance(CryptographicConstant.ALGO_ID_C14N_INCL_OMIT_COMMENTS);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         canonicalizer.canonicalizeSubtree(document, outputStream);
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+        documentBuilderFactory.setXIncludeAware(false);
         documentBuilderFactory.setNamespaceAware(true);
 
         return documentBuilderFactory.newDocumentBuilder().parse(new ByteArrayInputStream(outputStream.toByteArray()));
     }
 
-    public static Document parseContent(byte[] byteContent) throws ParserConfigurationException, SAXException, IOException {
+    public static Document parseContent(byte[] byteContent)
+            throws ParserConfigurationException, SAXException, IOException {
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("XMLUtil: parse byte[] content: \n'{}'", byteContent.length);
-        }
         String content = new String(byteContent, StandardCharsets.UTF_8);
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setNamespaceAware(true);
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        StringReader lReader = new StringReader(content);
-        InputSource inputSource = new InputSource(lReader);
-        return documentBuilder.parse(inputSource);
+        return parseContent(content);
     }
 
-    public static Document parseContent(String content) throws ParserConfigurationException, SAXException, IOException {
+    public static Document parseContent(String content)
+            throws ParserConfigurationException, SAXException, IOException {
 
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("XMLUtil: parse byte[] content: \n'{}'", content);
+        }
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+        documentBuilderFactory.setXIncludeAware(false);
         documentBuilderFactory.setNamespaceAware(true);
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         StringReader lReader = new StringReader(content);
@@ -103,8 +111,7 @@ public class XMLUtil {
 
     public static String documentToString(Document doc) throws TransformerException {
 
-        TransformerFactory factory = TransformerFactory.newInstance();
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        TransformerFactory factory = getTransformerFactory();
         Transformer transformer = factory.newTransformer();
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(doc), new StreamResult(writer));
@@ -113,8 +120,7 @@ public class XMLUtil {
 
     public static String documentToString(Document doc, boolean omitXmlDeclaration) throws TransformerException {
 
-        TransformerFactory factory = TransformerFactory.newInstance();
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        TransformerFactory factory = getTransformerFactory();
         Transformer transformer = factory.newTransformer();
         StringWriter writer = new StringWriter();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, omitXmlDeclaration ? "yes" : "no");
@@ -133,8 +139,8 @@ public class XMLUtil {
         }
 
         StringWriter stringWriter = new StringWriter();
-        TransformerFactory factory = TransformerFactory.newInstance();
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+        TransformerFactory factory = getTransformerFactory();
         Transformer transformer = factory.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
@@ -145,10 +151,10 @@ public class XMLUtil {
         return stringWriter.toString();
     }
 
-    private static String unPrettyPrint(final String xml) {
+    private static String unPrettyPrint(final String xml) throws TransformerException {
 
         if (StringUtils.isBlank(xml)) {
-            throw new RuntimeException("xml was null or blank in unPrettyPrint()");
+            throw new TransformerException("xml was null or blank in unPrettyPrint()");
         }
 
         final StringWriter sw;
@@ -160,7 +166,7 @@ public class XMLUtil {
             final XMLWriter writer = new XMLWriter(sw, format);
             writer.write(document);
         } catch (Exception e) {
-            throw new RuntimeException("Error un-pretty printing xml:\n" + xml, e);
+            throw new TransformerException("Error un-pretty printing xml:\n" + xml, e);
         }
         return sw.toString();
     }
@@ -173,8 +179,8 @@ public class XMLUtil {
     public static String prettyPrint(Node node) throws TransformerException {
 
         StringWriter stringWriter = new StringWriter();
-        TransformerFactory factory = TransformerFactory.newInstance();
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+        TransformerFactory factory = getTransformerFactory();
         Transformer transformer = factory.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
@@ -191,8 +197,7 @@ public class XMLUtil {
      */
     public static void transformDocument(DOMSource source, Result result) throws TransformerException {
 
-        TransformerFactory factory = TransformerFactory.newInstance();
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        TransformerFactory factory = getTransformerFactory();
         Transformer transformer = factory.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
@@ -208,7 +213,7 @@ public class XMLUtil {
     public static Map<String, String> parseNamespaceBindings(String namespaceBindings) {
 
         if (namespaceBindings == null) {
-            return null;
+            return Collections.emptyMap();
         }
         namespaceBindings = namespaceBindings.substring(1, namespaceBindings.length() - 1);
         String[] bindings = namespaceBindings.split(",");
@@ -240,6 +245,8 @@ public class XMLUtil {
             marshaller.setSchema(schema);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+            dbf.setXIncludeAware(false);
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.newDocument();
@@ -294,7 +301,7 @@ public class XMLUtil {
             JAXBContext jc = JAXBContext.newInstance(context);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(new File(schemaLocation));
+            schemaFactory.newSchema(new File(schemaLocation));
             Object obj = unmarshaller.unmarshal(new StringReader(content));
             Locale.setDefault(oldLocale);
             return obj;
@@ -317,6 +324,8 @@ public class XMLUtil {
 
         try {
             factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
+            factory.setXIncludeAware(false);
             builder = factory.newDocumentBuilder();
             ret = builder.parse(new InputSource(in));
         } catch (ParserConfigurationException e) {
@@ -348,5 +357,11 @@ public class XMLUtil {
             return new ArrayList<>();
         }
         return result;
+    }
+
+    private static TransformerFactory getTransformerFactory() throws TransformerException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        return factory;
     }
 }

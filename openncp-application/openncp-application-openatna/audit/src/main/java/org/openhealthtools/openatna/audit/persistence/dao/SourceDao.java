@@ -15,17 +15,17 @@ public interface SourceDao {
 
     SourceEntity getById(Long id) throws AtnaPersistenceException;
 
-    List<? extends SourceEntity> getBySourceId(String id) throws AtnaPersistenceException;
+    List<SourceEntity> getBySourceId(String id) throws AtnaPersistenceException;
 
     SourceEntity getByEnterpriseSiteId(String id) throws AtnaPersistenceException;
 
     SourceEntity get(SourceEntity other) throws AtnaPersistenceException;
 
-    List<? extends SourceEntity> getByCode(SourceCodeEntity code) throws AtnaPersistenceException;
+    List<SourceEntity> getByCode(SourceCodeEntity code) throws AtnaPersistenceException;
 
-    List<? extends SourceEntity> getAll() throws AtnaPersistenceException;
+    List<SourceEntity> getAll() throws AtnaPersistenceException;
 
-    List<? extends SourceEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
+    List<SourceEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
 
     void save(SourceEntity entity, PersistencePolicies policies) throws AtnaPersistenceException;
 

@@ -86,7 +86,7 @@
                     </reportElement>
                     <text><![CDATA[Query]]></text>
                 </staticText>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement positionType="Float" x="20" y="27" width="100" height="15"
                                    style="Arial_Normal_Small">
                         <printWhenExpression>$F{objectDataLifeCycle} != null</printWhenExpression>
@@ -95,7 +95,7 @@
                         $F{objectDataLifeCycle}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement positionType="Float" x="120" y="27" width="400" height="15"
                                    style="Arial_Normal_Small">
                         <printWhenExpression>$F{objectQuery} != null</printWhenExpression>

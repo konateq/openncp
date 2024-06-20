@@ -87,7 +87,7 @@ public class AtnaServer {
         return this.tlsConnection;
     }
 
-    public void notifyListeners(final SyslogMessage msg) {
+    public void notifyListeners(final SyslogMessage<MessageQueue> msg) {
         if (queue != null) {
             queue.put(msg);
         }

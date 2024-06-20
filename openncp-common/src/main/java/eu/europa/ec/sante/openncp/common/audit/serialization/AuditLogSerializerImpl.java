@@ -12,6 +12,7 @@ import java.util.List;
 
 public class AuditLogSerializerImpl implements AuditLogSerializer {
 
+    private static final String EPSOS_PROPS_PATH = "EPSOS_PROPS_PATH";
     private final Logger logger = LoggerFactory.getLogger(AuditLogSerializerImpl.class);
     private final Type type;
 
@@ -61,7 +62,7 @@ public class AuditLogSerializerImpl implements AuditLogSerializer {
      */
     public void writeObjectToFile(Serializable message) {
 
-        String path = System.getenv("EPSOS_PROPS_PATH") + type.getNewFileName();
+        String path = System.getenv(EPSOS_PROPS_PATH) + type.getNewFileName();
         try (OutputStream file = Files.newOutputStream(Paths.get(path))) {
 
             if (message != null) {
@@ -79,11 +80,11 @@ public class AuditLogSerializerImpl implements AuditLogSerializer {
     }
 
     private File getPath() {
-        return new File(System.getenv("EPSOS_PROPS_PATH") + type.getDir());
+        return new File(System.getenv(EPSOS_PROPS_PATH) + type.getDir());
     }
     
     private String getTrashPath() {
-        return System.getenv("EPSOS_PROPS_PATH") + type.getTrashDir();
+        return System.getenv(EPSOS_PROPS_PATH) + type.getTrashDir();
     }
 
     private boolean isAuditLogBackupWriterFile(File file) {

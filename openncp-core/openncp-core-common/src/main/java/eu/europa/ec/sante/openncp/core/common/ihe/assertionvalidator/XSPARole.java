@@ -9,19 +9,19 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum XSPARole {
 
-    AUDIOLOGIST("2266", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Audiologists and speech therapists"),
-    DENTIST("2261", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Dentists"),
-    MEDICAL_DOCTORS("221", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Medical Doctors"),
-    MEDICAL_TECHNICIAN("3211", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Medical imaging and therapeutic equipment technicians"),
-    MIDWIFE("2222", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Midwifery professionals"),
-    NURSE("2221", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Nursing professionals"),
-    NUTRITIONIST("2265", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Dieticians and nutritionists"),
-    OPTICIAN("2267", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Optometrists and ophthalmic opticians"),
-    OTHER_CLINICIAN("2269", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Health professionals not elsewhere classified"),
-    OTHER_CLERICAL("44", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Other Clerical Support Workers"),
-    PHARMACIST("2262", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Pharmacists"),
-    PHARMACIST_ASSISTANT("3213", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Pharmaceutical technicians and assistants"),
-    PHYSIOTHERAPIST("2264", "2.16.840.1.113883.2.9.6.2.7", "ISCO", "Physiotherapists");
+    AUDIOLOGIST("2266", Constants.STR_OID, "ISCO", "Audiologists and speech therapists"),
+    DENTIST("2261", Constants.STR_OID, "ISCO", "Dentists"),
+    MEDICAL_DOCTORS("221", Constants.STR_OID, "ISCO", "Medical Doctors"),
+    MEDICAL_TECHNICIAN("3211", Constants.STR_OID, "ISCO", "Medical imaging and therapeutic equipment technicians"),
+    MIDWIFE("2222", Constants.STR_OID, "ISCO", "Midwifery professionals"),
+    NURSE("2221", Constants.STR_OID, "ISCO", "Nursing professionals"),
+    NUTRITIONIST("2265", Constants.STR_OID, "ISCO", "Dieticians and nutritionists"),
+    OPTICIAN("2267", Constants.STR_OID, "ISCO", "Optometrists and ophthalmic opticians"),
+    OTHER_CLINICIAN("2269", Constants.STR_OID, "ISCO", "Health professionals not elsewhere classified"),
+    OTHER_CLERICAL("44", Constants.STR_OID, "ISCO", "Other Clerical Support Workers"),
+    PHARMACIST("2262", Constants.STR_OID, "ISCO", "Pharmacists"),
+    PHARMACIST_ASSISTANT("3213", Constants.STR_OID, "ISCO", "Pharmaceutical technicians and assistants"),
+    PHYSIOTHERAPIST("2264", Constants.STR_OID, "ISCO", "Physiotherapists");
 
     private final String code;
     private final String codeSystem;
@@ -78,5 +78,9 @@ public enum XSPARole {
                 ", codeSystemName='" + codeSystemName + '\'' +
                 ", displayName='" + displayName + '\'' +
                 '}';
+    }
+
+    private static class Constants {
+        private static final String STR_OID = "2.16.840.1.113883.2.9.6.2.7";
     }
 }

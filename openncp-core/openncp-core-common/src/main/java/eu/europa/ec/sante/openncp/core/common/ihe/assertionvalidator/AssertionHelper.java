@@ -95,7 +95,6 @@ public class AssertionHelper {
             for (final Attribute attribute : attributeStatement.getAttributes()) {
                 if (StringUtils.equals(attribute.getName(), attributeName)) {
                     if (!attribute.getAttributeValues().isEmpty()) {
-                        //return attribute.getAttributeValues().get(0).getDOM().getTextContent();
                         return attribute.getAttributeValues()
                                         .get(0)
                                         .getDOM()
@@ -121,7 +120,6 @@ public class AssertionHelper {
             for (final Attribute attribute : attributeStatement.getAttributes()) {
                 if (StringUtils.equals(attribute.getName(), attributeName)) {
                     if (!attribute.getAttributeValues().isEmpty()) {
-                        //return attribute.getAttributeValues().get(0).getDOM().getTextContent();
                         return attribute.getAttributeValues()
                                         .get(0)
                                         .getDOM()
@@ -147,7 +145,6 @@ public class AssertionHelper {
             for (final Attribute attribute : attributeStatement.getAttributes()) {
                 if (StringUtils.equals(attribute.getName(), attributeName)) {
                     if (!attribute.getAttributeValues().isEmpty()) {
-                        //return attribute.getAttributeValues().get(0).getDOM().getTextContent();
                         return attribute.getAttributeValues()
                                         .get(0)
                                         .getDOM()

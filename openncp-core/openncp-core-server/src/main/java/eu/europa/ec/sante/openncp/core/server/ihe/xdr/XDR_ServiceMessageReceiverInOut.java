@@ -101,7 +101,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         Document eDispenseCda = null;
 
         // Out Envelop
-        SOAPEnvelope envelope = null;
+        SOAPEnvelope envelope;
 
         try {
             // get the implementation class for the Web Service
@@ -115,7 +115,6 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
                 String err = "Operation is not located, if this is Doc/lit style the SOAP-ACTION should specified via the " +
                         "SOAP Action to use the RawXMLProvider";
 
-                //eadcFailure(msgContext, err);
                 eadcError = err;
 
                 throw new AxisFault(err);
@@ -156,7 +155,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
 
                     RegistryResponseType registryResponse = xdrServiceSkeleton.documentRecipient_ProvideAndRegisterDocumentSetB(wrappedParam, soapHeader, eventLog);
 
-                    envelope = toEnvelope(getSOAPFactory(msgContext), registryResponse, false);
+                    envelope = toEnvelope(getSOAPFactory(msgContext), registryResponse);
 
                     eventLog.setResM_ParticipantObjectID(randomUUID);
                     eventLog.setResM_ParticipantObjectDetail(envelope.getHeader().toString().getBytes());
@@ -176,7 +175,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
                         OpenNCPValidation.validateXDRMessage(responseMessage, NcpSide.NCP_A, null);
                     }
                     if (loggerClinical.isDebugEnabled() && !StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
-                        loggerClinical.debug("Response Header:\n{}", envelope.getHeader().toString());
+                        loggerClinical.debug("Response Header:\n{}", envelope.getHeader());
                         loggerClinical.debug("Outgoing XDR Response Message:\n{}", XMLUtil.prettyPrint(XMLUtils.toDOM(envelope)));
                     }
                     // eADC: extract of the eDispense CDA required by the KPIs.
@@ -186,7 +185,6 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
                     String err = "Method not found: '" + methodName + "'";
                     LOGGER.error(err);
 
-                    //eadcFailure(msgContext, err);
                     eadcError = err;
 
                     throw new RuntimeException(err);
@@ -207,7 +205,6 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
 
-            //eadcFailure(msgContext, e.getMessage());
             eadcError = e.getMessage();
 
             throw AxisFault.makeFault(e);
@@ -222,50 +219,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
 
     }
 
-//    private boolean hasTransactionErrors(SOAPEnvelope envelope) {
-//        Iterator<OMElement> it = envelope.getBody().getChildElements();
-//        String errorDescription = null;
-//        while(it.hasNext()) {
-//            OMElement elementDocSet = it.next();
-//            if(StringUtils.equals(elementDocSet.getLocalName(), "RegistryResponse")) {
-//                String status = elementDocSet.getAttributeValue(QName.valueOf("status"));
-//                if(StringUtils.equals(status, AdhocQueryResponseStatus.FAILURE)) {
-//                    return true;
-//                }
-//            }
-//            it = elementDocSet.getChildElements();
-//        }
-//        return false;
-//    }
-//
-//    private String getTransactionErrorDescription(SOAPEnvelope envelope) {
-//        Iterator<OMElement> it = envelope.getBody().getChildElements();
-//        String errorDescription = "unknown";
-//        while(it.hasNext()) {
-//            OMElement elementDocSet = it.next();
-//            if(StringUtils.equals(elementDocSet.getLocalName(), "RegistryError")) {
-//                String err = elementDocSet.getAttributeValue(QName.valueOf("errorCode"));
-//                String cod = elementDocSet.getAttributeValue(QName.valueOf("codeContext"));
-//                errorDescription = cod + " [" + err + "]";
-//                break;
-//            }
-//            it = elementDocSet.getChildElements();
-//        }
-//        return errorDescription;
-//    }
-
-    /*
-    private void eadcFailure(MessageContext messageContext, String errorDescription) {
-        var transactionStartTime = new Date();
-        Date transactionEndTime = new Date();
-        MessageContext ctx = new MessageContext();
-        EadcUtilWrapper.invokeEadcFailure(messageContext, ctx, null, null,
-                transactionStartTime, transactionEndTime, Constants.COUNTRY_CODE, EadcEntry.DsTypes.EADC,
-                EadcUtil.Direction.INBOUND, ServiceType.DOCUMENT_EXCHANGED_RESPONSE, errorDescription);
-    }
-    */
-
-    private OMElement toOM(ProvideAndRegisterDocumentSetRequestType param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(ProvideAndRegisterDocumentSetRequestType param) throws AxisFault {
 
         try {
             OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -283,16 +237,15 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, ProvideAndRegisterDocumentSetRequestType param,
-                                    boolean optimizeContent) throws AxisFault {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, ProvideAndRegisterDocumentSetRequestType param) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();
-        envelope.getBody().addChild(toOM(param, optimizeContent));
+        envelope.getBody().addChild(toOM(param));
 
         return envelope;
     }
 
-    private OMElement toOM(RegistryResponseType param, boolean optimizeContent) throws AxisFault {
+    private OMElement toOM(RegistryResponseType param) throws AxisFault {
 
         try {
             OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -309,11 +262,10 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         }
     }
 
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, RegistryResponseType param,
-                                    boolean optimizeContent) throws AxisFault {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, RegistryResponseType param) throws AxisFault {
 
         SOAPEnvelope envelope = factory.getDefaultEnvelope();
-        envelope.getBody().addChild(toOM(param, optimizeContent));
+        envelope.getBody().addChild(toOM(param));
 
         return envelope;
     }

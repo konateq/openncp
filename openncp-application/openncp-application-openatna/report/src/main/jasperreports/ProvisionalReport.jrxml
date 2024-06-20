@@ -47,7 +47,7 @@
                     <text><![CDATA[Message]]></text>
                 </staticText>
 
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="5" y="15" width="500" height="0" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         <![CDATA[$F{content}]]>

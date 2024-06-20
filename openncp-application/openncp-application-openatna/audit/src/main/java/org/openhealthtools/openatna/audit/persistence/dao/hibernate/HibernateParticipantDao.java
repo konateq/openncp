@@ -25,6 +25,15 @@ import java.util.Set;
 @Transactional(rollbackFor = AtnaPersistenceException.class)
 public class HibernateParticipantDao extends AbstractHibernateDao<ParticipantEntity> implements ParticipantDao {
 
+    private static final String USER_ID = "userId";
+    private static final String ALTERNATIVE_USER_ID = "alternativeUserId";
+    private static final String USER_NAME = "userName";
+    private static final String PARTICIPANT_TYPE_CODES = "participantTypeCodes";
+    private static final String CODE = "code";
+    private static final String CODE_SYSTEM = "codeSystem";
+    private static final String CODE_SYSTEM_NAME = "codeSystemName";
+    private static final String ERROR_CODE_IS_DEFINED_BUT_IS_OF_A_DIFFERENT_TYPE = "code is defined but is of a different type.";
+
     public HibernateParticipantDao(SessionFactory sessionFactory) {
         super(ParticipantEntity.class, sessionFactory);
     }
@@ -33,29 +42,29 @@ public class HibernateParticipantDao extends AbstractHibernateDao<ParticipantEnt
         return get(id);
     }
 
-    public List<? extends ParticipantEntity> getByUserId(String userId) {
-        return list(criteria().add(Restrictions.eq("userId", userId)));
+    public List<ParticipantEntity> getByUserId(String userId) {
+        return list(criteria().add(Restrictions.eq(USER_ID, userId)));
     }
 
     public ParticipantEntity getByAltUserId(String altUserId) {
-        return uniqueResult(criteria().add(Restrictions.eq("alternativeUserId", altUserId)));
+        return uniqueResult(criteria().add(Restrictions.eq(ALTERNATIVE_USER_ID, altUserId)));
     }
 
     public ParticipantEntity get(ParticipantEntity other) {
 
         Criteria c = criteria();
-        c.add(Restrictions.eq("userId", other.getUserId()));
+        c.add(Restrictions.eq(USER_ID, other.getUserId()));
         if (other.getAlternativeUserId() != null) {
-            c.add(Restrictions.eq("alternativeUserId", other.getAlternativeUserId()));
+            c.add(Restrictions.eq(ALTERNATIVE_USER_ID, other.getAlternativeUserId()));
         } else {
-            c.add(Restrictions.isNull("alternativeUserId"));
+            c.add(Restrictions.isNull(ALTERNATIVE_USER_ID));
         }
         if (other.getUserName() != null) {
-            c.add(Restrictions.eq("userName", other.getUserName()));
+            c.add(Restrictions.eq(USER_NAME, other.getUserName()));
         } else {
-            c.add(Restrictions.isNull("userName"));
+            c.add(Restrictions.isNull(USER_NAME));
         }
-        List<? extends ParticipantEntity> ret = list(c);
+        List<ParticipantEntity> ret = list(c);
         if (ret == null || ret.isEmpty()) {
             return null;
         }
@@ -67,23 +76,23 @@ public class HibernateParticipantDao extends AbstractHibernateDao<ParticipantEnt
         return null;
     }
 
-    public List<? extends ParticipantEntity> getByCode(ParticipantCodeEntity codeEntity) {
+    public List<ParticipantEntity> getByCode(ParticipantCodeEntity codeEntity) {
 
-        return list(criteria().createCriteria("participantTypeCodes")
-                .add(Restrictions.eq("code", codeEntity.getCode()))
-                .add(Restrictions.eq("codeSystem", codeEntity.getCodeSystem()))
-                .add(Restrictions.eq("codeSystemName", codeEntity.getCodeSystemName())));
+        return list(criteria().createCriteria(PARTICIPANT_TYPE_CODES)
+                .add(Restrictions.eq(CODE, codeEntity.getCode()))
+                .add(Restrictions.eq(CODE_SYSTEM, codeEntity.getCodeSystem()))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
-    public List<? extends ParticipantEntity> getByUserName(String userName) {
-        return list(criteria().add(Restrictions.eq("userName", userName)));
+    public List<ParticipantEntity> getByUserName(String userName) {
+        return list(criteria().add(Restrictions.eq(USER_NAME, userName)));
     }
 
-    public List<? extends ParticipantEntity> getAll() throws AtnaPersistenceException {
+    public List<ParticipantEntity> getAll() throws AtnaPersistenceException {
         return all();
     }
 
-    public List<? extends ParticipantEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
+    public List<ParticipantEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
         return all(offset, amount);
     }
 
@@ -117,19 +126,9 @@ public class HibernateParticipantDao extends AbstractHibernateDao<ParticipantEnt
                 ParticipantCodeEntity code = arr[i];
                 CodeEntity codeEnt = dao.get(code);
                 if (codeEnt == null) {
-                    if (policies.isAllowNewCodes()) {
-                        dao.save(code, policies);
-                    } else {
-                        throw new AtnaPersistenceException(code.toString(),
-                                AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
-                    }
+                    saveNewCodeEntityDao(policies, dao, code);
                 } else {
-                    if (codeEnt instanceof ParticipantCodeEntity) {
-                        arr[i] = ((ParticipantCodeEntity) codeEnt);
-                    } else {
-                        throw new AtnaPersistenceException("code is defined but is of a different type.",
-                                AtnaPersistenceException.PersistenceError.WRONG_CODE_TYPE);
-                    }
+                    updateCodeEntityDao(codeEnt, arr, i);
                 }
             }
             pe.setParticipantTypeCodes(new HashSet<>(Arrays.asList(arr)));
@@ -148,6 +147,24 @@ public class HibernateParticipantDao extends AbstractHibernateDao<ParticipantEnt
             }
         }
         currentSession().saveOrUpdate(pe);
+    }
+
+    private static void updateCodeEntityDao(CodeEntity codeEnt, ParticipantCodeEntity[] arr, int i) throws AtnaPersistenceException {
+        if (codeEnt instanceof ParticipantCodeEntity) {
+            arr[i] = ((ParticipantCodeEntity) codeEnt);
+        } else {
+            throw new AtnaPersistenceException(ERROR_CODE_IS_DEFINED_BUT_IS_OF_A_DIFFERENT_TYPE,
+                    AtnaPersistenceException.PersistenceError.WRONG_CODE_TYPE);
+        }
+    }
+
+    private static void saveNewCodeEntityDao(PersistencePolicies policies, CodeDao dao, ParticipantCodeEntity code) throws AtnaPersistenceException {
+        if (policies.isAllowNewCodes()) {
+            dao.save(code, policies);
+        } else {
+            throw new AtnaPersistenceException(code.toString(),
+                    AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
+        }
     }
 
     public void delete(ParticipantEntity ap) {

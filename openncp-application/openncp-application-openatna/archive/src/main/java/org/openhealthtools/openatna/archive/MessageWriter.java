@@ -26,46 +26,23 @@ public class MessageWriter {
 
         for (MessageEntity message : messageList) {
             writer.writeStartElement(DataConstants.MESSAGE);
-            if (message.getSourceAddress() != null) {
-                writer.writeAttribute(DataConstants.SOURCE_IP, message.getSourceAddress());
-            }
-            if (message.getEventActionCode() != null) {
-                writer.writeAttribute(DataConstants.EVT_ACTION, message.getEventActionCode());
-            }
-            if (message.getEventOutcome() != null) {
-                writer.writeAttribute(DataConstants.EVT_OUTCOME, Integer.toString(message.getEventOutcome()));
-            }
-            if (message.getEventDateTime() != null) {
-                writer.writeAttribute(DataConstants.EVT_TIME, Archiver.formatDate(message.getEventDateTime()));
-            }
-            if (message.getEventId() != null) {
-                entityWriter.writeCode(message.getEventId(), writer, DataConstants.EVT_ID);
-            }
-            if (!message.getEventTypeCodes().isEmpty()) {
-                List<? extends CodeEntity> l = new ArrayList<>(message.getEventTypeCodes());
-                for (CodeEntity codeEntity : l) {
-                    entityWriter.writeCode(codeEntity, writer, DataConstants.EVT_TYPE);
-                }
-            }
+            writeSourceAddress(writer, message);
+            writeEventActionCode(writer, message);
+            writeEventOutcome(writer, message);
+            writeEventDateTime(writer, message);
+            writeCodeEventId(writer, message);
+            writeCodeEntity(writer, message);
             Set<MessageSourceEntity> sources = message.getMessageSources();
             writer.writeStartElement(DataConstants.MESSAGE_SOURCES);
-            for (MessageSourceEntity source : sources) {
-                writer.writeStartElement(DataConstants.MESSAGE_SOURCE);
-                entityWriter.writeSource(source.getSource(), writer);
-                writer.writeEndElement();
-            }
+            writeSourceEntity(writer, sources);
             writer.writeEndElement();
             Set<MessageParticipantEntity> parts = message.getMessageParticipants();
             writer.writeStartElement(DataConstants.MESSAGE_PARTICIPANTS);
             for (MessageParticipantEntity part : parts) {
                 writer.writeStartElement(DataConstants.MESSAGE_PARTICIPANT);
-                if (Boolean.TRUE.equals(part.isUserIsRequestor())) {
-                    writer.writeAttribute(DataConstants.USER_IS_REQUESTOR, Boolean.toString(part.isUserIsRequestor()));
-                }
+                writeAttributeUserIsRequestor(writer, part);
                 NetworkAccessPointEntity nap = part.getNetworkAccessPoint();
-                if (nap != null) {
-                    entityWriter.writeNap(nap, writer);
-                }
+                writeNap(writer, nap);
                 ParticipantEntity pe = part.getParticipant();
                 entityWriter.writeParticipant(pe, writer);
                 writer.writeEndElement();
@@ -103,6 +80,65 @@ public class MessageWriter {
             }
             writer.writeEndElement();
             writer.writeEndElement();
+        }
+    }
+
+    private void writeNap(XMLStreamWriter writer, NetworkAccessPointEntity nap) throws XMLStreamException {
+        if (nap != null) {
+            entityWriter.writeNap(nap, writer);
+        }
+    }
+
+    private static void writeAttributeUserIsRequestor(XMLStreamWriter writer, MessageParticipantEntity part) throws XMLStreamException {
+        if (Boolean.TRUE.equals(part.isUserIsRequestor())) {
+            writer.writeAttribute(DataConstants.USER_IS_REQUESTOR, Boolean.toString(part.isUserIsRequestor()));
+        }
+    }
+
+    private void writeSourceEntity(XMLStreamWriter writer, Set<MessageSourceEntity> sources) throws XMLStreamException {
+        for (MessageSourceEntity source : sources) {
+            writer.writeStartElement(DataConstants.MESSAGE_SOURCE);
+            entityWriter.writeSource(source.getSource(), writer);
+            writer.writeEndElement();
+        }
+    }
+
+    private void writeCodeEntity(XMLStreamWriter writer, MessageEntity message) throws XMLStreamException {
+        if (!message.getEventTypeCodes().isEmpty()) {
+            List<? extends CodeEntity> l = new ArrayList<>(message.getEventTypeCodes());
+            for (CodeEntity codeEntity : l) {
+                entityWriter.writeCode(codeEntity, writer, DataConstants.EVT_TYPE);
+            }
+        }
+    }
+
+    private void writeCodeEventId(XMLStreamWriter writer, MessageEntity message) throws XMLStreamException {
+        if (message.getEventId() != null) {
+            entityWriter.writeCode(message.getEventId(), writer, DataConstants.EVT_ID);
+        }
+    }
+
+    private static void writeEventDateTime(XMLStreamWriter writer, MessageEntity message) throws XMLStreamException {
+        if (message.getEventDateTime() != null) {
+            writer.writeAttribute(DataConstants.EVT_TIME, Archiver.formatDate(message.getEventDateTime()));
+        }
+    }
+
+    private static void writeEventOutcome(XMLStreamWriter writer, MessageEntity message) throws XMLStreamException {
+        if (message.getEventOutcome() != null) {
+            writer.writeAttribute(DataConstants.EVT_OUTCOME, Integer.toString(message.getEventOutcome()));
+        }
+    }
+
+    private static void writeEventActionCode(XMLStreamWriter writer, MessageEntity message) throws XMLStreamException {
+        if (message.getEventActionCode() != null) {
+            writer.writeAttribute(DataConstants.EVT_ACTION, message.getEventActionCode());
+        }
+    }
+
+    private static void writeSourceAddress(XMLStreamWriter writer, MessageEntity message) throws XMLStreamException {
+        if (message.getSourceAddress() != null) {
+            writer.writeAttribute(DataConstants.SOURCE_IP, message.getSourceAddress());
         }
     }
 

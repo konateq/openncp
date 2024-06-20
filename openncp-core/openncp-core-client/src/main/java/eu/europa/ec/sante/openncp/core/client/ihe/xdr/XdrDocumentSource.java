@@ -118,7 +118,7 @@ public final class XdrDocumentSource {
 
             OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
             if(openncpErrorCode == null){
-                LOGGER.warn("No EHDSI error code found in the XDR response for : " + errorCode);
+                LOGGER.warn("No EHDSI error code found in the XDR response for : {}", errorCode);
             }
 
             if (hasError) {
@@ -133,6 +133,8 @@ public final class XdrDocumentSource {
                 return OpenNCPErrorCode.ERROR_ED_GENERIC;
             case EDD_CLASSCODE:
                 return OpenNCPErrorCode.ERROR_ED_DISCARD_FAILED;
+            default:
+                break;
         }
         return OpenNCPErrorCode.ERROR_GENERIC;
     }

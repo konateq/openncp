@@ -72,6 +72,8 @@ public class TMResponseStructure implements TMConstants {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
+            factory.setXIncludeAware(false);
+            //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.newDocument();
 

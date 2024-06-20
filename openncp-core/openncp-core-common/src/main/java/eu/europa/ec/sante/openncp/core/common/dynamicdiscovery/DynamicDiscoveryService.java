@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.dynamicdiscovery;
+package eu.europa.ec.sante.openncp.core.common.ihe;
 
 import eu.europa.ec.dynamicdiscovery.DynamicDiscovery;
 import eu.europa.ec.dynamicdiscovery.core.locator.dns.impl.DefaultDNSLookup;

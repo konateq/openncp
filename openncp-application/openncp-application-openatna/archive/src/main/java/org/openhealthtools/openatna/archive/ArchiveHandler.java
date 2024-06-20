@@ -78,11 +78,7 @@ public class ArchiveHandler {
             jos.closeEntry();
             if (recursive) {
                 File[] childers = f.listFiles();
-                if (childers != null) {
-                    for (File childer : childers) {
-                        writeEntry(childer, jos, build, entries, true);
-                    }
-                }
+                writeChildersEntries(jos, build, entries, childers);
             }
         } else {
             try (FileInputStream in = new FileInputStream(f)) {
@@ -93,6 +89,14 @@ public class ArchiveHandler {
                     jos.write(bytes, 0, c);
                 }
                 jos.closeEntry();
+            }
+        }
+    }
+
+    private static void writeChildersEntries(JarOutputStream jos, File build, List<String> entries, File[] childers) throws IOException {
+        if (childers != null) {
+            for (File childer : childers) {
+                writeEntry(childer, jos, build, entries, true);
             }
         }
     }
@@ -139,7 +143,6 @@ public class ArchiveHandler {
         }
         if (src.isDirectory()) {
             if (!dest.exists()) {
-
                 if (!dest.mkdirs()) {
                     LOGGER.error("Cannot create directory: '{}''", dest.getAbsolutePath());
                 }
@@ -189,7 +192,7 @@ public class ArchiveHandler {
         if (!parent.exists()) {
             throw new FileNotFoundException("File does not exist.");
         }
-        if (parent.isDirectory() && !(parent.listFiles() == null)) {
+        if (parent.isDirectory() && parent.listFiles() != null) {
             File[] files = parent.listFiles();
             if (files != null) {
                 for (File file : files) {
@@ -243,6 +246,9 @@ public class ArchiveHandler {
         if (f.isDirectory()) {
             return f;
         }
+        if (!f.toPath().normalize().startsWith(destDir.toPath())) { // Fix Zip Slip vulnerability
+            throw new IOException("Bad file entry");
+        }
         try (FileOutputStream out = new FileOutputStream(f)) {
             byte[] bytes = new byte[8192];
             int c;
@@ -250,7 +256,6 @@ public class ArchiveHandler {
                 out.write(bytes, 0, c);
             }
             out.flush();
-            out.close();
             in.close();
         }
         return f;

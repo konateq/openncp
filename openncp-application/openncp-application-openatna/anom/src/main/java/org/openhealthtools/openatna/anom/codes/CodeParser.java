@@ -27,6 +27,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,21 +56,26 @@ public class CodeParser {
     public static void parse(Collection<String> codes) {
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             spf.setValidating(false);
             javax.xml.parsers.SAXParser sp = spf.newSAXParser();
             Handler handler = new Handler();
             for (String code : codes) {
-                try {
-                    URL url = new URL(code);
-                    InputSource input = new InputSource(url.openStream());
-                    input.setSystemId(code);
-                    sp.parse(input, handler);
-                } catch (Exception e) {
-                    log.warn("Error parsing codes at:" + code);
-                }
+                parseUrl(code, sp, handler);
             }
         } catch (Exception e) {
             throw new RuntimeException("Error loading system codes", e);
+        }
+    }
+
+    private static void parseUrl(String code, SAXParser sp, Handler handler) {
+        try {
+            URL url = new URL(code);
+            InputSource input = new InputSource(url.openStream());
+            input.setSystemId(code);
+            sp.parse(input, handler);
+        } catch (Exception e) {
+            log.warn("Error parsing codes at: {}", code);
         }
     }
 

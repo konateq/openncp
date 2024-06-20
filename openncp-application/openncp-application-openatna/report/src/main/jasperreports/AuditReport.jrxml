@@ -83,14 +83,16 @@
             </line>
             <textField>
                 <reportElement x="0" y="10" width="515" height="30" style="Arial_Normal" forecolor="#2c5519"/>
-                <textElement textAlignment="Center" lineSpacing="Single">
-                    <font size="22"/>
+                <textElement textAlignment="Center">
+                    <paragraph lineSpacing="Single"/>
+                    <!--font size="22"/-->
                 </textElement>
                 <textFieldExpression>"OpenATNA Report"</textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="0" y="40" width="515" height="20" style="Arial_Normal_Small" forecolor="#2c5519"/>
-                <textElement textAlignment="Center" lineSpacing="Single">
+                <textElement textAlignment="Center">
+                    <paragraph lineSpacing="Single"/>
                 </textElement>
                 <textFieldExpression>"Query:" + $P{query}</textFieldExpression>
             </textField>

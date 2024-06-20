@@ -63,7 +63,7 @@ public class TestMessage {
         part.setUserName("andrew");
 
         MessageParticipantEntity pentity = new MessageParticipantEntity(part);
-        NetworkAccessPointEntity net = new NetworkAccessPointEntity(new Short("2"), "192.168.0.1");
+        NetworkAccessPointEntity net = new NetworkAccessPointEntity(Short.valueOf("2"), "192.168.0.1");
         pentity.setNetworkAccessPoint(net);
         msgEnt.addMessageParticipant(pentity);
 
@@ -75,7 +75,7 @@ public class TestMessage {
         obj.setObjectSensitivity("N");
 
         MessageObjectEntity objEnt = new MessageObjectEntity(obj);
-        objEnt.setObjectDataLifeCycle(new Short("1"));
+        objEnt.setObjectDataLifeCycle(Short.valueOf("1"));
         objEnt.addObjectDetail(new ObjectDetailEntity("version", Base64.encodeString("1.2").getBytes()));
         msgEnt.addMessageObject(objEnt);
 

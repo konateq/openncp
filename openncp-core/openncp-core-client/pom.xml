@@ -10,7 +10,7 @@
     <name>openncp-core-client</name>
 
     <properties>
-        <axis2.version>1.8.1</axis2.version>
+        <axis2.version>1.8.2</axis2.version>
     </properties>
 
 
@@ -135,11 +135,6 @@
                                     <bindingFiles>
                                         <bindingFile>${basedir}/src/main/resources/wsdl/binding.xjb</bindingFile>
                                     </bindingFiles>
-
-                                    <!--                                        <extraargs>-->
-                                    <!--                                            <extraarg>-impl</extraarg>-->
-                                    <!--                                            <extraarg>-server</extraarg>-->
-                                    <!--                                        </extraargs>-->
                                 </wsdlOption>
                             </wsdlOptions>
                         </configuration>

@@ -33,6 +33,7 @@ public enum AuditTrailUtils {
     INSTANCE;
     private static final JAXBContext jaxbContext;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditTrailUtils.class);
+    private static final String EVENT_TYPE_CODE_N_A = "EventTypeCode(N/A)";
 
     static {
         try {
@@ -57,10 +58,10 @@ public enum AuditTrailUtils {
     public static synchronized String constructMessage(AuditMessage auditmessage, boolean sign) {
 
         String auditMessage = "";
-        String eventTypeCode = "EventTypeCode(N/A)";
+        String eventTypeCode = EVENT_TYPE_CODE_N_A;
         try {
             eventTypeCode = auditmessage.getEventIdentification() != null ?
-                    auditmessage.getEventIdentification().getEventTypeCode().get(0).getCsdCode() : "EventTypeCode(N/A)";
+                    auditmessage.getEventIdentification().getEventTypeCode().get(0).getCsdCode() : EVENT_TYPE_CODE_N_A;
             LOGGER.debug("'{}' try to convert the message to xml using JAXB", eventTypeCode);
         } catch (NullPointerException e) {
             LOGGER.warn("Unable to log AuditMessageEventTypeCode.", e);
@@ -78,7 +79,7 @@ public enum AuditTrailUtils {
 
         try {
             LOGGER.debug("'{}' Validating Schema", auditmessage.getEventIdentification() != null ?
-                    auditmessage.getEventIdentification().getEventID().getCsdCode() : "EventTypeCode(N/A)");
+                    auditmessage.getEventIdentification().getEventID().getCsdCode() : EVENT_TYPE_CODE_N_A);
             validated = Utils.validateSchema(auditMessage);
 
         } catch (Exception e) {
@@ -88,7 +89,7 @@ public enum AuditTrailUtils {
         boolean forceWrite = Boolean.parseBoolean(Utils.getProperty("auditrep.forcewrite", "true", true));
         if (!validated) {
             LOGGER.debug("'{}' Message not validated", auditmessage.getEventIdentification() != null ?
-                    auditmessage.getEventIdentification().getEventID().getCsdCode() : "EventTypeCode(N/A)");
+                    auditmessage.getEventIdentification().getEventID().getCsdCode() : EVENT_TYPE_CODE_N_A);
             //auditmessage.getEventIdentification().getEventID().getCode() : "EventTypeCode(N/A)");
             if (!forceWrite) {
                 auditMessage = "";
@@ -98,18 +99,18 @@ public enum AuditTrailUtils {
 
             if (validated) {
                 LOGGER.debug("'{}' Audit Message validated", auditmessage.getEventIdentification() != null ?
-                        auditmessage.getEventIdentification().getEventID().getCsdCode() : "EventTypeCode(N/A)");
+                        auditmessage.getEventIdentification().getEventID().getCsdCode() : EVENT_TYPE_CODE_N_A);
                 //auditmessage.getEventIdentification().getEventID().getCode() : "EventTypeCode(N/A)");
             } else {
                 LOGGER.debug("'{}' Audit Message not validated", auditmessage.getEventIdentification() != null ?
-                        auditmessage.getEventIdentification().getEventID().getCsdCode() : "EventTypeCode(N/A)");
+                        auditmessage.getEventIdentification().getEventID().getCsdCode() : EVENT_TYPE_CODE_N_A);
                 //auditmessage.getEventIdentification().getEventID().getCode() : "EventTypeCode(N/A)");
             }
 
             if (forceWrite && !validated) {
                 LOGGER.debug("'{}' AuditManager is force to send the message. So trying ...",
                         auditmessage.getEventIdentification() != null ?
-                                auditmessage.getEventIdentification().getEventID().getCsdCode() : "EventTypeCode(N/A)");
+                                auditmessage.getEventIdentification().getEventID().getCsdCode() : EVENT_TYPE_CODE_N_A);
                 //auditmessage.getEventIdentification().getEventID().getCode() : "EventTypeCode(N/A)");
             }
 
@@ -117,7 +118,7 @@ public enum AuditTrailUtils {
                 // Validating XML according to XSD
                 LOGGER.debug("'{}' XML stuff: Create Dom From String",
                         auditmessage.getEventIdentification() != null ?
-                                auditmessage.getEventIdentification().getEventID().getCsdCode() : "EventTypeCode(N/A)");
+                                auditmessage.getEventIdentification().getEventID().getCsdCode() : EVENT_TYPE_CODE_N_A);
                 //auditmessage.getEventIdentification().getEventID().getCode() : "EventTypeCode(N/A)");
                 Document doc = Utils.createDomFromString(auditMessage);
                 if (sign) {
@@ -125,14 +126,14 @@ public enum AuditTrailUtils {
                     auditMessage = SecurityMgr.getSignedDocumentAsString(SecurityMgr.signDocumentEnveloped(doc));
                     LOGGER.debug("'{}' Audit Message signed",
                             auditmessage.getEventIdentification() != null ?
-                                    auditmessage.getEventIdentification().getEventID().getCsdCode() : "EventTypeCode(N/A)");
+                                    auditmessage.getEventIdentification().getEventID().getCsdCode() : EVENT_TYPE_CODE_N_A);
                     //auditmessage.getEventIdentification().getEventID().getCode() : "EventTypeCode(N/A)");
                 }
             } catch (Exception e) {
                 auditMessage = "";
                 LOGGER.error("'{}' Error signing doc: '{}'",
                         auditmessage.getEventIdentification() != null ?
-                                auditmessage.getEventIdentification().getEventID().getCsdCode() : "EventTypeCode(N/A)",
+                                auditmessage.getEventIdentification().getEventID().getCsdCode() : EVENT_TYPE_CODE_N_A,
                         //auditmessage.getEventIdentification().getEventID().getCode() : "EventTypeCode(N/A)",
                         e.getMessage(), e);
             }
@@ -181,7 +182,7 @@ public enum AuditTrailUtils {
     public AuditMessage createAuditMessage(EventLog eventLog) {
 
         LOGGER.debug("createAuditMessage(EventLog '{}')", eventLog.getEventType());
-        //TODO: Check if the Audit Message return with a null value shall be considered as fatal?
+        // Check if the Audit Message return with a null value shall be considered as fatal?
         AuditMessage message = eventLog.getEventType().buildAuditMessage(eventLog);
 
         //  Non Repudiation information are not relevant for SML/SMP process
@@ -193,8 +194,8 @@ public enum AuditTrailUtils {
                     eventLog.getResM_ParticipantObjectDetail());
         }
 
-        //TODO: Check if the Audit Message return with a null value shall be considered as fatal?
-        /* Invoke audit message validation services */
+        // Check if the Audit Message return with a null value shall be considered as fatal?
+        // Invoke audit message validation services
         if (OpenNCPValidation.isValidationEnable()) {
             if (message == null) {
                 LOGGER.error("Validation of the Audit Message cannot proceed on a Null value!!!");
@@ -215,7 +216,7 @@ public enum AuditTrailUtils {
     public void addNonRepudiationSection(AuditMessage auditMessage, String participantIdRequest, byte[] participantDetailRequest,
                                          String participantIdResponse, byte[] participantDetailResponse) {
 
-        //TODO: Based on the current guidelines and functional specifications, this is not clear enough if an evidence
+        // Based on the current guidelines and functional specifications, this is not clear enough if an evidence
         // has to be generated including the Non-Repudiation section (Type Value pair attributes - security header)
         // while the Audit Message has been considering NCP internal actions.
 

@@ -96,6 +96,7 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
             final String messageId = getMessageIdFromHeader(header);
 
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
             final DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
 

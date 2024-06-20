@@ -183,7 +183,7 @@ public class AdhocQueryRequest
      */
     public BigInteger getStartIndex() {
         if (startIndex == null) {
-            return new BigInteger("0");
+            return BigInteger.ZERO;
         } else {
             return startIndex;
         }
@@ -211,7 +211,7 @@ public class AdhocQueryRequest
      */
     public BigInteger getMaxResults() {
         if (maxResults == null) {
-            return new BigInteger("-1");
+            return BigInteger.valueOf(-1);
         } else {
             return maxResults;
         }

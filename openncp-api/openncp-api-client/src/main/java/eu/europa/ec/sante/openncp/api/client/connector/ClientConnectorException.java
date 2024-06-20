@@ -1,8 +1,6 @@
 package eu.europa.ec.sante.openncp.api.client.connector;
 
 
-import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
-
 public class ClientConnectorException extends RuntimeException {
 
     public ClientConnectorException() {

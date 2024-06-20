@@ -23,11 +23,11 @@ public class HibernateQueryDao extends AbstractHibernateDao<QueryEntity> impleme
         return get(id);
     }
 
-    public List<? extends QueryEntity> getAll() throws AtnaPersistenceException {
+    public List<QueryEntity> getAll() throws AtnaPersistenceException {
         return all();
     }
 
-    public List<? extends QueryEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
+    public List<QueryEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
         return all(offset, amount);
     }
 

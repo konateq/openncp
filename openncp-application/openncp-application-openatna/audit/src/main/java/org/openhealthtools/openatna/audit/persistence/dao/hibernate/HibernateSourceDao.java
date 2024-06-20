@@ -26,6 +26,8 @@ import java.util.Set;
 @Transactional(rollbackFor = AtnaPersistenceException.class)
 public class HibernateSourceDao extends AbstractHibernateDao<SourceEntity> implements SourceDao {
 
+    private static final String ENTERPRISE_SITE_ID = "enterpriseSiteId";
+
     public HibernateSourceDao(SessionFactory sessionFactory) {
         super(SourceEntity.class, sessionFactory);
     }
@@ -34,12 +36,12 @@ public class HibernateSourceDao extends AbstractHibernateDao<SourceEntity> imple
         return get(id);
     }
 
-    public List<? extends SourceEntity> getBySourceId(String id) {
+    public List<SourceEntity> getBySourceId(String id) {
         return list(criteria().add(Restrictions.eq("sourceId", id)));
     }
 
     public SourceEntity getByEnterpriseSiteId(String id) {
-        return uniqueResult(criteria().add(Restrictions.eq("enterpriseSiteId", id)));
+        return uniqueResult(criteria().add(Restrictions.eq(ENTERPRISE_SITE_ID, id)));
     }
 
     public SourceEntity get(SourceEntity other) {
@@ -47,9 +49,9 @@ public class HibernateSourceDao extends AbstractHibernateDao<SourceEntity> imple
         Criteria c = criteria();
         c.add(Restrictions.eq("sourceId", other.getSourceId()));
         if (other.getEnterpriseSiteId() != null) {
-            c.add(Restrictions.eq("enterpriseSiteId", other.getEnterpriseSiteId()));
+            c.add(Restrictions.eq(ENTERPRISE_SITE_ID, other.getEnterpriseSiteId()));
         } else {
-            c.add(Restrictions.isNull("enterpriseSiteId"));
+            c.add(Restrictions.isNull(ENTERPRISE_SITE_ID));
         }
         List<? extends SourceEntity> ret = list(c);
         if (ret == null || ret.isEmpty()) {
@@ -64,7 +66,7 @@ public class HibernateSourceDao extends AbstractHibernateDao<SourceEntity> imple
         return null;
     }
 
-    public List<? extends SourceEntity> getByCode(SourceCodeEntity codeEntity) {
+    public List<SourceEntity> getByCode(SourceCodeEntity codeEntity) {
 
         return list(criteria().createCriteria("sourceTypeCodes")
                 .add(Restrictions.eq("code", codeEntity.getCode()))
@@ -72,11 +74,11 @@ public class HibernateSourceDao extends AbstractHibernateDao<SourceEntity> imple
                 .add(Restrictions.eq("codeSystemName", codeEntity.getCodeSystemName())));
     }
 
-    public List<? extends SourceEntity> getAll() throws AtnaPersistenceException {
+    public List<SourceEntity> getAll() throws AtnaPersistenceException {
         return all();
     }
 
-    public List<? extends SourceEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
+    public List<SourceEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
         return all(offset, amount);
     }
 
@@ -90,19 +92,9 @@ public class HibernateSourceDao extends AbstractHibernateDao<SourceEntity> imple
                 SourceCodeEntity code = arr[i];
                 CodeEntity codeEnt = dao.get(code);
                 if (codeEnt == null) {
-                    if (policies.isAllowNewCodes()) {
-                        dao.save(code, policies);
-                    } else {
-                        throw new AtnaPersistenceException(code.toString(),
-                                AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
-                    }
+                    saveNewCodeEntityDao(policies, dao, code);
                 } else {
-                    if (codeEnt instanceof SourceCodeEntity) {
-                        arr[i] = ((SourceCodeEntity) codeEnt);
-                    } else {
-                        throw new AtnaPersistenceException("code is defined but is of a different type.",
-                                AtnaPersistenceException.PersistenceError.WRONG_CODE_TYPE);
-                    }
+                    setCodeEntity(codeEnt, arr, i);
                 }
             }
             entity.setSourceTypeCodes(new HashSet<>(Arrays.asList(arr)));
@@ -121,6 +113,24 @@ public class HibernateSourceDao extends AbstractHibernateDao<SourceEntity> imple
             }
         }
         currentSession().saveOrUpdate(entity);
+    }
+
+    private static void setCodeEntity(CodeEntity codeEnt, SourceCodeEntity[] arr, int i) throws AtnaPersistenceException {
+        if (codeEnt instanceof SourceCodeEntity) {
+            arr[i] = ((SourceCodeEntity) codeEnt);
+        } else {
+            throw new AtnaPersistenceException("code is defined but is of a different type.",
+                    AtnaPersistenceException.PersistenceError.WRONG_CODE_TYPE);
+        }
+    }
+
+    private static void saveNewCodeEntityDao(PersistencePolicies policies, CodeDao dao, SourceCodeEntity code) throws AtnaPersistenceException {
+        if (policies.isAllowNewCodes()) {
+            dao.save(code, policies);
+        } else {
+            throw new AtnaPersistenceException(code.toString(),
+                    AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
+        }
     }
 
     public void delete(SourceEntity entity) {
