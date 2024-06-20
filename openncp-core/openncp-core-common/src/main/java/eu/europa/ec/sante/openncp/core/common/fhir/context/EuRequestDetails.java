@@ -11,6 +11,9 @@ public interface EuRequestDetails {
 
     default CountryCode getCountryCode() {
         final String countryCode = getHapiRequestDetails().getHeader("CountryCode");
+        if (countryCode == null) {
+            throw new IllegalArgumentException("There was no 'CountryCode' header found, please add a header with key 'CountryCode' that contains a valid ISO 3166-1 alpha-2 code.");
+        }
         return CountryCode.of(countryCode);
     }
 
