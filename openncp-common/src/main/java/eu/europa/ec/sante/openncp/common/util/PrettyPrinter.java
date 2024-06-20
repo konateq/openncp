@@ -47,6 +47,7 @@ public class PrettyPrinter extends DefaultHandler {
     private static final String STANDARD_INDENT = "  ";
     private static final String END_LINE = System.getProperty("line.separator");
     private static final String NS_SAX_FEATURES_PREFIXES = "http://xml.org/sax/features/namespace-prefixes";
+    private static final String HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
     /**
      * The primary buffer for accumulating the formatted XML.
      */
@@ -71,6 +72,7 @@ public class PrettyPrinter extends DefaultHandler {
         try {
             PrettyPrinter pretty = new PrettyPrinter();
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
             factory.setFeature(NS_SAX_FEATURES_PREFIXES, true);
             factory.newSAXParser().parse(new ByteArrayInputStream(content), pretty);
             return pretty.toString();
@@ -88,6 +90,7 @@ public class PrettyPrinter extends DefaultHandler {
         try {
             PrettyPrinter pretty = new PrettyPrinter();
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
             factory.setFeature(NS_SAX_FEATURES_PREFIXES, true);
             factory.newSAXParser().parse(content, pretty);
             return pretty.toString();
@@ -105,6 +108,7 @@ public class PrettyPrinter extends DefaultHandler {
         try {
             PrettyPrinter pretty = new PrettyPrinter();
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setFeature(HTTP_APACHE_ORG_XML_FEATURES_DISALLOW_DOCTYPE_DECL, true);
             factory.setFeature(NS_SAX_FEATURES_PREFIXES, true);
             factory.newSAXParser().parse(content, pretty);
             return pretty.toString();

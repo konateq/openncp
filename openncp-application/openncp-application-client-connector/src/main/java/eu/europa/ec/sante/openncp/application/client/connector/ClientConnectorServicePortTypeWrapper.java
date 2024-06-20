@@ -20,10 +20,6 @@ public class ClientConnectorServicePortTypeWrapper {
         getRequestContext().put(REQUESTCONTEXT_ASSERTIONS_KEY, assertions);
     }
 
-    public void getAssertions() {
-        getRequestContext().get(REQUESTCONTEXT_ASSERTIONS_KEY);
-    }
-
     public ClientConnectorServicePortType getClientConnectorServicePortType() {
         return clientConnectorServicePortType;
     }

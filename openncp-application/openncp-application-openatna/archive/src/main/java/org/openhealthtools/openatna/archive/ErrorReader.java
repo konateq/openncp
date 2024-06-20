@@ -45,11 +45,7 @@ public class ErrorReader {
             if (attr.equalsIgnoreCase(DataConstants.SOURCE_IP)) {
                 se.setSourceIp(a.getValue());
             } else if (attr.equalsIgnoreCase(DataConstants.ERROR_TIMESTAMP)) {
-                try {
-                    se.setErrorTimestamp(Archiver.parseDate(a.getValue()));
-                } catch (ParseException e) {
-                    throw new XMLStreamException(e);
-                }
+                setErrorTimeStamp(a, se);
             }
         }
         while (true) {
@@ -85,5 +81,13 @@ public class ErrorReader {
             }
         }
         return se;
+    }
+
+    private static void setErrorTimeStamp(Attribute a, ErrorEntity se) throws XMLStreamException {
+        try {
+            se.setErrorTimestamp(Archiver.parseDate(a.getValue()));
+        } catch (ParseException e) {
+            throw new XMLStreamException(e);
+        }
     }
 }

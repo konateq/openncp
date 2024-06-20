@@ -61,14 +61,6 @@
                     <dataSourceExpression>new EntityDataSource($F{participant})</dataSourceExpression>
                     <subreportExpression>$P{inputDirectory} + "/ParticipantReport.jasper"</subreportExpression>
                 </subreport>
-
-
-                <!--<textField isStretchWithOverflow="true">
-                    <reportElement x="0" y="15" width="150" height="12"/>
-                    <textFieldExpression class="java.lang.Boolean">
-                        $F{userIsRequestor}
-                    </textFieldExpression>
-                </textField>-->
                 <subreport>
                     <reportElement positionType="Float" x="5" y="0" width="495" height="0" isRemoveLineWhenBlank="true">
                         <printWhenExpression>$F{networkAccessPoint} != null</printWhenExpression>

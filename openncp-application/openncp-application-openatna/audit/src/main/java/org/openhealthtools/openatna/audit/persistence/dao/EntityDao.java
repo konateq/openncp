@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface EntityDao {
 
-    List<? extends PersistentEntity> query(String query) throws AtnaPersistenceException;
+    List<PersistentEntity> query(String query) throws AtnaPersistenceException;
 
     String[] getSupportedQueryDialects();
 }

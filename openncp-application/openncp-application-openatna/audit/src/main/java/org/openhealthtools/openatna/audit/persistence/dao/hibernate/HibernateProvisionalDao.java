@@ -23,11 +23,11 @@ public class HibernateProvisionalDao extends AbstractHibernateDao<ProvisionalEnt
         return get(id);
     }
 
-    public List<? extends ProvisionalEntity> getAll() throws AtnaPersistenceException {
+    public List<ProvisionalEntity> getAll() throws AtnaPersistenceException {
         return all();
     }
 
-    public List<? extends ProvisionalEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
+    public List<ProvisionalEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
         return all(offset, amount);
     }
 

@@ -49,7 +49,7 @@ public class BsdClientTest {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         m.write(outputStream);
-        LOGGER.info("Output:\n{}", outputStream.toString());
+        LOGGER.info("Output:\n{}", outputStream);
 
         SyslogMessageFactory.registerLogMessage("ATNALOG", StringLogMessage.class);
         SyslogMessageFactory.setFactory(new BsdMessageFactory());

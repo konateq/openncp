@@ -83,6 +83,7 @@ public class AuditManager {
         StringWriter sw = new StringWriter();
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setXIncludeAware(false);
             ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
             DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
             Document doc = builder.parse(stream);

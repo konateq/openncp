@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.common.configuration.util;
 
+import eu.europa.ec.sante.openncp.common.Constant;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -105,40 +106,40 @@ public class Constants {
 
         LOGGER.info("OpenNCP Util Constants Initialization - EPSOS_PROPS_PATH: '{}'", EPSOS_PROPS_PATH);
 
-        SERVER_IP = configurationManager.getProperty("SERVER_IP");
+        SERVER_IP = configurationManager.getProperty(Constant.SERVER_IP);
 
-        HOME_COMM_ID = configurationManager.getProperty("HOME_COMM_ID");
-        COUNTRY_CODE = configurationManager.getProperty("COUNTRY_CODE");
-        COUNTRY_NAME = configurationManager.getProperty("COUNTRY_NAME");
-        COUNTRY_PRINCIPAL_SUBDIVISION = configurationManager.getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
-        LANGUAGE_CODE = configurationManager.getProperty("LANGUAGE_CODE");
+        HOME_COMM_ID = configurationManager.getProperty(Constant.HOME_COMM_ID);
+        COUNTRY_CODE = configurationManager.getProperty(Constant.COUNTRY_CODE);
+        COUNTRY_NAME = configurationManager.getProperty(Constant.COUNTRY_NAME);
+        COUNTRY_PRINCIPAL_SUBDIVISION = configurationManager.getProperty(Constant.COUNTRY_PRINCIPAL_SUBDIVISION);
+        LANGUAGE_CODE = configurationManager.getProperty(Constant.LANGUAGE_CODE);
 
-        TRUSTSTORE_PATH = globalizePath(configurationManager.getProperty("TRUSTSTORE_PATH"));
-        TRUSTSTORE_PASSWORD = configurationManager.getProperty("TRUSTSTORE_PASSWORD");
+        TRUSTSTORE_PATH = globalizePath(configurationManager.getProperty(Constant.TRUSTSTORE_PATH));
+        TRUSTSTORE_PASSWORD = configurationManager.getProperty(Constant.TRUSTSTORE_PASSWORD);
 
-        SP_KEYSTORE_PATH = globalizePath(configurationManager.getProperty("SP_KEYSTORE_PATH"));
-        SP_KEYSTORE_PASSWORD = configurationManager.getProperty("SP_KEYSTORE_PASSWORD");
-        SP_PRIVATEKEY_ALIAS = configurationManager.getProperty("SP_PRIVATEKEY_ALIAS");
-        SP_PRIVATEKEY_PASSWORD = configurationManager.getProperty("SP_PRIVATEKEY_PASSWORD");
+        SP_KEYSTORE_PATH = globalizePath(configurationManager.getProperty(Constant.SP_KEYSTORE_PATH));
+        SP_KEYSTORE_PASSWORD = configurationManager.getProperty(Constant.SP_KEYSTORE_PASSWORD);
+        SP_PRIVATEKEY_ALIAS = configurationManager.getProperty(Constant.SP_PRIVATEKEY_ALIAS);
+        SP_PRIVATEKEY_PASSWORD = configurationManager.getProperty(Constant.SP_PRIVATEKEY_PASSWORD);
 
-        SC_KEYSTORE_PATH = globalizePath(configurationManager.getProperty("SC_KEYSTORE_PATH"));
-        SC_KEYSTORE_PASSWORD = configurationManager.getProperty("SC_KEYSTORE_PASSWORD");
-        SC_PRIVATEKEY_ALIAS = configurationManager.getProperty("SC_PRIVATEKEY_ALIAS");
-        SC_PRIVATEKEY_PASSWORD = configurationManager.getProperty("SC_PRIVATEKEY_PASSWORD");
+        SC_KEYSTORE_PATH = globalizePath(configurationManager.getProperty(Constant.SC_KEYSTORE_PATH));
+        SC_KEYSTORE_PASSWORD = configurationManager.getProperty(Constant.SC_KEYSTORE_PASSWORD);
+        SC_PRIVATEKEY_ALIAS = configurationManager.getProperty(Constant.SC_PRIVATEKEY_ALIAS);
+        SC_PRIVATEKEY_PASSWORD = configurationManager.getProperty(Constant.SC_PRIVATEKEY_PASSWORD);
 
-        NCP_SIG_KEYSTORE_PATH = globalizePath(configurationManager.getProperty("NCP_SIG_KEYSTORE_PATH"));
-        NCP_SIG_KEYSTORE_PASSWORD = configurationManager.getProperty("NCP_SIG_KEYSTORE_PASSWORD");
-        NCP_SIG_PRIVATEKEY_ALIAS = configurationManager.getProperty("NCP_SIG_PRIVATEKEY_ALIAS");
-        NCP_SIG_PRIVATEKEY_PASSWORD = configurationManager.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD");
+        NCP_SIG_KEYSTORE_PATH = globalizePath(configurationManager.getProperty(Constant.NCP_SIG_KEYSTORE_PATH));
+        NCP_SIG_KEYSTORE_PASSWORD = configurationManager.getProperty(Constant.NCP_SIG_KEYSTORE_PASSWORD);
+        NCP_SIG_PRIVATEKEY_ALIAS = configurationManager.getProperty(Constant.NCP_SIG_PRIVATEKEY_ALIAS);
+        NCP_SIG_PRIVATEKEY_PASSWORD = configurationManager.getProperty(Constant.NCP_SIG_PRIVATEKEY_PASSWORD);
 
-        ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD = configurationManager.getProperty("ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD");
-        ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD");
-        ABUSE_UNIQUE_POC_REQUEST_THRESHOLD = configurationManager.getProperty("ABUSE_UNIQUE_POC_REQUEST_THRESHOLD");
-        ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD");
-        ABUSE_ALL_REQUEST_THRESHOLD = configurationManager.getProperty("ABUSE_ALL_REQUEST_THRESHOLD");
-        ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty("ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD");
-        ABUSE_SCHEDULER_TIME_INTERVAL = configurationManager.getProperty("ABUSE_SCHEDULER_TIME_INTERVAL");
-        ABUSE_SCHEDULER_ENABLE = configurationManager.getProperty("ABUSE_SCHEDULER_ENABLE");
+        ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD = configurationManager.getProperty(Constant.ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD);
+        ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty(Constant.ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD);
+        ABUSE_UNIQUE_POC_REQUEST_THRESHOLD = configurationManager.getProperty(Constant.ABUSE_UNIQUE_POC_REQUEST_THRESHOLD);
+        ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty(Constant.ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD);
+        ABUSE_ALL_REQUEST_THRESHOLD = configurationManager.getProperty(Constant.ABUSE_ALL_REQUEST_THRESHOLD);
+        ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD = configurationManager.getProperty(Constant.ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD);
+        ABUSE_SCHEDULER_TIME_INTERVAL = configurationManager.getProperty(Constant.ABUSE_SCHEDULER_TIME_INTERVAL);
+        ABUSE_SCHEDULER_ENABLE = configurationManager.getProperty(Constant.ABUSE_SCHEDULER_ENABLE);
     }
 
     /**

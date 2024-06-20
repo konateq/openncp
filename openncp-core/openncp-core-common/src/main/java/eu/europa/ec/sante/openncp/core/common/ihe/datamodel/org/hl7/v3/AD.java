@@ -186,7 +186,7 @@ public class AD {
      */
     public List<Serializable> getContent() {
         if (content == null) {
-            content = new ArrayList<Serializable>();
+            content = new ArrayList<>();
         }
         return this.content;
     }
@@ -215,7 +215,7 @@ public class AD {
      */
     public List<String> getUse() {
         if (use == null) {
-            use = new ArrayList<String>();
+            use = new ArrayList<>();
         }
         return this.use;
     }

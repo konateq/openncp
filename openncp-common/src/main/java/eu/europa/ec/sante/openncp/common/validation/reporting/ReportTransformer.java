@@ -41,7 +41,8 @@ public class ReportTransformer {
         StreamResult out = new StreamResult(writer);
 
         TransformerFactory factory = TransformerFactory.newInstance();
-
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         try {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer transformer = factory.newTransformer(xsl);

@@ -16,11 +16,16 @@ import net.RFC3881.dicom.*;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public abstract class AbstractAuditMessageBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAuditMessageBuilder.class);
+    private static final String LOCALHOST = "127.0.0.1";
+    private static final String SMP_QUERY = "SMP::Query";
+    private static final String SMP_PUSH = "SMP::Push";
+    private static final String SMP = "SMP";
 
     protected AuditMessage addParticipantObject(AuditMessage auditMessage, String participantId, Short participantCode,
                                                 Short participantRole, String participantName, String PS_ObjectCode, String PS_ObjectCodeName,
@@ -43,21 +48,11 @@ public abstract class AbstractAuditMessageBuilder {
             ParticipantObjectDetail participantObjectDetail = new ParticipantObjectDetail();
             // 'ihe:homeCommunityID' or 'Repository Unique Id'
             participantObjectDetail.setType("ihe:homeCommunityID");
-            try {
-                if (StringUtils.isNotBlank(PS_getHciIdentifierPayload)) {
-                    participantObjectDetail.setValue(PS_getHciIdentifierPayload.getBytes("UTF-8"));
-                }
-            } catch (UnsupportedEncodingException e) {
-                participantObjectDetail.setValue(new byte[]{2});
-                LOGGER.debug("Error addParticipantObject() - participantObjectDetail: '{}'", e.getMessage());
+            if (StringUtils.isNotBlank(PS_getHciIdentifierPayload)) {
+                participantObjectDetail.setValue(PS_getHciIdentifierPayload.getBytes(StandardCharsets.UTF_8));
             }
-            try {
-                if (StringUtils.isNotBlank(PS_getQueryByParameterPayload)) {
-                    participantObjectIdentification.setParticipantObjectQuery(PS_getQueryByParameterPayload.getBytes("UTF-8"));
-                }
-            } catch (UnsupportedEncodingException e) {
-                participantObjectIdentification.setParticipantObjectQuery(new byte[]{2});
-                LOGGER.debug("Error addParticipantObject() - participantObjectIdentification: '{}'", e.getMessage());
+            if (StringUtils.isNotBlank(PS_getQueryByParameterPayload)) {
+                participantObjectIdentification.setParticipantObjectQuery(PS_getQueryByParameterPayload.getBytes(StandardCharsets.UTF_8));
             }
             participantObjectIdentification.getParticipantObjectDetail().add(participantObjectDetail);
         }
@@ -108,7 +103,6 @@ public abstract class AbstractAuditMessageBuilder {
     protected AuditMessage addService(AuditMessage auditMessage, String userId, boolean userIsRequester, String code,
                                     String codeSystem, String displayName) {
 
-        InetAddressValidator validator = InetAddressValidator.getInstance();
         if (StringUtils.isBlank(userId)) {
             LOGGER.warn("No Service, as this is Service Consumer");
             throw new IllegalArgumentException("Both ServiceConsumer User ID and ServiceProvider User ID must exist!");
@@ -180,11 +174,11 @@ public abstract class AbstractAuditMessageBuilder {
     protected AuditMessage addPointOfCare(AuditMessage message, String userId, String roleId, boolean userIsRequester, String codeSystem) {
 
         if (StringUtils.isBlank(userId)) {
-            //LOGGER.debug("This is service provider and doesn't need Point of Care");
+            // This is service provider and doesn't need Point of Care
             ActiveParticipantContents participant = new ActiveParticipantContents();
             participant.setUserID("SP");
             participant.setAlternativeUserID("SP");
-            participant.setNetworkAccessPointID("127.0.0.1");
+            participant.setNetworkAccessPointID(LOCALHOST);
             participant.setNetworkAccessPointTypeCode("1");
             participant.setUserIsRequestor(userIsRequester);
 
@@ -194,11 +188,11 @@ public abstract class AbstractAuditMessageBuilder {
             codedValue.setOriginalText(codeSystem); // Should be "Destination Role ID"
             participant.getRoleIDCode().add(codedValue);
             message.getActiveParticipant().add(participant);
-        } else {//ActiveParticipantType   participant2 = new ActiveParticipantType();//participant2.setNetworkAccessPointID();
+        } else {
             ActiveParticipantContents participant = new ActiveParticipantContents();
             participant.setUserID(userId);
             participant.setAlternativeUserID(userId);
-            participant.setNetworkAccessPointID("127.0.0.1");
+            participant.setNetworkAccessPointID(LOCALHOST);
             participant.setNetworkAccessPointTypeCode("1");
             participant.setUserIsRequestor(userIsRequester);
 
@@ -269,7 +263,7 @@ public abstract class AbstractAuditMessageBuilder {
         ActiveParticipantContents humanRequester = new ActiveParticipantContents();
         humanRequester.setUserID(userId);
         humanRequester.setAlternativeUserID(alternativeUserID);
-        humanRequester.setNetworkAccessPointID("127.0.0.1");
+        humanRequester.setNetworkAccessPointID(LOCALHOST);
         humanRequester.setNetworkAccessPointTypeCode("2");
         humanRequester.setUserIsRequestor(userIsRequester);
 
@@ -401,18 +395,20 @@ public abstract class AbstractAuditMessageBuilder {
             case SMP_QUERY:
                 eventTypeCode = new EventTypeCodeBuilder()
                         .codeSystemName(eventType.getCode())
-                        .csdCode("SMP")
-                        .displayName("SMP::Query")
-                        .originalText("SMP::Query")
+                        .csdCode(SMP)
+                        .displayName(SMP_QUERY)
+                        .originalText(SMP_QUERY)
                         .build();
                 break;
             case SMP_PUSH:
                 eventTypeCode = new EventTypeCodeBuilder()
                         .codeSystemName(eventType.getCode())
-                        .csdCode("SMP")
-                        .displayName("SMP::Push")
-                        .originalText("SMP::Query")
+                        .csdCode(SMP)
+                        .displayName(SMP_PUSH)
+                        .originalText(SMP_QUERY)
                         .build();
+                break;
+            default:
                 break;
         }
         return eventTypeCode;
@@ -424,17 +420,17 @@ public abstract class AbstractAuditMessageBuilder {
             case SMP_QUERY:
                 eventID = new EventIDBuilder()
                         .codeSystemName("EHDSI-193")
-                        .csdCode("SMP")
-                        .displayName("SMP::Query")
-                        .originalText("SMP::Query")
+                        .csdCode(SMP)
+                        .displayName(SMP_QUERY)
+                        .originalText(SMP_QUERY)
                         .build();
                 break;
             case SMP_PUSH:
                 eventID = new EventIDBuilder()
                         .codeSystemName("EHDSI-194")
-                        .csdCode("SMP")
-                        .displayName("SMP::Push")
-                        .originalText("SMP::Push")
+                        .csdCode(SMP)
+                        .displayName(SMP_PUSH)
+                        .originalText(SMP_PUSH)
                         .build();
                 break;
             default:
@@ -459,7 +455,7 @@ public abstract class AbstractAuditMessageBuilder {
         auditSourceIdentification.setAuditSourceID(auditSource);
         auditSourceIdentification.setAuditEnterpriseSiteID(auditSource);
         /*
-        attribute code {
+        attribute code
             "1" |                 ## End-user display device, diagnostic device
             "2" |                 ## Data acquisition device or instrument
             "3" |                 ## Web Server process or thread
@@ -469,7 +465,7 @@ public abstract class AbstractAuditMessageBuilder {
             "7" |                 ## ISO level 1-3 network component
             "8" |                 ## ISO level 4-6 operating software
             "9" |                 ## other
-            token },              ## other values are allowed if a codeSystemName is present
+            token                 ## other values are allowed if a codeSystemName is present
         */
         AuditSourceTypeCode auditTypeSource = new AuditSourceTypeCode();
         auditTypeSource.setCsdCode("4");

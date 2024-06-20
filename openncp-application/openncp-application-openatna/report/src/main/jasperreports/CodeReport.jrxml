@@ -53,7 +53,7 @@
         <band height="49">
             <frame>
                 <reportElement x="0" y="4" width="510" height="45" style="Arial_Normal_Small"/>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="5" y="0" width="400" height="15" forecolor="#2c5519" style="Arial_Small_Italic"/>
                     <textFieldExpression class="java.lang.String">
                         $F{type}
@@ -80,31 +80,31 @@
                     <reportElement x="420" y="15" width="90" height="15" style="Arial_Small_Italic"/>
                     <text><![CDATA[Original Text]]></text>
                 </staticText>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="20" y="30" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{code}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="120" y="30" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{codeSystem}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="220" y="30" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{codeSystemName}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="320" y="30" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{displayName}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="420" y="30" width="90" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{originalText}

@@ -54,19 +54,19 @@
                     <text><![CDATA[Instance UIDs]]></text>
                 </staticText>
 
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="20" y="15" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{sopId}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="120" y="15" width="250" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.Integer">
                         $F{numberOfInstances}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="240" y="15" width="250" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{instanceUids}

@@ -99,7 +99,7 @@ public class AtnaParticipant implements Serializable {
         if (alternativeUserId != null ? !alternativeUserId.equals(that.alternativeUserId) : that.alternativeUserId != null) {
             return false;
         }
-        if (roleIdCodes != null ? !roleIdCodes.equals(that.roleIdCodes) : that.roleIdCodes != null) {
+        if (!roleIdCodes.equals(that.roleIdCodes)) {
             return false;
         }
         if (userId != null ? !userId.equals(that.userId) : that.userId != null) {
@@ -110,7 +110,7 @@ public class AtnaParticipant implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = roleIdCodes != null ? roleIdCodes.hashCode() : 0;
+        int result = roleIdCodes.hashCode();
         result = 31 * result + (userId != null ? userId.hashCode() : 0);
         result = 31 * result + (alternativeUserId != null ? alternativeUserId.hashCode() : 0);
         result = 31 * result + (userName != null ? userName.hashCode() : 0);

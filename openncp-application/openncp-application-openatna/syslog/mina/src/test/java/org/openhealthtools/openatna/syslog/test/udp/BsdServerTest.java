@@ -62,7 +62,7 @@ public class BsdServerTest {
     static class Listener implements SyslogListener {
 
         public void messageArrived(SyslogMessage message) {
-            LOGGER.info("serialized message: '{}'", message.toString());
+            LOGGER.info("serialized message: '{}'", message);
             LOGGER.info("application message: '{}'", message.getMessage().getMessageObject());
         }
 

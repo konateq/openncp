@@ -40,6 +40,8 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
     private static final DatatypeFactory DATATYPE_FACTORY;
     private static final JAXBContext jaxbContext;
 
+    private static final String ATNA_ERROR_MESSAGE_NO_CODE = "Code has no code";
+
     static {
         try {
             DATATYPE_FACTORY = DatatypeFactory.newInstance();
@@ -63,6 +65,8 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             canonicalizer.canonicalizeSubtree(document, outputStream);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
             return documentBuilderFactory.newDocumentBuilder().parse(new ByteArrayInputStream(outputStream.toByteArray()));
 
@@ -137,6 +141,8 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
 
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             return documentBuilder.parse(stream);
@@ -466,7 +472,7 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
     private AtnaCode createCode(String type, ParticipantObjectIDTypeCode code) throws AtnaException {
 
         if (code.getCsdCode() == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
         return new AtnaCode(type, code.getCsdCode(), code.getDisplayName(), code.getCodeSystemName(),
                 code.getDisplayName(), code.getOriginalText());
@@ -475,19 +481,19 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
     private AtnaCode createCode(String type, String code, AuditSourceIdentificationContents source) throws AtnaException {
 
         if (code == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
 
-        String displayName = source.getAuditSourceTypeCode().size() > 0 ? source.getAuditSourceTypeCode().get(0).getDisplayName() : "";
-        String codeSystemName = source.getAuditSourceTypeCode().size() > 0 ? source.getAuditSourceTypeCode().get(0).getCodeSystemName() : "";
-        String originalText = source.getAuditSourceTypeCode().size() > 0 ? source.getAuditSourceTypeCode().get(0).getOriginalText() : "";
+        String displayName = !source.getAuditSourceTypeCode().isEmpty() ? source.getAuditSourceTypeCode().get(0).getDisplayName() : "";
+        String codeSystemName = !source.getAuditSourceTypeCode().isEmpty() ? source.getAuditSourceTypeCode().get(0).getCodeSystemName() : "";
+        String originalText = !source.getAuditSourceTypeCode().isEmpty() ? source.getAuditSourceTypeCode().get(0).getOriginalText() : "";
         return new AtnaCode(type, code, displayName, codeSystemName, displayName, originalText);
     }
 
     private AtnaCode createCode(String type, RoleIDCode code) throws AtnaException {
 
         if (code.getCsdCode() == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
         return new AtnaCode(type, code.getCsdCode(), code.getDisplayName(), code.getCodeSystemName(),
                 code.getDisplayName(), code.getOriginalText());
@@ -496,7 +502,7 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
     private AtnaCode createCode(String type, EventID code) throws AtnaException {
 
         if (code.getCsdCode() == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
         return new AtnaCode(type, code.getCsdCode(), code.getDisplayName(), code.getCodeSystemName(),
                 code.getDisplayName(), code.getOriginalText());
@@ -504,7 +510,7 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
 
     private AtnaCode createCode(String type, EventTypeCode code) throws AtnaException {
         if (code.getCsdCode() == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
         return new AtnaCode(type, code.getCsdCode(), code.getDisplayName(), code.getCodeSystemName(),
                 code.getDisplayName(), code.getOriginalText());
@@ -513,11 +519,10 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
     private RoleIDCode createCode(AtnaCode code) throws AtnaException {
 
         if (code.getCode() == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
         RoleIDCode type = new RoleIDCode();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());
@@ -526,11 +531,10 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
 
     private ParticipantObjectIDTypeCode createParticipantObjectIdFromAtnaCode(AtnaCode code) throws AtnaException {
         if (code.getCode() == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
         ParticipantObjectIDTypeCode type = new ParticipantObjectIDTypeCode();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());
@@ -540,11 +544,10 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
 
     private EventTypeCode createEventCodeFromAtnaCode(AtnaCode code) throws AtnaException {
         if (code.getCode() == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
         EventTypeCode type = new EventTypeCode();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());
@@ -554,11 +557,10 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
     private EventID createEventIdCodeFromAtnaCode(AtnaCode code) throws AtnaException {
 
         if (code.getCode() == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
         EventID type = new EventID();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());
@@ -568,11 +570,10 @@ public class JaxbIOFactory implements AtnaIOFactory, Serializable {
     private EventID createEventIdCode(AtnaCode code) throws AtnaException {
 
         if (code.getCode() == null) {
-            throw new AtnaException("Code has no code");
+            throw new AtnaException(ATNA_ERROR_MESSAGE_NO_CODE);
         }
         EventID type = new EventID();
         type.setCsdCode(code.getCode());
-        //type.setCodeSystem(code.getCodeSystem());
         type.setCodeSystemName(code.getCodeSystemName());
         type.setDisplayName(code.getDisplayName());
         type.setOriginalText(code.getOriginalText());

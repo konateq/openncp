@@ -2,7 +2,6 @@ package eu.europa.ec.sante.openncp.core.client.cdadisplaytool;
 
 import eu.europa.ec.sante.openncp.core.client.cdadisplaytool.exceptions.TerminologyFileNotFoundException;
 import eu.europa.ec.sante.openncp.core.client.cdadisplaytool.exceptions.UITransformationException;
-import net.sf.saxon.TransformerFactoryImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +73,6 @@ public class CdaXSLTransformer {
                 throw new TerminologyFileNotFoundException("Folder " + PATH.toString() + " doesn't exists");
             }
         } catch (Exception e) {
-            LOGGER.error("FATAL ERROR: '{}'", e.getMessage(), e);
             throw new UITransformationException(e);
         }
     }
@@ -123,7 +121,9 @@ public class CdaXSLTransformer {
             StreamSource xslSource = new StreamSource(xslStream);
             xslSource.setSystemId(systemId);
 
-            TransformerFactory transformerFactory = TransformerFactoryImpl.newInstance();
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer transformer = transformerFactory.newTransformer(xslSource);
             transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
@@ -148,7 +148,6 @@ public class CdaXSLTransformer {
                 LOGGER.debug("Deleting temp file '{}' successfully", resultFile.getAbsolutePath());
             }
         } catch (Exception e) {
-            LOGGER.error("Exception: '{}'", e.getMessage(), e);
             throw new UITransformationException(e);
         }
         return output;

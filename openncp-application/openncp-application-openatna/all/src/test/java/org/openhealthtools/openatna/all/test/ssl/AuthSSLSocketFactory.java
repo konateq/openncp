@@ -45,7 +45,7 @@ public class AuthSSLSocketFactory {
     private SSLContext sslcontext = null;
     private X509TrustManager defaultTrustManager = null;
 
-    public AuthSSLSocketFactory(KeystoreDetails details, KeystoreDetails truststore, X509TrustManager defaultTrustManager) throws IOException {
+    public AuthSSLSocketFactory(KeystoreDetails details, KeystoreDetails truststore, X509TrustManager defaultTrustManager) {
         super();
 
         if (details != null) {
@@ -113,7 +113,7 @@ public class AuthSSLSocketFactory {
         } catch (Exception e) {
 
         }
-        log.info("could not open stream to:" + location);
+        log.info("could not open stream to: {}", location);
         return null;
     }
 
@@ -137,7 +137,7 @@ public class AuthSSLSocketFactory {
             throw new IllegalArgumentException("Keystore may not be null");
         }
         TrustManagerFactory tmfactory =
-                TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());//TrustManagerFactory.getInstance(algorithm);
+                TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmfactory.init(keystore);
         TrustManager[] trustmanagers = tmfactory.getTrustManagers();
         for (int i = 0; i < trustmanagers.length; i++) {
@@ -161,16 +161,16 @@ public class AuthSSLSocketFactory {
                     String alias = (String) aliases.nextElement();
                     Certificate[] certs = keystore.getCertificateChain(alias);
                     if (certs != null) {
-                        log.info("Certificate chain '" + alias + "':");
+                        log.info("Certificate chain '{}':", alias);
                         for (int c = 0; c < certs.length; c++) {
                             if (certs[c] instanceof X509Certificate) {
                                 X509Certificate cert = (X509Certificate) certs[c];
-                                log.info(" Certificate " + (c + 1) + ":");
-                                log.info("  Subject DN: " + cert.getSubjectDN());
-                                log.info("  Signature Algorithm: " + cert.getSigAlgName());
-                                log.info("  Valid from: " + cert.getNotBefore());
-                                log.info("  Valid until: " + cert.getNotAfter());
-                                log.info("  Issuer: " + cert.getIssuerDN());
+                                log.info(" Certificate: {}", (c + 1));
+                                log.info("  Subject DN: {}", cert.getSubjectDN());
+                                log.info("  Signature Algorithm: {}", cert.getSigAlgName());
+                                log.info("  Valid from: {}", cert.getNotBefore());
+                                log.info("  Valid until: {}", cert.getNotAfter());
+                                log.info("  Issuer: {}", cert.getIssuerDN());
                             }
                         }
                     }
@@ -182,15 +182,15 @@ public class AuthSSLSocketFactory {
                 Enumeration aliases = keystore.aliases();
                 while (aliases.hasMoreElements()) {
                     String alias = (String) aliases.nextElement();
-                    log.info("Trusted certificate '" + alias + "':");
+                    log.info("Trusted certificate '{}':", alias);
                     Certificate trustedcert = keystore.getCertificate(alias);
-                    if (trustedcert != null && trustedcert instanceof X509Certificate) {
+                    if (trustedcert instanceof X509Certificate) {
                         X509Certificate cert = (X509Certificate) trustedcert;
-                        log.info("  Subject DN: " + cert.getSubjectDN());
-                        log.info("  Signature Algorithm: " + cert.getSigAlgName());
-                        log.info("  Valid from: " + cert.getNotBefore());
-                        log.info("  Valid until: " + cert.getNotAfter());
-                        log.info("  Issuer: " + cert.getIssuerDN());
+                        log.info("  Subject DN: {}", cert.getSubjectDN());
+                        log.info("  Signature Algorithm: {}", cert.getSigAlgName());
+                        log.info("  Valid from: {}", cert.getNotBefore());
+                        log.info("  Valid until: {}", cert.getNotAfter());
+                        log.info("  Issuer: {}", cert.getIssuerDN());
                     }
                 }
                 trustmanagers = createTrustManagers(truststore, keystore, defaultTrustManager);
@@ -200,9 +200,9 @@ public class AuthSSLSocketFactory {
                 trustmanagers = new TrustManager[]{defaultTrustManager};
             }
 
-            SSLContext sslcontext = SSLContext.getInstance("TLSv1.2");
-            sslcontext.init(keymanagers, trustmanagers, null);
-            return sslcontext;
+            SSLContext sslcontextInstance = SSLContext.getInstance("TLSv1.2");
+            sslcontextInstance.init(keymanagers, trustmanagers, null);
+            return sslcontextInstance;
         } catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
             throw new IOException("Unsupported algorithm exception: " + e.getMessage());

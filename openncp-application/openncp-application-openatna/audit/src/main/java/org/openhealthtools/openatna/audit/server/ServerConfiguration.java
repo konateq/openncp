@@ -275,6 +275,8 @@ public class ServerConfiguration {
     private Document createDocument(File configFile) throws Exception {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setXIncludeAware(false);
         factory.setValidating(false);
         return factory.newDocumentBuilder().parse(configFile);
     }

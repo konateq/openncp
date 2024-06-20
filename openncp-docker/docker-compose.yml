@@ -1,4 +1,3 @@
-version: '3.8'
 name: "openncp-lift-and-shift"
 services:
   mysql:

@@ -184,7 +184,7 @@ public class AssertionUtil {
         pou.getUnknownAttributes().put(new QName("codeSystem"), "3bc18518-d305-46c2-a8d6-94bd59856e9e");
         pou.getUnknownAttributes().put(new QName("codeSystemName"), "eHDSI XSPA PurposeOfUse");
         pou.getUnknownAttributes().put(new QName("displayName"), value);
-        //pou.setTextContent(value);
+
         final XSAny pouAttributeValue = xsAnyBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME);
         pouAttributeValue.getUnknownXMLObjects().add(pou);
         attr.getAttributeValues().add(pouAttributeValue);

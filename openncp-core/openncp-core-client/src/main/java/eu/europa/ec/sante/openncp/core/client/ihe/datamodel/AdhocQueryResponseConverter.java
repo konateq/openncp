@@ -258,7 +258,6 @@ public final class AdhocQueryResponseConverter {
     private static void setDocumentAssociations(List<XDSDocumentAssociation> documentAssociations,
                                                 Map<String, String> documentAssociationsMap, List<XDSDocument> documents) {
 
-        //TODO: 2021-10-13 Implementation of this method should be reviewed to reduce the cognitive complexity and the number of break continue into a loop
         for (Map.Entry<String, String> entry : documentAssociationsMap.entrySet()) {
 
             String sourceObjectId = entry.getKey();

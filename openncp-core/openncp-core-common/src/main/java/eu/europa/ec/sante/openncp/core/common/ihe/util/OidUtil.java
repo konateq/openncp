@@ -87,6 +87,8 @@ public class OidUtil {
             oid2CountryCodeMap = new HashMap<>();
             File mapFile = new File(mapFilePath);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            //dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbFactory.setXIncludeAware(false);
             DocumentBuilder documentBuilder = dbFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(mapFile);
             document.getDocumentElement().normalize();

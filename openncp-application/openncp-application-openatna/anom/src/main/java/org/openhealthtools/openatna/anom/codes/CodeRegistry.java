@@ -93,15 +93,11 @@ public class CodeRegistry {
             if (!atnaCode.getCode().equals(code)) {
                 continue;
             }
-            if (atnaCode.getCodeSystem() != null && system != null) {
-                if (!atnaCode.getCodeSystem().equals(system)) {
-                    continue;
-                }
+            if (atnaCode.getCodeSystem() != null && system != null && !atnaCode.getCodeSystem().equals(system)) {
+                continue;
             }
-            if (atnaCode.getCodeSystemName() != null && systemName != null) {
-                if (!atnaCode.getCodeSystemName().equals(systemName)) {
-                    continue;
-                }
+            if (atnaCode.getCodeSystemName() != null && systemName != null && !atnaCode.getCodeSystemName().equals(systemName)) {
+                continue;
             }
             return atnaCode;
         }

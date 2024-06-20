@@ -65,7 +65,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <java.optimize>true</java.optimize>
+        <!--java.optimize>true</java.optimize-->
         <joda-time.version>2.10.13</joda-time.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-codec.version>1.15</commons-codec.version>
@@ -129,12 +129,16 @@
         <mail.version>1.6.2</mail.version>
         <ibatis-sqlmap.version>2.3.4.726</ibatis-sqlmap.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
-        <axis2.version>1.8.1</axis2.version>
+        <axis2.version>1.8.2</axis2.version>
         <axiom-api.version>1.4.0</axiom-api.version>
         <hapi.fhir.version>6.6.0</hapi.fhir.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
         <cxf.version>3.6.3</cxf.version>
         <bcprov.version>1.70</bcprov.version>
+
+        <sonar.organization>abc123s</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
     </properties>
 
     <dependencyManagement>
@@ -757,7 +761,7 @@
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
-                        <optimize>${java.optimize}</optimize>
+                        <!--optimize>${java.optimize}</optimize-->
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <showDeprecation>true</showDeprecation>
                         <release>${java.version}</release>

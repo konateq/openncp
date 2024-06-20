@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,13 +15,15 @@ public class AuditLoggerPluginManagerImpl implements AuditLoggerPluginManager {
     private final List<AuditLogger> auditLoggers = new ArrayList<>();
     private String loggers = null;
     private String splitChar = ",";
-    private final String notDefinedLoggersValue = "${openATNA.auditLoggers}";
 
-    public void start() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public void start() throws ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            SecurityException,  NoSuchMethodException,
+                            IllegalArgumentException, InvocationTargetException
+    {
 
         logger.info("Starting AuditLoggerPluginManager");
 
-        if (loggers == null || loggers.length() == 0 || notDefinedLoggersValue.equals(loggers)) {
+        if (loggers == null || loggers.isEmpty() || "${openATNA.auditLoggers}".equals(loggers)) {
             logger.info("No auditloggers defined. Using DefaultAuditLoggerImpl.");
             auditLoggers.add(new DefaultAuditLoggerImpl());
         } else {
@@ -28,13 +31,13 @@ public class AuditLoggerPluginManagerImpl implements AuditLoggerPluginManager {
             for (String clazz : classes) {
                 logger.info("Initializing auditlogger: '{}'", clazz);
                 Class<AuditLogger> c = (Class<AuditLogger>) Class.forName(clazz);
-                AuditLogger logger = c.newInstance();
-                auditLoggers.add(logger);
+                AuditLogger auditLogger = c.getDeclaredConstructor().newInstance();
+                auditLoggers.add(auditLogger);
             }
         }
 
         for (AuditLogger al : auditLoggers) {
-            logger.info("Starting auditlogger " + al.getClass().getName() + ".");
+            logger.info("Starting auditlogger {}.", al.getClass().getName());
             al.start();
         }
     }
@@ -54,7 +57,7 @@ public class AuditLoggerPluginManagerImpl implements AuditLoggerPluginManager {
     public void handleAuditEvent(HttpServletRequest request, Map<String, String> queryParameters, List<Long> messageEntityIds) {
 
         for (AuditLogger al : auditLoggers) {
-            logger.info("Forwarding auditEvent for auditlogger " + al.getClass().getName() + ".");
+            logger.info("Forwarding auditEvent for auditlogger {}.", al.getClass().getName());
             al.logViewRequest(request, queryParameters, messageEntityIds);
         }
     }

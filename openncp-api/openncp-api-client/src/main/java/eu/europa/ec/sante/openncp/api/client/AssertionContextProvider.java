@@ -16,4 +16,8 @@ public class AssertionContextProvider {
         Validate.notNull(assertionContext);
         threadLocalAssertionContext.set(assertionContext);
     }
+
+    public void unload() {
+        threadLocalAssertionContext.remove();
+    }
 }

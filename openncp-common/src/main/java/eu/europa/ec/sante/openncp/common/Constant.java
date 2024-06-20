@@ -2,7 +2,7 @@ package eu.europa.ec.sante.openncp.common;
 
 public enum Constant {
 
-    SERVER_IP("SERER_IP"),
+    SERVER_IP("SERVER_IP"),
     HOME_COMM_ID("HOME_COMM_ID"),
     COUNTRY_CODE("COUNTRY_CODE"),
     COUNTRY_NAME("COUNTRY_NAME"),

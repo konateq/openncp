@@ -59,13 +59,13 @@
                     <reportElement x="220" y="15" width="195" height="15" style="Arial_Small_Italic"/>
                     <text><![CDATA[Enterprise Site Id]]></text>
                 </staticText>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="20" y="30" width="195" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{sourceId}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="220" y="30" width="195" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{enterpriseSiteId}

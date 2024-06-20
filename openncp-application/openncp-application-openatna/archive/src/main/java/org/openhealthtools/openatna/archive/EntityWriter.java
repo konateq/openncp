@@ -136,7 +136,7 @@ public class EntityWriter {
             writer.writeEndElement();
         }
         Set<ObjectDescriptionEntity> descs = entity.getObjectDescriptions();
-        if (descs.size() > 0) {
+        if (!descs.isEmpty()) {
             writer.writeStartElement(DataConstants.OBJECT_DESCRIPTIONS);
             for (ObjectDescriptionEntity desc : descs) {
                 writer.writeStartElement(DataConstants.OBJECT_DESCRIPTION);

@@ -99,7 +99,6 @@ public class SMPSignFileController {
         String type = null;
 
         String contentFile = new String(Files.readAllBytes(Paths.get(smpFileOps.getFileToSign().getPath())));
-        //boolean valid = XMLValidator.validate(contentFile, "/bdx-smp-201605.xsd");
         if (!BdxSmpValidator.validateFile(contentFile)) {
             boolean fileDeleted = smpFileOps.getFileToSign().delete();
             logger.debug("Converted File deleted: '{}'", fileDeleted);

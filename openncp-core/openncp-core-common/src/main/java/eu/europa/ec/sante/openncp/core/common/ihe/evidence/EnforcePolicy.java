@@ -48,6 +48,8 @@ public class EnforcePolicy {
                 response = pdp.evaluate(myrequest);
             }
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbf.setXIncludeAware(false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.newDocument();
             ResponseMarshaller.marshal(response, doc);

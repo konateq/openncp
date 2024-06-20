@@ -11,13 +11,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @SpringBootApplication(scanBasePackages = {"eu.europa.ec.sante.openncp"})
 public class ClientWebServiceApplication extends SpringBootServletInitializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientWebServiceApplication.class);
+    private static final Logger loggerApplication = LoggerFactory.getLogger(ClientWebServiceApplication.class);
 
 
     public static void main(final String... args) {
         SpringApplication.run(eu.europa.ec.sante.openncp.application.client.ClientWebServiceApplication.class, args);
 
         final String serverMode = System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE);
-        LOGGER.info("Server Mode: '{}'", StringUtils.isNotBlank(serverMode) ? serverMode : "N/A");
+        loggerApplication.info("Server Mode: '{}'", StringUtils.isNotBlank(serverMode) ? serverMode : "N/A");
     }
 }

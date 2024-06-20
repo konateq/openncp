@@ -23,7 +23,7 @@ public abstract class AbstractHibernateDao<E> {
     private final Class<E> entityClass;
     private final SessionFactory sessionFactory;
 
-    public AbstractHibernateDao(Class<E> entityClass, SessionFactory sessionFactory) {
+    protected AbstractHibernateDao(Class<E> entityClass, SessionFactory sessionFactory) {
 
         if (entityClass == null) {
             throw new IllegalArgumentException("entityClass must not be null");
@@ -37,11 +37,11 @@ public abstract class AbstractHibernateDao<E> {
     }
 
     protected Criteria criteria() {
-        return currentSession().createCriteria(entityClass).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return currentSession().createCriteria(entityClass).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
     }
 
     protected Criteria criteria(Class entityClass) {
-        return currentSession().createCriteria(entityClass).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return currentSession().createCriteria(entityClass).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
     }
 
     protected Query createQuery(String hql) {
@@ -52,11 +52,11 @@ public abstract class AbstractHibernateDao<E> {
         return sessionFactory.getCurrentSession();
     }
 
-    protected List<? extends E> all() {
+    protected List<E> all() {
         return list(criteria());
     }
 
-    protected List<? extends E> all(int offset, int amount) {
+    protected List<E> all(int offset, int amount) {
 
         Criteria messageCriteria = criteria();
         Criteria idCriteria = criteria()
@@ -77,17 +77,17 @@ public abstract class AbstractHibernateDao<E> {
         return list(messageCriteria);
     }
 
-    public Class<? extends E> getEntityClass() {
+    public Class<E> getEntityClass() {
         return entityClass;
     }
 
     @SuppressWarnings("unchecked")
-    protected List<? extends E> list(Criteria criteria) {
+    protected List<E> list(Criteria criteria) {
         return criteria.list();
     }
 
     @SuppressWarnings("unchecked")
-    protected List<? extends E> list(Query query) {
+    protected List<E> list(Query query) {
         return query.list();
     }
 
@@ -101,8 +101,7 @@ public abstract class AbstractHibernateDao<E> {
         return (E) query.uniqueResult();
     }
 
-    @SuppressWarnings("unchecked")
     protected E get(Serializable id) {
-        return (E) currentSession().get(entityClass, id);
+        return currentSession().get(entityClass, id);
     }
 }

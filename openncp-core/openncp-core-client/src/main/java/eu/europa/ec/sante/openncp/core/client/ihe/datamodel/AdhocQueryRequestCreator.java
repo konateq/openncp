@@ -62,16 +62,17 @@ public class AdhocQueryRequestCreator {
         SlotType1 entryClassCode = new SlotType1();
         entryClassCode.setName(XCAConstants.AdHocQueryRequest.XDS_DOCUMENT_ENTRY_CLASSCODE_SLOT_NAME);
         ValueListType v3 = new ValueListType();
-        String documentEntryClassCode = "('";
-        for(GenericDocumentCode documentCode : documentCodes) {
+        StringBuilder documentEntryClassCodeBuilder = new StringBuilder();
 
-            //v3.getValue().add("('" + documentCode.getValue() + "^^" + documentCode.getSchema() + "')");
-            if(StringUtils.length(documentEntryClassCode) > 2) {
-                documentEntryClassCode += ",";
+        documentEntryClassCodeBuilder.append("('");
+        for(GenericDocumentCode documentCode : documentCodes) {
+            if(documentEntryClassCodeBuilder.length() > 2) {
+                documentEntryClassCodeBuilder.append(",");
             }
-            documentEntryClassCode += documentCode.getValue() + "^^" + documentCode.getSchema();
+            documentEntryClassCodeBuilder.append(documentCode.getValue()).append("^^").append(documentCode.getSchema());
         }
-        documentEntryClassCode += "')";
+        documentEntryClassCodeBuilder.append("')");
+        String documentEntryClassCode = documentEntryClassCodeBuilder.toString();
 
         v3.getValue().add(documentEntryClassCode);
         entryClassCode.setValueList(v3);

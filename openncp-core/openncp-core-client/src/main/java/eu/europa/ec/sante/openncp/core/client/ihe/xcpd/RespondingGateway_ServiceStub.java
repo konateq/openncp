@@ -261,18 +261,18 @@ public class RespondingGateway_ServiceStub extends Stub {
             messageContext.setEnvelope(env);
             _messageContext = messageContext;
 
-            /* add the message contxt to the operation client */
+            // add the message context to the operation client
             operationClient.addMessageContext(messageContext);
 
-            /* Log soap request */
+            // Log soap request
             String logRequestBody;
             try {
                 if (loggerClinical.isDebugEnabled() && !StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
                     String logRequestMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(env));
-                    loggerClinical.debug(XCPDConstants.LOG.OUTGOING_XCPD_MESSAGE + System.getProperty("line.separator") + logRequestMsg);
+                    loggerClinical.debug(XCPDConstants.LOG.OUTGOING_XCPD_MESSAGE, System.getProperty("line.separator") + logRequestMsg);
                 }
                 logRequestBody = XMLUtil.prettyPrint(XMLUtils.toDOM(env.getBody().getFirstElement()));
-                // NRO  NCPB_XCPD_REQ - LOGGER.info("XCPD Request sent. EVIDENCE NRO");
+                // NRO NCPB_XCPD_REQ - "XCPD Request sent. EVIDENCE NRO"
 
             } catch (Exception ex) {
                 throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC,ex.getMessage());

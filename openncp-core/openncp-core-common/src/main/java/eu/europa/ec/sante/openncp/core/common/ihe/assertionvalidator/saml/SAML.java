@@ -88,6 +88,8 @@ public class SAML {
 
         try {
             final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setXIncludeAware(false);
+            //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             factory.setNamespaceAware(true);
             builder = factory.newDocumentBuilder();
             this.issuerURL = issuerURL;

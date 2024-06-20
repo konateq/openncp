@@ -26,8 +26,6 @@ import org.openhealthtools.openatna.audit.persistence.AtnaPersistenceException;
 import org.openhealthtools.openatna.audit.persistence.PersistencePolicies;
 import org.openhealthtools.openatna.audit.persistence.dao.CodeDao;
 import org.openhealthtools.openatna.audit.persistence.model.codes.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -48,7 +46,10 @@ import java.util.List;
 @Transactional(rollbackFor = AtnaPersistenceException.class)
 public class HibernateCodeDao extends AbstractHibernateDao<CodeEntity> implements CodeDao {
 
-    private static Logger logger = LoggerFactory.getLogger(HibernateCodeDao.class);
+    private static final String CODE_SYSTEM_NAME = "codeSystemName";
+    private static final String CODE_SYSTEM = "codeSystem";
+    private static final String TYPE = "type";
+    private static final String CODE = "code";
 
     public HibernateCodeDao(SessionFactory sessionFactory) {
         super(CodeEntity.class, sessionFactory);
@@ -58,87 +59,87 @@ public class HibernateCodeDao extends AbstractHibernateDao<CodeEntity> implement
         return get(id);
     }
 
-    public List<? extends CodeEntity> getByType(CodeEntity.CodeType type) {
+    public List<CodeEntity> getByType(CodeEntity.CodeType type) {
         return list(criteria(fromCodeType(type)));
     }
 
-    public List<? extends CodeEntity> getByCode(String code) {
-        return list(criteria().add(Restrictions.eq("code", code)));
+    public List<CodeEntity> getByCode(String code) {
+        return list(criteria().add(Restrictions.eq(CODE, code)));
     }
 
-    public List<? extends CodeEntity> getByCodeAndType(CodeEntity.CodeType type, String code) {
+    public List<CodeEntity> getByCodeAndType(CodeEntity.CodeType type, String code) {
 
         // first see if someone was lazy and didn't use the name of the RFC
-        List<? extends CodeEntity> ce = list(criteria()
-                .add(Restrictions.eq("type", type))
-                .add(Restrictions.eq("code", code))
-                .add(Restrictions.eq("codeSystemName", "RFC-3881")));
+        List<CodeEntity> ce = list(criteria()
+                .add(Restrictions.eq(TYPE, type))
+                .add(Restrictions.eq(CODE, code))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, "RFC-3881")));
         if (ce != null) {
             return ce;
         }
         // look for codes with an empty system name
         ce = list(criteria()
-                .add(Restrictions.eq("type", type))
-                .add(Restrictions.eq("code", code))
-                .add(Restrictions.eq("codeSystemName", "")));
+                .add(Restrictions.eq(TYPE, type))
+                .add(Restrictions.eq(CODE, code))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, "")));
         if (ce != null) {
             return ce;
         }
         // look for codes with a null system name
         return list(criteria()
-                .add(Restrictions.eq("type", type))
-                .add(Restrictions.eq("code", code))
-                .add(Restrictions.isNull("codeSystemName")));
+                .add(Restrictions.eq(TYPE, type))
+                .add(Restrictions.eq(CODE, code))
+                .add(Restrictions.isNull(CODE_SYSTEM_NAME)));
     }
 
-    public List<? extends CodeEntity> getByCodeSystem(String codeSystem) {
-        return list(criteria().add(Restrictions.eq("codeSystem", codeSystem)));
+    public List<CodeEntity> getByCodeSystem(String codeSystem) {
+        return list(criteria().add(Restrictions.eq(CODE_SYSTEM, codeSystem)));
     }
 
-    public List<? extends CodeEntity> getByCodeSystemName(String codeSystemName) {
-        return list(criteria().add(Restrictions.eq("codeSystemName", codeSystemName)));
+    public List<CodeEntity> getByCodeSystemName(String codeSystemName) {
+        return list(criteria().add(Restrictions.eq(CODE_SYSTEM_NAME, codeSystemName)));
     }
 
     public CodeEntity getByCodeAndSystem(CodeEntity.CodeType type, String code, String codeSystem) {
 
         return uniqueResult(criteria()
-                .add(Restrictions.eq("type", type))
-                .add(Restrictions.eq("code", code))
-                .add(Restrictions.eq("codeSystem", codeSystem)));
+                .add(Restrictions.eq(TYPE, type))
+                .add(Restrictions.eq(CODE, code))
+                .add(Restrictions.eq(CODE_SYSTEM, codeSystem)));
     }
 
     public CodeEntity getByCodeAndSystemName(CodeEntity.CodeType type, String code, String codeSystemName) {
 
         return uniqueResult(criteria()
-                .add(Restrictions.eq("type", type))
-                .add(Restrictions.eq("code", code))
-                .add(Restrictions.eq("codeSystemName", codeSystemName)));
+                .add(Restrictions.eq(TYPE, type))
+                .add(Restrictions.eq(CODE, code))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, codeSystemName)));
 
     }
 
-    public List<? extends CodeEntity> getBySystemAndType(String codeSystem, CodeEntity.CodeType type) {
+    public List<CodeEntity> getBySystemAndType(String codeSystem, CodeEntity.CodeType type) {
 
-        return list(criteria(fromCodeType(type)).add(Restrictions.eq("codeSystem", codeSystem)));
+        return list(criteria(fromCodeType(type)).add(Restrictions.eq(CODE_SYSTEM, codeSystem)));
     }
 
-    public List<? extends CodeEntity> getBySystemNameAndType(String codeSystemName, CodeEntity.CodeType type) {
+    public List<CodeEntity> getBySystemNameAndType(String codeSystemName, CodeEntity.CodeType type) {
 
-        return list(criteria(fromCodeType(type)).add(Restrictions.eq("codeSystemName", codeSystemName)));
+        return list(criteria(fromCodeType(type)).add(Restrictions.eq(CODE_SYSTEM_NAME, codeSystemName)));
     }
 
     public CodeEntity getByCodeAndSystemAndSystemName(CodeEntity.CodeType type, String code, String codeSystem, String codeSystemName) {
 
-        return uniqueResult(criteria().add(Restrictions.eq("codeSystemName", codeSystemName))
-                .add(Restrictions.eq("code", code))
-                .add(Restrictions.eq("type", type))
-                .add(Restrictions.eq("codeSystem", codeSystem)));
+        return uniqueResult(criteria().add(Restrictions.eq(CODE_SYSTEM_NAME, codeSystemName))
+                .add(Restrictions.eq(CODE, code))
+                .add(Restrictions.eq(TYPE, type))
+                .add(Restrictions.eq(CODE_SYSTEM, codeSystem)));
     }
 
-    public List<? extends CodeEntity> getAll() throws AtnaPersistenceException {
+    public List<CodeEntity> getAll() throws AtnaPersistenceException {
         return all();
     }
 
-    public List<? extends CodeEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
+    public List<CodeEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
         return all(offset, amount);
     }
 
@@ -178,26 +179,23 @@ public class HibernateCodeDao extends AbstractHibernateDao<CodeEntity> implement
             throw new AtnaPersistenceException("no code in code entity",
                     AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
         }
-        if ((sys == null || sys.length() == 0) && (name == null || name.length() == 0)) {
-            List<? extends CodeEntity> l = getByCodeAndType(code.getType(), c);
+        if ((sys == null || sys.isEmpty()) && (name == null || name.isEmpty())) {
+            List<CodeEntity> l = getByCodeAndType(code.getType(), c);
             if (l.size() == 1) {
                 return l.get(0);
             }
         }
-        CodeEntity ret = null;
-        if ((sys != null && sys.length() > 0 && (name != null && name.length() > 0))) {
-            ret = getByCodeAndSystemAndSystemName(code.getType(), c, sys, name);
-        }
+        CodeEntity ret = getCodeEntity(code, sys, name, c);
         if (ret != null) {
             return ret;
         }
-        if (sys != null && sys.length() > 0) {
+        if (sys != null && !sys.isEmpty()) {
             ret = getByCodeAndSystem(code.getType(), c, sys);
         }
         if (ret != null) {
             return ret;
         }
-        if (name != null && name.length() > 0) {
+        if (name != null && !name.isEmpty()) {
             ret = getByCodeAndSystemName(code.getType(), c, name);
         }
         if (ret != null) {
@@ -206,7 +204,15 @@ public class HibernateCodeDao extends AbstractHibernateDao<CodeEntity> implement
         return ret;
     }
 
-    private Class fromCodeType(CodeEntity.CodeType type) {
+    private CodeEntity getCodeEntity(CodeEntity code, String sys, String name, String c) {
+        CodeEntity ret = null;
+        if ((sys != null && !sys.isEmpty() && (name != null && !name.isEmpty()))) {
+            ret = getByCodeAndSystemAndSystemName(code.getType(), c, sys, name);
+        }
+        return ret;
+    }
+
+    private Class<?> fromCodeType(CodeEntity.CodeType type) {
 
         switch (type) {
             case EVENT_ID:
