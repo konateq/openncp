@@ -6,6 +6,8 @@ import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -47,9 +49,11 @@ public abstract class AbstractResourceTranslationService<R extends Resource> imp
             coding.ifPresent(value -> {
                 final var translatedValue = getTranslation(value, targetLanguage);
                 Validate.notNull(translatedValue);
-                errors.addAll(translatedValue.getErrors());
-                warnings.addAll(translatedValue.getWarnings());
-                ToolingExtensions.addLanguageTranslation(value.getDisplayElement(), targetLanguage, translatedValue.getDesignation());
+                errors.addAll(CollectionUtils.emptyIfNull(translatedValue.getErrors()));
+                warnings.addAll(CollectionUtils.emptyIfNull(translatedValue.getWarnings()));
+                if (!StringUtils.isNotEmpty(translatedValue.getDesignation())) {
+                    ToolingExtensions.addLanguageTranslation(value.getDisplayElement(), targetLanguage, translatedValue.getDesignation());
+                }
             });
         }
     }

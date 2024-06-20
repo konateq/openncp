@@ -1,5 +1,8 @@
 package eu.europa.ec.sante.openncp.core.common.tsam.config;
 
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
 public class TsamConfiguration {
     /**
      * Code of a language, which country B uses for designations in pivot
@@ -13,7 +16,7 @@ public class TsamConfiguration {
     private String transcodingLang;
 
 
-    private TsamConfiguration() {
+    public TsamConfiguration() {
     }
 
     /**
@@ -23,7 +26,7 @@ public class TsamConfiguration {
         return translationLang;
     }
 
-    public void setTranslationLang(String translationLang) {
+    public void setTranslationLang(final String translationLang) {
         this.translationLang = translationLang;
     }
 
@@ -34,13 +37,13 @@ public class TsamConfiguration {
         return transcodingLang;
     }
 
-    public void setTranscodingLang(String transcofingLang) {
+    public void setTranscodingLang(final String transcofingLang) {
         this.transcodingLang = transcofingLang;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("TsamConfiguration [");
         if (transcodingLang != null) {
             builder.append("transcodingLang=");

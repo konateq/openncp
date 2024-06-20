@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,8 +27,8 @@ public class TranscodingServiceImpl implements TranscodingService {
 
     @Override
     public TMResponseStructure transcode(final Bundle fhirDocument) {
-        final List<ITMTSAMError> errors = Collections.emptyList();
-        final List<ITMTSAMError> warnings = Collections.emptyList();
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
         fhirDocument.getEntry().forEach(bundleEntryComponent -> {
             final Resource resource = bundleEntryComponent.getResource();
             retrieveTranscodingLogic(resource).ifPresentOrElse(resourceTranscodingService -> resourceTranscodingService.transcode(resource, errors, warnings),

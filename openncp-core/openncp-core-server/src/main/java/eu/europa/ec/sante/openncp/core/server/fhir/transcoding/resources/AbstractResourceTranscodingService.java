@@ -6,15 +6,20 @@ import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractResourceTranscodingService<R extends Resource> implements ResourceTranscodingService<R> {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractResourceTranscodingService.class);
 
     private final TerminologyService terminologyService;
 
@@ -43,18 +48,23 @@ public abstract class AbstractResourceTranscodingService<R extends Resource> imp
     private Optional<Coding> getTranscoding(final Coding coding, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
         final TSAMResponseStructure tsamTranscodingResponse = terminologyService.getTargetConcept(CodeConcept.from(coding));
         Validate.notNull(tsamTranscodingResponse);
-        errors.addAll(tsamTranscodingResponse.getErrors());
-        warnings.addAll(tsamTranscodingResponse.getWarnings());
-        final Coding targetCoding = new Coding(CodeSystem.getUrlBasedOnOid(tsamTranscodingResponse.getCodeSystem()),
-                                               tsamTranscodingResponse.getCode(), tsamTranscodingResponse.getDesignation()).setVersion(tsamTranscodingResponse.getCodeSystemVersion());
-        targetCoding.setUserSelected(false);
+        errors.addAll(CollectionUtils.emptyIfNull(tsamTranscodingResponse.getErrors()));
+        warnings.addAll(CollectionUtils.emptyIfNull(tsamTranscodingResponse.getWarnings()));
+        if (tsamTranscodingResponse.getCode() != null) {
+            final Coding targetCoding = new Coding(CodeSystem.getUrlBasedOnOid(tsamTranscodingResponse.getCodeSystem()),
+                    tsamTranscodingResponse.getCode(), tsamTranscodingResponse.getDesignation()).setVersion(tsamTranscodingResponse.getCodeSystemVersion());
+            targetCoding.setUserSelected(false);
 
-        final TSAMResponseStructure tsamTranslationResponse = terminologyService.getDesignation(CodeConcept.from(targetCoding), "en-GB");
-        Validate.notNull(tsamTranslationResponse);
-        errors.addAll(tsamTranslationResponse.getErrors());
-        warnings.addAll(tsamTranslationResponse.getWarnings());
-        ToolingExtensions.addLanguageTranslation(targetCoding.getDisplayElement(), "en-GB", tsamTranslationResponse.getDesignation());
-        return Optional.of(targetCoding);
+            final TSAMResponseStructure tsamTranslationResponse = terminologyService.getDesignation(CodeConcept.from(targetCoding), "en-GB");
+            Validate.notNull(tsamTranslationResponse);
+            errors.addAll(CollectionUtils.emptyIfNull(tsamTranslationResponse.getErrors()));
+            warnings.addAll(CollectionUtils.emptyIfNull(tsamTranslationResponse.getWarnings()));
+            ToolingExtensions.addLanguageTranslation(targetCoding.getDisplayElement(), "en-GB", tsamTranslationResponse.getDesignation());
+            return Optional.of(targetCoding);
+        } else {
+            LOGGER.warn("No mapping found for code {} from codeSystem {}", coding.getCode(), coding.getSystem());
+            return Optional.empty();
+        }
     }
 
     protected Optional<Coding> retrieveCoding(final CodeableConcept codeableConcept) {

@@ -10,6 +10,7 @@ import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Resource;
 import org.junit.Assert;
+
 import static org.mockito.Mockito.when;
 
 public abstract class AbstractTranscodingServiceTest {
@@ -19,17 +20,17 @@ public abstract class AbstractTranscodingServiceTest {
     // Instantiate a new parser
     final protected IParser parser = ctx.newJsonParser();
 
-    protected void assertFhirResourcesAreEqual(Resource resource1, Resource resource2) {
+    protected void assertFhirResourcesAreEqual(final Resource resource1, final Resource resource2) {
         Assert.assertEquals(parser.encodeResourceToString(resource1), parser.encodeResourceToString(resource2));
     }
 
-    protected void mockTranscoding (TerminologyService terminologyService, Coding coding, CodeConcept targetCodeConcept, String targetLanguage) {
+    protected void mockTranscoding(final TerminologyService terminologyService, final Coding coding, final CodeConcept targetCodeConcept, final String targetLanguage) {
         final TSAMResponseStructure tsamResponseStructureTranscoding = new TSAMResponseStructure(targetCodeConcept);
-        CodeConcept codeConcept = CodeConcept.from(coding);
+        final CodeConcept codeConcept = CodeConcept.from(coding);
         tsamResponseStructureTranscoding.setCode(targetCodeConcept.getCode());
         targetCodeConcept.getCodeSystemOid().ifPresent(codeSystemOid -> tsamResponseStructureTranscoding.setCodeSystem(codeSystemOid));
         targetCodeConcept.getCodeSystemUrl().ifPresent(codeSystemUrl -> tsamResponseStructureTranscoding.setCodeSystem(codeSystemUrl));
-        tsamResponseStructureTranscoding.setCodeSystemVersion(targetCodeConcept.getCodeSystemVersion());
+        targetCodeConcept.getCodeSystemVersion().ifPresent(codeSystemVersion -> tsamResponseStructureTranscoding.setCodeSystemVersion(codeSystemVersion));
         tsamResponseStructureTranscoding.setCodeSystemName(targetCodeConcept.getCodeSystemName().get());
         tsamResponseStructureTranscoding.setDesignation(targetCodeConcept.getDisplayName().get());
         when(terminologyService.getTargetConcept(codeConcept)).thenReturn(tsamResponseStructureTranscoding);

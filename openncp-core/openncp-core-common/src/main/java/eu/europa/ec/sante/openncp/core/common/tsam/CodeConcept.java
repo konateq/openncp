@@ -4,7 +4,6 @@ import eu.europa.ec.sante.openncp.common.immutables.Domain;
 import eu.europa.ec.sante.openncp.core.common.ihe.tsam.util.CodedElement;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Coding;
-import org.immutables.value.Value;
 import org.w3c.dom.Element;
 
 import java.util.Optional;
@@ -14,7 +13,7 @@ public interface CodeConcept {
 
     String getCode();
 
-    String getCodeSystemVersion();
+    Optional<String> getCodeSystemVersion();
 
     Optional<String> getCodeSystemOid();
 
@@ -28,7 +27,7 @@ public interface CodeConcept {
 
     Optional<String> getDisplayName();
 
-    static CodeConcept from(CodedElement codedElement) {
+    static CodeConcept from(final CodedElement codedElement) {
         Validate.notNull(codedElement);
         return ImmutableCodeConcept.builder()
                 .code(codedElement.getCode())
@@ -40,7 +39,7 @@ public interface CodeConcept {
                 .build();
     }
 
-    static CodeConcept from(Element iheElement, String valueSetOid, String valueSetVersion) {
+    static CodeConcept from(final Element iheElement, final String valueSetOid, final String valueSetVersion) {
         Validate.notNull(iheElement);
         Validate.notNull(valueSetOid);
         Validate.notNull(valueSetVersion);
@@ -56,11 +55,11 @@ public interface CodeConcept {
                 .build();
     }
 
-    static CodeConcept from(Coding coding) {
+    static CodeConcept from(final Coding coding) {
         Validate.notNull(coding);
         return ImmutableCodeConcept.builder()
                 .code(coding.getCode())
-                .codeSystemVersion(coding.getVersion())
+                .codeSystemVersion(Optional.ofNullable(coding.getVersion()))
                 .codeSystemName(Optional.ofNullable(coding.getSystem()))
                 .codeSystemUrl(Optional.ofNullable(coding.getSystem()))
                 .displayName(Optional.ofNullable(coding.getDisplay()))
