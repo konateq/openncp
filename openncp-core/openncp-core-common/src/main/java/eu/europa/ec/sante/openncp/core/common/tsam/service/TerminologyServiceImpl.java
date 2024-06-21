@@ -102,42 +102,41 @@ public class TerminologyServiceImpl implements TerminologyService {
 
             if (concept.isEmpty()) {
                 return response;
+            }
+            final CodeSystemConcept codeSystemConcept = concept.get();
+            checkConceptStatus(codeSystemConcept, response);
+
+            // obtain Target Concept and Designation
+            CodeSystemConcept target = dao.getTargetConcept(codeSystemConcept);
+            final List<Designation> designations;
+            if (target == null) {
+                logger.debug("No target concept found. Retrieve designation for source concept.");
+                target = codeSystemConcept;
+                designations = dao.getSourceDesignation(target);
             } else {
-                final CodeSystemConcept codeSystemConcept = concept.get();
-                checkConceptStatus(codeSystemConcept, response);
+                designations = dao.getDesignation(target, config.getTranscodingLang());
+            }
+            checkConceptStatus(target, response);
 
-                // obtain Target Concept and Designation
-                CodeSystemConcept target = dao.getTargetConcept(codeSystemConcept);
-                final List<Designation> designations;
-                if (target == null) {
-                    // if target concept is null, get designation for source concept
-                    target = codeSystemConcept;
-                    designations = dao.getSourceDesignation(target);
-                } else {
-                    designations = dao.getDesignation(target, config.getTranscodingLang());
-                }
-                checkConceptStatus(target, response);
+            final Designation designation = designations.get(0);
+            if (target != null) {
 
-                final Designation designation = designations.get(0);
-                if (target != null) {
+                response.setCode(target.getCode());
+                response.setDesignation(designation.getDesignation());
 
-                    response.setCode(target.getCode());
-                    response.setDesignation(designation.getDesignation());
+                // obtain Target Code System Version
+                final CodeSystemVersion targetVersion = target.getCodeSystemVersion();
+                checkTargetVersion(targetVersion);
+                response.setCodeSystemVersion(targetVersion.getLocalName());
 
-                    // obtain Target Code System Version
-                    final CodeSystemVersion targetVersion = target.getCodeSystemVersion();
-                    checkTargetVersion(targetVersion);
-                    response.setCodeSystemVersion(targetVersion.getLocalName());
+                // obtain Target Code System
+                final CodeSystem targetCodeSystem = targetVersion.getCodeSystem();
+                checkTargetCodeSystem(targetCodeSystem);
+                response.setCodeSystem(targetCodeSystem.getOid());
+                response.setCodeSystemName(targetCodeSystem.getName());
 
-                    // obtain Target Code System
-                    final CodeSystem targetCodeSystem = targetVersion.getCodeSystem();
-                    checkTargetCodeSystem(targetCodeSystem);
-                    response.setCodeSystem(targetCodeSystem.getOid());
-                    response.setCodeSystemName(targetCodeSystem.getName());
-
-                    checkValueSet(codeSystemConcept, codeConcept, response);
-                    checkManyDesignations(response, designations);
-                }
+                checkValueSet(codeSystemConcept, codeConcept, response);
+                checkManyDesignations(response, designations);
             }
         } catch (final TSAMException e) {
             // TSAM Exception considered as Warning
