@@ -123,7 +123,6 @@ public class FhirConfiguration {
 
         private final List<IServerInterceptor> interceptors;
         private final OpenApiInterceptor openApiInterceptor;
-        private final BalpAuditCaptureInterceptor auditInterceptor;
         private final List<FhirCustomInterceptor> fhirCustomInterceptors;
         private final IPagingProvider pagingProvider;
         private final EuCorsInterceptor euCorsInterceptor;

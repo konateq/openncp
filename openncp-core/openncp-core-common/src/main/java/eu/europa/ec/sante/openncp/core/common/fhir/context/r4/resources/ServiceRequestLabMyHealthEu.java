@@ -4,7 +4,7 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.r4.model.ServiceRequest;
 
 @ResourceDef(name = "ServiceRequestLabMyHealthEu", profile = DiagnosticReportLabMyHealthEu.PROFILE)
-public class ServiceRequestLabMyHealthEu extends ServiceRequest {
+public class ServiceRequestLabMyHealthEu extends ServiceRequest implements CustomResource {
 
-    public static final String PROFILE = "http://fhir.ehdsi.eu/laboratory/StructureDefinition/ServiceRequest-lab-myhealtheu";
+    protected static final String PROFILE = "http://fhir.ehdsi.eu/laboratory/StructureDefinition/ServiceRequest-lab-myhealtheu";
 }

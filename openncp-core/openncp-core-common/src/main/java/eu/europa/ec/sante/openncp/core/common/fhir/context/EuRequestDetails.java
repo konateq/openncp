@@ -4,11 +4,15 @@ import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import eu.europa.ec.sante.openncp.common.immutables.Domain;
 import eu.europa.ec.sante.openncp.core.common.CountryCode;
+import org.immutables.value.Value;
+
+import java.util.Optional;
 
 @Domain
 public interface EuRequestDetails {
     RequestDetails getHapiRequestDetails();
 
+    @Value.Derived
     default CountryCode getCountryCode() {
         final String countryCode = getHapiRequestDetails().getHeader("CountryCode");
         if (countryCode == null) {
@@ -19,6 +23,23 @@ public interface EuRequestDetails {
 
     default RestOperationTypeEnum getRestOperationType() {
         return getHapiRequestDetails().getRestOperationType();
+    }
+
+    @Value.Derived
+    default Optional<FhirSupportedResourceType> getSupportedResourceType() {
+        return FhirSupportedResourceType.ofRequestPath(getHapiRequestDetails().getRequestPath());
+    }
+
+    @Value.Derived
+    default String getResource() {
+        return getSupportedResourceType()
+                .map(FhirSupportedResourceType::getRestRequestPath)
+                .map(FhirSupportedResourceType.RestRequestPath::getValue)
+                .orElseGet(() -> getHapiRequestDetails().getRequestPath());
+    }
+
+    default Optional<String> getResourceId() {
+        return Optional.empty();
     }
 
     static EuRequestDetails of(final RequestDetails requestDetails) {

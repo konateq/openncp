@@ -382,12 +382,13 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
         final HashMap<String, String> hmReffId_DisplayName = new HashMap<>();
 
         if (config.isConfigurableElementIdentification()) {
+
             final Collection<CodedElementListItem> ceList = codedElementList.getList(cdaDocumentType);
             logger.info("Configurable Element Identification is set, CodedElementList for '{}' contains elements: '{}'",
                     cdaDocumentType, ceList.size());
             if (logger.isDebugEnabled()) {
                 for (final CodedElementListItem listItem : ceList) {
-                    logger.debug("Usage: '{}', XPath: '{}', ValueSet: '{}'", listItem.getUsage(), listItem.getxPath(), listItem.getValueSet());
+                    logger.debug("Usage: '{}', XPath: '{}', VgalueSet: '{}'", listItem.getUsage(), listItem.getxPath(), listItem.getValueSet());
                 }
             }
             if (ceList.isEmpty()) {

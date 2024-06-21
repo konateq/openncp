@@ -6,7 +6,7 @@ import org.hl7.fhir.r4.model.Composition;
 @ResourceDef(name = "Composition", profile = CompositionLabReportMyHealthEu.PROFILE)
 public class CompositionLabReportMyHealthEu extends Composition {
 
-    public static final String PROFILE = "http://fhir.ehdsi.eu/laboratory/StructureDefinition/Composition-lab-myhealtheu";
+    protected static final String PROFILE = "http://fhir.ehdsi.eu/laboratory/StructureDefinition/Composition-lab-myhealtheu";
 
 //    @Child(name = "text", type = { Narrative.class }, order = 5, min = 0, max = 1, modifier = false, summary = false)
 //    @Description(shortDefinition = "Narrative text", value = "Narrative text")
