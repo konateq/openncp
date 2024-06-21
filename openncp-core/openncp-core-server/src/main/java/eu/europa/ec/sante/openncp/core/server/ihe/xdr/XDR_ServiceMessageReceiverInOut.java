@@ -18,6 +18,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.eadc.EadcUtilWrapper;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
 import org.apache.axiom.om.*;
+import org.apache.axiom.om.ds.AbstractOMDataSource;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
@@ -218,32 +219,6 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
 
     }
 
-    private OMElement toOM(ProvideAndRegisterDocumentSetRequestType param) throws AxisFault {
-
-        try {
-            OMFactory factory = OMAbstractFactory.getOMFactory();
-            Marshaller marshaller = wsContext.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-
-            JaxbRIDataSource source = new JaxbRIDataSource(ProvideAndRegisterDocumentSetRequestType.class,
-                    param, marshaller, "urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSetRequest");
-            OMNamespace namespace = factory.createOMNamespace("urn:ihe:iti:xds-b:2007", null);
-
-            return factory.createOMElement(source, "ProvideAndRegisterDocumentSetRequest", namespace);
-
-        } catch (JAXBException bex) {
-            throw AxisFault.makeFault(bex);
-        }
-    }
-
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, ProvideAndRegisterDocumentSetRequestType param) throws AxisFault {
-
-        SOAPEnvelope envelope = factory.getDefaultEnvelope();
-        envelope.getBody().addChild(toOM(param));
-
-        return envelope;
-    }
-
     private OMElement toOM(RegistryResponseType param) throws AxisFault {
 
         try {
@@ -318,7 +293,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         return axisFault;
     }
 
-    class JaxbRIDataSource implements OMDataSource {
+    class JaxbRIDataSource extends AbstractOMDataSource {
 
         /**
          * Bound object for output.
@@ -355,7 +330,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
             this.name = name;
         }
 
-        public void serialize(OutputStream output, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(OutputStream output) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
@@ -365,7 +340,7 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
             }
         }
 
-        public void serialize(Writer writer, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(Writer writer) throws XMLStreamException {
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), writer);
 
@@ -397,6 +372,16 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
             } catch (JAXBException e) {
                 throw new XMLStreamException("Error in JAXB marshalling", e);
             }
+        }
+
+        @Override
+        public boolean isDestructiveRead() {
+            return false;
+        }
+
+        @Override
+        public boolean isDestructiveWrite() {
+            return false;
         }
     }
 }

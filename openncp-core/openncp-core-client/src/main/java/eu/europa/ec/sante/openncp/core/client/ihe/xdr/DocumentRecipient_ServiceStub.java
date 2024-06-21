@@ -28,6 +28,7 @@ import eu.europa.ec.sante.openncp.core.common.ssl.HttpsClientConfiguration;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.*;
+import org.apache.axiom.om.ds.AbstractOMDataSource;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -565,7 +566,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
     private void populateFaults() {
     }
 
-    static class JaxbRIDataSource implements OMDataSource {
+    static class JaxbRIDataSource extends AbstractOMDataSource {
 
         /**
          * Bound object for output.
@@ -604,10 +605,9 @@ public class DocumentRecipient_ServiceStub extends Stub {
 
         /**
          * @param output
-         * @param format
          * @throws XMLStreamException
          */
-        public void serialize(OutputStream output, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(OutputStream output) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
@@ -618,10 +618,9 @@ public class DocumentRecipient_ServiceStub extends Stub {
 
         /**
          * @param writer
-         * @param format
          * @throws XMLStreamException
          */
-        public void serialize(Writer writer, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(Writer writer) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), writer);
@@ -661,6 +660,16 @@ public class DocumentRecipient_ServiceStub extends Stub {
             } catch (JAXBException e) {
                 throw new XMLStreamException(XDRConstants.EXCEPTIONS.ERROR_JAXB_MARSHALLING, e);
             }
+        }
+
+        @Override
+        public boolean isDestructiveRead() {
+            return false;
+        }
+
+        @Override
+        public boolean isDestructiveWrite() {
+            return false;
         }
     }
 }
