@@ -26,6 +26,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
 import eu.europa.ec.sante.openncp.core.common.ssl.HttpsClientConfiguration;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import org.apache.axiom.om.*;
+import org.apache.axiom.om.ds.AbstractOMDataSource;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -1127,7 +1128,7 @@ public class RespondingGateway_ServiceStub extends Stub {
     /**
      * Inner JAXBRIDataSource class
      */
-    class JaxbRIDataSource implements OMDataSource {
+    class JaxbRIDataSource extends AbstractOMDataSource {
 
         /**
          * Bound object for output.
@@ -1166,7 +1167,7 @@ public class RespondingGateway_ServiceStub extends Stub {
         }
 
         @SuppressWarnings("unchecked")
-        public void serialize(OutputStream output, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(OutputStream output) throws XMLStreamException {
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
             } catch (JAXBException e) {
@@ -1175,7 +1176,7 @@ public class RespondingGateway_ServiceStub extends Stub {
         }
 
         @SuppressWarnings("unchecked")
-        public void serialize(Writer writer, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(Writer writer) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), writer);
@@ -1206,6 +1207,16 @@ public class RespondingGateway_ServiceStub extends Stub {
             } catch (JAXBException e) {
                 throw new XMLStreamException(XCAConstants.EXCEPTIONS.ERROR_JAXB_MARSHALLING, e);
             }
+        }
+
+        @Override
+        public boolean isDestructiveRead() {
+            return false;
+        }
+
+        @Override
+        public boolean isDestructiveWrite() {
+            return false;
         }
     }
 }

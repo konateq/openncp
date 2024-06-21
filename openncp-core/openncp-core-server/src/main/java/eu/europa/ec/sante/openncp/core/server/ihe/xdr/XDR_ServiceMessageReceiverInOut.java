@@ -213,7 +213,6 @@ public class XDR_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
                 EadcUtilWrapper.invokeEadcFailure(msgContext, newMsgContext, null, eDispenseCda, startTime, endTime,
                         Constants.COUNTRY_CODE, EadcEntry.DsTypes.EADC, EadcUtil.Direction.INBOUND,
                         ServiceType.DOCUMENT_EXCHANGED_RESPONSE, eadcError);
-                eadcError = "";
             }
         }
 

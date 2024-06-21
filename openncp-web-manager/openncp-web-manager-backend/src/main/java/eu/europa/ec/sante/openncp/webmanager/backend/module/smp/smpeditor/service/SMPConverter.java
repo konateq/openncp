@@ -164,7 +164,7 @@ public class SMPConverter {
 
                                 for (Certificate certificate : certs) {
                                     logger.debug("Certificate Info: '{}' - '{}'", ((X509Certificate) certificate).getSerialNumber(),
-                                            ((X509Certificate) certificate).getSubjectDN().getName());
+                                            ((X509Certificate) certificate).getSubjectX500Principal().getName());
                                 }
                             }
                             if (certs[0] instanceof X509Certificate) {
