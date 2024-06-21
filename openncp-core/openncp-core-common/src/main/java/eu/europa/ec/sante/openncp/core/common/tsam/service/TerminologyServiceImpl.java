@@ -33,7 +33,7 @@ public class TerminologyServiceImpl implements TerminologyService {
     private TsamDao dao;
     private TsamConfiguration config;
 
-    public TerminologyServiceImpl(TsamDao dao, TsamConfiguration config) {
+    public TerminologyServiceImpl(final TsamDao dao, final TsamConfiguration config) {
         this.dao = Validate.notNull(dao);
         this.config = Validate.notNull(config);
     }
@@ -141,7 +141,7 @@ public class TerminologyServiceImpl implements TerminologyService {
             }
         } catch (final TSAMException e) {
             // TSAM Exception considered as Warning
-            logger.error("TSAMException: '{}'", e.getMessage());
+            logger.error("TSAMException: '{}'", e.getReason().getDescription());
             response.addError(e.getReason(), codeConcept.toString());
             logger.error(codeConcept + ", " + e, e);
         } catch (final Exception e) {

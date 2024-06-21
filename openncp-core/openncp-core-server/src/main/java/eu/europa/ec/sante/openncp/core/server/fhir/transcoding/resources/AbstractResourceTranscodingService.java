@@ -62,7 +62,7 @@ public abstract class AbstractResourceTranscodingService<R extends Resource> imp
             ToolingExtensions.addLanguageTranslation(targetCoding.getDisplayElement(), "en-GB", tsamTranslationResponse.getDesignation());
             return Optional.of(targetCoding);
         } else {
-            LOGGER.warn("No mapping found for code {} from codeSystem {}", coding.getCode(), coding.getSystem());
+            LOGGER.warn("No mapping found for code [{}] from codeSystem [{}]", coding.getCode(), coding.getSystem());
             return Optional.empty();
         }
     }

@@ -51,7 +51,7 @@ public abstract class AbstractResourceTranslationService<R extends Resource> imp
                 Validate.notNull(translatedValue);
                 errors.addAll(CollectionUtils.emptyIfNull(translatedValue.getErrors()));
                 warnings.addAll(CollectionUtils.emptyIfNull(translatedValue.getWarnings()));
-                if (!StringUtils.isNotEmpty(translatedValue.getDesignation())) {
+                if (StringUtils.isNotEmpty(translatedValue.getDesignation())) {
                     ToolingExtensions.addLanguageTranslation(value.getDisplayElement(), targetLanguage, translatedValue.getDesignation());
                 }
             });

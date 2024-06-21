@@ -370,7 +370,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
     private void processDocument(final Document document, final String targetLanguageCode, final List<ITMTSAMError> errors,
                                  final List<ITMTSAMError> warnings, final String cdaDocumentType, final boolean isTranscode) {
 
-        //TODO: Check is an attribute shall/can also be translated anr/or transcoded like the XML element.
+        //TODO: Check is an attribute shall/can also be translated and/or transcoded like the XML element.
         logger.info("Processing Document '{}' to target Language: '{}' Transcoding: '{}'", cdaDocumentType, targetLanguageCode, isTranscode);
         // hashMap for ID of referencedValues and transcoded/translated DisplayNames
         final HashMap<String, String> hmReffId_DisplayName = new HashMap<>();

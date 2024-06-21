@@ -2,6 +2,7 @@ package eu.europa.ec.sante.openncp.core.common.tsam;
 
 import eu.europa.ec.sante.openncp.common.immutables.Domain;
 import eu.europa.ec.sante.openncp.core.common.ihe.tsam.util.CodedElement;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Coding;
 import org.w3c.dom.Element;
@@ -41,17 +42,15 @@ public interface CodeConcept {
 
     static CodeConcept from(final Element iheElement, final String valueSetOid, final String valueSetVersion) {
         Validate.notNull(iheElement);
-        Validate.notNull(valueSetOid);
-        Validate.notNull(valueSetVersion);
 
         return ImmutableCodeConcept.builder()
                 .code(iheElement.getAttribute("code"))
-                .codeSystemVersion(iheElement.getAttribute("codeSystemVersion"))
-                .codeSystemName(iheElement.getAttribute("codeSystemName"))
+                .codeSystemVersion(Optional.of(iheElement.getAttribute("codeSystemVersion")).filter(StringUtils::isNotBlank))
+                .codeSystemName(Optional.of(iheElement.getAttribute("codeSystemName")).filter(StringUtils::isNotBlank))
                 .codeSystemOid(iheElement.getAttribute("codeSystem"))
                 .displayName(iheElement.getAttribute("displayName"))
-                .valueSetOid(valueSetOid)
-                .valueSetVersion(valueSetVersion)
+                .valueSetOid(Optional.ofNullable(valueSetOid))
+                .valueSetVersion(Optional.ofNullable(valueSetVersion))
                 .build();
     }
 

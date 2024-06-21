@@ -18,7 +18,7 @@ public interface EuRequestDetails {
         return getHapiRequestDetails().getRestOperationType();
     }
 
-    static EuRequestDetails of(RequestDetails requestDetails) {
+    static EuRequestDetails of(final RequestDetails requestDetails) {
         return ImmutableEuRequestDetails.of(requestDetails);
     }
 }

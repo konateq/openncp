@@ -12,7 +12,15 @@ USE `ehealth_ltrdb`;
 --  *********************************************************************
 
 --  Changeset src/main/resources/openncp-ltrdb/db.changelog.xml::1::subigre
-CREATE TABLE code_system (id BIGINT AUTO_INCREMENT NOT NULL, oid VARCHAR(255) NULL, name VARCHAR(255) NULL, `description` VARCHAR(4000) NULL, CONSTRAINT PK_CODE_SYSTEM PRIMARY KEY (id));
+CREATE TABLE code_system
+(
+    id            BIGINT AUTO_INCREMENT NOT NULL,
+    oid           VARCHAR(255) NULL,
+    url           VARCHAR(255) NULL,
+    name          VARCHAR(255) NULL,
+    `description` VARCHAR(4000) NULL,
+    CONSTRAINT PK_CODE_SYSTEM PRIMARY KEY (id)
+);
 
 CREATE TABLE code_system_version (id BIGINT AUTO_INCREMENT NOT NULL, code_system_id BIGINT NOT NULL, full_name VARCHAR(255) NULL, local_name VARCHAR(255) NULL, previous_version_id BIGINT NULL, effective_date datetime NULL, release_date datetime NULL, status VARCHAR(255) NULL, status_date datetime NULL, `description` VARCHAR(4000) NULL, copyright VARCHAR(255) NULL, source VARCHAR(255) NULL, CONSTRAINT PK_CODE_SYSTEM_VERSION PRIMARY KEY (id), CONSTRAINT FK_CODE_SYSTEM_VERSION_CODE_SYSTEM FOREIGN KEY (code_system_id) REFERENCES code_system(id));
 

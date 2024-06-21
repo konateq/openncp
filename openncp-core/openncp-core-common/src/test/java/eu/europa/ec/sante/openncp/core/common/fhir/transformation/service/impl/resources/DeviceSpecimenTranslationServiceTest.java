@@ -51,6 +51,9 @@ class DeviceSpecimenTranslationServiceTest extends AbstractTranslationServiceTes
         final DeviceSpecimenMyHealthEu expectedOutput = parser.parseResource(DeviceSpecimenMyHealthEu.class, IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("out/deviceSpecimen-out.json"),
                 StandardCharsets.UTF_8));
+        System.out.println(parser.encodeResourceToString(expectedOutput));
+        System.out.println(parser.encodeResourceToString(translated));
+
         assertFhirResourcesAreEqual(expectedOutput, translated);
     }
 }
