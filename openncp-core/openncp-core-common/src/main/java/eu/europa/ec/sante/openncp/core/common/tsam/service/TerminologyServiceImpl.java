@@ -82,7 +82,7 @@ public class TerminologyServiceImpl implements TerminologyService {
             final CodeSystemVersion codeSystemVersion = dao.getVersion(codeConcept.getCodeSystemVersion().get(), codeSystem);
             concept = dao.getConcept(codeConcept.getCode(), codeSystemVersion);
         } else {
-            final List<Long> codeSystemVersionIds = dao.getCodeSystemVersionIds(codeConcept.getCodeSystemOid().get());
+            final List<Long> codeSystemVersionIds = dao.getCodeSystemVersionIds(codeConcept);
             concept = dao.getConceptByCodeSystemVersionIds(codeConcept.getCode(), codeSystemVersionIds);
         }
         return concept;

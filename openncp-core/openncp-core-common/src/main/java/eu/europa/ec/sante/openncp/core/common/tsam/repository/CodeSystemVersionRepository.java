@@ -15,4 +15,7 @@ public interface CodeSystemVersionRepository extends JpaRepository<CodeSystemVer
 
     @Query("select csv.id from CodeSystemVersion csv, CodeSystem cs where cs.id = csv.codeSystem.id and cs.oid = :oid")
     List<Long> findByOid(@Param("oid") String oid);
+
+    @Query("select csv.id from CodeSystemVersion csv, CodeSystem cs where cs.id = csv.codeSystem.id and cs.url = :url")
+    List<Long> findByUrl(@Param("url") String url);
 }

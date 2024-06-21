@@ -90,7 +90,7 @@ public interface TsamDao {
      * @param oid
      * @return
      */
-    List<Long> getCodeSystemVersionIds(String oid);
+    List<Long> getCodeSystemVersionIds(CodeConcept codeConcept);
 
     /**
      * Method to retrieve all concepts and their current designations for selected ValueSet ana language.
