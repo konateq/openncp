@@ -503,8 +503,8 @@ public class XCAServiceImpl implements XCAServiceInterface {
 
         // Then, it is the Policy Decision Point (PDP) that decides according to the consent of the patient
         if (!saml2Validator.isConsentGiven(fullPatientId, countryCode)) {
-            RegistryErrorUtils.addErrorMessage(registryErrorList, OpenNCPErrorCode.ERROR_NO_CONSENT,
-                    OpenNCPErrorCode.ERROR_NO_CONSENT.getDescription(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
+            RegistryErrorUtils.addErrorMessage(registryErrorList, OpenNCPErrorCode.ERROR_PS_NO_CONSENT,
+                    OpenNCPErrorCode.ERROR_PS_NO_CONSENT.getDescription(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
         }
 
         if (classCodeValues.isEmpty()) {
@@ -831,8 +831,8 @@ public class XCAServiceImpl implements XCAServiceInterface {
             // Then, it is the Policy Decision Point (PDP) that decides according to the consent of the patient
             if (!saml2Validator.isConsentGiven(fullPatientId, countryCode)) {
                 failure = true;
-                RegistryErrorUtils.addErrorOMMessage(omNamespace, registryErrorList, OpenNCPErrorCode.ERROR_NO_CONSENT,
-                        OpenNCPErrorCode.ERROR_NO_CONSENT.getDescription(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
+                RegistryErrorUtils.addErrorOMMessage(omNamespace, registryErrorList, OpenNCPErrorCode.ERROR_PS_NO_CONSENT,
+                        OpenNCPErrorCode.ERROR_PS_NO_CONSENT.getDescription(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
                 break processLabel;
             }
 

@@ -57,6 +57,19 @@ public enum OpenNCPErrorCode implements ErrorCode {
     WARNING_EP_MISSING_EXPECTED_MAPPING("WARNING_EP_MISSING_EXPECTED_MAPPING", "A needed code mapping is missing for the prescription."),
     WARNING_EP_MISSING_EXPECTED_TRANSLATION("WARNING_EP_MISSING_EXPECTED_TRANSLATION", "An expected translation of the ePrescription is missing."),
     ERROR_EP_PDF_FORMAT_NOT_PROVIDED("ERROR_EP_PDF_FORMAT_NOT_PROVIDED", "A PDF has not been provided."),
+    ERROR_EP_INCORRECT_FORMATTING("ERROR_EP_INCORRECT_FORMATTING", "ePrescription request contains a syntax error."),
+    ERROR_EP_MISSING_REQUIRED_FIELDS("ERROR_EP_MISSING_REQUIRED_FIELDS", "ePrescription request is missing values that are needed to process the request."),
+    ERROR_EP_INTERNAL_ERROR("ERROR_EP_INTERNAL_ERROR", "The application encountered an unexpected error."),
+    ERROR_EP_MISSING_BASIC_DATA("ERROR_EP_MISSING_BASIC_DATA", "The ePrescription is missing required information and can not be provided."),
+    ERROR_EP_NO_CONSENT("ERROR_EP_NO_CONSENT", "The patient has not given consent to the service."),
+    ERROR_EP_LIST_INCORRECT_FORMATTING("ERROR_EP_INCORRECT_FORMATTING", "ePrescription request contains a syntax error."),
+    ERROR_EP_LIST_MISSING_REQUIRED_FIELDS("ERROR_EP_MISSING_REQUIRED_FIELDS", "ePrescription request is missing values that are needed to process the request."),
+    ERROR_EP_LIST_REGISTRY_NOT_AVAILABLE("ERROR_EP_REGISTRY_NOT_AVAILABLE", "The national ePrescription registry service is unavailable."),
+    ERROR_EP_LIST_INTERNAL_ERROR("ERROR_EP_INTERNAL_ERROR", "The application encountered an unexpected error."),
+    ERROR_EP_LIST_NO_CONSENT("ERROR_EP_NO_CONSENT", "The patient has not given consent to the service."),
+
+
+
 
     // 07. Handle Dispensation of medicine and Substitution
     ERROR_ED_GENERIC("ERROR_ED_GENERIC", "Dispensation generic error"),
@@ -74,6 +87,12 @@ public enum OpenNCPErrorCode implements ErrorCode {
     ERROR_ED_DISCARD_SERVICE_NOT_AVAILABLE("ERROR_ED_DISCARD_SERVICE_NOT_AVAILABLE", "The Country of Treatment cannot contact the eDispensation discard service of the Country of Affiliation"),
     ERROR_ED_DISCARD_FAILED("ERROR_ED_DISCARD_FAILED", "The dispensation discard could not be performed in the Country of Affiliation"),
     WARNING_ED_DISCARD_MISSING_MANDATORY_DATA("WARNING_ED_DISCARD_MISSING_MANDATORY_DATA", "Any or all of the mandatory elements are missing."),
+    ERROR_ED_INCORRECT_FORMATTING("ERROR_ED_INCORRECT_FORMATTING", "eDispensation request contains a syntax error."),
+    ERROR_ED_MISSING_REQUIRED_FIELDS("ERROR_ED_MISSING_REQUIRED_FIELDS", "eDispensation request is missing values that are needed to process the request."),
+    ERROR_ED_INTERNAL_ERROR("ERROR_ED_INTERNAL_ERROR", "The application encountered an unexpected error."),
+    ERROR_ED_MISSING_BASIC_DATA("ERROR_ED_MISSING_BASIC_DATA", "The eDispensation is missing required information and can not be provided."),
+    ERROR_ED_REGISTRY_NOT_AVAILABLE("ERROR_ED_REGISTRY_NOT_AVAILABLE", "The national eDispensation registry service is unavailable."),
+    ERROR_ED_NO_CONSENT("ERROR_ED_NO_CONSENT", "The patient has not given consent to the service."),
 
     // 08. Make Original Clinical Documents available to HP
     ERROR_ORCD_GENERIC("ERROR_ORCD_GENERIC", "Original Clinical Documents generic error"),

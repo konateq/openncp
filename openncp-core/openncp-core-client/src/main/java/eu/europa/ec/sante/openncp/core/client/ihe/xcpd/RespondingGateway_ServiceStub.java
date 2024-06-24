@@ -275,7 +275,7 @@ public class RespondingGateway_ServiceStub extends Stub {
                 // NRO  NCPB_XCPD_REQ - LOGGER.info("XCPD Request sent. EVIDENCE NRO");
 
             } catch (Exception ex) {
-                throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC,ex.getMessage());
+                throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_NO_MATCH,ex.getMessage());
             }
 
             // XCPD response end time
@@ -351,7 +351,7 @@ public class RespondingGateway_ServiceStub extends Stub {
                     /* if we cannot solve this issue through the Central Services, then there's nothing we can do, so we let it be thrown */
                     eadcError = "Could not find configurations in the Central Services for [" + this.countryCode.toLowerCase(Locale.ENGLISH)
                             + RegisteredService.PATIENT_IDENTIFICATION_SERVICE.getServiceName() + "], the service will fail.";
-                    LOGGER.error(eadcError);                    throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC, e);
+                    LOGGER.error(eadcError);                    throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_NO_MATCH, e);
                 }
             }
 
