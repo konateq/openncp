@@ -30,8 +30,8 @@ public class TerminologyServiceImpl implements TerminologyService {
 
     private static final String CURRENT = "current";
     private final Logger logger = LoggerFactory.getLogger(TerminologyServiceImpl.class);
-    private TsamDao dao;
-    private TsamConfiguration config;
+    private final TsamDao dao;
+    private final TsamConfiguration config;
 
     public TerminologyServiceImpl(final TsamDao dao, final TsamConfiguration config) {
         this.dao = Validate.notNull(dao);
@@ -49,7 +49,7 @@ public class TerminologyServiceImpl implements TerminologyService {
             if (concept.isEmpty()) {
                 return response;
             } else {
-                final String targetLanguageCodeToUse = StringUtils.isNotEmpty(targetLanguageCode) ? targetLanguageCode : config.getTranslationLang();
+                final String targetLanguageCodeToUse = StringUtils.isNotEmpty(targetLanguageCode) ? targetLanguageCode : config.getTranslationLanguage();
                 final CodeSystemConcept conceptToTranslate = concept.get();
                 final List<Designation> designations = dao.getDesignation(conceptToTranslate, targetLanguageCodeToUse);
                 final Designation designation = designations.get(0);
@@ -114,7 +114,7 @@ public class TerminologyServiceImpl implements TerminologyService {
                 target = codeSystemConcept;
                 designations = dao.getSourceDesignation(target);
             } else {
-                designations = dao.getDesignation(target, config.getTranscodingLang());
+                designations = dao.getDesignation(target, config.getTranscodingLanguage());
             }
             checkConceptStatus(target, response);
 
@@ -281,22 +281,6 @@ public class TerminologyServiceImpl implements TerminologyService {
                 logger.debug("'{}': '{}'", response.getCodeConcept(), warning);
             }
         }
-    }
-
-    public TsamDao getDao() {
-        return dao;
-    }
-
-    public void setDao(final TsamDao dao) {
-        this.dao = dao;
-    }
-
-    public TsamConfiguration getConfig() {
-        return config;
-    }
-
-    public void setConfig(final TsamConfiguration config) {
-        this.config = config;
     }
 
     public Map<CodeSystemConcept, CodeSystemConcept> getNationalCodeSystemMappedConcepts(final CodeConcept codeConcept, final String version) {

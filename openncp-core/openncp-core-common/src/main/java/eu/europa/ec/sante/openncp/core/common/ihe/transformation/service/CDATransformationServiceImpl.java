@@ -58,11 +58,13 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
 
     private final TMConfiguration config;
 
+    private final CodedElementList codedElementList;
     private final TerminologyService terminologyService;
     private final Validator validator;
 
-    public CDATransformationServiceImpl(final TMConfiguration config, final TerminologyService terminologyService, final Validator validator) {
+    public CDATransformationServiceImpl(final TMConfiguration config, final CodedElementList codedElementList, final TerminologyService terminologyService, final Validator validator) {
         this.config = Validate.notNull(config);
+        this.codedElementList = Validate.notNull(codedElementList, "CodedElementList cannot be null");
         this.terminologyService = Validate.notNull(terminologyService);
         this.validator = Validate.notNull(validator);
 
@@ -374,9 +376,8 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         // hashMap for ID of referencedValues and transcoded/translated DisplayNames
         final HashMap<String, String> hmReffId_DisplayName = new HashMap<>();
 
-        if (CodedElementList.getInstance().isConfigurableElementIdentification()) {
-
-            final Collection<CodedElementListItem> ceList = CodedElementList.getInstance().getList(cdaDocumentType);
+        if (config.isConfigurableElementIdentification()) {
+            final Collection<CodedElementListItem> ceList = codedElementList.getList(cdaDocumentType);
             logger.info("Configurable Element Identification is set, CodedElementList for '{}' contains elements: '{}'",
                     cdaDocumentType, ceList.size());
             if (logger.isDebugEnabled()) {
