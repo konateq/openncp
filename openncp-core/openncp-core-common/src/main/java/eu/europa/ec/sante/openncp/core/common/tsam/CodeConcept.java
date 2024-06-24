@@ -33,6 +33,7 @@ public interface CodeConcept {
         return ImmutableCodeConcept.builder()
                 .code(codedElement.getCode())
                 .codeSystemVersion(codedElement.getVersion())
+                .codeSystemOid(codedElement.getOid())
                 .codeSystemName(codedElement.getCodeSystem())
                 .displayName(codedElement.getDisplayName())
                 .valueSetOid(codedElement.getVsOid())

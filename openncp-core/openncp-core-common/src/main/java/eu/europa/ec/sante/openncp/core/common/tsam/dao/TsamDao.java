@@ -85,9 +85,9 @@ public interface TsamDao {
     CodeSystem getCodeSystem(CodeConcept codeConcept) throws TSAMException;
 
     /**
-     * Retrieve CodeSystemVersion IDs list by OID
+     * Retrieve CodeSystemVersion IDs list by CodeConcept
      *
-     * @param oid
+     * @param codeConcept
      * @return
      */
     List<Long> getCodeSystemVersionIds(CodeConcept codeConcept);
