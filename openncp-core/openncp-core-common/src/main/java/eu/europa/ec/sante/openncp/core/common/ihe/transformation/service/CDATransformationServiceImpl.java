@@ -21,7 +21,6 @@ import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMErrorCtx;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.ValueSet;
@@ -626,8 +625,8 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                     originalElement.setAttribute(DISPLAY_NAME, tsamResponse.getDesignation());
                 }
                 // +++++ Element editing END +++++
-                errors.addAll(CollectionUtils.emptyIfNull(tsamResponse.getErrors()));
-                warnings.addAll(CollectionUtils.emptyIfNull(tsamResponse.getWarnings()));
+                errors.addAll(tsamResponse.getErrors());
+                warnings.addAll(tsamResponse.getWarnings());
                 return true;
             } else {
                 if (logger.isDebugEnabled()) {
