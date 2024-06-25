@@ -14,9 +14,6 @@
     <xsl:variable name="dateOfDescription"
                   select="/n1:ClinicalDocument/n1:author/n1:time/@value"/>
 
-    <xsl:variable name="prescriptionItemID"
-                  select="//n1:entry/n1:substanceAdministration[n1:templateId[@root='1.3.6.1.4.1.12559.11.10.1.3.1.3.2']]/n1:id/@extension"/>
-
     <xsl:variable name="entryNode"
                   select="//n1:entry/n1:substanceAdministration[n1:templateId[@root='1.3.6.1.4.1.12559.11.10.1.3.1.3.2']]"/>
 
