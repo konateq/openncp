@@ -4,42 +4,58 @@ import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import eu.europa.ec.sante.openncp.common.immutables.Domain;
 import eu.europa.ec.sante.openncp.core.common.CountryCode;
-import org.immutables.value.Value;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.CorrelationIdInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.CountryCodeInterceptor;
+import org.apache.commons.lang3.Validate;
+import org.hl7.fhir.instance.model.api.IIdType;
 
 import java.util.Optional;
 
 @Domain
 public interface EuRequestDetails {
     RequestDetails getHapiRequestDetails();
-
-    @Value.Derived
+    
     default CountryCode getCountryCode() {
-        final String countryCode = getHapiRequestDetails().getHeader("CountryCode");
+        final String countryCode = getHapiRequestDetails().getHeader(CountryCodeInterceptor.COUNTRY_CODE_HEADER_KEY);
         if (countryCode == null) {
-            throw new IllegalArgumentException("There was no 'CountryCode' header found, please add a header with key 'CountryCode' that contains a valid ISO 3166-1 alpha-2 code.");
+            throw new IllegalArgumentException(String.format("There was no [%1$s] header found, please add a header with key [%1$s] that contains a valid ISO 3166-1 alpha-2 code.", CountryCodeInterceptor.COUNTRY_CODE_HEADER_KEY));
         }
         return CountryCode.of(countryCode);
+    }
+
+    default String getCorrelationId() {
+        return getHapiRequestDetails().getHeader(CorrelationIdInterceptor.X_REQUEST_ID_HEADER_KEY);
     }
 
     default RestOperationTypeEnum getRestOperationType() {
         return getHapiRequestDetails().getRestOperationType();
     }
 
-    @Value.Derived
     default Optional<FhirSupportedResourceType> getSupportedResourceType() {
         return FhirSupportedResourceType.ofRequestPath(getHapiRequestDetails().getRequestPath());
     }
 
-    @Value.Derived
-    default String getResource() {
+    default String getResourceType() {
         return getSupportedResourceType()
                 .map(FhirSupportedResourceType::getRestRequestPath)
                 .map(FhirSupportedResourceType.RestRequestPath::getValue)
                 .orElseGet(() -> getHapiRequestDetails().getRequestPath());
     }
 
-    default Optional<String> getResourceId() {
-        return Optional.empty();
+    default boolean isPatient() {
+        return getSupportedResourceType()
+                .filter(fhirSupportedResourceType -> FhirSupportedResourceType.PATIENT == fhirSupportedResourceType)
+                .isPresent();
+    }
+
+    /**
+     * Creates a fully qualified resource reference from an {@link IIdType} by injecting the server's base URL into the ID
+     */
+    default String createFullyQualifiedResourceReference(final IIdType idElement) {
+        Validate.notNull(idElement, "IdElement must not be null");
+        final String serverBaseUrl = getHapiRequestDetails().getFhirServerBase();
+        final String resourceName = idElement.getResourceType();
+        return idElement.withServerBase(serverBaseUrl, resourceName).getValue();
     }
 
     static EuRequestDetails of(final RequestDetails requestDetails) {

@@ -38,5 +38,5 @@ public class BalpConstants {
     public static final String CS_OBJECT_ROLE_4_DOMAIN_RESOURCE_DISPLAY = "Domain Resource";
     public static final String CS_RESTFUL_INTERACTION = "http://hl7.org/fhir/restful-interaction";
     public static final String CS_OBJECT_ROLE_24_QUERY = "24";
-    static final String CS_OBJECT_ROLE_24_QUERY_DISPLAY = "Query";
+    public static final String CS_OBJECT_ROLE_24_QUERY_DISPLAY = "Query";
 }
