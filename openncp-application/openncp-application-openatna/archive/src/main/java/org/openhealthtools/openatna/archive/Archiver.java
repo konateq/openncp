@@ -51,8 +51,10 @@ public class Archiver {
     public static final String ENTITIES = "entities.xml";
     public static final String ERRORS = "errors.xml";
     private static final Logger LOGGER = LoggerFactory.getLogger(Archiver.class);
-    protected DateFormat archiveFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-    protected DateFormat nameFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
+    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss:SSS";
+    private static final String NAME_FORMAT = "yyyyMMdd-HHmmss";
+    protected DateFormat archiveFormat = new SimpleDateFormat(DATE_FORMAT);
+    protected DateFormat nameFormat = new SimpleDateFormat(NAME_FORMAT);
 
     private boolean archiveMessages = true;
     private boolean archiveEntities = true;
@@ -75,12 +77,12 @@ public class Archiver {
     }
 
     public static String formatDate(Date date) {
-        DateFormat archiveFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+        DateFormat archiveFormat = new SimpleDateFormat(DATE_FORMAT);
         return archiveFormat.format(date);
     }
 
     public static Date parseDate(String date) throws ParseException {
-        DateFormat archiveFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+        DateFormat archiveFormat = new SimpleDateFormat(DATE_FORMAT);
         return archiveFormat.parse(date);
     }
 

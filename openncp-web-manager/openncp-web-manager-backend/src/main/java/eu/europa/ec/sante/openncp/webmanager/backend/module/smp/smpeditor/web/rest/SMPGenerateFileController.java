@@ -173,7 +173,7 @@ public class SMPGenerateFileController {
                 //SPECIFICATION May change if Document Identifier specification change
                 String[] nIDs = docID.split(env.getProperty("DocumentIdentifier.Scheme") + "::");
                 String docuID = nIDs[1];
-                Set set2 = propertiesMap.entrySet();
+                Set<Map.Entry<String, String>> set2 = propertiesMap.entrySet();
                 for (Object aSet2 : set2) {
 
                     Map.Entry mentry2 = (Map.Entry) aSet2;
@@ -204,7 +204,6 @@ public class SMPGenerateFileController {
 
         smpfile.setGeneratedFile(smpconverter.getFile());
         String content = new String(Files.readAllBytes(Paths.get(smpfile.getGeneratedFile().getPath())));
-        //boolean valid = XMLValidator.validate(content, "/bdx-smp-201605.xsd");
         if (BdxSmpValidator.validateFile(content)) {
             LOGGER.debug("\n****VALID XML File");
         } else {

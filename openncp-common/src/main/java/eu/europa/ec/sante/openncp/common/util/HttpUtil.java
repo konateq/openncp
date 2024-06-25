@@ -20,9 +20,8 @@ import java.net.ProxySelector;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.*;
+import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 public class HttpUtil {
 
@@ -82,13 +81,22 @@ public class HttpUtil {
                 }
 
                 @Override
-                public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
-                    //  No implemented.
+                public void checkClientTrusted(X509Certificate[] certificates, String authType) {
+                    try {
+                        this.getAcceptedIssuers()[0].checkValidity();
+                    } catch (CertificateExpiredException | CertificateNotYetValidException e) {
+                        LOGGER.error("Error: Invalid client certificate : {} : {}", this.getAcceptedIssuers()[0].getSubjectDN().getName(), authType);
+                    }
                 }
 
                 @Override
                 public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
-                    //  No implemented.
+                    try {
+                        this.getAcceptedIssuers()[0].checkValidity();
+                    } catch (CertificateExpiredException | CertificateNotYetValidException e) {
+                        LOGGER.error("Error: Invalid server certificate : {} : {}", this.getAcceptedIssuers()[0].getSubjectDN().getName(), arg1);
+                    }
+
                 }
             }
             };
@@ -110,7 +118,7 @@ public class HttpUtil {
                 URL url;
                 url = new URL(host);
                 urlConnection = (HttpsURLConnection) url.openConnection();
-                urlConnection.setHostnameVerifier((hostname, session) -> true);
+                urlConnection.setHostnameVerifier((hostname, session) -> session.isValid() && !hostname.isEmpty());
                 urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
                 urlConnection.connect();
                 return urlConnection.getServerCertificates();
@@ -160,9 +168,7 @@ public class HttpUtil {
                 URL url;
                 url = new URL(endpoint);
                 urlConnection = (HttpsURLConnection) url.openConnection();
-                //TODO: not sustainable solution: EHNCP-1363
-                urlConnection.setHostnameVerifier((hostname, session) -> true);
-                // End EHNCP-1363
+                urlConnection.setHostnameVerifier((hostname, session) -> session.isValid() && !hostname.isEmpty());
                 urlConnection.setSSLSocketFactory(sslSocketFactory);
                 urlConnection.connect();
                 Certificate[] certs = urlConnection.getServerCertificates();

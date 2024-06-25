@@ -33,7 +33,7 @@ import java.util.Set;
 
 public class DataWriter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataWriter.class);
 
     private Document doc;
     private Element root;
@@ -81,6 +81,8 @@ public class DataWriter {
         Document doc = null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbf.setXIncludeAware(false);
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             doc = db.newDocument();

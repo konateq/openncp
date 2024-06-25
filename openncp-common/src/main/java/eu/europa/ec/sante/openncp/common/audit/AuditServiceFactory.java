@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class AuditServiceFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuditService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuditServiceFactory.class);
     private static AuditService instance;
 
     private AuditServiceFactory() {

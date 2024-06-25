@@ -171,7 +171,7 @@ class DefaultClientConnectorServiceIntegrationTest {
         conceptRole.setCodeSystemName("ISCO");
         conceptRole.setDisplayName("Medical Doctors");
 
-        return AssertionTestUtil.createHCPAssertion(username, fullName, email, "BE", "BElgium", "homecommid", conceptRole,
+        return AssertionTestUtil.createHCPAssertion(fullName, email, "BE", "BElgium", "homecommid", conceptRole,
                 "eHealth OpenNCP EU Portal", "urn:hl7ii:1.2.3.4:ABCD", "Resident Physician", "TREATMENT",
                 "eHDSI EU Testing MedCare Center", permissions, null);
     }

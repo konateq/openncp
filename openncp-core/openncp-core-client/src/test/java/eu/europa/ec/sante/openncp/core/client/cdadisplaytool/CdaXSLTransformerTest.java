@@ -78,7 +78,6 @@ public class CdaXSLTransformerTest {
                 new PdfValidator().validate(cda, transformationResult);
                 break;
             case WITH_OUTPUT_AND_DEFINED_PATH:
-                //new HtmlValidator().validate(cda, transformationResult);
                 break;
         }
         displayTransformedFile(transformationResult, transformationType, inputFileName);

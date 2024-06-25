@@ -18,13 +18,13 @@ public interface NetworkAccessPointDao extends Dao {
 
     NetworkAccessPointEntity getByTypeAndIdentifier(Short type, String identifier) throws AtnaPersistenceException;
 
-    List<? extends NetworkAccessPointEntity> getByType(Short type) throws AtnaPersistenceException;
+    List<NetworkAccessPointEntity> getByType(Short type) throws AtnaPersistenceException;
 
-    List<? extends NetworkAccessPointEntity> getByIdentifier(String identifier) throws AtnaPersistenceException;
+    List<NetworkAccessPointEntity> getByIdentifier(String identifier) throws AtnaPersistenceException;
 
-    List<? extends NetworkAccessPointEntity> getAll() throws AtnaPersistenceException;
+    List<NetworkAccessPointEntity> getAll() throws AtnaPersistenceException;
 
-    List<? extends NetworkAccessPointEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
+    List<NetworkAccessPointEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
 
     void save(NetworkAccessPointEntity nap, PersistencePolicies policies) throws AtnaPersistenceException;
 

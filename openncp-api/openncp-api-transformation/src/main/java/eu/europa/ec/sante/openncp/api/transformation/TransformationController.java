@@ -79,6 +79,7 @@ public class TransformationController {
             return ResponseEntity.badRequest().body(tmResponseStructure);
         }
         String targetLanguageCode = translateRequest.getTargetLanguageCode();
+        targetLanguageCode = sanitizeString(targetLanguageCode);
         logger.info("Translating CDA document in language [{}]", targetLanguageCode);
         return ResponseEntity.ok(cdaTransformationService.translate(pivotCDA, targetLanguageCode));
     }
@@ -99,5 +100,9 @@ public class TransformationController {
         }
         logger.info("Transcoding CDA document into PIVOT");
         return ResponseEntity.ok(cdaTransformationService.transcode(friendlyCDA));
+    }
+
+    private static String sanitizeString(String stringToSanitize) {
+        return stringToSanitize != null ? stringToSanitize.replaceAll("[\n\r]", "_") : "";
     }
 }

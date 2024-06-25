@@ -373,12 +373,10 @@ public class XDRServiceImpl implements XDRServiceInterface {
             discardDetails.setHealthCareProviderFacility(Helper.getXSPALocality(soapHeaderElement));
             discardDetails.setHealthCareProviderOrganization(Helper.getOrganization(soapHeaderElement));
             discardDetails.setHealthCareProviderOrganizationId(Helper.getOrganizationId(soapHeaderElement));
-            //  TODO: EHNCP-2055 Inconsistency in handling patient id
             documentSubmitInterface.cancelDispensation(discardDetails, epsosDocument);
 
         } catch (NationalInfrastructureException e) {
             logger.error("DocumentSubmitException: '{}'-'{}'", e.getOpenncpErrorCode(), e.getMessage());
-            var codeContext = e.getOpenncpErrorCode().getDescription() + "^" + e.getMessage();
             registryErrorList.getRegistryError().add(createErrorMessage(e.getOpenncpErrorCode(), e.getOpenncpErrorCode().getDescription() + " ( " + documentId + " )", "", e.getMessage(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR));
         } catch (NIException e) {
             logger.error("NIException: '{}'", e.getMessage());
@@ -478,7 +476,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
         }
         // Mustafa: This part is added for handling consents when the call is not https.
         // In this case, we check the country code of the signature certificate that ships within the HCP assertion.
-        // TODO: Might be necessary to remove later, although it does no harm in reality!
+        // Might be necessary to remove later, although it does no harm in reality!
         else {
             logger.info("Could not get client country code from the service consumer certificate. " +
                     "The reason can be that the call was not via HTTPS. Will check the country code from the signature certificate now.");
@@ -627,7 +625,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
                 logger.debug("[WS] XDR Service: Classification: '{}'-'{}'", classification.getClassificationScheme(), classification.getNodeRepresentation());
                 if (StringUtils.equals(classification.getClassificationScheme(), IheConstants.FORMAT_CODE_SCHEME)) {
 
-                    // TODO: check the right LOINC code, currently coded as in example 3.4.2 ver. 2.2 p. 82
+                    // Check the right LOINC code, currently coded as in example 3.4.2 ver. 2.2 p. 82
                     if (StringUtils.equals(classification.getNodeRepresentation(), "urn:epSOS:ep:dis:2010")) {
                         //  urn:epSOS:ep:dis:2010
                         return saveDispensation(request, soapHeader, eventLog);

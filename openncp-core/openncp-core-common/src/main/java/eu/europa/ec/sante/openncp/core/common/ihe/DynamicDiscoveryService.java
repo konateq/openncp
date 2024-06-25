@@ -34,6 +34,7 @@ import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.security.MessageDigest;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -277,6 +278,7 @@ public class DynamicDiscoveryService {
             try (InputStream is = new FileInputStream(trustStorePath)) {
                 trustStore.load(is, trustStorePassword);
             }
+            // Try use DigestUtils sha512 because md5 is too vulnerable
             String alias = Base64.encodeBase64String(DigestUtils.md5(certificate.getSubjectDN().getName()));
             trustStore.setCertificateEntry(alias, certificate);
             try (OutputStream os = new FileOutputStream(trustStorePath)) {

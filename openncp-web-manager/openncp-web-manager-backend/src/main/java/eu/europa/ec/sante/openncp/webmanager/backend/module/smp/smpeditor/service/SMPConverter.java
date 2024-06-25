@@ -51,6 +51,8 @@ import java.util.Scanner;
 public class SMPConverter {
 
     private static final JAXBContext jaxbContext;
+    public static final String SERIAL_NUMBER = " Serial Number #";
+    public static final String KEYSTORE_NOT_CONFIGURED_FOR_TLS_CERTIFICATE_WITH_ALIAS = "Keystore not configured for TLS certificate with alias: '{}'";
 
     static {
         try {
@@ -169,10 +171,10 @@ public class SMPConverter {
 
                                 X509Certificate x509 = (X509Certificate) certs[0];
                                 endpointType.setCertificate(x509.getEncoded());
-                                certificateSubjectName = x509.getIssuerX500Principal().getName() + " Serial Number #" + x509.getSerialNumber();
+                                certificateSubjectName = x509.getIssuerX500Principal().getName() + SERIAL_NUMBER + x509.getSerialNumber();
                             }
                         } else {
-                            logger.error("Keystore not configured for TLS certificate with alias: '{}'", certificateAlias);
+                            logger.error(KEYSTORE_NOT_CONFIGURED_FOR_TLS_CERTIFICATE_WITH_ALIAS, certificateAlias);
                         }
                     } else if (ks.isCertificateEntry(certificateAlias)) {
 
@@ -181,10 +183,10 @@ public class SMPConverter {
                             if (c instanceof X509Certificate) {
                                 X509Certificate x509 = (X509Certificate) c;
                                 endpointType.setCertificate(x509.getEncoded());
-                                certificateSubjectName = x509.getIssuerX500Principal().getName() + " Serial Number #" + x509.getSerialNumber();
+                                certificateSubjectName = x509.getIssuerX500Principal().getName() + SERIAL_NUMBER + x509.getSerialNumber();
                             }
                         } else {
-                            logger.error("Keystore not configured for TLS certificate with alias: '{}'", certificateAlias);
+                            logger.error(KEYSTORE_NOT_CONFIGURED_FOR_TLS_CERTIFICATE_WITH_ALIAS, certificateAlias);
                         }
                     } else {
                         logger.error("\n ********** '{}' is unknown to this keystore", certificateAlias);
@@ -218,7 +220,9 @@ public class SMPConverter {
             //    Endpoint Extension file parse
             if (StringUtils.isNotBlank(extension)) {
                 nullExtension = false;
-                logger.info("XML Extension Content:\n'{}'", extension);
+                if(logger.isInfoEnabled()) {
+                    logger.info("XML Extension Content:\n'{}'", sanitizeString(extension));
+                }
                 Document docOriginal = parseStringToDocument(extension);
                 if (docOriginal != null) {
                     //Adding ISM Extension to SMP file.
@@ -370,10 +374,10 @@ public class SMPConverter {
 
                                 X509Certificate x509 = (X509Certificate) certs[0];
                                 endpointType.setCertificate(x509.getEncoded());
-                                certificateSubjectName = x509.getIssuerX500Principal().getName() + " Serial Number #" + x509.getSerialNumber();
+                                certificateSubjectName = x509.getIssuerX500Principal().getName() + SERIAL_NUMBER + x509.getSerialNumber();
                             }
                         } else {
-                            logger.error("Keystore not configured for TLS certificate with alias: '{}'", certificateAlias);
+                            logger.error(KEYSTORE_NOT_CONFIGURED_FOR_TLS_CERTIFICATE_WITH_ALIAS, certificateAlias);
                         }
                     } else if (ks.isCertificateEntry(certificateAlias)) {
 
@@ -382,10 +386,10 @@ public class SMPConverter {
                             if (c instanceof X509Certificate) {
                                 X509Certificate x509 = (X509Certificate) c;
                                 endpointType.setCertificate(x509.getEncoded());
-                                certificateSubjectName = x509.getIssuerX500Principal().getName() + " Serial Number #" + x509.getSerialNumber();
+                                certificateSubjectName = x509.getIssuerX500Principal().getName() + SERIAL_NUMBER + x509.getSerialNumber();
                             }
                         } else {
-                            logger.error("Keystore not configured for TLS certificate with alias: '{}'", certificateAlias);
+                            logger.error(KEYSTORE_NOT_CONFIGURED_FOR_TLS_CERTIFICATE_WITH_ALIAS, certificateAlias);
                         }
                     } else {
                         logger.debug("\n ********** '{}' is unknown to this keystore", certificateAlias);
@@ -476,9 +480,6 @@ public class SMPConverter {
     }
 
     public Object convertFromXml(File file) {
-
-        ObjectFactory objectFactory = new ObjectFactory();
-
         Object result = null;
 
         try {
@@ -523,15 +524,7 @@ public class SMPConverter {
      Document and Participant identifiers definition
      */
         participantIdentifierType.setScheme(environment.getProperty(type + ".ParticipantIdentifier.Scheme")); ///in smpeditor.properties
-    /*
-    servidor -- :ncpa-idp
-    client -- :ncp-idp
-    */
-   /* if(clientServer == 1){
-      participantIdentifierType.setValue("urn:ehealth:" + countryCode + ":ncpa-idp"); //set by user (countryCode - country)
-    } else if (clientServer == 2){
-      participantIdentifierType.setValue("urn:ehealth:" + countryCode + ":ncp-idp"); //set by user (countryCode - country)
-    }*/
+
 
         String participantID = environment.getProperty(type + ".ParticipantIdentifier.value");//in smpeditor.properties
         participantID = String.format(participantID, countryCode); //Add country in place of %2s
@@ -654,6 +647,8 @@ public class SMPConverter {
     private DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setXIncludeAware(false);
         dbf.setNamespaceAware(true);
         return dbf.newDocumentBuilder();
     }
@@ -664,6 +659,8 @@ public class SMPConverter {
         dbf.setNamespaceAware(true);
         Document doc = null;
         try {
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbf.setXIncludeAware(false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             doc = db.parse(new ByteArrayInputStream(document.getBytes(StandardCharsets.UTF_8)));
         } catch (SAXException e) {
@@ -674,5 +671,9 @@ public class SMPConverter {
             logger.error("ParserConfigurationException: ", e);
         }
         return doc;
+    }
+
+    private static String sanitizeString(String stringToSanitize) {
+        return stringToSanitize != null ? stringToSanitize.replaceAll("[\n\r]", "_") : "";
     }
 }

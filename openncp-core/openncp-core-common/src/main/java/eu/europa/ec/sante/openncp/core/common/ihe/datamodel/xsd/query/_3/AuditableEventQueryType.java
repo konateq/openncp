@@ -88,7 +88,7 @@ public class AuditableEventQueryType
      */
     public List<RegistryObjectQueryType> getAffectedObjectQuery() {
         if (affectedObjectQuery == null) {
-            affectedObjectQuery = new ArrayList<RegistryObjectQueryType>();
+            affectedObjectQuery = new ArrayList<>();
         }
         return this.affectedObjectQuery;
     }

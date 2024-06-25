@@ -27,6 +27,7 @@ import java.util.Properties;
 public class KeystoreManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KeystoreManager.class);
+    private static final String DEFAULT = "default";
 
     private static X509TrustManager sunTrustManager = null;
 
@@ -69,9 +70,7 @@ public class KeystoreManager {
             if (pass == null) {
                 pass = "changeit";
             }
-            //TODO: check if this condition is required? because certs could not be null at this stage of the code?
-            // Perhaps exist() method would be more appropriate?
-            if (certs != null) {
+            if (certs.exists()) {
                 KeyStore ks = KeyStore.getInstance("jks");
                 try (FileInputStream inputStream = new FileInputStream(certs)) {
                     ks.load(inputStream, pass.toCharArray());
@@ -152,7 +151,7 @@ public class KeystoreManager {
             for (File keyFile : keyFiles) {
                 try {
                     KeystoreDetails kd = load(new FileInputStream(keyFile));
-                    if (kd.getAuthority() != null && kd.getAuthority().trim().equalsIgnoreCase("default")) {
+                    if (kd.getAuthority() != null && kd.getAuthority().trim().equalsIgnoreCase(DEFAULT)) {
                         defaultKeyDetails = kd;
                     }
                     allKeys.put(keyFile.getName(), kd);
@@ -257,7 +256,7 @@ public class KeystoreManager {
                 }
                 if (StringUtils.equals(auth, host)) {
                     return keystoreDetails;
-                } else if (StringUtils.equalsIgnoreCase(auth, "default")) {
+                } else if (StringUtils.equalsIgnoreCase(auth, DEFAULT)) {
                     def = keystoreDetails;
                 }
             }
@@ -283,7 +282,7 @@ public class KeystoreManager {
                 }
                 if (auth.equals(host)) {
                     return keystoreDetails;
-                } else if (auth.equalsIgnoreCase("default")) {
+                } else if (auth.equalsIgnoreCase(DEFAULT)) {
                     def = keystoreDetails;
                 }
             }
@@ -381,7 +380,7 @@ public class KeystoreManager {
             props.setProperty("authority", details.getAuthority());
         }
         List<String> authorizedDNs = details.getAuthorizedDNs();
-        if (authorizedDNs.size() > 0) {
+        if (!authorizedDNs.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (String dn : authorizedDNs) {
                 sb.append(URLEncoder.encode(dn, StandardCharsets.UTF_8)).append("&");
@@ -390,8 +389,17 @@ public class KeystoreManager {
         }
         File f = key ? getKeysDirectory() : getCertsDirectory();
         f = new File(f, name);
-        FileOutputStream out = new FileOutputStream(f);
-        props.store(out, "Details for " + details.getAlias() + " keystore access.");
-        out.close();
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(f);
+            props.store(out, "Details for " + details.getAlias() + " keystore access.");
+            out.close();
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if(out != null) {
+                out.close();
+            }
+        }
     }
 }

@@ -45,7 +45,7 @@ import java.util.*;
  */
 public class XDSbRepositoryServiceInvoker {
 
-    //TODO: this class implementation needs to be reviewed deeply
+    //This class implementation needs to be reviewed deeply
     private static final ObjectFactory ofRim = new ObjectFactory();
     private final Logger logger = LoggerFactory.getLogger(XDSbRepositoryServiceInvoker.class);
 
@@ -271,7 +271,7 @@ public class XDSbRepositoryServiceInvoker {
     private ExtrinsicObjectType makeExtrinsicObject(XdrRequest request, String uuid, ClassCode docClassCode, String language, Boolean isPDF) {
 
         if (Boolean.TRUE.equals(isPDF)) {
-            // TODO A.R. isPDF unfinished...
+            // A.R. isPDF unfinished...
             logger.warn("PDF document will be processed, but this is not fully supported by current implementation");
         }
 
@@ -356,7 +356,7 @@ public class XDSbRepositoryServiceInvoker {
 
         //  XDSDocument.EntryUUID
         if (docClassCode.equals(ClassCode.CONSENT_CLASSCODE)) {
-            // TODO: missing XDSDocument.EntryUUID for Consent
+            // Missing XDSDocument.EntryUUID for Consent
             logger.warn("Patient Consent not supported!!!");
         }
 

@@ -18,7 +18,7 @@ public class HibernateEntityDao extends AbstractHibernateDao<PersistentEntity> i
         super(PersistentEntity.class, sessionFactory);
     }
 
-    public List<? extends PersistentEntity> query(String query) {
+    public List<PersistentEntity> query(String query) {
         return list(createQuery(query));
     }
 

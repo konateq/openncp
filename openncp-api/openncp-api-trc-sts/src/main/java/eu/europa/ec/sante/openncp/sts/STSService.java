@@ -86,7 +86,9 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
             final String messageId = getMessageIdFromHeader(header);
 
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
+
             final DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
 
             // The response TRC Assertion Issuer.

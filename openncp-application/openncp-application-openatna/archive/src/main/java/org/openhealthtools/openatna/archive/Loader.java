@@ -18,6 +18,7 @@ import java.util.List;
 public class Loader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
+    public static final String INPUT_STREAM_TO_MESSAGE_FILE_IS_NULL = " Input stream to '{}' message file is null";
 
     private final String archive;
     private final PersistencePolicies policies = new PersistencePolicies();
@@ -66,7 +67,7 @@ public class Loader {
                     loadEntities(reader);
                     reader.close();
                 } else {
-                    LOGGER.info(" Input stream to '{}' message file is null", f.getAbsolutePath());
+                    LOGGER.info(INPUT_STREAM_TO_MESSAGE_FILE_IS_NULL, f.getAbsolutePath());
                 }
             }
         }
@@ -77,7 +78,7 @@ public class Loader {
                     loadMessages(reader);
                     reader.close();
                 } else {
-                    LOGGER.info(" Input stream to '{}' message file is null", f.getAbsolutePath());
+                    LOGGER.info(INPUT_STREAM_TO_MESSAGE_FILE_IS_NULL, f.getAbsolutePath());
                 }
             }
         }
@@ -90,7 +91,7 @@ public class Loader {
                     loadErrors(reader);
                     reader.close();
                 } else {
-                    LOGGER.info(" Input stream to '{}' message file is null", f.getAbsolutePath());
+                    LOGGER.info(INPUT_STREAM_TO_MESSAGE_FILE_IS_NULL, f.getAbsolutePath());
                 }
             }
         }

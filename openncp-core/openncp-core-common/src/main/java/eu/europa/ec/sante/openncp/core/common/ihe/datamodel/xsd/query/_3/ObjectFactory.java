@@ -41,35 +41,35 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _ExtrinsicObjectQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ExtrinsicObjectQuery");
-    private final static QName _RegistryPackageQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "RegistryPackageQuery");
-    private final static QName _UserQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "UserQuery");
-    private final static QName _BooleanFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "BooleanFilter");
-    private final static QName _ExternalLinkQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ExternalLinkQuery");
-    private final static QName _SpecificationLinkQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "SpecificationLinkQuery");
-    private final static QName _Filter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "Filter");
-    private final static QName _AssociationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "AssociationQuery");
-    private final static QName _StringFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "StringFilter");
-    private final static QName _FloatFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "FloatFilter");
-    private final static QName _PersonQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "PersonQuery");
-    private final static QName _RegistryObjectQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "RegistryObjectQuery");
-    private final static QName _CompoundFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "CompoundFilter");
-    private final static QName _SubscriptionQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "SubscriptionQuery");
-    private final static QName _FederationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "FederationQuery");
-    private final static QName _IntegerFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "IntegerFilter");
-    private final static QName _ServiceBindingQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ServiceBindingQuery");
-    private final static QName _DateTimeFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "DateTimeFilter");
-    private final static QName _ResponseOption_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ResponseOption");
-    private final static QName _AuditableEventQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "AuditableEventQuery");
-    private final static QName _ClassificationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ClassificationQuery");
-    private final static QName _ClassificationSchemeQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ClassificationSchemeQuery");
-    private final static QName _ServiceQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ServiceQuery");
-    private final static QName _AdhocQueryQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "AdhocQueryQuery");
-    private final static QName _RegistryQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "RegistryQuery");
-    private final static QName _ClassificationNodeQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ClassificationNodeQuery");
-    private final static QName _OrganizationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "OrganizationQuery");
-    private final static QName _NotificationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "NotificationQuery");
-    private final static QName _ExternalIdentifierQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ExternalIdentifierQuery");
+    private static final QName _ExtrinsicObjectQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ExtrinsicObjectQuery");
+    private static final QName _RegistryPackageQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "RegistryPackageQuery");
+    private static final QName _UserQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "UserQuery");
+    private static final QName _BooleanFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "BooleanFilter");
+    private static final QName _ExternalLinkQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ExternalLinkQuery");
+    private static final QName _SpecificationLinkQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "SpecificationLinkQuery");
+    private static final QName _Filter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "Filter");
+    private static final QName _AssociationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "AssociationQuery");
+    private static final QName _StringFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "StringFilter");
+    private static final QName _FloatFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "FloatFilter");
+    private static final QName _PersonQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "PersonQuery");
+    private static final QName _RegistryObjectQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "RegistryObjectQuery");
+    private static final QName _CompoundFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "CompoundFilter");
+    private static final QName _SubscriptionQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "SubscriptionQuery");
+    private static final QName _FederationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "FederationQuery");
+    private static final QName _IntegerFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "IntegerFilter");
+    private static final QName _ServiceBindingQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ServiceBindingQuery");
+    private static final QName _DateTimeFilter_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "DateTimeFilter");
+    private static final QName _ResponseOption_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ResponseOption");
+    private static final QName _AuditableEventQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "AuditableEventQuery");
+    private static final QName _ClassificationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ClassificationQuery");
+    private static final QName _ClassificationSchemeQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ClassificationSchemeQuery");
+    private static final QName _ServiceQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ServiceQuery");
+    private static final QName _AdhocQueryQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "AdhocQueryQuery");
+    private static final QName _RegistryQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "RegistryQuery");
+    private static final QName _ClassificationNodeQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ClassificationNodeQuery");
+    private static final QName _OrganizationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "OrganizationQuery");
+    private static final QName _NotificationQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "NotificationQuery");
+    private static final QName _ExternalIdentifierQuery_QNAME = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0", "ExternalIdentifierQuery");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: eu.europa.ec.sante.openncp.core.server.datamodel.xsd.query._3

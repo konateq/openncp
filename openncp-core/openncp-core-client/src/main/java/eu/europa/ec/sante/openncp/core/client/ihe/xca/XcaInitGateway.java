@@ -73,17 +73,15 @@ public class XcaInitGateway {
         if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && LOGGER_CLINICAL.isDebugEnabled()) {
             final StringBuilder builder = new StringBuilder();
             builder.append("[");
-            documentCodes.forEach(s -> {
-                builder.append(s.getValue()).append(",");
-            });
+            documentCodes.forEach(s -> builder.append(s.getValue()).append(","));
             builder.replace(builder.length() - 1, builder.length(), "]");
             String classCodes = builder.toString();
             LOGGER_CLINICAL.info("QueryResponse crossGatewayQuery('{}','{}','{}','{}','{}','{}')", pid.getExtension(), countryCode,
                     classCodes, assertionMap.get(AssertionEnum.CLINICIAN).getID(), assertionMap.get(AssertionEnum.TREATMENT).getID(), service);
             if (filterParams != null) {
-                LOGGER_CLINICAL.info("FilterParams created Before: " + filterParams.getCreatedBefore());
-                LOGGER_CLINICAL.info("FilterParams created After: " + filterParams.getCreatedAfter());
-                LOGGER_CLINICAL.info("FilterParams size : " + filterParams.getMaximumSize());
+                LOGGER_CLINICAL.info("FilterParams created Before: {}", filterParams.getCreatedBefore());
+                LOGGER_CLINICAL.info("FilterParams created After: {}", filterParams.getCreatedAfter());
+                LOGGER_CLINICAL.info("FilterParams size : {}", filterParams.getMaximumSize());
             }
         }
         QueryResponse result = null;
@@ -161,7 +159,7 @@ public class XcaInitGateway {
                     break;
                 default:
                     LOGGER.error("Service Not Supported");
-                    //TODO: Has to be managed as an error.
+                    // Has to be managed as an error.
             }
             queryResponse = stub.respondingGateway_CrossGatewayRetrieve(queryRequest, assertionMap, classCode);
 
@@ -178,11 +176,10 @@ public class XcaInitGateway {
             if (queryResponse.getDocumentResponse().size() > 1) {
                 LOGGER.error("More than one documents where retrieved for the current request with parameters document ID: '{}' " +
                         "- homeCommunityId: '{}' - registry: '{}'", document.getDocumentUniqueId(), homeCommunityId, document.getRepositoryUniqueId());
-                //TODO: Shall be a fatal ERROR
+                // Shall be a fatal ERROR
             }
-            //TODO: review this try - catch - finally mechanism and the transformation/translation mechanism.
+            // review this try - catch - finally mechanism and the transformation/translation mechanism.
             byte[] pivotDocument = queryResponse.getDocumentResponse().get(0).getDocument();
-            byte[] friendlyDocument;
 
             try {
                 //  Validate CDA Pivot
@@ -259,7 +256,7 @@ public class XcaInitGateway {
 
                     OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
                     if(openncpErrorCode == null){
-                        LOGGER.warn("No EHDSI error code found in the XCA response for : " + errorCode);
+                        LOGGER.warn("No EHDSI error code found in the XCA response for : {}", errorCode);
                     }
 
                     //Throw all the remaining errors

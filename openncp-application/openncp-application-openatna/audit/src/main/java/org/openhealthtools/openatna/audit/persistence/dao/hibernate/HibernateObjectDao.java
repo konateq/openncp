@@ -22,6 +22,18 @@ import java.util.List;
 @Transactional(rollbackFor = AtnaPersistenceException.class)
 public class HibernateObjectDao extends AbstractHibernateDao<ObjectEntity> implements ObjectDao {
 
+    private static final String OBJECT_ID = "objectId";
+    private static final String OBJECT_NAME = "objectName";
+    private static final String OBJECT_TYPE_CODE = "objectTypeCode";
+    private static final String OBJECT_TYPE_CODE_ROLE = "objectTypeCodeRole";
+    private static final String OBJECT_SENSITIVITY = "objectSensitivity";
+    private static final String OBJECT_ID_TYPE_CODE = "objectIdTypeCode";
+    private static final String CODE_SYSTEM = "codeSystem";
+    private static final String CODE_SYSTEM_NAME = "codeSystemName";
+    private static final String ERROR_NO_OR_UNKNOWN_OBJECT_ID_TYPE_CODE_DEFINED = "no or unknown object id type code defined.";
+    private static final String ERROR_CODE_IS_DEFINED_BUT_IS_OF_A_DIFFERENT_TYPE = "code is defined but is of a different type.";
+    private static final String ERROR_CODE_IS_NULL_OR_NOT_EXISTING = "code is null or not existing";
+
     public HibernateObjectDao(SessionFactory sessionFactory) {
         super(ObjectEntity.class, sessionFactory);
     }
@@ -31,35 +43,35 @@ public class HibernateObjectDao extends AbstractHibernateDao<ObjectEntity> imple
     }
 
     public ObjectEntity getByObjectId(String id) {
-        return uniqueResult(criteria().add(Restrictions.eq("objectId", id)));
+        return uniqueResult(criteria().add(Restrictions.eq(OBJECT_ID, id)));
     }
 
     public ObjectEntity get(ObjectEntity other) {
 
         Criteria c = criteria();
-        c.add(Restrictions.eq("objectId", other.getObjectId()));
+        c.add(Restrictions.eq(OBJECT_ID, other.getObjectId()));
         if (other.getObjectName() != null) {
-            c.add(Restrictions.eq("objectName", other.getObjectName()));
+            c.add(Restrictions.eq(OBJECT_NAME, other.getObjectName()));
         } else {
-            c.add(Restrictions.isNull("objectName"));
+            c.add(Restrictions.isNull(OBJECT_NAME));
         }
         if (other.getObjectTypeCode() != null) {
-            c.add(Restrictions.eq("objectTypeCode", other.getObjectTypeCode()));
+            c.add(Restrictions.eq(OBJECT_TYPE_CODE, other.getObjectTypeCode()));
         } else {
-            c.add(Restrictions.isNull("objectTypeCode"));
+            c.add(Restrictions.isNull(OBJECT_TYPE_CODE));
         }
         if (other.getObjectTypeCodeRole() != null) {
-            c.add(Restrictions.eq("objectTypeCodeRole", other.getObjectTypeCodeRole()));
+            c.add(Restrictions.eq(OBJECT_TYPE_CODE_ROLE, other.getObjectTypeCodeRole()));
         } else {
-            c.add(Restrictions.isNull("objectTypeCodeRole"));
+            c.add(Restrictions.isNull(OBJECT_TYPE_CODE_ROLE));
         }
         if (other.getObjectSensitivity() != null) {
-            c.add(Restrictions.eq("objectSensitivity", other.getObjectSensitivity()));
+            c.add(Restrictions.eq(OBJECT_SENSITIVITY, other.getObjectSensitivity()));
         } else {
-            c.add(Restrictions.isNull("objectSensitivity"));
+            c.add(Restrictions.isNull(OBJECT_SENSITIVITY));
         }
 
-        List<? extends ObjectEntity> ret = list(c);
+        List<ObjectEntity> ret = list(c);
         if (ret == null || ret.isEmpty()) {
             return null;
         }
@@ -71,35 +83,35 @@ public class HibernateObjectDao extends AbstractHibernateDao<ObjectEntity> imple
         return null;
     }
 
-    public List<? extends ObjectEntity> getByName(String name) {
-        return list(criteria().add(Restrictions.eq("objectName", name)));
+    public List<ObjectEntity> getByName(String name) {
+        return list(criteria().add(Restrictions.eq(OBJECT_NAME, name)));
     }
 
-    public List<? extends ObjectEntity> getByTypeCode(Short type) {
-        return list(criteria().add(Restrictions.eq("objectTypeCode", type)));
+    public List<ObjectEntity> getByTypeCode(Short type) {
+        return list(criteria().add(Restrictions.eq(OBJECT_TYPE_CODE, type)));
     }
 
-    public List<? extends ObjectEntity> getByTypeCodeRole(Short type) {
-        return list(criteria().add(Restrictions.eq("objectTypeCodeRole", type)));
+    public List<ObjectEntity> getByTypeCodeRole(Short type) {
+        return list(criteria().add(Restrictions.eq(OBJECT_TYPE_CODE_ROLE, type)));
     }
 
-    public List<? extends ObjectEntity> getBySensitivity(String sensitivity) {
-        return list(criteria().add(Restrictions.eq("objectSensitivity", sensitivity)));
+    public List<ObjectEntity> getBySensitivity(String sensitivity) {
+        return list(criteria().add(Restrictions.eq(OBJECT_SENSITIVITY, sensitivity)));
     }
 
-    public List<? extends ObjectEntity> getAll() throws AtnaPersistenceException {
+    public List<ObjectEntity> getAll() throws AtnaPersistenceException {
         return all();
     }
 
-    public List<? extends ObjectEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
+    public List<ObjectEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
         return all(offset, amount);
     }
 
-    public List<? extends ObjectEntity> getByObjectIdTypeCode(ObjectIdTypeCodeEntity codeEntity)
+    public List<ObjectEntity> getByObjectIdTypeCode(ObjectIdTypeCodeEntity codeEntity)
             throws AtnaPersistenceException {
-        return list(criteria().createCriteria("objectIdTypeCode").add(Restrictions.eq("code", codeEntity.getCode()))
-                .add(Restrictions.eq("codeSystem", codeEntity.getCodeSystem()))
-                .add(Restrictions.eq("codeSystemName", codeEntity.getCodeSystemName())));
+        return list(criteria().createCriteria(OBJECT_ID_TYPE_CODE).add(Restrictions.eq("code", codeEntity.getCode()))
+                .add(Restrictions.eq(CODE_SYSTEM, codeEntity.getCodeSystem()))
+                .add(Restrictions.eq(CODE_SYSTEM_NAME, codeEntity.getCodeSystemName())));
     }
 
     // TODO - check for INCONSISTENT_REPRESENTATION, e.g sensitivity
@@ -113,19 +125,19 @@ public class HibernateObjectDao extends AbstractHibernateDao<ObjectEntity> imple
                 if (policies.isAllowNewCodes()) {
                     dao.save(code, policies);
                 } else {
-                    throw new AtnaPersistenceException("no or unknown object id type code defined.",
+                    throw new AtnaPersistenceException(ERROR_NO_OR_UNKNOWN_OBJECT_ID_TYPE_CODE_DEFINED,
                             AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
                 }
             } else {
                 if (existing instanceof ObjectIdTypeCodeEntity) {
                     entity.setObjectIdTypeCode((ObjectIdTypeCodeEntity) existing);
                 } else {
-                    throw new AtnaPersistenceException("code is defined but is of a different type.",
+                    throw new AtnaPersistenceException(ERROR_CODE_IS_DEFINED_BUT_IS_OF_A_DIFFERENT_TYPE,
                             AtnaPersistenceException.PersistenceError.WRONG_CODE_TYPE);
                 }
             }
         } else {
-            throw new AtnaPersistenceException("code is null or not existing",
+            throw new AtnaPersistenceException(ERROR_CODE_IS_NULL_OR_NOT_EXISTING,
                     AtnaPersistenceException.PersistenceError.NON_EXISTENT_CODE);
         }
 

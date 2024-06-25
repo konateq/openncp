@@ -45,6 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -55,6 +56,23 @@ import java.util.*;
 @RequestMapping(path = "/api")
 public class SMPDeleteFileController {
 
+    private static final String HTTPS_PROTOCOL = "https";
+    private static final String ERROR_RESULT = "\n ***************** ERROR RESULT - '{}'";
+    private static final String ERROR_DESCRIPTION = "ErrorDescription";
+    private static final String BUSINESS_CODE = "BusinessCode";
+    private static final String ERROR_NOUSER = "error.nouser";
+    private static final String ERROR_SERVER_FAILED = "error.server.failed";
+    private static final String SMP_ADMIN_URL = "SMP_ADMIN_URL";
+    private static final String IOEXCEPTION = "\n IOException - {}";
+    private static final String URI_SYNTAX_EXCEPTION = "URISyntaxException";
+    private static final String URI = "\n ************** URI - {}";
+    private static final String PROTOCOL_HTTPS = "https://";
+    private static final String PROTOCOL_HTTP = "http://";
+    private static final String SMP_TYPE_REFERENCE = "SMP Type- '{}', reference - '{}'";
+    private static final String REFERENCES_DECODED_UTF_8 = "references decoded UTF-8 - {}";
+    private static final String DELETE_RESPONSE_STATUS_REASON = "Delete Response Status - {}, Reason - {} ";
+    private static final String SUFFIX = "/";
+    private static final String TECHNICAL_EXCEPTION = "TechnicalException";
     private final Logger logger = LoggerFactory.getLogger(SMPDeleteFileController.class);
     private final DynamicDiscoveryClient dynamicDiscoveryClient;
     private final ReadSMPProperties readProperties;
@@ -82,20 +100,24 @@ public class SMPDeleteFileController {
             smpClient = dynamicDiscoveryClient.getInstance();
         } catch (ConnectionException ex) {
             success = false;
-            errorType = "ConnectionException";
-            logger.error("\n ConnectionException - " + SimpleErrorHandler.printExceptionStackTrace(ex));
+            if(logger.isErrorEnabled()) {
+                logger.error("\n ConnectionException - {}", SimpleErrorHandler.printExceptionStackTrace(ex));
+            }
         } catch (TechnicalException | CertificateException | KeyStoreException | IOException |
                  NoSuchAlgorithmException e) {
-            logger.error("Technical Exception: '{}'", e.getMessage(), e);
+            if(logger.isErrorEnabled()) {
+                logger.error("Connection Exception: '{}'", e.getMessage(), e);
+            }
         }
 
         List<DocumentIdentifier> documentIdentifiers = null;
         try {
+            assert smpClient != null;
             documentIdentifiers = smpClient.getService().getServiceGroup(participantIdentifier).getDocumentIdentifiers();
         } catch (TechnicalException ex) {
             success = false;
-            errorType = "TechnicalException";
-            logger.error("TechnicalException - '{}'", SimpleErrorHandler.printExceptionStackTrace(ex));
+            errorType = TECHNICAL_EXCEPTION;
+            logger.error("Technical Exception - '{}'", SimpleErrorHandler.printExceptionStackTrace(ex));
         }
 
         URI serviceGroup = null;
@@ -118,9 +140,10 @@ public class SMPDeleteFileController {
                     }
                 }
                 String smpType = documentID;
-                logger.debug("\n******** DOC ID - '{}'", documentIdentifier.getIdentifier());
-                logger.debug("\n******** SMP Type - '{}'", smpType);
-
+                if(logger.isDebugEnabled()) {
+                    logger.debug("\n******** DOC ID - '{}'", documentIdentifier.getIdentifier());
+                    logger.debug("\n******** SMP Type - '{}'", smpType);
+                }
                 for (SMPType smptype1 : SMPType.values()) {
                     if (smptype1.name().equals(smpType)) {
                         smptype = smptype1.getDescription();
@@ -132,8 +155,10 @@ public class SMPDeleteFileController {
                     smpURI = smpClient.getService().getMetadataLocator().lookup(participantIdentifier);
                 } catch (TechnicalException ex) {
                     success = false;
-                    errorType = "TechnicalException";
-                    logger.error("\n TechnicalException - " + SimpleErrorHandler.printExceptionStackTrace(ex));
+                    errorType = TECHNICAL_EXCEPTION;
+                    if(logger.isErrorEnabled()) {
+                        logger.error("\n TechnicalException - {}", SimpleErrorHandler.printExceptionStackTrace(ex));
+                    }
                 }
                 URI uri = smpClient.getService().getMetadataProvider().resolveServiceMetadata(smpURI, participantIdentifier, documentIdentifier);
                 ReferenceCollection reference = new ReferenceCollection();
@@ -146,7 +171,9 @@ public class SMPDeleteFileController {
                 serviceGroup = smpClient.getService().getMetadataProvider().resolveDocumentIdentifiers(smpURI, participantIdentifier);
             }
         } else {
-            logger.info("Smp file list is empty");
+            if(logger.isInfoEnabled()) {
+                logger.info("Smp file list is empty");
+            }
             //  Returning empty List and  no Audit message expected in this case.
             return ResponseEntity.ok(Collections.emptyList());
         }
@@ -166,36 +193,44 @@ public class SMPDeleteFileController {
 
     @DeleteMapping(value = "smpeditor/smpfile")
     public ResponseEntity deleteSmpFile(@RequestBody ReferenceCollection ref) {
+        if(logger.isInfoEnabled()) {
+            logger.info("[REST Api] Delete SMP file: '{}' from server: '{}'",
+                    sanitizeString(ref.getReference()), sanitizeString(ref.getSmpUri()));
+        }
 
-        logger.info("[REST Api] Delete SMP file: '{}' from server: '{}'", ref.getReference(), ref.getSmpUri());
         ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
 
         String urlServer = configurationManager.getProperty(StandardProperties.SMP_SML_ADMIN_URL);
-        if (urlServer.endsWith("/")) {
+        if (urlServer.endsWith(SUFFIX)) {
             urlServer = urlServer.substring(0, urlServer.length() - 1);
         }
         /*Removes https:// from entered by the user so it won't repeat in uri set scheme*/
-        if (urlServer.startsWith("https")) {
+        if (urlServer.startsWith(HTTPS_PROTOCOL)) {
             urlServer = urlServer.substring(8);
         }
 
         String reference = ref.getReference();
         String smpType = ref.getSmpType();
-        logger.debug("SMP Type- '{}', reference - '{}'", smpType, reference);
+        if(logger.isDebugEnabled()) {
+            logger.debug(SMP_TYPE_REFERENCE, sanitizeString(smpType), sanitizeString(reference));
+        }
 
-        if (reference.startsWith("http://") || reference.startsWith("https://")) {
+        if (reference.startsWith(PROTOCOL_HTTP) || reference.startsWith(PROTOCOL_HTTPS)) {
             reference = reference.substring(ref.getSmpUri().length());
         }
 
-        reference = java.net.URLDecoder.decode(reference, StandardCharsets.UTF_8);
-        logger.debug("references decoded UTF-8 - {}", reference);
-
+        reference = URLDecoder.decode(reference, StandardCharsets.UTF_8);
+        if(logger.isDebugEnabled()) {
+            logger.debug(REFERENCES_DECODED_UTF_8, sanitizeString(reference));
+        }
         URI uri;
         try {
-            uri = new URIBuilder().setScheme("https").setHost(urlServer).setPath(reference).build();
-            logger.debug("\n ************** URI - {}", uri);
+            uri = new URIBuilder().setScheme(HTTPS_PROTOCOL).setHost(urlServer).setPath(reference).build();
+            if(logger.isDebugEnabled()) {
+                logger.debug(URI, uri);
+            }
         } catch (URISyntaxException e) {
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "URISyntaxException");
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, URI_SYNTAX_EXCEPTION);
         }
 
         // Trust own CA and all self-signed certs
@@ -208,45 +243,45 @@ public class SMPDeleteFileController {
         try {
             response = DynamicDiscoveryService.buildHttpClient(sslcontext).execute(httpdelete);
         } catch (IOException ex) {
-            logger.error("\n IOException - " + SimpleErrorHandler.printExceptionStackTrace(ex));
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "IOException - " + SimpleErrorHandler.printExceptionStackTrace(ex));
         }
 
         /*Get response*/
         int responseStatus = response.getStatusLine().getStatusCode();
         String responseReason = response.getStatusLine().getReasonPhrase();
-        logger.debug("Delete Response Status - {}, Reason - {} ", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+        if(logger.isDebugEnabled()) {
+            logger.debug(DELETE_RESPONSE_STATUS_REASON, response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+        }
 
         HttpEntity entity = response.getEntity();
 
         //Audit vars
-        String remoteIp = ConfigurationManagerFactory.getConfigurationManager().getProperty("SMP_ADMIN_URL");
+        String remoteIp = ConfigurationManagerFactory.getConfigurationManager().getProperty(SMP_ADMIN_URL);
         //ET_ObjectID --> Base64 of url
         String objectID = uri.toString();
         byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
+        byte[] encodedObjectDetail = Base64.encodeBase64(responseReason.getBytes());
 
         switch (responseStatus) {
             case 503:
             case 405:
                 //Audit error
-                byte[] encodedObjectDetail = Base64.encodeBase64(responseReason.getBytes());
                 AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         Integer.toString(responseStatus), encodedObjectDetail);
-                throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty("error.server.failed"));
+                throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty(ERROR_SERVER_FAILED));
             case 401:
                 //Audit error
-                encodedObjectDetail = Base64.encodeBase64(responseReason.getBytes());
                 AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         Integer.toString(responseStatus), encodedObjectDetail);
-                throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty("error.nouser"));
+                throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty(ERROR_NOUSER));
             case 200:
             case 201:
                 //Audit Success
                 AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         null, null);
                 return ResponseEntity.ok().build();
-
-
+            default:
+                break;
         }
         /* Get BusinessCode and ErrorDescription from response */
 
@@ -264,17 +299,21 @@ public class SMPDeleteFileController {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
+            //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setXIncludeAware(false);
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             builder = factory.newDocumentBuilder();
             Document doc = builder.parse(bais);
             Element element = doc.getDocumentElement();
             NodeList nodes = element.getChildNodes();
             for (int j = 0; j < nodes.getLength(); j++) {
-                if (nodes.item(j).getNodeName().equals("BusinessCode")) {
+                if (nodes.item(j).getNodeName().equals(BUSINESS_CODE)) {
                     String businessCode = nodes.item(j).getTextContent();
+                    logger.debug("{}", businessCode);
                 }
-                if (nodes.item(j).getNodeName().equals("ErrorDescription")) {
+                if (nodes.item(j).getNodeName().equals(ERROR_DESCRIPTION)) {
                     String errorDescription = nodes.item(j).getTextContent();
+                    logger.debug("{}", errorDescription);
                 }
             }
         } catch (ParserConfigurationException | IOException | SAXException ex) {
@@ -283,7 +322,7 @@ public class SMPDeleteFileController {
 
         /*transform xml to string in order to send in Audit*/
         String errorResult = AuditManager.prepareEventLog(bytes);
-        logger.debug("\n ***************** ERROR RESULT - '{}'", errorResult);
+        logger.debug(ERROR_RESULT, errorResult);
         //Audit error
         AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                 Integer.toString(responseStatus), errorResult.getBytes());
@@ -296,31 +335,35 @@ public class SMPDeleteFileController {
 
         ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
         String urlServer = configurationManager.getProperty(StandardProperties.SMP_SML_ADMIN_URL);
-        if (urlServer.endsWith("/")) {
+        if (urlServer.endsWith(SUFFIX)) {
             urlServer = urlServer.substring(0, urlServer.length() - 1);
         }
         //  Removes https:// from entered by the user so it won't repeat in uri set scheme
-        if (urlServer.startsWith("https")) {
+        if (urlServer.startsWith(HTTPS_PROTOCOL)) {
             urlServer = urlServer.substring(8);
         }
 
         String reference = ref.getReference();
         String smpType = ref.getSmpType();
-        logger.debug("SMP Type- '{}', reference - '{}'", smpType, reference);
+        if(logger.isDebugEnabled()) {
+            logger.debug(SMP_TYPE_REFERENCE, sanitizeString(smpType), sanitizeString(reference));
+        }
 
-        if (reference.startsWith("http://") || reference.startsWith("https://")) {
+        if (reference.startsWith(PROTOCOL_HTTP) || reference.startsWith(PROTOCOL_HTTPS)) {
             reference = reference.substring(ref.getSmpUri().length());
         }
 
-        reference = java.net.URLDecoder.decode(reference, StandardCharsets.UTF_8);
-        logger.debug("references decoded UTF-8 - {}", reference);
+        reference = URLDecoder.decode(reference, StandardCharsets.UTF_8);
+        if(logger.isDebugEnabled()) {
+            logger.debug(REFERENCES_DECODED_UTF_8, sanitizeString(reference));
+        }
 
         URI uri = null;
         try {
-            uri = new URIBuilder().setScheme("https").setHost(urlServer).setPath(reference).build();
-            logger.debug("\n ************** URI - {}", uri);
+            uri = new URIBuilder().setScheme(HTTPS_PROTOCOL).setHost(urlServer).setPath(reference).build();
+            logger.debug(URI, uri);
         } catch (URISyntaxException e) {
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "URISyntaxException");
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, URI_SYNTAX_EXCEPTION);
         }
 
         // Trust own CA and all self-signed certs
@@ -334,18 +377,18 @@ public class SMPDeleteFileController {
         try {
             response = DynamicDiscoveryService.buildHttpClient(sslcontext).execute(httpdelete);
         } catch (IOException e) {
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "\n IOException - " + SimpleErrorHandler.printExceptionStackTrace(e));
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, IOEXCEPTION + SimpleErrorHandler.printExceptionStackTrace(e));
         }
 
         //  Get response
         int responseStatus = response.getStatusLine().getStatusCode();
         String responseReason = response.getStatusLine().getReasonPhrase();
-        logger.debug("Delete Response Status - {}, Reason - {} ", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+        logger.debug(DELETE_RESPONSE_STATUS_REASON, response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
 
         HttpEntity entity = response.getEntity();
 
         //  Audit vars
-        String remoteIp = ConfigurationManagerFactory.getConfigurationManager().getProperty("SMP_ADMIN_URL");
+        String remoteIp = ConfigurationManagerFactory.getConfigurationManager().getProperty(SMP_ADMIN_URL);
         //  ET_ObjectID --> Base64 of url
         String objectID = uri.toString();
         byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
@@ -357,19 +400,21 @@ public class SMPDeleteFileController {
                 byte[] encodedObjectDetail = Base64.encodeBase64(responseReason.getBytes());
                 AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         Integer.toString(responseStatus), encodedObjectDetail);
-                throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty("error.server.failed"));
+                throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty(ERROR_SERVER_FAILED));
             case 401:
                 //Audit error
                 encodedObjectDetail = Base64.encodeBase64(responseReason.getBytes());
                 AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         Integer.toString(responseStatus), encodedObjectDetail);
-                throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty("error.nouser"));
+                throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty(ERROR_NOUSER));
             case 200:
             case 201:
                 //Audit Success
                 AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         null, null);
                 return ResponseEntity.ok().build();
+            default:
+                break;
         }
         /* Get BusinessCode and ErrorDescription from response */
 
@@ -385,17 +430,21 @@ public class SMPDeleteFileController {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
+            //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setXIncludeAware(false);
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             builder = factory.newDocumentBuilder();
             Document doc = builder.parse(bais);
             Element element = doc.getDocumentElement();
             NodeList nodes = element.getChildNodes();
             for (int j = 0; j < nodes.getLength(); j++) {
-                if (nodes.item(j).getNodeName().equals("BusinessCode")) {
+                if (nodes.item(j).getNodeName().equals(BUSINESS_CODE)) {
                     String businessCode = nodes.item(j).getTextContent();
+                    logger.debug("{}", businessCode);
                 }
-                if (nodes.item(j).getNodeName().equals("ErrorDescription")) {
+                if (nodes.item(j).getNodeName().equals(ERROR_DESCRIPTION)) {
                     String errorDescription = nodes.item(j).getTextContent();
+                    logger.debug("{}", errorDescription);
                 }
             }
         } catch (ParserConfigurationException | IOException | SAXException ex) {
@@ -404,12 +453,16 @@ public class SMPDeleteFileController {
 
         /*transform xml to string in order to send in Audit*/
         String errorResult = AuditManager.prepareEventLog(bytes);
-        logger.debug("\n ***************** ERROR RESULT - '{}'", errorResult);
+        logger.debug(ERROR_RESULT, errorResult);
         //Audit error
         AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                 Integer.toString(responseStatus), errorResult.getBytes());
 
         return ResponseEntity.status(responseStatus).build();
+    }
+
+    private static String sanitizeString(String stringToSanitize) {
+        return stringToSanitize != null ? stringToSanitize.replaceAll("[\n\r]", "_") : "";
     }
 
 }

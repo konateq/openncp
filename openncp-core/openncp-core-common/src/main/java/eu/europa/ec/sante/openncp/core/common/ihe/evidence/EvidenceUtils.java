@@ -43,7 +43,7 @@ public class EvidenceUtils {
     private static final Logger LOGGER_CLINICAL = LoggerFactory.getLogger("LOGGER_CLINICAL");
     private static final String DATATYPE_STRING = "http://www.w3.org/2001/XMLSchema#string";
     private static final String DATATYPE_DATETIME = "http://www.w3.org/2001/XMLSchema#dateTime";
-    private static final String HIDDEN_PASSWORD = "******";
+    private static final String HIDDEN_CREDS = "******";
 
     private EvidenceUtils() {
     }
@@ -90,19 +90,19 @@ public class EvidenceUtils {
                                             String senderCertAlias, String recipientKeyStorePath, String recipientKeyPassword,
                                             String recipientCertAlias, String eventType, DateTime submissionTime,
                                             String status, String title)
-            throws IOException, URISyntaxException, TOElementException, EnforcePolicyException, ObligationDischargeException,
+            throws IOException, URISyntaxException, eu.europa.ec.sante.openncp.core.common.evidence.TOElementException, eu.europa.ec.sante.openncp.core.common.evidence.EnforcePolicyException, eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException,
             TransformerException, SyntaxException, KeyStoreException, NoSuchAlgorithmException, CertificateException,
             UnrecoverableKeyException {
 
         MessageType messageType;
         String messageIdentifier;
         try {
-            MessageInspector messageInspector = new MessageInspector(incomingMsg);
+            eu.europa.ec.sante.openncp.core.common.evidence.MessageInspector messageInspector = new eu.europa.ec.sante.openncp.core.common.evidence.MessageInspector(incomingMsg);
             messageType = messageInspector.getMessageType();
             messageIdentifier = messageInspector.getMessageUUID();
         } catch (Exception e) {
             LOGGER.warn("[REM-NRR] Message Type Unknown: '{}'", e.getMessage(), e);
-            messageType = new UnknownMessageType(incomingMsg);
+            messageType = new eu.europa.ec.sante.openncp.core.common.evidence.UnknownMessageType(incomingMsg);
             messageIdentifier = UUID.randomUUID().toString();
         }
         LOGGER.info("[Evidence Emitter] Creation of REMNRR for message type: '{}' with ID: '{}'", messageType, messageIdentifier);
@@ -144,17 +144,17 @@ public class EvidenceUtils {
                                             String senderCertAlias, String recipientKeyStorePath, String recipientKeyPassword,
                                             String recipientCertAlias, String eventType, DateTime submissionTime,
                                             String status, String title, String msguuid)
-            throws IOException, URISyntaxException, TOElementException, EnforcePolicyException,
-            ObligationDischargeException, TransformerException, SyntaxException, KeyStoreException,
+            throws IOException, URISyntaxException, eu.europa.ec.sante.openncp.core.common.evidence.TOElementException, eu.europa.ec.sante.openncp.core.common.evidence.EnforcePolicyException,
+            eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException, TransformerException, SyntaxException, KeyStoreException,
             NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException {
 
 
         if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && LOGGER_CLINICAL.isDebugEnabled()) {
             LOGGER_CLINICAL.debug("[Evidences] createEvidenceREMNRR()\nIncoming message:\n'{}'\n Issuer Info: '{}'-'{}'-'{}', " +
                             "Sender Info: '{}'-'{}'-'{}', Recipient Info: '{}'-'{}'-'{}'\nEvent Info: '{}'-'{}'-'{}'-'{}'-'{}'",
-                    XMLUtil.documentToString(incomingMsg), issuerKeyStorePath, StringUtils.isNotBlank(issuerKeyPassword) ? HIDDEN_PASSWORD : "N/A",
-                    issuerCertAlias, senderKeyStorePath, StringUtils.isNotBlank(senderKeyPassword) ? HIDDEN_PASSWORD : "N/A",
-                    senderCertAlias, recipientKeyStorePath, StringUtils.isNotBlank(recipientKeyPassword) ? HIDDEN_PASSWORD : "N/A",
+                    XMLUtil.documentToString(incomingMsg), issuerKeyStorePath, StringUtils.isNotBlank(issuerKeyPassword) ? HIDDEN_CREDS : "N/A",
+                    issuerCertAlias, senderKeyStorePath, StringUtils.isNotBlank(senderKeyPassword) ? HIDDEN_CREDS : "N/A",
+                    senderCertAlias, recipientKeyStorePath, StringUtils.isNotBlank(recipientKeyPassword) ? HIDDEN_CREDS : "N/A",
                     recipientCertAlias, eventType, submissionTime, status, title, msguuid);
         }
         String messageStatus = "failure";
@@ -174,43 +174,43 @@ public class EvidenceUtils {
         MessageType messageType;
 
         try {
-            MessageInspector messageInspector = new MessageInspector(incomingMsg);
+            eu.europa.ec.sante.openncp.core.common.evidence.MessageInspector messageInspector = new eu.europa.ec.sante.openncp.core.common.evidence.MessageInspector(incomingMsg);
             messageType = messageInspector.getMessageType();
         } catch (Exception e) {
             LOGGER.warn("[REM-NRR] Message Type Unknown: '{}'", e.getMessage(), e);
-            messageType = new UnknownMessageType(incomingMsg);
+            messageType = new eu.europa.ec.sante.openncp.core.common.evidence.UnknownMessageType(incomingMsg);
         }
         /*
          * Now create the XACML request
          */
-        LinkedList<XACMLAttributes> actionList = new LinkedList<>();
-        XACMLAttributes action = new XACMLAttributes();
+        LinkedList<eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes> actionList = new LinkedList<>();
+        eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes action = new eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes();
         action.setDataType(new URI(DATATYPE_STRING));
         action.setIdentifier(new URI("urn:eSENS:outcome"));
         actionList.add(action);
         action.setValue(messageStatus);
 
-        LinkedList<XACMLAttributes> environmentList = new LinkedList<>();
-        XACMLAttributes environment = new XACMLAttributes();
+        LinkedList<eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes> environmentList = new LinkedList<>();
+        eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes environment = new eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes();
         environment.setDataType(new URI(DATATYPE_DATETIME));
         environment.setIdentifier(new URI("urn:esens:2014:event"));
         environment.setValue(new DateTime().toString());
         environmentList.add(environment);
 
-        XACMLRequestCreator requestCreator = new XACMLRequestCreator(messageType, null, null,
+        eu.europa.ec.sante.openncp.core.common.evidence.XACMLRequestCreator requestCreator = new eu.europa.ec.sante.openncp.core.common.evidence.XACMLRequestCreator(messageType, null, null,
                 actionList, environmentList);
 
         Element request = requestCreator.getRequest();
 
         // just some printouts
-        Utilities.serialize(request);
+        eu.europa.ec.sante.openncp.core.common.evidence.Utilities.serialize(request);
 
-        EnforcePolicy enforcePolicy = new EnforcePolicy(simplePDP);
+        eu.europa.ec.sante.openncp.core.common.evidence.EnforcePolicy enforcePolicy = new eu.europa.ec.sante.openncp.core.common.evidence.EnforcePolicy(simplePDP);
         enforcePolicy.decide(request);
 
-        Utilities.serialize(enforcePolicy.getResponseAsDocument().getDocumentElement());
+        eu.europa.ec.sante.openncp.core.common.evidence.Utilities.serialize(enforcePolicy.getResponseAsDocument().getDocumentElement());
 
-        List<ESensObligation> obligations = enforcePolicy.getObligationList();
+        List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations = enforcePolicy.getObligationList();
 
         Context context = new Context();
         context.setIncomingMsg(incomingMsg);
@@ -233,20 +233,20 @@ public class EvidenceUtils {
         context.setRequest(request);
         context.setEnforcer(enforcePolicy);
 
-        ObligationHandlerFactory handlerFactory = ObligationHandlerFactory.getInstance();
-        List<ObligationHandler> handlers = handlerFactory.createHandler(messageType, obligations, context);
+        eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandlerFactory handlerFactory = eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandlerFactory.getInstance();
+        List<eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandler> handlers = handlerFactory.createHandler(messageType, obligations, context);
 
-        for (ObligationHandler oh : handlers) {
+        for (eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandler oh : handlers) {
 
             oh.discharge();
-            Utilities.serialize(oh.getMessage().getDocumentElement());
+            eu.europa.ec.sante.openncp.core.common.evidence.Utilities.serialize(oh.getMessage().getDocumentElement());
             String oblString = XMLUtil.documentToString(oh.getMessage());
             if (StringUtils.isBlank(title)) {
                 title = getPath() + "nrr" + File.separator + getDocumentTitle(msguuid, oh.toString(), "NRR") + ".xml";
             } else {
                 title = getPath() + "nrr" + File.separator + getDocumentTitle(msguuid, title, "NRR") + ".xml";
             }
-            FileUtil.constructNewFile(title, oblString.getBytes());
+            eu.europa.ec.sante.openncp.core.common.evidence.FileUtil.constructNewFile(title, oblString.getBytes());
         }
     }
 
@@ -275,7 +275,7 @@ public class EvidenceUtils {
 
         String msguuid;
         try {
-            MessageInspector messageInspector = new MessageInspector(incomingSoap);
+            eu.europa.ec.sante.openncp.core.common.evidence.MessageInspector messageInspector = new eu.europa.ec.sante.openncp.core.common.evidence.MessageInspector(incomingSoap);
             logMessage(incomingSoap);
             msguuid = messageInspector.getMessageUUID();
         } catch (Exception e) {
@@ -315,9 +315,9 @@ public class EvidenceUtils {
         if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && LOGGER_CLINICAL.isDebugEnabled()) {
             LOGGER_CLINICAL.debug("[Evidences] createEvidenceREMNRO()\nIncoming message:\n'{}'\n Issuer Info: '{}'-'{}'-'{}', " +
                             "Sender Info: '{}'-'{}'-'{}', Recipient Info: '{}'-'{}'-'{}'\nEvent Info: '{}'-'{}'-'{}'-'{}'-'{}'",
-                    XMLUtil.documentToString(incomingSoap), issuerKeyStorePath, StringUtils.isNotBlank(issuerKeyPassword) ? HIDDEN_PASSWORD : "N/A",
-                    issuerCertAlias, senderKeyStorePath, StringUtils.isNotBlank(senderKeyPassword) ? HIDDEN_PASSWORD : "N/A",
-                    senderCertAlias, recipientKeyStorePath, StringUtils.isNotBlank(recipientKeyPassword) ? HIDDEN_PASSWORD : "N/A",
+                    XMLUtil.documentToString(incomingSoap), issuerKeyStorePath, StringUtils.isNotBlank(issuerKeyPassword) ? HIDDEN_CREDS : "N/A",
+                    issuerCertAlias, senderKeyStorePath, StringUtils.isNotBlank(senderKeyPassword) ? HIDDEN_CREDS : "N/A",
+                    senderCertAlias, recipientKeyStorePath, StringUtils.isNotBlank(recipientKeyPassword) ? HIDDEN_CREDS : "N/A",
                     recipientCertAlias, eventType, submissionTime, status, title, msguuid);
         }
         String messageStatus = "failure";
@@ -342,12 +342,12 @@ public class EvidenceUtils {
         // Read the message as it arrives at the facade
         MessageType messageType;
         try {
-            MessageInspector messageInspector = new MessageInspector(incomingSoap);
+            eu.europa.ec.sante.openncp.core.common.evidence.MessageInspector messageInspector = new eu.europa.ec.sante.openncp.core.common.evidence.MessageInspector(incomingSoap);
             logMessage(incomingSoap);
             messageType = messageInspector.getMessageType();
         } catch (Exception e) {
             LOGGER.warn("[REM-NRO] Message Type Unknown: '{}'", e.getMessage(), e);
-            messageType = new UnknownMessageType(incomingSoap);
+            messageType = new eu.europa.ec.sante.openncp.core.common.evidence.UnknownMessageType(incomingSoap);
         }
         //TODO: 2021-04-21  Review the following method and if any validation is expected based on the message type.
         checkCorrectnessOfIHEXCA(messageType);
@@ -356,35 +356,35 @@ public class EvidenceUtils {
         /*
          * Now create the XACML request
          */
-        LinkedList<XACMLAttributes> actionList = new LinkedList<>();
-        XACMLAttributes action = new XACMLAttributes();
+        LinkedList<eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes> actionList = new LinkedList<>();
+        eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes action = new eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes();
         action.setDataType(new URI(DATATYPE_STRING));
         action.setIdentifier(new URI("urn:eSENS:outcome"));
         actionList.add(action);
         action.setValue(messageStatus);
 
-        LinkedList<XACMLAttributes> environmentList = new LinkedList<>();
-        XACMLAttributes environment = new XACMLAttributes();
+        LinkedList<eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes> environmentList = new LinkedList<>();
+        eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes environment = new eu.europa.ec.sante.openncp.core.common.evidence.XACMLAttributes();
         environment.setDataType(new URI(DATATYPE_DATETIME));
         environment.setIdentifier(new URI("urn:esens:2014:event"));
         environment.setValue(new DateTime().toString());
         environmentList.add(environment);
 
-        XACMLRequestCreator requestCreator = new XACMLRequestCreator(messageType, null, null,
+        eu.europa.ec.sante.openncp.core.common.evidence.XACMLRequestCreator requestCreator = new eu.europa.ec.sante.openncp.core.common.evidence.XACMLRequestCreator(messageType, null, null,
                 actionList, environmentList);
 
         Element request = requestCreator.getRequest();
-        Utilities.serialize(request);
+        eu.europa.ec.sante.openncp.core.common.evidence.Utilities.serialize(request);
 
         /*
          * Call the XACML engine.
          * The policy has been deployed in the setupBeforeClass.
          */
-        EnforcePolicy enforcePolicy = new EnforcePolicy(simplePDP);
+        eu.europa.ec.sante.openncp.core.common.evidence.EnforcePolicy enforcePolicy = new eu.europa.ec.sante.openncp.core.common.evidence.EnforcePolicy(simplePDP);
         enforcePolicy.decide(request);
 
-        Utilities.serialize(enforcePolicy.getResponseAsDocument().getDocumentElement());
-        List<ESensObligation> obligations = enforcePolicy.getObligationList();
+        eu.europa.ec.sante.openncp.core.common.evidence.Utilities.serialize(enforcePolicy.getResponseAsDocument().getDocumentElement());
+        List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations = enforcePolicy.getObligationList();
         Context context = new Context();
         context.setIncomingMsg(incomingSoap);
 
@@ -405,21 +405,21 @@ public class EvidenceUtils {
         context.setAuthenticationMethod("http://uri.etsi.org/REM/AuthMethod#Strong");
         context.setRequest(request);
         context.setEnforcer(enforcePolicy);
-        ObligationHandlerFactory handlerFactory = ObligationHandlerFactory.getInstance();
-        List<ObligationHandler> handlers = handlerFactory.createHandler(messageType, obligations, context);
+        eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandlerFactory handlerFactory = eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandlerFactory.getInstance();
+        List<eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandler> handlers = handlerFactory.createHandler(messageType, obligations, context);
 
         // Here I discharge manually. This behavior is to let free an implementation
-        for (ObligationHandler handler : handlers) {
+        for (eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandler handler : handlers) {
 
             handler.discharge();
-            Utilities.serialize(handler.getMessage().getDocumentElement());
+            eu.europa.ec.sante.openncp.core.common.evidence.Utilities.serialize(handler.getMessage().getDocumentElement());
             String oblString = XMLUtil.documentToString(handler.getMessage());
             if (StringUtils.isBlank(title)) {
                 title = getPath() + "nro" + File.separator + getDocumentTitle(msguuid, handler.toString(), "NRO") + ".xml";
             } else {
                 title = getPath() + "nro" + File.separator + getDocumentTitle(msguuid, title, "NRO") + ".xml";
             }
-            FileUtil.constructNewFile(title, oblString.getBytes());
+            eu.europa.ec.sante.openncp.core.common.evidence.FileUtil.constructNewFile(title, oblString.getBytes());
         }
     }
 
@@ -458,6 +458,7 @@ public class EvidenceUtils {
     public static Document readMessage(String file) throws ParserConfigurationException, SAXException, IOException {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setXIncludeAware(false);
         documentBuilderFactory.setNamespaceAware(true);
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         return documentBuilder.parse(new File(file));
@@ -466,6 +467,7 @@ public class EvidenceUtils {
     public static Document readXmlMessage(String xml) throws ParserConfigurationException, SAXException, IOException {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setXIncludeAware(false);
         documentBuilderFactory.setNamespaceAware(true);
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         return documentBuilder.parse(xml);
@@ -484,7 +486,7 @@ public class EvidenceUtils {
     private static X509Certificate getCertificate(String keyStorePath, String keyPassword, String certAlias)
             throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
 
-        LOGGER.debug("X509Certificate getCertificate('{}', '{}', '{}')", keyStorePath, StringUtils.isNotBlank(keyPassword) ? HIDDEN_PASSWORD : "N/A", certAlias);
+        LOGGER.debug("X509Certificate getCertificate('{}', '{}', '{}')", keyStorePath, StringUtils.isNotBlank(keyPassword) ? HIDDEN_CREDS : "N/A", certAlias);
         KeyStore ks = KeyStore.getInstance("JKS");
         InputStream keyStream = new FileInputStream(new File(keyStorePath));
         ks.load(keyStream, keyPassword == null ? null : keyPassword.toCharArray());
@@ -505,7 +507,7 @@ public class EvidenceUtils {
     private static PrivateKey getSigningKey(String keyStorePath, String keyPassword, String certAlias)
             throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException {
 
-        LOGGER.debug("PrivateKey getSigningKey('{}', '{}', '{}')", keyStorePath, StringUtils.isNotBlank(keyPassword) ? HIDDEN_PASSWORD : "N/A", certAlias);
+        LOGGER.debug("PrivateKey getSigningKey('{}', '{}', '{}')", keyStorePath, StringUtils.isNotBlank(keyPassword) ? HIDDEN_CREDS : "N/A", certAlias);
         KeyStore ks = KeyStore.getInstance("JKS");
         InputStream keyStream = new FileInputStream(new File(keyStorePath));
         ks.load(keyStream, keyPassword == null ? null : keyPassword.toCharArray());
@@ -523,7 +525,7 @@ public class EvidenceUtils {
                 && LOGGER_CLINICAL.isDebugEnabled()) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try {
-                Utilities.serialize(message.getDocumentElement(), outputStream);
+                eu.europa.ec.sante.openncp.core.common.evidence.Utilities.serialize(message.getDocumentElement(), outputStream);
                 String messageAsString = outputStream.toString();
                 LOGGER_CLINICAL.debug("Message:\n'{}'", messageAsString);
             } catch (TransformerException e) {

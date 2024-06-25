@@ -17,19 +17,19 @@ public interface ParticipantDao extends Dao {
 
     ParticipantEntity getById(Long id) throws AtnaPersistenceException;
 
-    List<? extends ParticipantEntity> getByUserId(String userId) throws AtnaPersistenceException;
+    List<ParticipantEntity> getByUserId(String userId) throws AtnaPersistenceException;
 
     ParticipantEntity getByAltUserId(String altUserId) throws AtnaPersistenceException;
 
     ParticipantEntity get(ParticipantEntity other) throws AtnaPersistenceException;
 
-    List<? extends ParticipantEntity> getByCode(ParticipantCodeEntity codeEntity) throws AtnaPersistenceException;
+    List<ParticipantEntity> getByCode(ParticipantCodeEntity codeEntity) throws AtnaPersistenceException;
 
-    List<? extends ParticipantEntity> getByUserName(String userName) throws AtnaPersistenceException;
+    List<ParticipantEntity> getByUserName(String userName) throws AtnaPersistenceException;
 
-    List<? extends ParticipantEntity> getAll() throws AtnaPersistenceException;
+    List<ParticipantEntity> getAll() throws AtnaPersistenceException;
 
-    List<? extends ParticipantEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
+    List<ParticipantEntity> getAll(int offset, int amount) throws AtnaPersistenceException;
 
     void save(ParticipantEntity ap, PersistencePolicies policies) throws AtnaPersistenceException;
 

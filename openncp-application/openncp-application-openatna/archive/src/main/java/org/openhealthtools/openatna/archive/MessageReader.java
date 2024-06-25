@@ -168,9 +168,9 @@ public class MessageReader {
                     if (end.getName().getLocalPart().equals(DataConstants.MESSAGE_PARTICIPANT)) {
                         break;
                     }
-                    evt = reader.nextEvent();
+                    reader.nextEvent();
                 } else {
-                    evt = reader.nextEvent();
+                    reader.nextEvent();
                 }
             }
             ret.add(mpe);
@@ -203,7 +203,7 @@ public class MessageReader {
                         moe.setObjectQuery(val);
                     } else if (se.getName().getLocalPart().equals(DataConstants.DETAIL)) {
                         ObjectDetailEntity detail = new ObjectDetailEntity();
-                        evt = reader.nextTag();// detail
+                        reader.nextTag();// detail
                         while (true) {
                             evt = reader.peek();
                             if (evt.isStartElement()) {
@@ -219,9 +219,9 @@ public class MessageReader {
                                     moe.addObjectDetail(detail);
                                     break;
                                 }
-                                evt = reader.nextEvent();
+                                reader.nextEvent();
                             } else {
-                                evt = reader.nextEvent();
+                                reader.nextEvent();
                             }
                         }
 
@@ -233,9 +233,9 @@ public class MessageReader {
                     if (end.getName().getLocalPart().equals(DataConstants.MESSAGE_OBJECT)) {
                         break;
                     }
-                    evt = reader.nextEvent();
+                    reader.nextEvent();
                 } else {
-                    evt = reader.nextEvent();
+                    reader.nextEvent();
                 }
             }
             ret.add(moe);

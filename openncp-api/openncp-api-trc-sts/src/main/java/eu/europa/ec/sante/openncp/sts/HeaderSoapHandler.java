@@ -29,6 +29,6 @@ public class HeaderSoapHandler implements SOAPHandler {
 
     @Override
     public void close(MessageContext messageContext) {
-
+        // to be implemented
     }
 }

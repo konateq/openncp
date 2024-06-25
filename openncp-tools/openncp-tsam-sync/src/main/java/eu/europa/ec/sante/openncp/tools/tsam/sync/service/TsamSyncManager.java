@@ -168,7 +168,4 @@ public class TsamSyncManager {
         this.pageSize = pageSize;
     }
 
-    public String getLanguageCode(Concept concept, List<String> languageAvailable){
-        return "";
-    }
 }

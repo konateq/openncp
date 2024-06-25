@@ -17,6 +17,9 @@ import java.util.List;
 @Transactional(rollbackFor = AtnaPersistenceException.class)
 public class HibernateErrorDao extends AbstractHibernateDao<ErrorEntity> implements ErrorDao {
 
+    private static final String SOURCE_IP = "sourceIp";
+    private static final String ERROR_TIMESTAMP = "errorTimestamp";
+
     public HibernateErrorDao(SessionFactory sessionFactory) {
         super(ErrorEntity.class, sessionFactory);
     }
@@ -25,41 +28,41 @@ public class HibernateErrorDao extends AbstractHibernateDao<ErrorEntity> impleme
         return get(id);
     }
 
-    public List<? extends ErrorEntity> getAll() throws AtnaPersistenceException {
+    public List<ErrorEntity> getAll() throws AtnaPersistenceException {
         return all();
     }
 
-    public List<? extends ErrorEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
+    public List<ErrorEntity> getAll(int offset, int amount) throws AtnaPersistenceException {
         return all(offset, amount);
     }
 
-    public List<? extends ErrorEntity> getBySourceIp(String ip) {
-        return list(criteria().add(Restrictions.eq("sourceIp", ip)));
+    public List<ErrorEntity> getBySourceIp(String ip) {
+        return list(criteria().add(Restrictions.eq(SOURCE_IP, ip)));
     }
 
-    public List<? extends ErrorEntity> getAfter(Date date) {
-        return list(criteria().add(Restrictions.ge("errorTimestamp", date)));
+    public List<ErrorEntity> getAfter(Date date) {
+        return list(criteria().add(Restrictions.ge(ERROR_TIMESTAMP, date)));
     }
 
-    public List<? extends ErrorEntity> getAfter(String ip, Date date) {
-        return list(criteria().add(Restrictions.eq("sourceIp", ip)).add(Restrictions.ge("errorTimestamp", date)));
+    public List<ErrorEntity> getAfter(String ip, Date date) {
+        return list(criteria().add(Restrictions.eq(SOURCE_IP, ip)).add(Restrictions.ge(ERROR_TIMESTAMP, date)));
     }
 
-    public List<? extends ErrorEntity> getBefore(Date date) {
-        return list(criteria().add(Restrictions.le("errorTimestamp", date)));
+    public List<ErrorEntity> getBefore(Date date) {
+        return list(criteria().add(Restrictions.le(ERROR_TIMESTAMP, date)));
     }
 
-    public List<? extends ErrorEntity> getBefore(String ip, Date date) {
-        return list(criteria().add(Restrictions.eq("sourceIp", ip)).add(Restrictions.le("errorTimestamp", date)));
+    public List<ErrorEntity> getBefore(String ip, Date date) {
+        return list(criteria().add(Restrictions.eq(SOURCE_IP, ip)).add(Restrictions.le(ERROR_TIMESTAMP, date)));
     }
 
-    public List<? extends ErrorEntity> getBetween(Date first, Date second) {
-        return list(criteria().add(Restrictions.ge("errorTimestamp", first)).add(Restrictions.le("errorTimestamp", second)));
+    public List<ErrorEntity> getBetween(Date first, Date second) {
+        return list(criteria().add(Restrictions.ge(ERROR_TIMESTAMP, first)).add(Restrictions.le(ERROR_TIMESTAMP, second)));
     }
 
-    public List<? extends ErrorEntity> getBetween(String ip, Date first, Date second) {
-        return list(criteria().add(Restrictions.eq("sourceIp", ip)).add(Restrictions.ge("errorTimestamp", first))
-                .add(Restrictions.le("errorTimestamp", second)));
+    public List<ErrorEntity> getBetween(String ip, Date first, Date second) {
+        return list(criteria().add(Restrictions.eq(SOURCE_IP, ip)).add(Restrictions.ge(ERROR_TIMESTAMP, first))
+                .add(Restrictions.le(ERROR_TIMESTAMP, second)));
     }
 
     public void save(ErrorEntity entity) {

@@ -45,13 +45,13 @@
                     <text><![CDATA[Value]]></text>
                 </staticText>
 
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="20" y="15" width="95" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{type}
                     </textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="120" y="15" width="400" height="15" style="Arial_Normal_Small"/>
                     <textFieldExpression class="java.lang.String">
                         $F{value}

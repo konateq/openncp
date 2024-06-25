@@ -154,8 +154,7 @@ public class EntityReader {
                         se.setObjectIdTypeCode(readCode(attrs, ObjectIdTypeCodeEntity.class));
                         break;
                     case DataConstants.OBJECT_DESCRIPTIONS:
-
-                        code = ReadUtils.dig(reader, DataConstants.OBJECT_DESCRIPTION);
+                        ReadUtils.dig(reader, DataConstants.OBJECT_DESCRIPTION);
                         while (evt != null) {
                             se.addObjectDescription(readDescription(reader));
                             evt = ReadUtils.dig(reader, DataConstants.OBJECT_DESCRIPTION);
@@ -219,7 +218,7 @@ public class EntityReader {
 
     public <C extends CodeEntity> C readCode(List<Attribute> attr, Class<C> cls) throws XMLStreamException {
         try {
-            C ret = cls.newInstance();
+            C ret = cls.getDeclaredConstructor().newInstance();
             for (Attribute attribute : attr) {
                 String name = attribute.getName().getLocalPart();
                 String val = attribute.getValue();

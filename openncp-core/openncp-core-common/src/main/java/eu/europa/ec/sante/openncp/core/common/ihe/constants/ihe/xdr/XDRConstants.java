@@ -189,9 +189,7 @@ public class XDRConstants {
                 }
             }
 
-            /**
-             * TODO: Implements CP-036
-             */
+            // Implements CP-036
             public static final class DispensationDiscard {
 
                 private DispensationDiscard() {
