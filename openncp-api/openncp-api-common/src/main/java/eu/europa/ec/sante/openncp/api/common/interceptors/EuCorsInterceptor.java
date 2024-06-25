@@ -20,12 +20,14 @@ public class EuCorsInterceptor extends CorsInterceptor {
         config.addAllowedHeader("Accept");
         config.addAllowedHeader("X-Requested-With");
         config.addAllowedHeader("Content-Type");
+        config.addAllowedHeader("CountryCode");
+        config.addAllowedHeader("X-Request-Id");
 
         config.addAllowedOrigin("*");
 
         config.addExposedHeader("Location");
         config.addExposedHeader("Content-Location");
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedMethods(Arrays.asList("GET", "OPTIONS"));
 
         return config;
     }
