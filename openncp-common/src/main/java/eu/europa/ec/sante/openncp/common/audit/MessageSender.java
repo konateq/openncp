@@ -147,7 +147,7 @@ public class MessageSender {
             //  Set body of syslog message.
             final int length = header.getBytes().length + 3 + auditMessage.getBytes().length;
             outputStream.write((length + " ").getBytes());
-            outputStream.write(header.getBytes());
+            outputStream.write(header.getBytes(StandardCharsets.UTF_8));
 
             //  Set the bom for UTF-8
             outputStream.write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF});
@@ -155,6 +155,7 @@ public class MessageSender {
 
             //  Write the Syslog message to repository
             outputStream.write(auditMessage.getBytes(StandardCharsets.UTF_8));
+            logger.info("AuditMessage to write to outputStream : " + auditMessage.toString());
             outputStream.flush();
 
             sent = true;
