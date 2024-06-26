@@ -107,7 +107,6 @@ public class AssertionTestUtil {
         private String codeSystemName;
 
         public Concept() {
-            this.code = code;
         }
 
         public String getCode() {
@@ -155,6 +154,7 @@ public class AssertionTestUtil {
 
             // Create the NameIdentifier
             final SAMLObjectBuilder nameIdBuilder = (SAMLObjectBuilder) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME);
+            assert nameIdBuilder != null;
             final var nameId = (NameID) nameIdBuilder.buildObject();
             nameId.setValue(email);
             nameId.setFormat(NameID.EMAIL);
@@ -265,7 +265,7 @@ public class AssertionTestUtil {
             // HL7 Permissions
             var attrPID8 = createAttribute("Hl7 Permissions", "urn:oasis:names:tc:xspa:1.0:subject:hl7:permission");
             for (final Object permission : permissions) {
-                attrPID8 = AddAttributeValue(builderFactory, attrPID8, permission.toString());
+                AddAttributeValue(builderFactory, attrPID8, permission.toString());
             }
             attrStmt.getAttributes().add(attrPID8);
 
