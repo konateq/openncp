@@ -33,7 +33,7 @@ public class TranslationsAndMappingsClient {
             node.put("pivotCDA", Base64Util.encode(cdaPivot));
             node.put("targetLanguageCode", targetLanguage);
             var jsonString = node.toString();
-            var entity = new StringEntity(jsonString, HTTP.UTF_8);
+            var entity = new StringEntity(jsonString, StandardCharsets.UTF_8);
             entity.setContentType(ContentType.APPLICATION_JSON.getMimeType());
             var postRequest = new HttpPost(getTranslationsAndMappingsWsUrl() + "/translate");
             postRequest.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());

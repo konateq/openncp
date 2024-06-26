@@ -23,6 +23,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
 import eu.europa.ec.sante.openncp.core.common.ssl.HttpsClientConfiguration;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import org.apache.axiom.om.*;
+import org.apache.axiom.om.ds.AbstractOMDataSource;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -275,7 +276,7 @@ public class RespondingGateway_ServiceStub extends Stub {
                 // NRO NCPB_XCPD_REQ - "XCPD Request sent. EVIDENCE NRO"
 
             } catch (Exception ex) {
-                throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC,ex.getMessage());
+                throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_NO_MATCH,ex.getMessage());
             }
 
             // XCPD response end time
@@ -351,7 +352,7 @@ public class RespondingGateway_ServiceStub extends Stub {
                     /* if we cannot solve this issue through the Central Services, then there's nothing we can do, so we let it be thrown */
                     eadcError = "Could not find configurations in the Central Services for [" + this.countryCode.toLowerCase(Locale.ENGLISH)
                             + RegisteredService.PATIENT_IDENTIFICATION_SERVICE.getServiceName() + "], the service will fail.";
-                    LOGGER.error(eadcError);                    throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC, e);
+                    LOGGER.error(eadcError);                    throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_NO_MATCH, e);
                 }
             }
 
@@ -579,7 +580,7 @@ public class RespondingGateway_ServiceStub extends Stub {
         return eventLog;
     }
 
-    class JaxbRIDataSource implements OMDataSource {
+    class JaxbRIDataSource extends AbstractOMDataSource {
 
         /**
          * Bound object for output.
@@ -616,7 +617,7 @@ public class RespondingGateway_ServiceStub extends Stub {
             this.name = name;
         }
 
-        public void serialize(OutputStream output, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(OutputStream output) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
@@ -626,7 +627,7 @@ public class RespondingGateway_ServiceStub extends Stub {
             }
         }
 
-        public void serialize(Writer writer, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(Writer writer) throws XMLStreamException {
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), writer);
 
@@ -654,6 +655,16 @@ public class RespondingGateway_ServiceStub extends Stub {
             } catch (JAXBException e) {
                 throw new XMLStreamException("Error in JAXB marshalling", e);
             }
+        }
+
+        @Override
+        public boolean isDestructiveRead() {
+            return false;
+        }
+
+        @Override
+        public boolean isDestructiveWrite() {
+            return false;
         }
     }
 }

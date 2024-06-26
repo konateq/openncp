@@ -7,7 +7,6 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.org.hl7.v3.PRPAIN201
 import org.apache.axiom.soap.SOAPHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 /**
  * XCPD_ServiceSkeleton java skeleton for the axisService
