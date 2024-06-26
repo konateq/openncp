@@ -11,6 +11,9 @@ import org.hl7.fhir.instance.model.api.IIdType;
 
 import java.util.Optional;
 
+/**
+ * Wrapper around the {@link RequestDetails}
+ */
 @Domain
 public interface EuRequestDetails {
     RequestDetails getHapiRequestDetails();

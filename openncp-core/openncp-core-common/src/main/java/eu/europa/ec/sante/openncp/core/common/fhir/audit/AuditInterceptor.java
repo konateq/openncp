@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Interceptor(order = Integer.MIN_VALUE + 2)
+@Interceptor(order = Integer.MAX_VALUE)
 @Component
 public class AuditInterceptor implements FhirCustomInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditInterceptor.class);
@@ -42,7 +42,7 @@ public class AuditInterceptor implements FhirCustomInterceptor {
         final AuditableEvent auditableEvent = ImmutableAuditableEvent.builder()
                 .pointcut(Pointcut.SERVER_OUTGOING_RESPONSE)
                 .fhirContext(fhirContext)
-                .requestDetails(euRequestDetails)
+                .euRequestDetails(euRequestDetails)
                 .resource(theResponseObject)
                 .build();
         final List<AuditEvent> auditEvents = auditEventProducers.stream()

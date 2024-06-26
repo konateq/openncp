@@ -21,7 +21,7 @@ public interface AuditableEvent {
 
     FhirContext getFhirContext();
 
-    EuRequestDetails getRequestDetails();
+    EuRequestDetails getEuRequestDetails();
 
     Optional<IBaseResource> getResource();
 
@@ -75,10 +75,10 @@ public interface AuditableEvent {
                         .map(Bundle.BundleEntryComponent::getResource)
                         .filter(bundleResource -> bundleResource.getResourceType() == ResourceType.Patient)
                         .map(Resource::getIdElement)
-                        .map(idElement -> getRequestDetails().createFullyQualifiedResourceReference(idElement))
+                        .map(idElement -> getEuRequestDetails().createFullyQualifiedResourceReference(idElement))
                         .collect(Collectors.toSet());
             } else {
-                return Set.of(getRequestDetails().createFullyQualifiedResourceReference(resource.getIdElement()));
+                return Set.of(getEuRequestDetails().createFullyQualifiedResourceReference(resource.getIdElement()));
             }
         }).orElse(Collections.emptySet());
     }
