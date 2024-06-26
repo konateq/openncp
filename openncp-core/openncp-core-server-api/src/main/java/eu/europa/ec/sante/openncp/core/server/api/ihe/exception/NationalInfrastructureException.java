@@ -13,4 +13,12 @@ public class NationalInfrastructureException extends NIException {
         Logger logger = LoggerFactory.getLogger(NationalInfrastructureException.class);
         logger.error("NationalInfrastructureException: '{}': '{}'", openncpErrorCode.getCode(), message);
     }
+
+
+    public NationalInfrastructureException(OpenNCPErrorCode openncpErrorCode) {
+
+        super(openncpErrorCode);
+        Logger logger = LoggerFactory.getLogger(NationalInfrastructureException.class);
+        logger.error("NationalInfrastructureException: '{}': '{}'", openncpErrorCode.getCode(), openncpErrorCode.getDescription());
+    }
 }

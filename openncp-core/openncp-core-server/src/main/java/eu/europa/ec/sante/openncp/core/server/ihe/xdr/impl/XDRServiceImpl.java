@@ -260,6 +260,22 @@ public class XDRServiceImpl implements XDRServiceInterface {
         try {
             sealCountryCode = saml2Validator.validateXDRHeader(soapHeaderElement, ClassCode.EDD_CLASSCODE);
 
+        } catch (MissingFieldException e) {
+            logger.error("'{}': '{}'", e.getClass().getName(), e.getMessage(), e);
+            RegistryErrorUtils.addErrorMessage(
+                    registryErrorList,
+                    OpenNCPErrorCode.ERROR_ED_MISSING_REQUIRED_FIELDS,
+                    e.getMessage(),
+                    e,
+                    RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
+        } catch (InvalidFieldException e) {
+            logger.error("'{}': '{}'", e.getClass().getName(), e.getMessage(), e);
+            RegistryErrorUtils.addErrorMessage(
+                    registryErrorList,
+                    OpenNCPErrorCode.ERROR_ED_INCORRECT_FORMATTING,
+                    e.getMessage(),
+                    e,
+                    RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
         } catch (OpenNCPErrorCodeException | SMgrException e) {
             logger.error("'{}': '{}'", e.getClass().getName(), e.getMessage(), e);
             RegistryErrorUtils.addErrorMessage(
@@ -413,6 +429,22 @@ public class XDRServiceImpl implements XDRServiceInterface {
         try {
             sealCountryCode = saml2Validator.validateXDRHeader(shElement, ClassCode.ED_CLASSCODE);
 
+        } catch (MissingFieldException e) {
+            logger.error("'{}': '{}'", e.getClass().getName(), e.getMessage(), e);
+            RegistryErrorUtils.addErrorMessage(
+                    registryErrorList,
+                    OpenNCPErrorCode.ERROR_ED_MISSING_REQUIRED_FIELDS,
+                    e.getMessage(),
+                    e,
+                    RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
+        } catch (InvalidFieldException e) {
+            logger.error("'{}': '{}'", e.getClass().getName(), e.getMessage(), e);
+            RegistryErrorUtils.addErrorMessage(
+                    registryErrorList,
+                    OpenNCPErrorCode.ERROR_ED_INCORRECT_FORMATTING,
+                    e.getMessage(),
+                    e,
+                    RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
         } catch (OpenNCPErrorCodeException e) {
             logger.error("OpenncpErrorCodeException: '{}'", e.getMessage(), e);
             RegistryErrorUtils.addErrorMessage(
