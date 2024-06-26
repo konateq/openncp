@@ -17,6 +17,16 @@
             <table class="ep_table">
                 <tr>
                     <th>
+                        <!-- Prescription Item ID -->
+                        <!-- TODO add concept to eHDSIDisplayLabel value set -->
+                        Prescription Item ID
+                    </th>
+                    <td>
+                        <xsl:value-of select="n1:id/@extension"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
                         <!-- Duration of treatment -->
                         <xsl:call-template name="show-eHDSIDisplayLabel">
                             <xsl:with-param name="code" select="'150'"/>
