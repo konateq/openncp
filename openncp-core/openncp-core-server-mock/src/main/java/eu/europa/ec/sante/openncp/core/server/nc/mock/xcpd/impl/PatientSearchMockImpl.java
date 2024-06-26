@@ -67,7 +67,7 @@ public class PatientSearchMockImpl extends NationalConnectorGateway implements P
             File rootDir = new File(patientFile + patientId.getRoot());
             //  Patient ID 999999 will throw an Exception from National Connector
             if (StringUtils.equals(patientId.getExtension(), "999999")) {
-                throw new NIException(OpenNCPErrorCode.ERROR_PI_REGISTRY_NOT_AVAILABLE, OpenNCPErrorCode.ERROR_PI_REGISTRY_NOT_AVAILABLE.getDescription());
+                throw new NIException(OpenNCPErrorCode.ERROR_PI_REGISTRY_NOT_AVAILABLE);
             }
 
             if (rootDir.exists()) {

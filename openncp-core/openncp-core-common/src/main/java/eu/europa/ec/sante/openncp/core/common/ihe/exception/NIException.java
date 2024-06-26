@@ -13,6 +13,11 @@ public class NIException extends Exception {
         this.message = message;
     }
 
+    public NIException(OpenNCPErrorCode openncpErrorCode) {
+        this.openncpErrorCode = openncpErrorCode;
+        this.message = openncpErrorCode.getDescription();
+    }
+
     @Override
     public String getMessage() {
         return message;

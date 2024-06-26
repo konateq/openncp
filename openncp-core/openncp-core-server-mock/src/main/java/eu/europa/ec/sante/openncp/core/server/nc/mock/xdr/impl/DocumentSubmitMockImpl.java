@@ -42,26 +42,26 @@ public class DocumentSubmitMockImpl extends NationalConnectorGateway implements 
             dispensation = XMLUtil.prettyPrint(dispensationDocument.getDocument().getFirstChild());
         } catch (TransformerException e) {
             logger.error("TransformerException while submitDispensation(): '{}'", e.getMessage(), e);
-            throw new NationalInfrastructureException(OpenNCPErrorCode.ERROR_EP_ALREADY_DISPENSED, null);
+            throw new NationalInfrastructureException(OpenNCPErrorCode.ERROR_EP_ALREADY_DISPENSED);
         }
         if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && loggerClinical.isDebugEnabled()) {
             loggerClinical.debug("eDispensation document content: '{}'", dispensation);
         }
 
         if (StringUtils.isEmpty(dispensation)) {
-            throw new NationalInfrastructureException(OpenNCPErrorCode.ERROR_EP_ALREADY_DISPENSED, null);
+            throw new NationalInfrastructureException(OpenNCPErrorCode.ERROR_EP_ALREADY_DISPENSED);
         }
 
         if (StringUtils.contains(dispensation, "NO_MATCHING_EP")) {
 
             logger.error("Tried to submit dispensation with no matching ePrescription.");
-            throw new NationalInfrastructureException(OpenNCPErrorCode.ERROR_EP_NOT_MATCHING, null);
+            throw new NationalInfrastructureException(OpenNCPErrorCode.ERROR_EP_NOT_MATCHING);
         }
 
         if (StringUtils.contains(dispensation, "INVALID_DISPENSE")) {
 
             logger.error("Tried to submit already dispensed ePrescription.");
-            throw new NationalInfrastructureException(OpenNCPErrorCode.ERROR_EP_ALREADY_DISPENSED, null);
+            throw new NationalInfrastructureException(OpenNCPErrorCode.ERROR_EP_ALREADY_DISPENSED);
         }
     }
 
