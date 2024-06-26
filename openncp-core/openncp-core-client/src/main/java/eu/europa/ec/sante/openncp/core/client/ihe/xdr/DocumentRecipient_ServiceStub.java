@@ -143,22 +143,8 @@ public class DocumentRecipient_ServiceStub extends Stub {
                     .setProperty(HTTPConstants.REUSE_HTTP_CLIENT, false);
         } catch (NoSuchAlgorithmException | KeyManagementException | IOException | CertificateException |
                  KeyStoreException | UnrecoverableKeyException e) {
-            throw new RuntimeException("SSL Context cannot be initialized");
+            throw new AxisFault("SSL Context cannot be initialized");
         }
-    }
-
-    /**
-     * Default Constructor
-     */
-    public DocumentRecipient_ServiceStub(ConfigurationContext configurationContext) throws AxisFault {
-        this(configurationContext, "http://195.142.27.167:8111/epsos/services/xdsrepositoryb");
-    }
-
-    /**
-     * Default Constructor
-     */
-    public DocumentRecipient_ServiceStub() throws AxisFault {
-        this("http://195.142.27.167:8111/epsos/services/xdsrepositoryb");
     }
 
     /**
@@ -241,20 +227,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
             OMNamespace ns = omFactory.createOMNamespace(XDRConstants.SOAP_HEADERS.SECURITY_XSD, "wsse");
             SOAPHeaderBlock security = OMAbstractFactory.getSOAP12Factory().createSOAPHeaderBlock(XDRConstants.SOAP_HEADERS.SECURITY_STR, ns);
 
-            try {
-
-                if (assertionMap.containsKey(AssertionEnum.NEXT_OF_KIN)) {
-                    var assertionNextOfKin = assertionMap.get(AssertionEnum.NEXT_OF_KIN);
-                    security.addChild(XMLUtils.toOM(assertionNextOfKin.getDOM()));
-                }
-                var assertionId = assertionMap.get(AssertionEnum.CLINICIAN);
-                security.addChild(XMLUtils.toOM(assertionId.getDOM()));
-                var assertionTreatment = assertionMap.get(AssertionEnum.TREATMENT);
-                security.addChild(XMLUtils.toOM(assertionTreatment.getDOM()));
-                _serviceClient.addHeader(security);
-            } catch (Exception ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
-            }
+            addSecurityHeader(assertionMap, security);
 
             /* The WSA To header is not being manually added, it's added by the client-connector axis2.xml configurations
             (which globally engages the addressing module, adding the wsa:To header based on the endpoint value from the transport)
@@ -272,18 +245,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
             operationClient.addMessageContext(messageContext);    // add the message context to the operation client
 
             /* Log soap request */
-            String requestLogMsg;
-            try {
-                String logRequestMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(soapEnvelope));
-                if (LOGGER_CLINICAL.isDebugEnabled()
-                        && !StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
-                    LOGGER_CLINICAL.debug("{} {} '{}'", XDRConstants.LOG.OUTGOING_XDR_PROVIDEANDREGISTER_MESSAGE,
-                            System.getProperty("line.separator"), logRequestMsg);
-                }
-                requestLogMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(soapEnvelope.getBody()));
-            } catch (Exception ex) {
-                throw new XDRException(OpenNCPErrorCode.ERROR_GENERIC, ex);
-            }
+            String requestLogMsg = getSoapResponseRequestMsg(soapEnvelope, XDRConstants.LOG.OUTGOING_XDR_PROVIDEANDREGISTER_MESSAGE);
 
             /* Perform validation of request message */
             if (OpenNCPValidation.isValidationEnable()) {
@@ -381,18 +343,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
                 eadcError = EadcUtilWrapper.getTransactionErrorDescription(returnEnv);
             }
             //  Log SOAP response message.
-            String responseLogMsg;
-            try {
-                if (LOGGER_CLINICAL.isDebugEnabled()
-                        && !StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
-                    String logResponseMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(returnEnv));
-                    LOGGER_CLINICAL.debug("{} {} '{}'", XDRConstants.LOG.INCOMING_XDR_PROVIDEANDREGISTER_MESSAGE,
-                            System.getProperty("line.separator"), logResponseMsg);
-                }
-                responseLogMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(returnEnv.getBody()));
-            } catch (Exception ex) {
-                throw new XDRException(OpenNCPErrorCode.ERROR_GENERIC, ex);
-            }
+            String responseLogMsg = getSoapResponseRequestMsg(returnEnv, XDRConstants.LOG.INCOMING_XDR_PROVIDEANDREGISTER_MESSAGE);
 
             /* Perform validation of response message */
             if (OpenNCPValidation.isValidationEnable()) {
@@ -402,15 +353,17 @@ public class DocumentRecipient_ServiceStub extends Stub {
              * Return
              */
             Object object = fromOM(returnEnv.getBody().getFirstElement(), RegistryResponseType.class);
+
             RegistryResponseType registryResponse = (RegistryResponseType) object;
+
             EventLog eventLog = createAndSendEventLogConsent(provideAndRegisterDocumentSetRequest, registryResponse.getRegistryErrorList(),
-                    messageContext, returnEnv, soapEnvelope, assertionMap.get(AssertionEnum.CLINICIAN), assertionMap.get(AssertionEnum.TREATMENT),
+                    messageContext, returnEnv, assertionMap.get(AssertionEnum.CLINICIAN), assertionMap.get(AssertionEnum.TREATMENT),
                     this._getServiceClient().getOptions().getTo().getAddress());
 
             return registryResponse;
 
         } catch (AxisFault axisFault) {
-            // TODO audit log on exception
+            // Audit log on exception
 
             OMElement faultElt = axisFault.getDetail();
             if (faultElt != null && faultExceptionNameMap.containsKey(faultElt.getQName())) {
@@ -445,6 +398,40 @@ public class DocumentRecipient_ServiceStub extends Stub {
                         transactionStartTime, transactionEndTime, this.countryCode, EadcEntry.DsTypes.EADC,
                         EadcUtil.Direction.OUTBOUND, ServiceType.DOCUMENT_EXCHANGED_QUERY, eadcError);
             }
+        }
+    }
+
+    private static String getSoapResponseRequestMsg(SOAPEnvelope soapEnvelope, String type) throws XDRException {
+        String msg;
+        try {
+            if (LOGGER_CLINICAL.isDebugEnabled()
+                    && !StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
+                String logResponseMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(soapEnvelope));
+                LOGGER_CLINICAL.debug("{} {} '{}'", type,
+                        System.getProperty("line.separator"), logResponseMsg);
+            }
+            msg = XMLUtil.prettyPrint(XMLUtils.toDOM(soapEnvelope.getBody()));
+        } catch (Exception ex) {
+            throw new XDRException(OpenNCPErrorCode.ERROR_GENERIC, ex);
+        }
+
+        return msg;
+
+    }
+
+    private void addSecurityHeader(Map<AssertionEnum, Assertion> assertionMap, SOAPHeaderBlock security) {
+        try {
+            if (assertionMap.containsKey(AssertionEnum.NEXT_OF_KIN)) {
+                var assertionNextOfKin = assertionMap.get(AssertionEnum.NEXT_OF_KIN);
+                security.addChild(XMLUtils.toOM(assertionNextOfKin.getDOM()));
+            }
+            var assertionId = assertionMap.get(AssertionEnum.CLINICIAN);
+            security.addChild(XMLUtils.toOM(assertionId.getDOM()));
+            var assertionTreatment = assertionMap.get(AssertionEnum.TREATMENT);
+            security.addChild(XMLUtils.toOM(assertionTreatment.getDOM()));
+            _serviceClient.addHeader(security);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -533,12 +520,12 @@ public class DocumentRecipient_ServiceStub extends Stub {
         }
     }
 
-    // TODO A.R. eDispensation handling
+    // A.R. eDispensation handling
     private EventLog createAndSendEventLogConsent(ProvideAndRegisterDocumentSetRequestType request, RegistryErrorList rel,
-                                                  MessageContext msgContext, SOAPEnvelope _returnEnv, SOAPEnvelope env,
+                                                  MessageContext msgContext, SOAPEnvelope returnEnv,
                                                   Assertion idAssertion, Assertion trcAssertion, String address) {
 
-        EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address);
+        EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, returnEnv, address);
         EventLogClientUtil.logIdAssertion(eventLog, idAssertion);
         EventLogClientUtil.logTrcAssertion(eventLog, trcAssertion);
         EventLogUtil.prepareXDRCommonLog(eventLog, request, rel);
@@ -564,6 +551,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
 
     // populates the faults
     private void populateFaults() {
+        // populates the faults
     }
 
     static class JaxbRIDataSource extends AbstractOMDataSource {

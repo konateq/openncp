@@ -42,8 +42,9 @@ public class FailedLogsHandlerServiceImpl implements FailedLogsHandlerService {
         if (scheduledExecutorService == null) {
             FailedLogsHandler failedLogsHandlerCommand = new FailedLogsHandlerImpl(listener, type);
             scheduledExecutorService = new ScheduledThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE);
-            scheduledExecutorService.scheduleWithFixedDelay(failedLogsHandlerCommand, getTimeBetween(), getTimeBetween(), TimeUnit.MINUTES);
-            LOGGER.info("Started FailedLogsHandlerService. Logs will be scanned every '{}' minutes.", getTimeBetween());
+            long timeBetween = getTimeBetween();
+            scheduledExecutorService.scheduleWithFixedDelay(failedLogsHandlerCommand,  timeBetween, timeBetween, TimeUnit.MINUTES);
+            LOGGER.info("Started FailedLogsHandlerService. Logs will be scanned every '{}' minutes.", timeBetween);
         } else {
             LOGGER.warn("Attempted to start FailedLogsHandlerService even already running.");
         }
@@ -82,15 +83,14 @@ public class FailedLogsHandlerServiceImpl implements FailedLogsHandlerService {
      * @return Interval in minute
      */
     private long getTimeBetween() {
-
-        String sValue = ConfigurationManagerFactory.getConfigurationManager()
-                .getProperty(KEY_SCHEDULED_TIME_BETWEEN_FAILED_LOGS_HANDLING);
-        if (StringUtils.isBlank(sValue)) {
-            return DEFAULT_SCHEDULER_TIME_MINUTES;
-        }
-
         long l;
         try {
+            String sValue = ConfigurationManagerFactory.getConfigurationManager()
+                    .getProperty(KEY_SCHEDULED_TIME_BETWEEN_FAILED_LOGS_HANDLING);
+            if (StringUtils.isBlank(sValue)) {
+                return DEFAULT_SCHEDULER_TIME_MINUTES;
+            }
+
             l = Long.parseLong(sValue);
         } catch (Exception e) {
             LOGGER.error("Exception: '{}'", e.getMessage(), e);
