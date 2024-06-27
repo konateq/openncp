@@ -47,6 +47,23 @@ public interface AuditEventData {
 
         EntityRole getRole();
 
+        static EntityData ofPatient(String patientId) {
+            return ImmutableEntityData.builder()
+                    .id(patientId)
+                    .type(ImmutableEntityType.of(BalpConstants.CS_AUDIT_ENTITY_TYPE_1_PERSON, Optional.of(BalpConstants.CS_AUDIT_ENTITY_TYPE_1_PERSON_DISPLAY)))
+                    .role(ImmutableEntityRole.of(BalpConstants.CS_OBJECT_ROLE_1_PATIENT, Optional.of(BalpConstants.CS_OBJECT_ROLE_1_PATIENT_DISPLAY)))
+                    .display("Patient")
+                    .build();
+        }
+
+        static EntityData ofResource(String resourceId) {
+            return ImmutableEntityData.builder()
+                    .id(resourceId)
+                    .type(ImmutableEntityType.of(BalpConstants.CS_AUDIT_ENTITY_TYPE_2_SYSTEM_OBJECT, Optional.of(BalpConstants.CS_AUDIT_ENTITY_TYPE_2_SYSTEM_OBJECT_DISPLAY)))
+                    .role(ImmutableEntityRole.of(BalpConstants.CS_OBJECT_ROLE_24_QUERY, Optional.of(BalpConstants.CS_OBJECT_ROLE_24_QUERY_DISPLAY)))
+                    .build();
+        }
+
         @Domain
         interface EntityType {
             String getCode();

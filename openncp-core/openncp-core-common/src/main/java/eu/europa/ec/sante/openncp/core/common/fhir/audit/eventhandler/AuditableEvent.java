@@ -10,9 +10,9 @@ import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Domain
@@ -68,12 +68,35 @@ public interface AuditableEvent {
     }
 
     default Set<String> extractResourceIds() {
+        return extractResourceIds((resource) -> true);
+    }
+
+    default List<IBaseResource> extractResources(final Predicate<IBaseResource> predicate) {
+        Validate.notNull(predicate, "The predicate to extract resources must be null.");
+
         return getResource().map(resource -> {
             if (resource instanceof Bundle) {
                 final Bundle bundle = (Bundle) resource;
                 return bundle.getEntry().stream()
                         .map(Bundle.BundleEntryComponent::getResource)
-                        .filter(bundleResource -> bundleResource.getResourceType() == ResourceType.Patient)
+                        .filter(predicate)
+                        .map(filteredResource -> (IBaseResource) filteredResource)
+                        .collect(Collectors.toList());
+            } else {
+                return List.of(resource);
+            }
+        }).orElse(Collections.emptyList());
+    }
+
+    default Set<String> extractResourceIds(final Predicate<IBaseResource> predicate) {
+        Validate.notNull(predicate, "The predicate to extract resource id's must be null.");
+
+        return getResource().map(resource -> {
+            if (resource instanceof Bundle) {
+                final Bundle bundle = (Bundle) resource;
+                return bundle.getEntry().stream()
+                        .map(Bundle.BundleEntryComponent::getResource)
+                        .filter(predicate)
                         .map(Resource::getIdElement)
                         .map(idElement -> getEuRequestDetails().createFullyQualifiedResourceReference(idElement))
                         .collect(Collectors.toSet());

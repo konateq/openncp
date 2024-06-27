@@ -4,7 +4,7 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.r4.model.Composition;
 
 @ResourceDef(name = "Composition", profile = CompositionLabReportMyHealthEu.PROFILE)
-public class CompositionLabReportMyHealthEu extends Composition {
+public class CompositionLabReportMyHealthEu extends Composition implements CustomResource {
 
     protected static final String PROFILE = "http://fhir.ehdsi.eu/laboratory/StructureDefinition/Composition-lab-myhealtheu";
 
