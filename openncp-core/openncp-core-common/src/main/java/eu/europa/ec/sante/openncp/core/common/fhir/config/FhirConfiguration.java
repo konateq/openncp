@@ -159,6 +159,7 @@ public class FhirConfiguration {
             final IInterceptorService interceptorService = getInterceptorService();
             interceptors.forEach(interceptorService::registerInterceptor);
             interceptorService.registerInterceptor(this.openApiInterceptor);
+            interceptorService.registerInterceptor(this.euCorsInterceptor);
         }
     }
 }
