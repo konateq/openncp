@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Component
 public class EuCorsInterceptor extends CorsInterceptor {
@@ -15,14 +16,8 @@ public class EuCorsInterceptor extends CorsInterceptor {
 
     private static CorsConfiguration createConfig() {
         final CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedHeader("x-fhir-starter");
-        config.addAllowedHeader("Origin");
-        config.addAllowedHeader("Accept");
-        config.addAllowedHeader("X-Requested-With");
-        config.addAllowedHeader("Content-Type");
-        config.addAllowedHeader("CountryCode");
-        config.addAllowedHeader("X-Request-Id");
 
+        config.setAllowedHeaders(Collections.singletonList(CorsConfiguration.ALL));
         config.addAllowedOrigin("*");
 
         config.addExposedHeader("Location");
