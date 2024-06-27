@@ -12,6 +12,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.validation.FhirValidator;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.EuFhirContextFactory;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.EuCorsInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.SecuredOpenApiInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.UnsecuredOpenApiInterceptor;
 import org.apache.commons.lang3.Validate;
@@ -121,18 +122,21 @@ public class FhirConfiguration {
         private final List<IServerInterceptor> interceptors;
         private final OpenApiInterceptor openApiInterceptor;
         private final IPagingProvider pagingProvider;
+        private final EuCorsInterceptor euCorsInterceptor;
 
         public FhirRestfulServerConfiguration(final FhirProperties properties, final FhirContext fhirContext,
                                               final ObjectProvider<List<IResourceProvider>> resourceProviders,
                                               final ObjectProvider<List<IServerInterceptor>> interceptors,
                                               final ObjectProvider<IPagingProvider> pagingProvider,
-                                              final OpenApiInterceptor openApiInterceptor) {
+                                              final OpenApiInterceptor openApiInterceptor,
+                                              final EuCorsInterceptor euCorsInterceptor) {
             this.properties = properties;
             this.fhirContext = fhirContext;
             this.resourceProviders = resourceProviders.getIfAvailable();
             this.pagingProvider = pagingProvider.getIfAvailable();
             this.interceptors = interceptors.getIfAvailable();
             this.openApiInterceptor = openApiInterceptor;
+            this.euCorsInterceptor = euCorsInterceptor;
         }
 
         @Bean
