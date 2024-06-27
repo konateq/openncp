@@ -4,7 +4,6 @@ import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import eu.europa.ec.sante.openncp.common.immutables.Domain;
 import eu.europa.ec.sante.openncp.core.common.CountryCode;
-import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.CorrelationIdInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.CountryCodeInterceptor;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -24,10 +23,6 @@ public interface EuRequestDetails {
             throw new IllegalArgumentException(String.format("There was no [%1$s] header found, please add a header with key [%1$s] that contains a valid ISO 3166-1 alpha-2 code.", CountryCodeInterceptor.COUNTRY_CODE_HEADER_KEY));
         }
         return CountryCode.of(countryCode);
-    }
-
-    default String getCorrelationId() {
-        return getHapiRequestDetails().getHeader(CorrelationIdInterceptor.X_REQUEST_ID_HEADER_KEY);
     }
 
     default RestOperationTypeEnum getRestOperationType() {

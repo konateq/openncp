@@ -1,14 +1,11 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.audit;
 
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
-import eu.europa.ec.sante.openncp.common.context.LogContext;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 @Component
 public class DefaultAuditEventBuilder implements AuditEventBuilder {
@@ -41,7 +38,7 @@ public class DefaultAuditEventBuilder implements AuditEventBuilder {
                 .setDisplay(restOperationType.getCode());
         auditEvent.setAction(eventProfile.getAction());
         auditEvent.setOutcome(AuditEvent.AuditEventOutcome._0);
-        auditEvent.setRecorded(Date.from(auditEventData.getRecordData().toInstant()));
+        auditEvent.getRecordedElement().setValueAsString(auditEventData.getMetaData().getRecordDateTime().toString());
 
         auditEvent.getSource().getObserver().setDisplay(auditEventData.getFhirServerBase());
 
@@ -56,12 +53,11 @@ public class DefaultAuditEventBuilder implements AuditEventBuilder {
             agent.getType().addCoding(agentTypeCode);
             participantData.getDisplay().ifPresent(participantDisplay -> agent.getWho().setDisplay(participantDisplay));
             agent.getWho().getIdentifier().setValue(participantData.getId());
-            agent.getType().addCoding(eventProfile.getAgentClientTypeCoding());
-
+            agent.setRequestor(participantData.isRequestor());
             participantData.getNetwork().ifPresent(participantNetwork -> agent.getNetwork()
                     .setAddress(participantNetwork)
                     .setType(BalpConstants.AUDIT_EVENT_AGENT_NETWORK_TYPE_IP_ADDRESS));
-            agent.setRequestor(participantData.isRequestor());
+
         });
 
 //        final AuditEvent.AuditEventAgentComponent userAgent = auditEvent.addAgent();
@@ -73,13 +69,13 @@ public class DefaultAuditEventBuilder implements AuditEventBuilder {
 //                .setDisplay("information recipient");
 //        userAgent.setWho(getAgentReference(requestDetails));
 //        userAgent.setRequestor(true);
-
-        final AuditEvent.AuditEventEntityComponent entityTransaction = auditEvent.addEntity();
-        entityTransaction
+        
+        final AuditEvent.AuditEventEntityComponent entityCorrelationId = auditEvent.addEntity();
+        entityCorrelationId
                 .getType()
                 .setSystem("https://profiles.ihe.net/ITI/BALP/CodeSystem/BasicAuditEntityType")
-                .setCode("XrequestId");
-        entityTransaction.getWhat().getIdentifier().setValue(LogContext.getCorrelationId());
+                .setCode("X-Correlation-ID");
+        entityCorrelationId.getWhat().getIdentifier().setValue(auditEventData.getMetaData().getCorrelationId());
 
         auditEventData.getEntities().forEach(entityData -> {
             final AuditEvent.AuditEventEntityComponent entity = auditEvent.addEntity();

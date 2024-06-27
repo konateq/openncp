@@ -10,7 +10,9 @@ import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
+import org.immutables.value.Value;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,6 +20,11 @@ import java.util.stream.Collectors;
 @Domain
 public interface AuditableEvent {
     Pointcut getPointcut();
+
+    @Value.Default
+    default Instant getTimestamp() {
+        return Instant.now();
+    }
 
     FhirContext getFhirContext();
 
@@ -93,6 +100,7 @@ public interface AuditableEvent {
 
         return getResource().map(resource -> {
             if (resource instanceof Bundle) {
+
                 final Bundle bundle = (Bundle) resource;
                 return bundle.getEntry().stream()
                         .map(Bundle.BundleEntryComponent::getResource)

@@ -3,23 +3,31 @@ package eu.europa.ec.sante.openncp.core.common.fhir.audit;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import eu.europa.ec.sante.openncp.common.immutables.Domain;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 @Domain
 public interface AuditEventData {
+
+    MetaData getMetaData();
+
     RestOperationTypeEnum getRestOperationType();
 
     BalpProfileEnum getProfile();
-
-    ZonedDateTime getRecordData();
 
     String getFhirServerBase();
 
     List<ParticipantData> getParticipants();
 
     List<EntityData> getEntities();
+
+    @Domain
+    interface MetaData {
+        Instant getRecordDateTime();
+
+        String getCorrelationId();
+    }
 
     @Domain
     interface ParticipantData {
@@ -47,7 +55,7 @@ public interface AuditEventData {
 
         EntityRole getRole();
 
-        static EntityData ofPatient(String patientId) {
+        static EntityData ofPatient(final String patientId) {
             return ImmutableEntityData.builder()
                     .id(patientId)
                     .type(ImmutableEntityType.of(BalpConstants.CS_AUDIT_ENTITY_TYPE_1_PERSON, Optional.of(BalpConstants.CS_AUDIT_ENTITY_TYPE_1_PERSON_DISPLAY)))
@@ -56,7 +64,7 @@ public interface AuditEventData {
                     .build();
         }
 
-        static EntityData ofResource(String resourceId) {
+        static EntityData ofResource(final String resourceId) {
             return ImmutableEntityData.builder()
                     .id(resourceId)
                     .type(ImmutableEntityType.of(BalpConstants.CS_AUDIT_ENTITY_TYPE_2_SYSTEM_OBJECT, Optional.of(BalpConstants.CS_AUDIT_ENTITY_TYPE_2_SYSTEM_OBJECT_DISPLAY)))

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,46 +26,37 @@ import java.util.UUID;
 @Component
 public class CorrelationIdInterceptor implements FhirCustomInterceptor, IClientInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationIdInterceptor.class);
-    public static final String X_REQUEST_ID_HEADER_KEY = "X-Request-ID";
+    public static final String X_CORRELATION_ID_HEADER_KEY = "X-Correlation-ID";
 
     @Hook(Pointcut.SERVER_INCOMING_REQUEST_PRE_PROCESSED)
     public void setIncomingCorrelationIdToLogContext(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
-        final String correlationId = Optional.ofNullable(httpServletRequest.getHeader(X_REQUEST_ID_HEADER_KEY)).map(correlationIdFromRequest -> {
-            LOGGER.debug("The request contains a [{}] header with value [{}], using that as correlation id", X_REQUEST_ID_HEADER_KEY, correlationIdFromRequest);
+        final String correlationId = Optional.ofNullable(httpServletRequest.getHeader(X_CORRELATION_ID_HEADER_KEY)).map(correlationIdFromRequest -> {
+            LOGGER.debug("The request contains a [{}] header with value [{}], using that as correlation id", X_CORRELATION_ID_HEADER_KEY, correlationIdFromRequest);
             return correlationIdFromRequest;
         }).orElseGet(() -> {
-            LOGGER.debug("The request did NOT contain a [{}] header, creating a new correlation id", X_REQUEST_ID_HEADER_KEY);
+            LOGGER.debug("The request did NOT contain a [{}] header, creating a new correlation id", X_CORRELATION_ID_HEADER_KEY);
             return UUID.randomUUID().toString();
         });
         LogContext.setCorrelationId(correlationId);
-        httpServletResponse.setHeader(X_REQUEST_ID_HEADER_KEY, LogContext.getCorrelationId());
+        httpServletResponse.setHeader(X_CORRELATION_ID_HEADER_KEY, LogContext.getCorrelationId());
     }
 
-    /**
-     * HAPI rewrites the X-Request-ID between the Pointcuts SERVER_OUTGOING_RESPONSE and SERVER_OUTGOING_WRITER_CREATED
-     * To be able to have the uniform correlation id we need to rewrite it again.
-     *
-     * @param writer
-     * @param requestDetails
-     * @param servletRequestDetails
-     */
-    @Hook(Pointcut.SERVER_OUTGOING_WRITER_CREATED)
-    public void setIncomingCorrelationIdToLogContext(
-            final Writer writer,
+    @Hook(Pointcut.SERVER_OUTGOING_RESPONSE)
+    public void setCorrelationIdToOutgoingMessage(
             final RequestDetails requestDetails,
             final ServletRequestDetails servletRequestDetails
     ) {
-        servletRequestDetails.getServletResponse().setHeader(X_REQUEST_ID_HEADER_KEY, LogContext.getCorrelationId());
+        servletRequestDetails.getServletResponse().setHeader(X_CORRELATION_ID_HEADER_KEY, LogContext.getCorrelationId());
     }
 
     @Override
     public void interceptRequest(final IHttpRequest theRequest) {
-        theRequest.removeHeaders(X_REQUEST_ID_HEADER_KEY);
-        theRequest.addHeader(X_REQUEST_ID_HEADER_KEY, LogContext.getCorrelationId());
+        theRequest.removeHeaders(X_CORRELATION_ID_HEADER_KEY);
+        theRequest.addHeader(X_CORRELATION_ID_HEADER_KEY, LogContext.getCorrelationId());
     }
 
     @Override
     public void interceptResponse(final IHttpResponse theResponse) throws IOException {
-        LOGGER.info("Received response with header [{}] and value [{}]", X_REQUEST_ID_HEADER_KEY, theResponse.getHeaders(X_REQUEST_ID_HEADER_KEY));
+        LOGGER.info("Received response from with header [{}] and value [{}]", X_CORRELATION_ID_HEADER_KEY, theResponse.getHeaders(X_CORRELATION_ID_HEADER_KEY));
     }
 }

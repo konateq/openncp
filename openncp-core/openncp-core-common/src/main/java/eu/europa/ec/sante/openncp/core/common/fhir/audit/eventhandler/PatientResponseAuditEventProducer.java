@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.audit.eventhandler;
 
+import eu.europa.ec.sante.openncp.common.context.LogContext;
 import eu.europa.ec.sante.openncp.core.common.fhir.audit.*;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.FhirSupportedResourceType;
 import org.apache.commons.lang3.BooleanUtils;
@@ -11,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Component
 public class PatientResponseAuditEventProducer implements AuditEventProducer {
     private static final Logger LOGGER = LoggerFactory.getLogger(PatientResponseAuditEventProducer.class);
-    public static final Predicate<IBaseResource> RESOURCE_IS_PATIENT = resource -> resource.getMeta().fhirType().equals(ResourceType.Patient.getPath());
+    public static final Predicate<IBaseResource> RESOURCE_IS_PATIENT = resource -> resource.getIdElement().getResourceType().equalsIgnoreCase(ResourceType.Patient.getPath());
     private final AuditEventBuilder auditEventBuilder;
 
     public PatientResponseAuditEventProducer(final AuditEventBuilder auditEventBuilder) {
@@ -45,7 +45,7 @@ public class PatientResponseAuditEventProducer implements AuditEventProducer {
             case GET_PAGE:
                 auditEventDataList = List.of(handleSearch(auditableEvent));
                 break;
-                case VREAD:
+            case VREAD:
             case READ:
                 auditEventDataList = handleRead(auditableEvent);
                 break;
@@ -56,6 +56,13 @@ public class PatientResponseAuditEventProducer implements AuditEventProducer {
         }
 
         return auditEventDataList.stream().map(auditEventBuilder::build).collect(Collectors.toList());
+    }
+
+    private AuditEventData.MetaData createMetaData(final AuditableEvent auditableEvent) {
+        return ImmutableMetaData.builder()
+                .recordDateTime(auditableEvent.getTimestamp())
+                .correlationId(LogContext.getCorrelationId())
+                .build();
     }
 
     private List<AuditEventData.ParticipantData> createParticipants() {
@@ -93,17 +100,17 @@ public class PatientResponseAuditEventProducer implements AuditEventProducer {
         final AuditEventData auditEventData;
         if (patientEntities.isEmpty()) {
             auditEventData = ImmutableAuditEventData.builder()
+                    .metaData(createMetaData(auditableEvent))
                     .restOperationType(auditableEvent.getEuRequestDetails().getRestOperationType())
                     .profile(BalpProfileEnum.BASIC_QUERY)
-                    .recordData(ZonedDateTime.now())
                     .fhirServerBase(auditableEvent.getEuRequestDetails().getHapiRequestDetails().getFhirServerBase())
                     .addAllParticipants(participants)
                     .build();
         } else {
             auditEventData = ImmutableAuditEventData.builder()
+                    .metaData(createMetaData(auditableEvent))
                     .restOperationType(auditableEvent.getEuRequestDetails().getRestOperationType())
                     .profile(BalpProfileEnum.PATIENT_QUERY)
-                    .recordData(ZonedDateTime.now())
                     .fhirServerBase(auditableEvent.getEuRequestDetails().getHapiRequestDetails().getFhirServerBase())
                     .addAllParticipants(participants)
                     .addAllEntities(patientEntities)
@@ -125,9 +132,9 @@ public class PatientResponseAuditEventProducer implements AuditEventProducer {
                 // this is a basic read so create a basic read audit event
                 final AuditEventData.EntityData resourceEntity = AuditEventData.EntityData.ofResource(dataResourceId);
                 auditEventDataList.add(ImmutableAuditEventData.builder()
+                        .metaData(createMetaData(auditableEvent))
                         .restOperationType(auditableEvent.getEuRequestDetails().getRestOperationType())
                         .profile(BalpProfileEnum.BASIC_READ)
-                        .recordData(ZonedDateTime.now())
                         .fhirServerBase(auditableEvent.getEuRequestDetails().getHapiRequestDetails().getFhirServerBase())
                         .addAllParticipants(participants)
                         .addEntity(resourceEntity)
@@ -140,9 +147,9 @@ public class PatientResponseAuditEventProducer implements AuditEventProducer {
                             final AuditEventData.EntityData patientEntityData = AuditEventData.EntityData.ofPatient(patientId);
 
                             return ImmutableAuditEventData.builder()
+                                    .metaData(createMetaData(auditableEvent))
                                     .restOperationType(auditableEvent.getEuRequestDetails().getRestOperationType())
                                     .profile(BalpProfileEnum.PATIENT_READ)
-                                    .recordData(ZonedDateTime.now())
                                     .fhirServerBase(auditableEvent.getEuRequestDetails().getHapiRequestDetails().getFhirServerBase())
                                     .addAllParticipants(participants)
                                     .addEntity(resourceEntityData)
