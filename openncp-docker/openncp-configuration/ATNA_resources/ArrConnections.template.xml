@@ -22,7 +22,7 @@
 <Configuration>
    <SecureConnection name="arr-tls">
       <HostName>127.0.0.1</HostName>
-      <Port>$CONNECTOR_SECURE_PORT</Port>
+      <Port>2862</Port>
       <!-- Trust and Keystore -->
       <KeyStore>/opt/openncp-configuration/keystore/gazelle-service-provider-keystore.jks</KeyStore>
       <KeyPass>gazelle</KeyPass>
@@ -32,7 +32,7 @@
    <!-- use IP address instead of localhost for UDP -->
    <StandardConnection name="arr-udp">
       <HostName>127.0.0.1</HostName>
-      <Port>$CONNECTOR_PORT</Port>
+      <Port>2861</Port>
    </StandardConnection>
 </Configuration>
 
