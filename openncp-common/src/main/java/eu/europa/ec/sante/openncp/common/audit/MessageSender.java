@@ -8,6 +8,7 @@ import eu.europa.ec.sante.openncp.common.audit.utils.Utils;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import net.RFC3881.dicom.AuditMessage;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -122,6 +124,7 @@ public class MessageSender {
         try {
             //  EHEALTH-9771: sslsocket = buildSSLSocket();
             sslsocket = createAuditSecuredSocket();
+            sslsocket.startHandshake();
         } catch (final IOException e) {
             logger.error("IOException: Cannot contact Secured Audit Server '{}'", e.getMessage());
             return false;
@@ -147,7 +150,7 @@ public class MessageSender {
             //  Set body of syslog message.
             final int length = header.getBytes().length + 3 + auditMessage.getBytes().length;
             outputStream.write((length + " ").getBytes());
-            outputStream.write(header.getBytes(StandardCharsets.UTF_8));
+            outputStream.write(header.getBytes());
 
             //  Set the bom for UTF-8
             outputStream.write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF});
@@ -183,18 +186,17 @@ public class MessageSender {
     private SSLSocket createAuditSecuredSocket() throws IOException {
 
         logger.info("Initialization SSLSocket...");
-        final String host = ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_URL);
-        final int port = Integer.parseInt(ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_PORT));
+        final String host = "localhost";
+        final int port = 2862;
 
-        final File u = new File(ConfigurationManagerFactory.getConfigurationManager().getProperty(TRUSTSTORE));
-        final KeystoreDetails trust = new KeystoreDetails(u.toString(),
-                ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TRUSTSTORE_PWD.getValue()),
-                ConfigurationManagerFactory.getConfigurationManager().getProperty(KEY_ALIAS));
-        final File uu = new File(ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TLS_KEYSTORE_FILE.getValue()));
+        final File u = new File("/Users/mathiasghys/Development/EC/ehdsi_properties/keystore/eu-truststore.jks");
+        final KeystoreDetails trust = new KeystoreDetails(u.toString(), "changeit",
+                "gazelle.ncp-signature.openncp.dg-sante.eu");
+        final File uu = new File("/Users/mathiasghys/Development/EC/ehdsi_properties/keystore/gazelle-service-consumer-keystore.jks");
         final KeystoreDetails key = new KeystoreDetails(uu.toString(),
-                ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TLS_KEYSTORE_PWD.getValue()),
-                ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TLS_PRIVATE_KEY_ALIAS.getValue()),
-                ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TLS_PRIVATE_KEY_PWD.getValue()));
+                "gazelle",
+                "gazelle.ncp-sc.openncp.dg-sante.eu",
+                "gazelle");
         final AuthSSLSocketFactory authSSLSocketFactory = new AuthSSLSocketFactory(key, trust);
         final SSLSocket sslsocket = (SSLSocket) authSSLSocketFactory.createSecureSocket(host, port);
         sslsocket.setEnabledProtocols(enabledProtocols);
@@ -206,12 +208,12 @@ public class MessageSender {
 
     public SSLSocket buildSSLSocket() throws GeneralSecurityException, IOException {
 
-        final String host = ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_URL);
-        final int port = Integer.parseInt(ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_PORT));
+        final String host = "localhost";
+        final int port = 2862;
 
         final KeyStore keyStore = KeyStore.getInstance("JKS");
-        final InputStream is = Files.newInputStream(Paths.get(ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TRUSTSTORE.getValue())));
-        keyStore.load(is, ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TRUSTSTORE_PWD.getValue()).toCharArray());
+        final InputStream is = Files.newInputStream(Paths.get("/Users/mathiasghys/Development/EC/ehdsi_properties/keystore/eu-truststore.jks"));
+        keyStore.load(is, ConfigurationManagerFactory.getConfigurationManager().getProperty("changeit").toCharArray());
 
         final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         trustManagerFactory.init(keyStore);
@@ -226,5 +228,15 @@ public class MessageSender {
         socket.setEnabledCipherSuites(suites);
 
         return socket;
+    }
+
+    public static void main(final String[] args) throws IOException, NoSuchAlgorithmException {
+
+        final MessageSender messageSender = new MessageSender();
+        final String auditMessage = IOUtils.toString(
+                MessageSender.class.getClassLoader().getResourceAsStream("auditMessage.xml"),
+                StandardCharsets.UTF_8);
+        final boolean success = messageSender.sendMessage(auditMessage, "", "1");
+        System.out.println(success);
     }
 }
