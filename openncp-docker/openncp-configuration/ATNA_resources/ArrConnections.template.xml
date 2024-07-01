@@ -26,8 +26,8 @@
       <!-- Trust and Keystore -->
       <KeyStore>/opt/openncp-configuration/keystore/gazelle-service-provider-keystore.jks</KeyStore>
       <KeyPass>gazelle</KeyPass>
-      <TrustStore>/opt/openncp-configuration/keystore/gazelle-service-consumer-keystore.jks</TrustStore>
-      <TrustPass>gazelle</TrustPass>
+      <TrustStore>/opt/openncp-configuration/keystore/eu-truststore.jks</TrustStore>
+      <TrustPass>changeit</TrustPass>
    </SecureConnection>
    <!-- use IP address instead of localhost for UDP -->
    <StandardConnection name="arr-udp">

@@ -5,26 +5,18 @@ import eu.europa.ec.sante.openncp.common.audit.ssl.AuthSSLSocketFactory;
 import eu.europa.ec.sante.openncp.common.audit.ssl.KeystoreDetails;
 import eu.europa.ec.sante.openncp.common.audit.utils.SerializableMessage;
 import eu.europa.ec.sante.openncp.common.audit.utils.Utils;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import net.RFC3881.dicom.AuditMessage;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Inet4Address;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -122,7 +114,6 @@ public class MessageSender {
         final String facsev = facility + severity;
 
         try {
-            //  EHEALTH-9771: sslsocket = buildSSLSocket();
             sslsocket = createAuditSecuredSocket();
             sslsocket.startHandshake();
         } catch (final IOException e) {
@@ -206,32 +197,9 @@ public class MessageSender {
         return sslsocket;
     }
 
-    public SSLSocket buildSSLSocket() throws GeneralSecurityException, IOException {
-
-        final String host = "localhost";
-        final int port = 2862;
-
-        final KeyStore keyStore = KeyStore.getInstance("JKS");
-        final InputStream is = Files.newInputStream(Paths.get("/Users/mathiasghys/Development/EC/ehdsi_properties/keystore/eu-truststore.jks"));
-        keyStore.load(is, ConfigurationManagerFactory.getConfigurationManager().getProperty("changeit").toCharArray());
-
-        final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        trustManagerFactory.init(keyStore);
-
-        final SSLContext sslContext = SSLContext.getInstance(enabledProtocols[0]);
-        sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
-
-        final SSLSocket socket = (SSLSocket) sslContext.getSocketFactory().createSocket(host, port);
-        socket.setEnabledProtocols(enabledProtocols);
-
-        final String[] suites = socket.getSupportedCipherSuites();
-        socket.setEnabledCipherSuites(suites);
-
-        return socket;
-    }
-
     public static void main(final String[] args) throws IOException, NoSuchAlgorithmException {
 
+        System.setProperty("javax.net.debug", "all");
         final MessageSender messageSender = new MessageSender();
         final String auditMessage = IOUtils.toString(
                 MessageSender.class.getClassLoader().getResourceAsStream("auditMessage.xml"),
