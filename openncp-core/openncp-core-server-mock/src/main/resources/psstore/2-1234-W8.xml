@@ -13,8 +13,8 @@ Although being real choices for the different diseases and conditions, the selec
     <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
     <!-- Template ID for eHDSI Patient Summary L3 document -->
     <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.1.3"/>
-    <id root="1.2.752.129.2.1.2.1" extension="PS_Pivot_2-1234-W3_EU"/>
-    <!-- Determines the document type "epSOS Patient Summary Document" -->
+    <id root="1.2.752.129.2.1.2.1" extension="PS_W7_EU"/>
+    <!-- Determines the document type "eHDSI Patient Summary Document" -->
     <code code="60591-5" codeSystem="2.16.840.1.113883.6.1" displayName="Patient summary Document"/>
     <!-- title used for display purposes -->
     <title>Patient Summary</title>
@@ -28,46 +28,26 @@ Although being real choices for the different diseases and conditions, the selec
     <recordTarget>
         <patientRole>
             <!-- Primary Patient Identifier -->
-            <id extension="2-1234-W6" root="2.16.17.710.850.1000.990.1.1000"/>
+            <id extension="2-1234-W8" root="2.16.17.710.850.1000.990.1.1000"/>
             <addr>
-                <streetAddressLine>155, Avenida da Liberdade</streetAddressLine>
-                <postalCode>1250-141</postalCode>
-                <city>Lisbon</city>
-                <country>PT</country>
+                <streetAddressLine>Breydelstraat 4</streetAddressLine>
+                <postalCode>1040</postalCode>
+                <city>Brussels</city>
+                <country>BE</country>
             </addr>
-            <telecom value="tel:351211234567" use="H"/>
-            <telecom value="mailto:paciente@gmail.com"/>
+            <telecom value="tel:0080067891011" use="H"/>
+            <telecom value="mailto:robert.schuman@ec.europa.eu"/>
             <patient>
                 <name>
-                    <family>Ferreira</family>
-                    <given>Diana</given>
+                    <family>Schuman</family>
+                    <given>Robert</given>
                 </name>
-                <administrativeGenderCode code="F" displayName="female" codeSystem="2.16.840.1.113883.5.1"/>
-                <birthTime value="19820508"/>
-                <!-- guardian (optional) -->
-                <guardian classCode="GUARD">
-                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.2.4"/>
-                    <addr>
-                        <streetAddressLine>155, Avenida da Liberdade</streetAddressLine>
-                        <city>Lisbon</city>
-                        <postalCode>1250-141</postalCode>
-                        <country>PT</country>
-                    </addr>
-                    <telecom value="mailto:guardian@gmail.com"/>
-                    <telecom value="tel:351211234569"/>
-                    <!--
-                    <telecom nullFlavor="NI"/>
-                    -->
-                    <guardianPerson>
-                        <name>
-                            <family>Baptista</family>
-                            <given>Joaquim</given>
-                        </name>
-                    </guardianPerson>
-                </guardian>
+                <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" displayName="Male"
+                                          codeSystemName="AdministrativeGender"/>
+                <birthTime value="18860629"/>
                 <!-- patient's language -->
                 <languageCommunication>
-                    <languageCode code="pt-PT"/>
+                    <languageCode code="nl-BE"/>
                 </languageCommunication>
             </patient>
         </patientRole>
@@ -427,7 +407,7 @@ Although being real choices for the different diseases and conditions, the selec
                                         <pharm:asContent classCode="CONT">
                                             <pharm:quantity xsi:type="PQ" value="1" unit="g"/>
                                             <pharm:containerPackagedProduct classCode="CONT" determinerCode="KIND">
-                                                <pharm:formCode code="10100500" displayName="Concentrate for oral suspension" codeSystem="0.4.0.127.0.16.1.1.2.1"/>
+                                                <pharm:formCode code="30009000" displayName="Box" codeSystem="0.4.0.127.0.16.1.1.2.1"/>
                                             </pharm:containerPackagedProduct>
                                         </pharm:asContent>
                                         <pharm:ingredient classCode="ACTI">
@@ -761,7 +741,7 @@ Although being real choices for the different diseases and conditions, the selec
                                     <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.17"/>
                                     <id root="2.999.2.1.1"/>
                                     <!-- eHDSIAdverseEventType -->
-                                    <code code="420134006" codeSystemVersion="2021-09-30" codeSystem="2.16.840.1.113883.6.96">
+                                    <code code="420134006" codeSystemVersion="2022-07-31" codeSystem="2.16.840.1.113883.6.96">
                                         <originalText><reference value="#code-6"/></originalText>
                                     </code>
                                     <text><reference value="#obs-1"/></text>
@@ -1247,7 +1227,7 @@ Although being real choices for the different diseases and conditions, the selec
                                 <tr ID="pca-1a"><td><content ID="obs-9"><content ID="val-9" language="xx-XX">Predominantly allergic asthma</content><br/></content></td><td><content ID="code-27" language="xx-XX">Clinical finding</content><br/></td><td>since 1994-10-03</td><td>active</td><td/></tr>
                                 <tr ID="pca-2a"><td><content ID="obs-10"><content ID="val-10" language="xx-XX">Postprocedural hypothyroidism</content><br/></content></td><td><content ID="code-29" language="xx-XX">Clinical finding</content><br/></td><td>since 1997-10-06</td><td>active</td><td/></tr>
                                 <tr ID="pca-3a"><td><content ID="obs-11"><content ID="val-11" language="xx-XX">Other specified cardiac arrhythmias</content><br/></content></td><td><content ID="code-31" language="xx-XX">Clinical finding</content><br/></td><td>since 2013-01-09</td><td>active</td><td/></tr>
-                                <tr ID="pca-4a"><td><content ID="obs-12"><content ID="val-12" language="xx-XX">Meningoencefalitis herpetica</content><br/></content></td><td><content ID="code-33" language="xx-XX">Clinical finding</content><br/></td><td>since 2013-01-09</td><td>active</td><td/></tr>
+                                <tr ID="pca-4a"><td><content ID="obs-12"><content ID="val-12" language="xx-XX">Type 2 diabetes mellitus</content><br/></content></td><td><content ID="code-33" language="xx-XX">Clinical finding</content><br/></td><td>since 2013-01-09</td><td>active</td><td/></tr>
                                 <tr ID="pca-5a"><td><content ID="obs-13"><content ID="val-13" language="xx-XX">Severe pre-eclampsia</content><br/></content></td><td><content ID="code-35" language="xx-XX">Problem</content><br/></td><td>since 2017-05-06</td><td>active</td><td><content ID="obs-14" language="xx-XX"><content ID="val-14" language="xx-XX">Severe</content></content></td></tr>
                                 <tr ID="pca-6a"><td><content ID="obs-15"><content ID="val-15" language="xx-XX">Acute tubulo-interstitial nephritis</content><br/></content></td><td><content ID="code-38" language="xx-XX">Problem</content><br/></td><td>since 2017-05-07</td><td>active</td><td><content ID="obs-16" language="xx-XX"><content ID="val-16" language="xx-XX">Moderate to severe</content></content></td></tr>
                             </tbody>
@@ -1374,7 +1354,7 @@ Although being real choices for the different diseases and conditions, the selec
                         <act classCode="ACT" moodCode="EVN">
                             <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.15"/>
                             <templateId root="2.16.840.1.113883.10.20.1.27"/>
-                            <id root="2.999.4.5"/>
+                            <id root="2.999.4.4"/>
                             <code code="CONC" codeSystem="2.16.840.1.113883.5.6"/>
                             <text><reference value="#pca-4"/></text>
 
@@ -1393,9 +1373,9 @@ Although being real choices for the different diseases and conditions, the selec
                                     <effectiveTime>
                                         <low value="20130109"/>
                                     </effectiveTime>
-                                    <value xsi:type="CD" codeSystem="2.16.840.1.113883.5.1008" nullFlavor="OTH">
+                                    <value xsi:type="CD" nullFlavor="OTH">
                                         <originalText>
-                                            <reference value="#val-12"/>
+                                            <reference value="#ref1"/>
                                         </originalText>
                                         <translation code="054.3" codeSystem="2.16.840.1.113883.6.103" displayName="Meningoencefalitis herpetica" />
                                     </value>
@@ -1407,7 +1387,7 @@ Although being real choices for the different diseases and conditions, the selec
                         <act classCode="ACT" moodCode="EVN">
                             <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.15"/>
                             <templateId root="2.16.840.1.113883.10.20.1.27"/>
-                            <id root="2.999.4.6"/>
+                            <id root="2.999.4.5"/>
                             <code code="CONC" codeSystem="2.16.840.1.113883.5.6"/>
                             <text><reference value="#pca-5"/></text>
 
@@ -1450,7 +1430,7 @@ Although being real choices for the different diseases and conditions, the selec
                         <act classCode="ACT" moodCode="EVN">
                             <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.15"/>
                             <templateId root="2.16.840.1.113883.10.20.1.27"/>
-                            <id root="2.999.4.7"/>
+                            <id root="2.999.4.6"/>
                             <code code="CONC" codeSystem="2.16.840.1.113883.5.6"/>
                             <text><reference value="#pca-6"/></text>
 
@@ -1488,61 +1468,94 @@ Although being real choices for the different diseases and conditions, the selec
                             </entryRelationship>
                         </act>
                     </entry>
-                </section>
-            </component>
-            <component>
-                <!-- History of medical device use -->
-                <section>
-                    <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.2.4"/>
-                    <templateId root="2.16.840.1.113883.10.20.1.7"/>
-                    <id root="2.999.5"/>
-                    <code code="46264-8" displayName="History of medical device use" codeSystem="2.16.840.1.113883.6.1"/>
-                    <title>History of medical device use </title>
-                    <text>
-                        <paragraph ID="sup-1">2014-10-20: Implantable defibrillator (Serial number: ABC-Device-ID, OID: 2.999)</paragraph>
-                        <paragraph ID="sup-2">2014-10-20 - 2022-06-08: Bone screw (Serial number: ABC-Device-ID-2, OID: 2.999)</paragraph>
-                        <table ID="sup-1a"><thead><tr><th>Device Type</th><th>Device ID</th><th>Implant date</th></tr></thead><tbody>
-                            <tr><td><content ID="code-41" language="en-GB">Implantable defibrillator</content><br/></td><td>2.999 ABC-Device-ID</td><td>2014-10-20</td></tr>
-                            <tr><td><content ID="code-71" language="en-GB">Bone screw</content><br/></td><td>2.999 ABC-Device-ID- 2</td><td>2014-10-20 - 2022-06-08</td></tr>
-                        </tbody></table></text>
                     <entry>
-                        <supply classCode="SPLY" moodCode="EVN">
-                            <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.5"/>
-                            <text><reference value="#sup-1"/></text>
-                            <effectiveTime xsi:type="IVL_TS">
-                                <low value="20141020"/>
+                        <act classCode="ACT" moodCode="EVN">
+                            <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.15"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.27"/>
+                            <id root="2.999.4.7"/>
+                            <code code="CONC" codeSystem="2.16.840.1.113883.5.6"/>
+                            <text><reference value="#pca-7"/></text>
+
+                            <statusCode code="active"/>
+                            <effectiveTime>
+                                <low value="20170507"/>
                             </effectiveTime>
-                            <participant typeCode="DEV">
-                                <participantRole classCode="MANU">
-                                    <id root="2.999" extension="ABC-Device-ID"/>
-                                    <playingDevice classCode="DEV" determinerCode="INSTANCE">
-                                        <code code="72506001" codeSystem="2.16.840.1.113883.6.96">
-                                            <originalText><reference value="#code-41"/></originalText>
-                                        </code>
-                                    </playingDevice>
-                                </participantRole>
-                            </participant>
-                        </supply>
-                    </entry>
-                    <entry>
-                        <supply classCode="SPLY" moodCode="EVN">
-                            <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.5"/>
-                            <text><reference value="#sup-2"/></text>
-                            <effectiveTime xsi:type="IVL_TS">
-                                <low value="20141020"/>
-                                <high value="20220608"/>
-                            </effectiveTime>
-                            <participant typeCode="DEV">
-                                <participantRole classCode="MANU">
-                                    <id root="2.999" extension="ABC-Device-ID-2"/>
-                                    <playingDevice classCode="DEV" determinerCode="INSTANCE">
-                                        <code code="68183006" codeSystem="2.16.840.1.113883.6.96">
-                                            <originalText><reference value="#code-71"/></originalText>
-                                        </code>
-                                    </playingDevice>
-                                </participantRole>
-                            </participant>
-                        </supply>
+                            <entryRelationship typeCode="SUBJ">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.7"/>
+                                    <id root="2.999"/>
+                                    <code code="55607006" codeSystem="2.16.840.1.113883.6.96">
+                                        <originalText><reference value="#code-38"/></originalText>
+                                    </code>
+                                    <text><reference value="#obs-15"/></text>
+                                    <effectiveTime>
+                                        <low value="20200101"/>
+                                    </effectiveTime>
+                                    <value xsi:type="CD" code="199" codeSystem="1.3.6.1.4.1.12559.11.10.1.3.1.44.5">
+                                        <originalText><reference value="#val-15"/></originalText>
+                                    </value>
+                                    <entryRelationship typeCode="SUBJ" inversionInd="true">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.49"/>
+                                            <code code="66455-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+                                            <text><reference value="#obs-16"/></text>
+                                            <statusCode code="completed"/>
+                                            <value xsi:type="CD" code="confirmed" displayName="Confirmed" codeSystem="2.16.840.1.113883.4.642.4.1075">
+                                                <originalText><reference value="#val-16"/></originalText>
+                                            </value>
+                                        </observation>
+                                    </entryRelationship>
+                                    <entryRelationship typeCode="REFR">
+                                        <act classCode="PCPR" moodCode="EVN">
+                                            <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.48"/>
+                                            <code code="85847-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+                                            <text><reference value="#obs-16"/></text>
+                                            <statusCode code="completed"/>
+                                            <performer typeCode="PRF">
+                                                <assignedEntity>
+                                                    <id root="2.9999.1"/>
+                                                    <addr>
+                                                        <streetName>Breydelstraat 4</streetName>
+                                                        <city>Brussels</city>
+                                                        <country>BE</country>
+                                                    </addr>
+                                                    <telecom value="mailto:doctor@rarediseasecenter.com" use="WP"/>
+                                                    <assignedPerson>
+                                                        <name>
+                                                            <family>Rare Disease</family>
+                                                            <given>Doctor</given>
+                                                        </name>
+                                                    </assignedPerson>
+                                                </assignedEntity>
+                                            </performer>
+                                            <performer typeCode="PRF">
+                                                <assignedEntity>
+                                                    <id root="2.9999.2"/>
+                                                    <representedOrganization>
+                                                        <name>Rare Disease center</name>
+                                                        <telecom value="mailto:rdc@rarediseasecenter.com" use="WP"/>
+                                                        <addr>
+                                                            <streetName>Breydelstraat 4</streetName>
+                                                            <city>Brussels</city>
+                                                            <country>BE</country>
+                                                        </addr>
+                                                    </representedOrganization>
+                                                </assignedEntity>
+                                            </performer>
+                                        </act>
+                                    </entryRelationship>
+                                    <reference typeCode="REFR">
+                                        <externalDocument>
+                                            <id root="2.9999.3"/>
+                                            <code code="url"/>
+                                            <text>
+                                                <reference value="https://www.orpha.net/consor/cgi-bin/OC_Exp.php?Expert=199"/>
+                                            </text>
+                                        </externalDocument>
+                                    </reference>
+                                </observation>
+                            </entryRelationship>
+                        </act>
                     </entry>
                 </section>
             </component>
@@ -1721,7 +1734,7 @@ Although being real choices for the different diseases and conditions, the selec
                                     <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.18"/>
                                     <templateId root="2.16.840.1.113883.10.20.1.53"/>
                                     <manufacturedMaterial>
-                                        <code code="34689006" codeSystem="2.16.840.1.113883.6.96">
+                                        <code code="836374004" codeSystem="2.16.840.1.113883.6.96">
                                             <originalText><reference value="#code-51"/></originalText>
                                         </code>
                                         <name>Engerix B (2294189)</name>
@@ -1781,7 +1794,7 @@ Although being real choices for the different diseases and conditions, the selec
                                     <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.18"/>
                                     <templateId root="2.16.840.1.113883.10.20.1.53"/>
                                     <manufacturedMaterial>
-                                        <code code="414005006" codeSystem="2.16.840.1.113883.6.96">
+                                        <code code="J07AM" codeSystem="2.16.840.1.113883.6.73">
                                             <originalText><reference value="#code-53"/></originalText>
                                         </code>
                                         <name>Tetravac (2782480)</name>
@@ -1815,7 +1828,7 @@ Although being real choices for the different diseases and conditions, the selec
                                     <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.18"/>
                                     <templateId root="2.16.840.1.113883.10.20.1.53"/>
                                     <manufacturedMaterial>
-                                        <code code="333680004" codeSystem="2.16.840.1.113883.6.96">
+                                        <code code="J07AG" codeSystem="2.16.840.1.113883.6.73">
                                             <originalText><reference value="#code-55"/></originalText>
                                         </code>
                                         <name>Hiberix (2751881)</name>
@@ -1839,7 +1852,7 @@ Although being real choices for the different diseases and conditions, the selec
                                     <templateId root="1.3.6.1.4.1.12559.11.10.1.3.1.3.18"/>
                                     <templateId root="2.16.840.1.113883.10.20.1.53"/>
                                     <manufacturedMaterial>
-                                        <code code="424519000" codeSystem="2.16.840.1.113883.6.96">
+                                        <code code="J07BM02" codeSystem="2.16.840.1.113883.6.73">
                                             <originalText><reference value="#code-57"/></originalText>
                                         </code>
                                         <name>Cervarix (5055173)</name>
@@ -2013,7 +2026,7 @@ Although being real choices for the different diseases and conditions, the selec
                             <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.13.4"/>
                             <templateId root="2.16.840.1.113883.10.20.1.33"/>
                             <id root="2.999.9.1"/>
-                            <code code="160573003" codeSystem="2.16.840.1.113883.6.96">
+                            <code code="897148007" codeSystem="2.16.840.1.113883.6.96">
                                 <originalText><reference value="#code-64"/></originalText>
                             </code>
                             <text><reference value="#obs-25"/></text>
