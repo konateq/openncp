@@ -11,7 +11,6 @@ import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.client.ihe.datamodel.AdhocQueryRequestCreator;
 import eu.europa.ec.sante.openncp.core.client.ihe.datamodel.AdhocQueryResponseConverter;
 import eu.europa.ec.sante.openncp.core.client.transformation.DomUtils;
-import eu.europa.ec.sante.openncp.core.client.transformation.TranslationsAndMappingsClient;
 import eu.europa.ec.sante.openncp.core.common.ihe.DynamicDiscoveryService;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.FilterParams;
@@ -26,15 +25,16 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.query._3.AdhocQu
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryError;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryErrorList;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XCAException;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
-import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATransformationService;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
@@ -47,9 +47,8 @@ import java.util.stream.Collectors;
  * This is an implementation of a IHE XCA Initiation Gateway.
  * This class provides the necessary operations to query and retrieve documents.
  *
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
- * @author Marcelo Fonseca<code> - marcelo.fonseca@iuz.pt</code>
  */
+@Service
 public class XcaInitGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XcaInitGateway.class);
@@ -58,13 +57,13 @@ public class XcaInitGateway {
 
     private static final String ERROR_SEVERITY_ERROR = "urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error";
 
-    /**
-     * Private constructor to disable class instantiation.
-     */
-    private XcaInitGateway() {
+    private final CDATransformationService cdaTransformationService;
+
+    private XcaInitGateway(final CDATransformationService cdaTransformationService) {
+        this.cdaTransformationService = Validate.notNull(cdaTransformationService, "CDATransformationService cannot be null");
     }
 
-    public static QueryResponse crossGatewayQuery(final PatientId pid, final String countryCode,
+    public QueryResponse crossGatewayQuery(final PatientId pid, final String countryCode,
                                                   final List<GenericDocumentCode> documentCodes,
                                                   final FilterParams filterParams,
                                                   final Map<AssertionEnum, Assertion> assertionMap,
@@ -118,7 +117,7 @@ public class XcaInitGateway {
         return result;
     }
 
-    public static RetrieveDocumentSetResponseType.DocumentResponse crossGatewayRetrieve(final XDSDocument document, final String homeCommunityId,
+    public RetrieveDocumentSetResponseType.DocumentResponse crossGatewayRetrieve(final XDSDocument document, final String homeCommunityId,
                                                                                         final String countryCode, final String targetLanguage,
                                                                                         final Map<AssertionEnum, Assertion> assertionMap,
                                                                                         String service) throws XCAException {
@@ -137,14 +136,7 @@ public class XcaInitGateway {
 
             RespondingGateway_ServiceStub stub = new RespondingGateway_ServiceStub();
             DynamicDiscoveryService dynamicDiscoveryService = new DynamicDiscoveryService();
-            String endpointReference;
-            if (service.equals(Constants.MroService)) {
-
-                endpointReference = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.PATIENT_SERVICE);
-            } else {
-
-                endpointReference = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
-            }
+            String endpointReference = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
             stub.setAddr(endpointReference);
             stub._getServiceClient().getOptions().setTo(new EndpointReference(endpointReference));
             stub.setCountryCode(countryCode);
@@ -153,7 +145,6 @@ public class XcaInitGateway {
             switch (service) {
                 case Constants.OrderService:
                 case Constants.PatientService:
-                case Constants.MroService:
                 case Constants.OrCDService:
                     classCode = ClassCode.getByCode(document.getClassCode().getValue());
                     break;
@@ -190,11 +181,9 @@ public class XcaInitGateway {
                 if (service.equals(Constants.OrCDService)) {
                     queryResponse.getDocumentResponse().get(0).setDocument(pivotDocument);
                 } else {
-                    //  Resets the response document to a translated version.
-                    var tmResponseStructure = TranslationsAndMappingsClient.translate(DomUtils.byteToDocument(pivotDocument), targetLanguage);
-                    var domDocument = tmResponseStructure.getResponseCDA();
-                    byte[] translatedCDA = XMLUtils.toOM(Base64Util.decode(domDocument).getDocumentElement()).toString().getBytes(StandardCharsets.UTF_8);
-                    queryResponse.getDocumentResponse().get(0).setDocument(translatedCDA);
+                    //  Sets the response document to a translated version.
+                    var tmResponseStructure = cdaTransformationService.translate(DomUtils.byteToDocument(pivotDocument), targetLanguage);
+                    queryResponse.getDocumentResponse().get(0).setDocument(tmResponseStructure.getResponseCDA().getBytes(StandardCharsets.UTF_8));
 
                 }
 

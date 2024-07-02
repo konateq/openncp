@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.common.ihe.transformation.service;
 
-import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.NcpSide;
+import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
@@ -9,17 +9,17 @@ import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.config.TMConfiguration;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMStatus;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.exception.TMException;
-import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.*;
+import eu.europa.ec.sante.openncp.core.common.ihe.tsam.util.CodedElement;
 import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.RetrievedConcept;
+import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMErrorCtx;
-import eu.europa.ec.sante.openncp.core.common.ihe.tsam.util.CodedElement;
-import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.tsam.service.TerminologyService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -37,14 +37,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
-public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATransformationService, TMConstants {
+public class CDATransformationServiceImpl implements CDATransformationService, TMConstants {
 
     private static final DatatypeFactory DATATYPE_FACTORY;
 
     static {
         try {
             DATATYPE_FACTORY = DatatypeFactory.newInstance();
-        } catch (DatatypeConfigurationException e) {
+        } catch (final DatatypeConfigurationException e) {
             throw new IllegalArgumentException();
         }
     }
@@ -69,15 +69,15 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         fillServiceTypeMaps();
     }
 
-    public TMResponseStructure translate(Document pivotCDA, String targetLanguageCode) {
+    public TMResponseStructure translate(final Document pivotCDA, final String targetLanguageCode) {
         logger.info("Translating OpenNCP CDA Document [START]");
-        StopWatch watch = new StopWatch();
+        final StopWatch watch = new StopWatch();
         watch.start();
-        TMResponseStructure responseStructure = process(pivotCDA, targetLanguageCode, false);
+        final TMResponseStructure responseStructure = process(pivotCDA, targetLanguageCode, false);
         if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && loggerClinical.isDebugEnabled()) {
             try {
                 loggerClinical.debug("Translate CDA: \n'{}'", XMLUtil.prettyPrint(responseStructure.getDocument()));
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.error("Exception: '{}'", e.getMessage(), e);
             }
         }
@@ -94,12 +94,12 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      *                          reference Value Sets. [Mandatory]
      * @return
      */
-    public TMResponseStructure transcode(Document friendlyCDA) {
+    public TMResponseStructure transcode(final Document friendlyCDA) {
 
         logger.info("Transcoding OpenNCP CDA Document [START]");
-        StopWatch watch = new StopWatch();
+        final StopWatch watch = new StopWatch();
         watch.start();
-        TMResponseStructure responseStructure = process(friendlyCDA, null, true);
+        final TMResponseStructure responseStructure = process(friendlyCDA, null, true);
 
         watch.stop();
         logger.info("Transformation of CDA executed in: '{}ms'", watch.getTotalTimeMillis());
@@ -108,143 +108,135 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
     }
 
     @Override
-    public ValueSet translateValueSet(String oid, String targetLanguage) {
-        List<RetrievedConcept> valueSetConcepts = terminologyService.getValueSetConcepts(oid, null, targetLanguage);
-        var valueSet = new ValueSet();
+    public ValueSet translateValueSet(final String oid, final String targetLanguage) {
+        final List<RetrievedConcept> valueSetConcepts = terminologyService.getValueSetConcepts(oid, null, targetLanguage);
+        final var valueSet = new ValueSet();
         valueSet.setId(oid);
-        ValueSet.ConceptSetComponent conceptSetComponent = new ValueSet.ConceptSetComponent();
+        final ValueSet.ConceptSetComponent conceptSetComponent = new ValueSet.ConceptSetComponent();
         valueSetConcepts.forEach(retrievedConcept ->
                 conceptSetComponent.addConcept(buildConcept(retrievedConcept.getCode(), retrievedConcept.getDesignation(), targetLanguage)));
         valueSet.getCompose().addInclude(conceptSetComponent);
         return valueSet;
     }
 
-    private ValueSet.ConceptReferenceComponent buildConcept(String code, String designation, String targetLanguage) {
-        var conceptReferenceComponent = new ValueSet.ConceptReferenceComponent();
+    private ValueSet.ConceptReferenceComponent buildConcept(final String code, final String designation, final String targetLanguage) {
+        final var conceptReferenceComponent = new ValueSet.ConceptReferenceComponent();
         conceptReferenceComponent.setCode(code);
-        var conceptReferenceDesignationComponent = new ValueSet.ConceptReferenceDesignationComponent();
+        final var conceptReferenceDesignationComponent = new ValueSet.ConceptReferenceDesignationComponent();
         conceptReferenceDesignationComponent.setLanguage(targetLanguage);
         conceptReferenceDesignationComponent.setValue(designation);
         conceptReferenceComponent.addDesignation(conceptReferenceDesignationComponent);
         return conceptReferenceComponent;
     }
 
-    private TMResponseStructure process(Document inputDocument, String targetLanguageCode, boolean isTranscode) {
+    private TMResponseStructure process(final Document inputDocument, final String targetLanguageCode, final boolean isTranscode) {
 
         logger.info("Processing CDA Document: '{}', Target Language: '{}', Transcoding: '{}'",
                 inputDocument.toString(), targetLanguageCode, isTranscode);
         TMResponseStructure responseStructure;
-        String status;
-        List<ITMTSAMError> errors = new ArrayList<>();
-        List<ITMTSAMError> warnings = new ArrayList<>();
-        byte[] inputDocbytes;
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
+        final byte[] inputDocbytes;
 
         try {
-            if (inputDocument == null) {
-                errors.add(TMError.ERROR_NULL_INPUT_DOCUMENT);
-                responseStructure = new TMResponseStructure(null, errors, warnings);
-                logger.error("Error, null input document!");
-                return responseStructure;
-            } else {
-                // validate schema
-                inputDocbytes = XmlUtil.doc2bytes(inputDocument);
-                Document namespaceAwareDoc = XmlUtil.getNamespaceAwareDocument(inputDocbytes);
+            // validate schema
+            inputDocbytes = XmlUtil.doc2bytes(inputDocument);
+            final Document namespaceAwareDoc = XmlUtil.getNamespaceAwareDocument(inputDocbytes);
 
-                // Checking Document type and if the Document is structured or unstructured
-                Document namespaceNotAwareDoc = inputDocument;
-                String cdaDocumentType = getCDADocumentType(namespaceNotAwareDoc);
+            // Checking Document type and if the Document is structured or unstructured
+            final Document namespaceNotAwareDoc = inputDocument;
+            final String cdaDocumentType = getCDADocumentType(namespaceNotAwareDoc);
 
-                // XSD Validation disabled: boolean schemaValid = Validator.validateToSchema(namespaceAwareDoc);
+            // XSD Validation disabled: boolean schemaValid = Validator.validateToSchema(namespaceAwareDoc);
 
-                // MDA validation
-                if (config.isModelValidationEnabled()) {
-                    ModelValidatorResult validateMDA = validator.validateMDA(new String(inputDocbytes), cdaDocumentType, isTranscode);
+            // MDA validation
+            if (config.isModelValidationEnabled()) {
+                final ModelValidatorResult validateMDA = validator.validateMDA(new String(inputDocbytes), cdaDocumentType, isTranscode);
 
-                    if (!validateMDA.isSchemaValid()) {
-                        warnings.add(TMError.WARNING_INPUT_XSD_VALIDATION_FAILED);
-                    }
-                    if (!validateMDA.isModelValid()) {
-                        warnings.add(TMError.WARNING_OUTPUT_MDA_VALIDATION_FAILED);
-                    }
+                if (!validateMDA.isSchemaValid()) {
+                    warnings.add(TMError.WARNING_INPUT_XSD_VALIDATION_FAILED);
                 }
-
-                //  XSD Schema Validation
-                if (config.isSchemaValidationEnabled()) {
-
-                    boolean schemaValid = validator.validateToSchema(namespaceAwareDoc);
-                    // if model validation is enabled schema validation is done as part of it so there is no point doing it again
-                    if (!schemaValid) {
-                        warnings.add(TMError.WARNING_INPUT_XSD_VALIDATION_FAILED);
-                    }
-                }
-
-                // Schematron Validation
-                if (config.isSchematronValidationEnabled()) {
-                    // if transcoding, validate against friendly scheme,
-                    // else against pivot scheme
-                    boolean validateFriendly = isTranscode;
-                    SchematronResult result = validator.validateSchematron(inputDocument, cdaDocumentType, validateFriendly);
-                    if (result == null || !result.isValid()) {
-                        warnings.add(TMError.WARNING_INPUT_SCHEMATRON_VALIDATION_FAILED);
-                        logger.error("Schematron validation error, input document is invalid!");
-                        if (result != null) {
-                            logger.error(result.toString());
-                        }
-                    }
-                } else {
-                    logger.info("Schematron validation disabled");
-                }
-                logger.info(isTranscode ? "Transcoding of the CDA Document: '{}'" : "Translating of the CDA Document: '{}'", cdaDocumentType);
-                // transcode/translate document
-                if (isTranscode) {
-                    transcodeDocument(namespaceNotAwareDoc, errors, warnings, cdaDocumentType);
-                } else {
-                    translateDocument(namespaceNotAwareDoc, targetLanguageCode, errors, warnings, cdaDocumentType);
-                }
-
-                Document finalDoc = XmlUtil.removeEmptyXmlns(namespaceNotAwareDoc);
-
-                if (config.isModelValidationEnabled()) {
-                    ModelValidatorResult validateMDA = validator.validateMDA(XmlUtil.xmlToString(finalDoc),
-                            cdaDocumentType, !isTranscode);
-                    if (!validateMDA.isSchemaValid()) {
-                        warnings.add(TMError.WARNING_OUTPUT_XSD_VALIDATION_FAILED);
-                    }
-                    if (!validateMDA.isModelValid()) {
-                        warnings.add(TMError.WARNING_OUTPUT_MDA_VALIDATION_FAILED);
-                    }
-                }
-                // validate RESULT (schematron)
-                if (config.isSchematronValidationEnabled()) {
-
-                    SchematronResult result = validator.validateSchematron(finalDoc, cdaDocumentType, !isTranscode);
-                    if (result == null || !result.isValid()) {
-                        warnings.add(TMError.WARNING_OUTPUT_SCHEMATRON_VALIDATION_FAILED);
-                        responseStructure = new TMResponseStructure(Base64Util.encode(finalDoc), errors, warnings);
-                        logger.error("Schematron validation error, result document is invalid!");
-                        if (logger.isErrorEnabled() && result != null) {
-                            logger.error(result.toString());
-                        }
-                        return responseStructure;
-                    }
-                } else {
-                    logger.debug("Schematron validation disabled");
-                }
-
-                // create & fill TMResponseStructure
-                responseStructure = new TMResponseStructure(Base64Util.encode(finalDoc), errors, warnings);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("TM result:\n{}", responseStructure);
+                if (!validateMDA.isModelValid()) {
+                    warnings.add(TMError.WARNING_OUTPUT_MDA_VALIDATION_FAILED);
                 }
             }
-        } catch (TMException e) {
+
+            //  XSD Schema Validation
+            if (config.isSchemaValidationEnabled()) {
+
+                final boolean schemaValid = validator.validateToSchema(namespaceAwareDoc);
+                // if model validation is enabled schema validation is done as part of it so there is no point doing it again
+                if (!schemaValid) {
+                    warnings.add(TMError.WARNING_INPUT_XSD_VALIDATION_FAILED);
+                }
+            }
+
+            // Schematron Validation
+            if (config.isSchematronValidationEnabled()) {
+                // if transcoding, validate against friendly scheme,
+                // else against pivot scheme
+                final boolean validateFriendly = isTranscode;
+                final SchematronResult result = validator.validateSchematron(inputDocument, cdaDocumentType, validateFriendly);
+                if (result == null || !result.isValid()) {
+                    warnings.add(TMError.WARNING_INPUT_SCHEMATRON_VALIDATION_FAILED);
+                    logger.error("Schematron validation error, input document is invalid!");
+                    if (result != null) {
+                        logger.error(result.toString());
+                    }
+                }
+            } else {
+                logger.info("Schematron validation disabled");
+            }
+            logger.info(isTranscode ? "Transcoding of the CDA Document: '{}'" : "Translating of the CDA Document: '{}'", cdaDocumentType);
+            // transcode/translate document
+            if (isTranscode) {
+                transcodeDocument(namespaceNotAwareDoc, errors, warnings, cdaDocumentType);
+            } else {
+                translateDocument(namespaceNotAwareDoc, targetLanguageCode, errors, warnings, cdaDocumentType);
+            }
+
+            final Document finalDoc = XmlUtil.removeEmptyXmlns(namespaceNotAwareDoc);
+
+            if (config.isModelValidationEnabled()) {
+                final ModelValidatorResult validateMDA = validator.validateMDA(XmlUtil.xmlToString(finalDoc),
+                        cdaDocumentType, !isTranscode);
+                if (!validateMDA.isSchemaValid()) {
+                    warnings.add(TMError.WARNING_OUTPUT_XSD_VALIDATION_FAILED);
+                }
+                if (!validateMDA.isModelValid()) {
+                    warnings.add(TMError.WARNING_OUTPUT_MDA_VALIDATION_FAILED);
+                }
+            }
+            // validate RESULT (schematron)
+            if (config.isSchematronValidationEnabled()) {
+
+                final SchematronResult result = validator.validateSchematron(finalDoc, cdaDocumentType, !isTranscode);
+                if (result == null || !result.isValid()) {
+                    warnings.add(TMError.WARNING_OUTPUT_SCHEMATRON_VALIDATION_FAILED);
+                    responseStructure = new TMResponseStructure(Base64Util.encode(finalDoc), errors, warnings);
+                    logger.error("Schematron validation error, result document is invalid!");
+                    if (logger.isErrorEnabled() && result != null) {
+                        logger.error(result.toString());
+                    }
+                    return responseStructure;
+                }
+            } else {
+                logger.debug("Schematron validation disabled");
+            }
+
+            // create & fill TMResponseStructure
+            responseStructure = new TMResponseStructure(Base64Util.encode(finalDoc), errors, warnings);
+            if (logger.isDebugEnabled()) {
+                logger.debug("TM result:\n{}", responseStructure);
+            }
+        } catch (final TMException e) {
 
             // Writing TMException to ResponseStructure
             logger.error("TMException: '{}'\nReason: '{}'", e.getMessage(), e.getReason().toString(), e);
             errors.add(e.getReason());
             responseStructure = new TMResponseStructure(Base64Util.encode(inputDocument), errors, warnings);
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
 
             // Writing ERROR to ResponseStructure
             logger.error("Exception: '{}'", e.getMessage(), e);
@@ -267,15 +259,15 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @return Constant which determines one of six Document types
      * @throws Exception
      */
-    public String getCDADocumentType(Document document) throws Exception {
+    public String getCDADocumentType(final Document document) throws Exception {
 
-        List<Node> nodeList = XmlUtil.getNodeList(document, XPATH_CLINICALDOCUMENT_CODE);
+        final List<Node> nodeList = XmlUtil.getNodeList(document, XPATH_CLINICALDOCUMENT_CODE);
 
         // Document type code
-        String docTypeCode;
+        final String docTypeCode;
         // exactly 1 document type element should exist
         if (nodeList.size() == 1 && nodeList.get(0).getNodeType() == Node.ELEMENT_NODE) {
-            Element docTypeCodeElement = (Element) nodeList.get(0);
+            final Element docTypeCodeElement = (Element) nodeList.get(0);
             docTypeCode = docTypeCodeElement.getAttribute(CODE);
             logger.info("CDA Document Type Code: '{}'", docTypeCode);
             if (StringUtils.isBlank(docTypeCode)) {
@@ -287,16 +279,16 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         }
 
         // Document level (1 - unstructured or 3 - structured)
-        boolean level3Doc;
+        final boolean level3Doc;
         // check if structuredDocument
-        Node nodeStructuredBody = XmlUtil.getNode(document, XPATH_STRUCTUREDBODY);
+        final Node nodeStructuredBody = XmlUtil.getNode(document, XPATH_STRUCTUREDBODY);
         if (nodeStructuredBody != null) {
 
             // LEVEL 3 document
             level3Doc = true;
         } else {
             // check if unstructured document
-            Node nodeNonXMLBody = XmlUtil.getNode(document, XPATH_NONXMLBODY);
+            final Node nodeNonXMLBody = XmlUtil.getNode(document, XPATH_NONXMLBODY);
             if (nodeNonXMLBody != null) {
 
                 // LEVEL 1 document
@@ -307,7 +299,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
             }
         }
 
-        String docTypeConstant;
+        final String docTypeConstant;
         // find constant for Document type
         if (level3Doc) {
             docTypeConstant = level3Type.get(docTypeCode);
@@ -333,8 +325,8 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @param warnings           empty list for TMWarnings
      * @return
      */
-    private void translateDocument(Document document, String targetLanguageCode, List<ITMTSAMError> errors,
-                                     List<ITMTSAMError> warnings, String cdaDocumentType) {
+    private void translateDocument(final Document document, final String targetLanguageCode, final List<ITMTSAMError> errors,
+                                   final List<ITMTSAMError> warnings, final String cdaDocumentType) {
 
         logger.info("Translating Document '{}' to target Language: '{}'", cdaDocumentType, targetLanguageCode);
         processDocument(document, targetLanguageCode, errors, warnings, cdaDocumentType, Boolean.FALSE);
@@ -351,7 +343,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @param cdaDocumentType Type of CDA document to process
      * @return
      */
-    private void transcodeDocument(Document document, List<ITMTSAMError> errors, List<ITMTSAMError> warnings, String cdaDocumentType) {
+    private void transcodeDocument(final Document document, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings, final String cdaDocumentType) {
 
         logger.info("Transcoding Document '{}'", cdaDocumentType);
         processDocument(document, null, errors, warnings, cdaDocumentType, Boolean.TRUE);
@@ -366,28 +358,28 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @param isTranscode
      * @return
      */
-    private void processDocument(Document document, String targetLanguageCode, List<ITMTSAMError> errors,
-                                   List<ITMTSAMError> warnings, String cdaDocumentType, boolean isTranscode) {
+    private void processDocument(final Document document, final String targetLanguageCode, final List<ITMTSAMError> errors,
+                                 final List<ITMTSAMError> warnings, final String cdaDocumentType, final boolean isTranscode) {
 
         //TODO: Check is an attribute shall/can also be translated anr/or transcoded like the XML element.
         logger.info("Processing Document '{}' to target Language: '{}' Transcoding: '{}'", cdaDocumentType, targetLanguageCode, isTranscode);
         // hashMap for ID of referencedValues and transcoded/translated DisplayNames
-        HashMap<String, String> hmReffId_DisplayName = new HashMap<>();
+        final HashMap<String, String> hmReffId_DisplayName = new HashMap<>();
 
         if (CodedElementList.getInstance().isConfigurableElementIdentification()) {
 
-            Collection<CodedElementListItem> ceList = CodedElementList.getInstance().getList(cdaDocumentType);
+            final Collection<CodedElementListItem> ceList = CodedElementList.getInstance().getList(cdaDocumentType);
             logger.info("Configurable Element Identification is set, CodedElementList for '{}' contains elements: '{}'",
                     cdaDocumentType, ceList.size());
             if (logger.isDebugEnabled()) {
-                for (CodedElementListItem listItem : ceList) {
+                for (final CodedElementListItem listItem : ceList) {
                     logger.debug("Usage: '{}', XPath: '{}', ValueSet: '{}'", listItem.getUsage(), listItem.getxPath(), listItem.getValueSet());
                 }
             }
             if (ceList.isEmpty()) {
                 warnings.add(TMError.WARNING_CODED_ELEMENT_LIST_EMPTY);
             }
-            Iterator<CodedElementListItem> iProcessed = ceList.iterator();
+            final Iterator<CodedElementListItem> iProcessed = ceList.iterator();
             CodedElementListItem codedElementListItem;
             String xPathExpression;
             List<Node> nodeList;
@@ -424,7 +416,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                     Element originalElement;
                     if (nodeList != null) {
 
-                        for (Node aNodeList : nodeList) {
+                        for (final Node aNodeList : nodeList) {
                             // Iterate elements for processing
                             if (aNodeList.getNodeType() == Node.ELEMENT_NODE) {
                                 originalElement = (Element) aNodeList;
@@ -432,13 +424,13 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                                 checkCodedElementType(originalElement, warnings);
 
                                 // Calling TSAM transcode/translate method for each coded element configured according CDA type.
-                                boolean success = (isTranscode ?
+                                final boolean success = (isTranscode ?
                                         transcodeElement(originalElement, document, hmReffId_DisplayName, null, null, errors, warnings)
                                         : translateElement(originalElement, document, targetLanguageCode, hmReffId_DisplayName, null, null, errors, warnings));
 
                                 // If is required & processing is unsuccessful, report ERROR
                                 if (isRequired && !success) {
-                                    String ctx = XmlUtil.getElementPath(originalElement);
+                                    final String ctx = XmlUtil.getElementPath(originalElement);
                                     errors.add(isTranscode ? new TMErrorCtx(TMError.ERROR_REQUIRED_CODED_ELEMENT_NOT_TRANSCODED, ctx)
                                             : new TMErrorCtx(TMError.ERROR_REQUIRED_CODED_ELEMENT_NOT_TRANSLATED, ctx));
                                     logger.error("Required coded element was not translated");
@@ -451,10 +443,10 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         } else {
 
             logger.info("Configurable Element Identification is NOT set - looking for //*[@code] elements");
-            List<Node> nodeList = XmlUtil.getNodeList(document, XPATH_ALL_ELEMENTS_WITH_CODE_ATTR);
+            final List<Node> nodeList = XmlUtil.getNodeList(document, XPATH_ALL_ELEMENTS_WITH_CODE_ATTR);
             logger.info("Found '{}' elements to translate/transcode", nodeList.size());
             Element originalElement;
-            for (Node aNodeList : nodeList) {
+            for (final Node aNodeList : nodeList) {
 
                 if (aNodeList.getNodeType() == Node.ELEMENT_NODE) {
                     // iterate elements for translation
@@ -462,7 +454,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                     // if element name is translation, don't do anything
                     if (TRANSLATION.equals(originalElement.getLocalName())) {
 
-                        CodedElement ce = new CodedElement(originalElement);
+                        final CodedElement ce = new CodedElement(originalElement);
                         if (logger.isDebugEnabled()) {
                             logger.debug("translation element - skipping: '{}'", ce);
                         }
@@ -472,7 +464,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                     checkCodedElementType(originalElement, warnings);
 
                     // call TSAM transcode/translate method for each coded element
-                    boolean success = (isTranscode ?
+                    final boolean success = (isTranscode ?
                             transcodeElement(originalElement, document, hmReffId_DisplayName, null, null, errors, warnings) :
                             translateElement(originalElement, document, targetLanguageCode, hmReffId_DisplayName, null, null, errors, warnings));
                     if(!success) {
@@ -495,16 +487,16 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @param errors
      * @return boolean - true if SUCCES otherwise false
      */
-    private boolean transcodeElement(Element originalElement, Document document, HashMap<String, String> hmReffIdDisplayName,
-                                     String valueSet, String valueSetVersion, List<ITMTSAMError> errors, List<ITMTSAMError> warnings) {
+    private boolean transcodeElement(final Element originalElement, final Document document, final HashMap<String, String> hmReffIdDisplayName,
+                                     final String valueSet, final String valueSetVersion, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
 
         return processElement(originalElement, document, null, hmReffIdDisplayName, valueSet,
                 valueSetVersion, true, errors, warnings);
     }
 
-    private boolean translateElement(Element originalElement, Document document, String targetLanguageCode,
-                                     HashMap<String, String> hmReffIdDisplayName, String valueSet, String valueSetVersion,
-                                     List<ITMTSAMError> errors, List<ITMTSAMError> warnings) {
+    private boolean translateElement(final Element originalElement, final Document document, final String targetLanguageCode,
+                                     final HashMap<String, String> hmReffIdDisplayName, final String valueSet, final String valueSetVersion,
+                                     final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
 
         return processElement(originalElement, document, targetLanguageCode, hmReffIdDisplayName, valueSet,
                 valueSetVersion, false, errors, warnings);
@@ -522,14 +514,14 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @param warnings
      * @return
      */
-    private boolean processElement(Element originalElement, Document document, String targetLanguageCode,
-                                   HashMap<String, String> hmReffIdDisplayName, String valueSet, String valueSetVersion,
-                                   boolean isTranscode, List<ITMTSAMError> errors, List<ITMTSAMError> warnings) {
+    private boolean processElement(final Element originalElement, final Document document, final String targetLanguageCode,
+                                   final HashMap<String, String> hmReffIdDisplayName, final String valueSet, final String valueSetVersion,
+                                   final boolean isTranscode, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
 
         //TODO: Update the translation Node while the translation/transcoding process
         try {
             // Checking mandatory attributes
-            Boolean checkAttributes = checkAttributes(originalElement, warnings);
+            final Boolean checkAttributes = checkAttributes(originalElement, warnings);
             if (checkAttributes != null) {
                 return checkAttributes;
             }
@@ -539,7 +531,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
             // looking for a nested translation element
             Node oldTranslationElement = findOldTranslation(originalElement);
 
-            TSAMResponseStructure tsamResponse = isTranscode ? terminologyService.getTargetConcept(codeConcept)
+            final TSAMResponseStructure tsamResponse = isTranscode ? terminologyService.getTargetConcept(codeConcept)
                     : terminologyService.getDesignation(codeConcept, targetLanguageCode);
 
             if (tsamResponse.isStatusSuccess()) {
@@ -547,7 +539,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                 // +++++ Element editing BEGIN +++++
 
                 // NEW TRANSLATION element
-                Element newTranslation = document.createElementNS(EHDSI_HL7_NAMESPACE, TRANSLATION);
+                final Element newTranslation = document.createElementNS(EHDSI_HL7_NAMESPACE, TRANSLATION);
                 if (originalElement.getPrefix() != null) {
                     newTranslation.setPrefix(originalElement.getPrefix());
                 }
@@ -636,24 +628,24 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                 warnings.addAll(tsamResponse.getWarnings());
                 return false;
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // system error
             logger.error("processing failure! ", e);
             return false;
         }
     }
 
-    private void writeAuditTrail(TMResponseStructure responseStructure) {
+    private void writeAuditTrail(final TMResponseStructure responseStructure) {
 
         logger.debug("[Transformation Service] Audit trail BEGIN");
 
         if (responseStructure != null) {
 
             try {
-                GregorianCalendar calendar = new GregorianCalendar();
+                final GregorianCalendar calendar = new GregorianCalendar();
                 calendar.setTime(new Date());
-                String securityHeader = "[No security header provided]";
-                EventLog eventLog = EventLog.createEventLogPivotTranslation(
+                final String securityHeader = "[No security header provided]";
+                final EventLog eventLog = EventLog.createEventLogPivotTranslation(
                         TransactionName.PIVOT_TRANSLATION,
                         EventActionCode.EXECUTE,
                         DATATYPE_FACTORY.newXMLGregorianCalendar(calendar),
@@ -673,7 +665,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                 AuditServiceFactory.getInstance().write(eventLog, config.getAuditTrailFacility(), config.getAuditTrailSeverity());
                 logger.info("Write AuditTrail: '{}'", eventLog.getEventType());
 
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.error("Audit trail ERROR! ", e);
             }
             logger.debug("[Transformation Service] Audit trail END");
@@ -682,13 +674,13 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         }
     }
 
-    private Node findOldTranslation(Element originalElement) {
+    private Node findOldTranslation(final Element originalElement) {
 
         Node oldTranslationElement = null;
-        NodeList nodeList = originalElement.getChildNodes();
+        final NodeList nodeList = originalElement.getChildNodes();
         if (nodeList.getLength() > 0) {
             for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
+                final Node node = nodeList.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE && StringUtils.equals(TMConstants.TRANSLATION, node.getLocalName())) {
 
                     oldTranslationElement = node;
@@ -705,22 +697,18 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @param originalElement
      * @param warnings
      */
-    private void checkCodedElementType(Element originalElement, List<ITMTSAMError> warnings) {
+    private void checkCodedElementType(final Element originalElement, final List<ITMTSAMError> warnings) {
 
         if (originalElement != null && StringUtils.isNotBlank(originalElement.getAttribute(XSI_TYPE))) {
 
-            Attr attr = originalElement.getAttributeNodeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "type");
+            final Attr attr = originalElement.getAttributeNodeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "type");
 
             if (attr != null) {
-
-                String prefix;
-                String suffix;
-                int colon = attr.getValue().indexOf(':');
+                final String suffix;
+                final int colon = attr.getValue().indexOf(':');
                 if (colon == -1) {
-                    prefix = "";
                     suffix = attr.getValue();
                 } else {
-                    prefix = attr.getValue().substring(0, colon);
                     suffix = attr.getValue().substring(colon + 1);
                 }
                 if (!StringUtils.equals(suffix, CE) && !StringUtils.equals(suffix, CD)) {
@@ -739,9 +727,9 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @param warnings
      * @return Returns true if it is allowed not to have mandatory attributes, false if not, null if everything is ok
      */
-    private Boolean checkAttributes(Element originalElement, List<ITMTSAMError> warnings) {
+    private Boolean checkAttributes(final Element originalElement, final List<ITMTSAMError> warnings) {
 
-        String elName = XmlUtil.getElementPath(originalElement);
+        final String elName = XmlUtil.getElementPath(originalElement);
         if (logger.isDebugEnabled()) {
             logger.debug("Required attributes for Element Path:\n'{}'", elName);
         }
@@ -761,7 +749,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                 noCodeSystem = true;
             }
             if (noCode || noCodeSystem) {
-                NodeList origText = originalElement.getElementsByTagName("originalText");
+                final NodeList origText = originalElement.getElementsByTagName("originalText");
                 if (origText.getLength() > 0) {
                     // ak element obsahuje originalText, preskocit, nevyhazovat warning
                     logger.debug("Element without required attributes, but has originalText, ignoring: '{}'", elName);
@@ -782,11 +770,11 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @param clinicalDocument - Current CDA processed.
      * @return Formatted OID identifying the CDA document.
      */
-    private String getOIDFromDocument(Document clinicalDocument) {
+    private String getOIDFromDocument(final Document clinicalDocument) {
 
         String oid = "";
         if (clinicalDocument.getElementsByTagNameNS(EHDSI_HL7_NAMESPACE, "id").getLength() > 0) {
-            Node id = clinicalDocument.getElementsByTagNameNS(EHDSI_HL7_NAMESPACE, "id").item(0);
+            final Node id = clinicalDocument.getElementsByTagNameNS(EHDSI_HL7_NAMESPACE, "id").item(0);
             if (id.getAttributes().getNamedItem("root") != null) {
                 oid = oid + id.getAttributes().getNamedItem("root").getTextContent();
             }
@@ -806,14 +794,10 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         level1Type = new HashMap<>();
         level1Type.put(config.getPatientSummaryCode(), PATIENT_SUMMARY1);
         level1Type.put(config.getePrescriptionCode(), EPRESCRIPTION1);
-        level1Type.put(config.getHcerCode(), HCER1);
-        level1Type.put(config.getMroCode(), MRO1);
 
         level3Type = new HashMap<>();
         level3Type.put(config.getPatientSummaryCode(), PATIENT_SUMMARY3);
         level3Type.put(config.geteDispensationCode(), EDISPENSATION3);
         level3Type.put(config.getePrescriptionCode(), EPRESCRIPTION3);
-        level3Type.put(config.getHcerCode(), HCER3);
-        level3Type.put(config.getMroCode(), MRO3);
     }
 }
