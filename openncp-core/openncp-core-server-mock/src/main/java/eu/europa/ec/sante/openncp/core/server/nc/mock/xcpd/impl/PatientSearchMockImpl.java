@@ -124,7 +124,7 @@ public class PatientSearchMockImpl extends NationalConnectorGateway implements P
 
         } catch (Exception e) {
             logger.error("[National Infrastructure Mock] Patient Not Found Exception: '{}'", e.getMessage(), e);
-            throw new AnswerNotAvailableException("[National Infrastructure Mock] Could not load the Patient Demographics");
+            throw new AnswerNotAvailableException(OpenNCPErrorCode.ERROR_PI_INTERNAL_ERROR);
         }
 
         return result;

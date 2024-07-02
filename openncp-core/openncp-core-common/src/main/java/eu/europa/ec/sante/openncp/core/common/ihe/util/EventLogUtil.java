@@ -59,8 +59,7 @@ public class EventLogUtil {
 
             String detail = response.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getContent();
             if (detail.startsWith("(")) {
-                String code = detail.substring(1, 5);
-                if (code.equals("1102")) {
+                if(detail.startsWith("(ERROR_PS_NOT_FOUND")) {
                     eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.TEMPORAL_FAILURE);
                 } else {
                     eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.PERMANENT_FAILURE);
