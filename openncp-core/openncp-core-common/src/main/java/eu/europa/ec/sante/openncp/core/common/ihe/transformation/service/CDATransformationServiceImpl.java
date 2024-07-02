@@ -70,10 +70,15 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
     }
 
     public TMResponseStructure translate(final Document pivotCDA, final String targetLanguageCode) {
+        return translate(pivotCDA, targetLanguageCode, null);
+    }
+
+    @Override
+    public TMResponseStructure translate(final Document pivotCDA, final String targetLanguageCode, final NcpSide ncpSide) {
         logger.info("Translating OpenNCP CDA Document [START]");
         final StopWatch watch = new StopWatch();
         watch.start();
-        final TMResponseStructure responseStructure = process(pivotCDA, targetLanguageCode, false);
+        final TMResponseStructure responseStructure = process(pivotCDA, targetLanguageCode, false, ncpSide);
         if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && loggerClinical.isDebugEnabled()) {
             try {
                 loggerClinical.debug("Translate CDA: \n'{}'", XMLUtil.prettyPrint(responseStructure.getDocument()));
@@ -95,11 +100,15 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @return
      */
     public TMResponseStructure transcode(final Document friendlyCDA) {
+        return transcode(friendlyCDA, null);
+    }
 
+    @Override
+    public TMResponseStructure transcode(final Document friendlyCDA, final NcpSide ncpSide) {
         logger.info("Transcoding OpenNCP CDA Document [START]");
         final StopWatch watch = new StopWatch();
         watch.start();
-        final TMResponseStructure responseStructure = process(friendlyCDA, null, true);
+        final TMResponseStructure responseStructure = process(friendlyCDA, null, true, ncpSide);
 
         watch.stop();
         logger.info("Transformation of CDA executed in: '{}ms'", watch.getTotalTimeMillis());
@@ -129,7 +138,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
         return conceptReferenceComponent;
     }
 
-    private TMResponseStructure process(final Document inputDocument, final String targetLanguageCode, final boolean isTranscode) {
+    private TMResponseStructure process(final Document inputDocument, final String targetLanguageCode, final boolean isTranscode, final NcpSide ncpSide) {
 
         logger.info("Processing CDA Document: '{}', Target Language: '{}', Transcoding: '{}'",
                 inputDocument.toString(), targetLanguageCode, isTranscode);
@@ -246,7 +255,9 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
         }
 
         // Transformation Service - Audit Message Handling
-        writeAuditTrail(responseStructure);
+        if (ncpSide != null) {
+            writeAuditTrail(responseStructure, ncpSide);
+        }
 
         return responseStructure;
     }
@@ -635,7 +646,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
         }
     }
 
-    private void writeAuditTrail(final TMResponseStructure responseStructure) {
+    private void writeAuditTrail(final TMResponseStructure responseStructure, final NcpSide ncpSide) {
 
         logger.debug("[Transformation Service] Audit trail BEGIN");
 
@@ -660,7 +671,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
                         IPUtil.getPrivateServerIp()
                 );
                 eventLog.setEventType(EventType.PIVOT_TRANSLATION);
-                eventLog.setNcpSide(NcpSide.valueOf(config.getNcpSide()));
+                eventLog.setNcpSide(ncpSide);
 
                 AuditServiceFactory.getInstance().write(eventLog, config.getAuditTrailFacility(), config.getAuditTrailSeverity());
                 logger.info("Write AuditTrail: '{}'", eventLog.getEventType());
@@ -682,7 +693,6 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE && StringUtils.equals(TMConstants.TRANSLATION, node.getLocalName())) {
-
                     oldTranslationElement = node;
                     logger.debug("Old translation found");
                     break;
@@ -733,12 +743,10 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
         if (logger.isDebugEnabled()) {
             logger.debug("Required attributes for Element Path:\n'{}'", elName);
         }
-        // ak je nullFlavor, neprekladat, nevyhadzovat chybu
         if (originalElement.hasAttribute("nullFlavor")) {
             logger.debug("nullFlavor, skippink: '{}'", elName);
             return true;
         } else {
-            // ak chyba code alebo codeSystem vyhodit warning
             boolean noCode = false;
             boolean noCodeSystem = false;
             if (!originalElement.hasAttribute("code")) {

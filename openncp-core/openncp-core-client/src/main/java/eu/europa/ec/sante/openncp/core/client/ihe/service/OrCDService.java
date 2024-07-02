@@ -25,7 +25,7 @@ public class OrCDService {
 
     private final XcaInitGateway xcaInitGateway;
 
-    private OrCDService(final XcaInitGateway xcaInitGateway) {
+    public OrCDService(final XcaInitGateway xcaInitGateway) {
         this.xcaInitGateway = Validate.notNull(xcaInitGateway, "xcaInitGateway cannot be null");
     }
 

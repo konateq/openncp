@@ -35,7 +35,7 @@ public class DispensationService {
 
     private final XdrDocumentSource xdrDocumentSource;
 
-    private DispensationService(final XdrDocumentSource xdrDocumentSource) {
+    public DispensationService(final XdrDocumentSource xdrDocumentSource) {
         this.xdrDocumentSource = Validate.notNull(xdrDocumentSource, "XdrDocumentSource cannot be null");
     }
 

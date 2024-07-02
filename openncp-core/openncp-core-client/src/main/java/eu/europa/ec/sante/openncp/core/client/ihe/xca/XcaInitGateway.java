@@ -59,7 +59,7 @@ public class XcaInitGateway {
 
     private final CDATransformationService cdaTransformationService;
 
-    private XcaInitGateway(final CDATransformationService cdaTransformationService) {
+    public XcaInitGateway(final CDATransformationService cdaTransformationService) {
         this.cdaTransformationService = Validate.notNull(cdaTransformationService, "CDATransformationService cannot be null");
     }
 
@@ -74,7 +74,7 @@ public class XcaInitGateway {
             builder.append("[");
             documentCodes.forEach(s -> builder.append(s.getValue()).append(","));
             builder.replace(builder.length() - 1, builder.length(), "]");
-            String classCodes = builder.toString();
+            final String classCodes = builder.toString();
             LOGGER_CLINICAL.info("QueryResponse crossGatewayQuery('{}','{}','{}','{}','{}','{}')", pid.getExtension(), countryCode,
                     classCodes, assertionMap.get(AssertionEnum.CLINICIAN).getID(), assertionMap.get(AssertionEnum.TREATMENT).getID(), service);
             if (filterParams != null) {
@@ -88,29 +88,29 @@ public class XcaInitGateway {
         try {
 
             /* queryRequest */
-            AdhocQueryRequest queryRequest = AdhocQueryRequestCreator.createAdhocQueryRequest(pid.getExtension(), pid.getRoot(), documentCodes, filterParams);
+            final AdhocQueryRequest queryRequest = AdhocQueryRequestCreator.createAdhocQueryRequest(pid.getExtension(), pid.getRoot(), documentCodes, filterParams);
 
             /* Stub */
-            var respondingGatewayStub = new RespondingGateway_ServiceStub();
-            var dynamicDiscoveryService = new DynamicDiscoveryService();
-            String epr = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
+            final var respondingGatewayStub = new RespondingGateway_ServiceStub();
+            final var dynamicDiscoveryService = new DynamicDiscoveryService();
+            final String epr = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
             respondingGatewayStub.setAddr(epr);
             respondingGatewayStub._getServiceClient().getOptions().setTo(new EndpointReference(epr));
             EventLogClientUtil.createDummyMustUnderstandHandler(respondingGatewayStub);
             respondingGatewayStub.setCountryCode(countryCode);
 
             /* queryResponse */
-            List<ClassCode> documentClassCodes = new ArrayList<>();
-            for (GenericDocumentCode genericDocumentCode : documentCodes) {
+            final List<ClassCode> documentClassCodes = new ArrayList<>();
+            for (final GenericDocumentCode genericDocumentCode : documentCodes) {
                 documentClassCodes.add(ClassCode.getByCode(genericDocumentCode.getValue()));
             }
-            AdhocQueryResponse queryResponse = respondingGatewayStub.respondingGateway_CrossGatewayQuery(queryRequest, assertionMap, documentClassCodes);
+            final AdhocQueryResponse queryResponse = respondingGatewayStub.respondingGateway_CrossGatewayQuery(queryRequest, assertionMap, documentClassCodes);
             processRegistryErrors(queryResponse.getRegistryErrorList());
 
             if (queryResponse.getRegistryObjectList() != null) {
                 result = AdhocQueryResponseConverter.convertAdhocQueryResponse(queryResponse);
             }
-        } catch (RemoteException | RuntimeException ex) {
+        } catch (final RemoteException | RuntimeException ex) {
             throw new RuntimeException(ex);
         }
 
@@ -118,25 +118,25 @@ public class XcaInitGateway {
     }
 
     public RetrieveDocumentSetResponseType.DocumentResponse crossGatewayRetrieve(final XDSDocument document, final String homeCommunityId,
-                                                                                        final String countryCode, final String targetLanguage,
-                                                                                        final Map<AssertionEnum, Assertion> assertionMap,
-                                                                                        String service) throws XCAException {
+                                                                                 final String countryCode, final String targetLanguage,
+                                                                                 final Map<AssertionEnum, Assertion> assertionMap,
+                                                                                 final String service) throws XCAException {
 
         LOGGER.info("QueryResponse crossGatewayQuery('{}','{}','{}','{}','{}', '{}')", homeCommunityId, countryCode,
                 targetLanguage, assertionMap.get(AssertionEnum.CLINICIAN).getID(),
                 assertionMap.get(AssertionEnum.TREATMENT).getID(), service);
         RetrieveDocumentSetResponseType.DocumentResponse result = null;
-        RetrieveDocumentSetResponseType queryResponse;
+        final RetrieveDocumentSetResponseType queryResponse;
         ClassCode classCode = null;
 
         try {
 
-            RetrieveDocumentSetRequestType queryRequest = new RetrieveDocumentSetRequestTypeCreator().createRetrieveDocumentSetRequestType(
+            final RetrieveDocumentSetRequestType queryRequest = new RetrieveDocumentSetRequestTypeCreator().createRetrieveDocumentSetRequestType(
                     document.getDocumentUniqueId(), homeCommunityId, document.getRepositoryUniqueId());
 
-            RespondingGateway_ServiceStub stub = new RespondingGateway_ServiceStub();
-            DynamicDiscoveryService dynamicDiscoveryService = new DynamicDiscoveryService();
-            String endpointReference = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
+            final RespondingGateway_ServiceStub stub = new RespondingGateway_ServiceStub();
+            final DynamicDiscoveryService dynamicDiscoveryService = new DynamicDiscoveryService();
+            final String endpointReference = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
             stub.setAddr(endpointReference);
             stub._getServiceClient().getOptions().setTo(new EndpointReference(endpointReference));
             stub.setCountryCode(countryCode);
@@ -156,10 +156,10 @@ public class XcaInitGateway {
 
             if (queryResponse.getRegistryResponse() != null) {
 
-                var registryErrorList = queryResponse.getRegistryResponse().getRegistryErrorList();
+                final var registryErrorList = queryResponse.getRegistryResponse().getRegistryErrorList();
                 processRegistryErrors(registryErrorList);
             }
-        } catch (RemoteException ex) {
+        } catch (final RemoteException ex) {
             throw new RuntimeException(ex);
         }
 
@@ -170,7 +170,7 @@ public class XcaInitGateway {
                 // Shall be a fatal ERROR
             }
             // review this try - catch - finally mechanism and the transformation/translation mechanism.
-            byte[] pivotDocument = queryResponse.getDocumentResponse().get(0).getDocument();
+            final byte[] pivotDocument = queryResponse.getDocumentResponse().get(0).getDocument();
 
             try {
                 //  Validate CDA Pivot
@@ -182,12 +182,12 @@ public class XcaInitGateway {
                     queryResponse.getDocumentResponse().get(0).setDocument(pivotDocument);
                 } else {
                     //  Sets the response document to a translated version.
-                    var tmResponseStructure = cdaTransformationService.translate(DomUtils.byteToDocument(pivotDocument), targetLanguage);
+                    final var tmResponseStructure = cdaTransformationService.translate(DomUtils.byteToDocument(pivotDocument), targetLanguage, NcpSide.NCP_B);
                     queryResponse.getDocumentResponse().get(0).setDocument(tmResponseStructure.getResponseCDA().getBytes(StandardCharsets.UTF_8));
 
                 }
 
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOGGER.warn("DocumentTransformationException: CDA cannot be translated: Please check the TM result");
             } finally {
                 LOGGER.debug("[XCA Init Gateway] Returns Original Document");
@@ -210,22 +210,22 @@ public class XcaInitGateway {
      * @param registryErrorList the list of errors from the {@link AdhocQueryResponse} message.
      * @throws XCAException thrown when an error has a severity of type "urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error".
      */
-    private static void processRegistryErrors(RegistryErrorList registryErrorList) throws XCAException {
+    private static void processRegistryErrors(final RegistryErrorList registryErrorList) throws XCAException {
         // A.R. ++ Error processing. For retrieve. Is it needed?
         // We don't want to break on TSAM errors anyway...
 
         if (registryErrorList != null) {
-            List<RegistryError> errorList = registryErrorList.getRegistryError();
+            final List<RegistryError> errorList = registryErrorList.getRegistryError();
 
             if (errorList != null) {
-                StringBuilder msg = new StringBuilder();
+                final StringBuilder msg = new StringBuilder();
                 boolean hasError = false;
-                for (RegistryError error : errorList) {
-                    String errorCode = error.getErrorCode();
-                    String value = error.getValue();
-                    String location = error.getLocation();
-                    String severity = error.getSeverity();
-                    String codeContext = error.getCodeContext();
+                for (final RegistryError error : errorList) {
+                    final String errorCode = error.getErrorCode();
+                    final String value = error.getValue();
+                    final String location = error.getLocation();
+                    final String severity = error.getSeverity();
+                    final String codeContext = error.getCodeContext();
                     LOGGER.debug("\nerrorCode='{}'\ncodeContext='{}'\nlocation='{}'\nseverity='{}'\n'{}'\n",
                             errorCode, codeContext, location, severity, value);
 
@@ -243,7 +243,7 @@ public class XcaInitGateway {
                         continue;
                     }
 
-                    OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
+                    final OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
                     if(openncpErrorCode == null){
                         LOGGER.warn("No EHDSI error code found in the XCA response for : {}", errorCode);
                     }
@@ -266,7 +266,7 @@ public class XcaInitGateway {
      * @param errorCode Error Code associated to the action performed.
      * @return True | false according the Error Codes List.
      */
-    private static boolean checkTransformationErrors(String errorCode) {
+    private static boolean checkTransformationErrors(final String errorCode) {
         return TM_ERROR_CODES.contains(errorCode);
     }
 }

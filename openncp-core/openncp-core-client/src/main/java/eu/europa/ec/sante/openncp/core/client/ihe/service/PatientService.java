@@ -21,7 +21,7 @@ public class PatientService {
 
     final XcaInitGateway xcaInitGateway;
 
-    private PatientService(final XcaInitGateway xcaInitGateway) {
+    public PatientService(final XcaInitGateway xcaInitGateway) {
         this.xcaInitGateway = Validate.notNull(xcaInitGateway, "XcaInitGateway cannot be null");
     }
 

@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public final class IdentificationService {
+public class IdentificationService {
 
     final XcpdInitGateway xcpdInitGateway;
 
-    private IdentificationService(final XcpdInitGateway xcpdInitGateway) {
+    public IdentificationService(final XcpdInitGateway xcpdInitGateway) {
         this.xcpdInitGateway = Validate.notNull(xcpdInitGateway, "XcpdInitGateway cannot be null");
     }
 

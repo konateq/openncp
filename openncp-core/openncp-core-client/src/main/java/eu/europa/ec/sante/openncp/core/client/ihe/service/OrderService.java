@@ -21,7 +21,7 @@ public class OrderService {
 
     private final XcaInitGateway xcaInitGateway;
 
-    private OrderService(final XcaInitGateway xcaInitGateway) {
+    public OrderService(final XcaInitGateway xcaInitGateway) {
         this.xcaInitGateway = Validate.notNull(xcaInitGateway, "XcaInitGateway cannot be null");
     }
 

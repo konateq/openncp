@@ -713,21 +713,19 @@ public class XCAServiceImpl implements XCAServiceInterface {
                 tmResponse = cdaTransformationService.transcode(doc);
             } else {
                 operationType = "translate";
-                logger.debug("Translating document to '{}'", Constants.LANGUAGE_CODE);
+                logger.debug("Translating document to [{}]'", Constants.LANGUAGE_CODE);
                 tmResponse = cdaTransformationService.translate(doc, Constants.LANGUAGE_CODE);
             }
 
             final OMNamespace ns = registryResponseElement.getNamespace();
             final var ons = omFactory.createOMNamespace(ns.getNamespaceURI(), "a");
 
-            for (var i = 0; i < tmResponse.getErrors().size(); i++) {
-                final ITMTSAMError error = tmResponse.getErrors().get(i);
+            for (final ITMTSAMError error : tmResponse.getErrors()) {
                 RegistryErrorUtils.addErrorOMMessage(ons, registryErrorList, error, operationType, RegistryErrorSeverity.ERROR_SEVERITY_ERROR);
             }
 
-            for (var i = 0; i < tmResponse.getWarnings().size(); i++) {
-                final ITMTSAMError error = tmResponse.getWarnings().get(i);
-                RegistryErrorUtils.addErrorOMMessage(ons, registryErrorList, error, operationType, RegistryErrorSeverity.ERROR_SEVERITY_WARNING);
+            for (final ITMTSAMError warning : tmResponse.getWarnings()) {
+                RegistryErrorUtils.addErrorOMMessage(ons, registryErrorList, warning, operationType, RegistryErrorSeverity.ERROR_SEVERITY_WARNING);
             }
 
             returnDoc = Base64Util.decode(tmResponse.getResponseCDA());
