@@ -24,7 +24,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.FilterParams;
 public class FilterParamsDts {
 
 
-    public static FilterParams newInstance(final eu.europa.ec.sante.openncp.core.client.FilterParams filterParams) {
+    public static FilterParams newInstance(final eu.europa.ec.sante.openncp.core.client.api.FilterParams filterParams) {
 
         if (filterParams == null) {
             return null;

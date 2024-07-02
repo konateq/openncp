@@ -1,45 +1,17 @@
 package eu.europa.ec.sante.openncp.core.client.ihe;
 
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.client.DocumentId;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.FilterParams;
-import eu.europa.ec.sante.openncp.core.client.GenericDocumentCode;
-import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.client.PatientId;
-import eu.europa.ec.sante.openncp.core.client.QueryDocumentsResponse;
-import eu.europa.ec.sante.openncp.core.client.QueryPatientResponse;
-import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentRequest;
-import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponse;
-import eu.europa.ec.sante.openncp.core.client.SubmitDocumentRequest;
-import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponse;
+import eu.europa.ec.sante.openncp.core.client.api.*;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryPatientOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.RetrieveDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.SubmitDocumentOperation;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.DocumentDts;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.FilterParamsDts;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.GenericDocumentCodeDts;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.PatientDemographicsDts;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.PatientIdDts;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.RetrieveDocumentResponseDts;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.XdsDocumentDts;
-import eu.europa.ec.sante.openncp.core.client.ihe.service.DispensationService;
-import eu.europa.ec.sante.openncp.core.client.ihe.service.IdentificationService;
-import eu.europa.ec.sante.openncp.core.client.ihe.service.OrCDService;
-import eu.europa.ec.sante.openncp.core.client.ihe.service.OrderService;
-import eu.europa.ec.sante.openncp.core.client.ihe.service.PatientService;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.*;
+import eu.europa.ec.sante.openncp.core.client.ihe.service.*;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
 import eu.europa.ec.sante.openncp.core.client.logging.LoggingSlf4j;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.QueryResponse;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
@@ -53,7 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-@Service
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+@Service("iheClientService")
 public class ClientServiceImpl implements ClientService {
 
     private static final String UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION = "Unsupported Class Code scheme: ";

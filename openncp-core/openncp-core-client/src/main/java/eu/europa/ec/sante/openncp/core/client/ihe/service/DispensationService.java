@@ -2,13 +2,13 @@ package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.client.api.EpsosDocument;
+import eu.europa.ec.sante.openncp.core.client.api.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrDocumentSource;
-import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequestDts;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequest;
+import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequestDts;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XDRException;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public class DispensationService {
                                          final Map<AssertionEnum, Assertion> assertionMap) throws XDRException, ParseException {
 
         LOGGER.info("[CC] Dispense Service: Initialize");
-        XdrRequest request = XdrRequestDts.newInstance(document, patient);
+        final XdrRequest request = XdrRequestDts.newInstance(document, patient);
         return XdrDocumentSource.initialize(request, countryCode, assertionMap);
     }
 
@@ -88,7 +88,7 @@ public class DispensationService {
 
         LOGGER.info("[CC] Dispense Service: DISCARD");
         try {
-            Document dispense = XMLUtil.parseContent(document.getBase64Binary());
+            final Document dispense = XMLUtil.parseContent(document.getBase64Binary());
             NodeList nodeList = dispense.getElementsByTagName("code");
             Node search = nodeList.item(0);
             NamedNodeMap namedNodeMap = search.getAttributes();
@@ -101,12 +101,12 @@ public class DispensationService {
             nodeAttr = namedNodeMap.getNamedItem("root");
             nodeAttr.setTextContent("1.3.6.1.4.1.12559.11.10.1.3.1.1.2-DISCARD");
 
-            String updated = XMLUtil.documentToString(dispense);
+            final String updated = XMLUtil.documentToString(dispense);
             document.setBase64Binary(updated.getBytes(StandardCharsets.UTF_8));
-        } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
+        } catch (final ParserConfigurationException | SAXException | IOException | TransformerException e) {
             LOGGER.error("Exception: '{}'", e.getMessage());
         }
-        XdrRequest request = XdrRequestDts.newInstance(document, patient);
+        final XdrRequest request = XdrRequestDts.newInstance(document, patient);
         return XdrDocumentSource.discard(request, countryCode, assertionMap);
     }
 }

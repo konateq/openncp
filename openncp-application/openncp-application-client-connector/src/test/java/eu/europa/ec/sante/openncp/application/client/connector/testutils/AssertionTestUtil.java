@@ -1,30 +1,13 @@
 package eu.europa.ec.sante.openncp.application.client.connector.testutils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.Security;
-import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.UUID;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.AssertionService;
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.ImmutableTrcAssertionRequest;
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.STSClientException;
 import eu.europa.ec.sante.openncp.application.client.connector.assertion.TrcAssertionRequest;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.core.client.PatientId;
 import eu.europa.ec.sante.openncp.common.security.key.DefaultKeyStoreManager;
 import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.core.client.api.PatientId;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -42,19 +25,7 @@ import org.opensaml.core.xml.schema.XSURI;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.SignableSAMLObject;
-import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.Attribute;
-import org.opensaml.saml.saml2.core.AttributeStatement;
-import org.opensaml.saml.saml2.core.AttributeValue;
-import org.opensaml.saml.saml2.core.Audience;
-import org.opensaml.saml.saml2.core.AudienceRestriction;
-import org.opensaml.saml.saml2.core.AuthnContext;
-import org.opensaml.saml.saml2.core.AuthnContextClassRef;
-import org.opensaml.saml.saml2.core.AuthnStatement;
-import org.opensaml.saml.saml2.core.Conditions;
-import org.opensaml.saml.saml2.core.NameID;
-import org.opensaml.saml.saml2.core.Subject;
-import org.opensaml.saml.saml2.core.SubjectConfirmation;
+import org.opensaml.saml.saml2.core.*;
 import org.opensaml.saml.saml2.core.impl.AssertionMarshaller;
 import org.opensaml.saml.saml2.core.impl.IssuerBuilder;
 import org.opensaml.security.credential.CredentialSupport;
@@ -68,6 +39,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.UUID;
 
 public class AssertionTestUtil {
 
@@ -85,14 +72,14 @@ public class AssertionTestUtil {
         //  Empty private constructor preventing instantiation.
     }
 
-    public static Assertion createPatientConfirmationPlain(AssertionService assertionService, URL location, Assertion clinicalAssertion, PatientId patient, String purposeOfUse) throws STSClientException, MarshallingException {
-        String patientId = patient.getExtension() + "^^^&" + patient.getRoot() + "&ISO";
+    public static Assertion createPatientConfirmationPlain(final AssertionService assertionService, final URL location, final Assertion clinicalAssertion, final PatientId patient, final String purposeOfUse) throws STSClientException, MarshallingException {
+        final String patientId = patient.getExtension() + "^^^&" + patient.getRoot() + "&ISO";
 
-        TrcAssertionRequest assertionRequest = ImmutableTrcAssertionRequest.builder().location(location).assertion(clinicalAssertion).checkForHostname(false).validationEnabled(false).purposeOfUse(purposeOfUse).patientId(patientId).build();
-        Assertion assertionTRC = assertionService.request(assertionRequest);
-        var marshaller = new AssertionMarshaller();
-        Element element = marshaller.marshall(assertionTRC);
-        Document document = element.getOwnerDocument();
+        final TrcAssertionRequest assertionRequest = ImmutableTrcAssertionRequest.builder().location(location).assertion(clinicalAssertion).checkForHostname(false).validationEnabled(false).purposeOfUse(purposeOfUse).patientId(patientId).build();
+        final Assertion assertionTRC = assertionService.request(assertionRequest);
+        final var marshaller = new AssertionMarshaller();
+        final Element element = marshaller.marshall(assertionTRC);
+        final Document document = element.getOwnerDocument();
         LOGGER.info("TRC Assertion: '{}'\n'{}'", assertionTRC.getID(), getDocumentAsXml(document, false));
         return assertionTRC;
     }
@@ -263,7 +250,7 @@ public class AssertionTestUtil {
             attrStmt.getAttributes().add(attrPID7);
 
             // HL7 Permissions
-            var attrPID8 = createAttribute("Hl7 Permissions", "urn:oasis:names:tc:xspa:1.0:subject:hl7:permission");
+            final var attrPID8 = createAttribute("Hl7 Permissions", "urn:oasis:names:tc:xspa:1.0:subject:hl7:permission");
             for (final Object permission : permissions) {
                 AddAttributeValue(builderFactory, attrPID8, permission.toString());
             }

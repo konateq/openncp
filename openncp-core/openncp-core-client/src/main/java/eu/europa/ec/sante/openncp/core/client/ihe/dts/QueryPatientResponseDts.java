@@ -1,8 +1,8 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.client.QueryPatientResponse;
+import eu.europa.ec.sante.openncp.core.client.api.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.client.api.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.api.QueryPatientResponse;
 
 import java.util.List;
 

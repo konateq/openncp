@@ -1,5 +1,26 @@
 package eu.europa.ec.sante.openncp.application.client.connector;
 
+import eu.europa.ec.sante.openncp.application.client.connector.assertion.AssertionService;
+import eu.europa.ec.sante.openncp.application.client.connector.assertion.AssertionServiceImpl;
+import eu.europa.ec.sante.openncp.application.client.connector.assertion.STSClientException;
+import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil;
+import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.Concept;
+import eu.europa.ec.sante.openncp.common.ClassCode;
+import eu.europa.ec.sante.openncp.common.Constant;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.common.security.key.DatabasePropertiesKeyStoreManager;
+import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
+import eu.europa.ec.sante.openncp.core.client.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.SetEnvironmentVariable;
+import org.mockito.Mockito;
+import org.opensaml.core.xml.io.MarshallingException;
+import org.opensaml.saml.saml2.core.Assertion;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
@@ -9,29 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import eu.europa.ec.sante.openncp.application.client.connector.assertion.AssertionService;
-import eu.europa.ec.sante.openncp.application.client.connector.assertion.AssertionServiceImpl;
-import eu.europa.ec.sante.openncp.application.client.connector.assertion.STSClientException;
-import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil;
-import eu.europa.ec.sante.openncp.application.client.connector.testutils.AssertionTestUtil.Concept;
-import eu.europa.ec.sante.openncp.common.ClassCode;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
-import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
-import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.core.client.*;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.PurposeOfUse;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
-import eu.europa.ec.sante.openncp.common.security.key.DefaultKeyStoreManager;
-import eu.europa.ec.sante.openncp.common.security.key.KeyStoreManager;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.SetEnvironmentVariable;
-import org.mockito.Mockito;
-import org.opensaml.core.xml.io.MarshallingException;
-import org.opensaml.saml.saml2.core.Assertion;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -40,9 +38,10 @@ import static org.mockito.Mockito.when;
 class DefaultClientConnectorServiceIntegrationTest {
 
     private static DefaultClientConnectorService clientConnectorService;
-    private static DefaultKeyStoreManager keyStoreManager;
+
     private static ConfigurationManager mockedConfigurationManager;
-    private final AssertionService assertionService = new AssertionServiceImpl(keyStoreManager, mockedConfigurationManager);
+    private static AssertionService assertionService;
+    private static KeyStoreManager keyStoreManager;
 
     @BeforeAll
     static void setup() throws Exception {
@@ -50,22 +49,26 @@ class DefaultClientConnectorServiceIntegrationTest {
         when(mockedConfigurationManager.getProperty("SC_KEYSTORE_PATH")).thenReturn("src/test/resources/gazelle-service-consumer-keystore.jks");
         when(mockedConfigurationManager.getProperty("SC_KEYSTORE_PASSWORD")).thenReturn("gazelle");
         when(mockedConfigurationManager.getProperty("SC_PRIVATEKEY_PASSWORD")).thenReturn("gazelle");
-        when(mockedConfigurationManager.getProperty("TRUSTSTORE_PATH")).thenReturn("src/test/resources/eu-truststore.jks");
-        when(mockedConfigurationManager.getProperty("TRUSTSTORE_PASSWORD")).thenReturn("changeit");
+        when(mockedConfigurationManager.getProperty(Constant.TRUSTSTORE_PATH)).thenReturn("src/test/resources/eu-truststore.jks");
+        when(mockedConfigurationManager.getProperty(Constant.TRUSTSTORE_PASSWORD)).thenReturn("changeit");
 
-        when(mockedConfigurationManager.getProperty("NCP_SIG_KEYSTORE_PATH")).thenReturn("src/test/resources/gazelle-signature-keystore.jks");
-        when(mockedConfigurationManager.getProperty("NCP_SIG_KEYSTORE_PASSWORD")).thenReturn("gazelle");
-        when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_ALIAS")).thenReturn("gazelle.ncp-signature.openncp.dg-sante.eu");
-        when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD")).thenReturn("gazelle");
+
+        when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_KEYSTORE_PATH)).thenReturn("src/test/resources/gazelle-signature-keystore.jks");
+        when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_KEYSTORE_PASSWORD)).thenReturn("gazelle");
+        when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_PRIVATEKEY_ALIAS)).thenReturn("gazelle.ncp-signature.openncp.dg-sante.eu");
+        when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_PRIVATEKEY_PASSWORD)).thenReturn("gazelle");
 
         when(mockedConfigurationManager.getProperty("secman.sts.url")).thenReturn("https://localhost:2443/TRC-STS/STSServiceService");
         when(mockedConfigurationManager.getProperty("secman.sts.checkHostname")).thenReturn("false");
-        when(mockedConfigurationManager.getProperty("PORTAL_CLIENT_CONNECTOR_URL")).thenReturn("https://localhost:6443/openncp-client-connector/services/ClientConnectorService");
+        when(mockedConfigurationManager.getProperty("PORTAL_CLIENT_CONNECTOR_URL")).thenReturn("https://localhost:6443/openncp-client-connector/services/ClientService");
 
 
         setFinalStatic(ConfigurationManagerFactory.class.getDeclaredField("configurationManager"), mockedConfigurationManager);
 
         clientConnectorService = new DefaultClientConnectorService(mockedConfigurationManager);
+        keyStoreManager = new DatabasePropertiesKeyStoreManager(mockedConfigurationManager);
+        assertionService = new AssertionServiceImpl(keyStoreManager, mockedConfigurationManager);
+
     }
 
     static void setFinalStatic(final Field field, final Object newValue) throws Exception {
@@ -104,7 +107,7 @@ class DefaultClientConnectorServiceIntegrationTest {
     @Test
     void queryDocuments() throws ClientConnectorException, STSClientException, MarshallingException, MalformedURLException {
         final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
-        Assertion clinicalAssertion = createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu");
+        final Assertion clinicalAssertion = createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu");
 
         final ObjectFactory objectFactory = new ObjectFactory();
         final PatientId patientId = objectFactory.createPatientId();
@@ -112,42 +115,42 @@ class DefaultClientConnectorServiceIntegrationTest {
         patientId.setExtension("2-1234-W7");
 
         assertions.put(AssertionEnum.CLINICIAN, clinicalAssertion);
-        Assertion treatmentConfirmationAssertion = AssertionTestUtil.createPatientConfirmationPlain(assertionService, new URL(mockedConfigurationManager.getProperty("secman.sts.url")), clinicalAssertion, patientId, "TREATMENT");
+        final Assertion treatmentConfirmationAssertion = AssertionTestUtil.createPatientConfirmationPlain(assertionService, new URL(mockedConfigurationManager.getProperty("secman.sts.url")), clinicalAssertion, patientId, "TREATMENT");
         assertions.put(AssertionEnum.TREATMENT, treatmentConfirmationAssertion);
 
-        GenericDocumentCode classCode = objectFactory.createGenericDocumentCode();
+        final GenericDocumentCode classCode = objectFactory.createGenericDocumentCode();
         classCode.setNodeRepresentation(ClassCode.PS_CLASSCODE.getCode());
-        classCode.setSchema(IheConstants.CLASSCODE_SCHEME);
+        classCode.setSchema("2.16.840.1.113883.6.1");
         classCode.setValue(Constants.PS_TITLE);
 
-        List<EpsosDocument> documentList = clientConnectorService.queryDocuments(assertions, "BE", patientId, List.of(classCode), null);
+        final List<EpsosDocument> documentList = clientConnectorService.queryDocuments(assertions, "BE", patientId, List.of(classCode), null);
         assertThat(documentList).isNotNull().hasSize(2);
     }
 
     @Test
     void retrieveDocument() throws ClientConnectorException, STSClientException, MarshallingException, MalformedURLException {
         final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
-        Assertion clinicalAssertion = createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu");
+        final Assertion clinicalAssertion = createClinicalAssertion(keyStoreManager, "Doctor House", "John House", "house@ehdsi.eu");
 
         final ObjectFactory objectFactory = new ObjectFactory();
         final PatientId patientId = objectFactory.createPatientId();
         patientId.setRoot("1.3.6.1.4.1.48336");
         patientId.setExtension("2-1234-W7");
 
-        var documentId = objectFactory.createDocumentId();
+        final var documentId = objectFactory.createDocumentId();
         documentId.setDocumentUniqueId("1.2.752.129.2.1.2.1^PS_W7_EU.1");
         documentId.setRepositoryUniqueId("1.3.6.1.4.1.48336");
 
         assertions.put(AssertionEnum.CLINICIAN, clinicalAssertion);
-        Assertion treatmentConfirmationAssertion = AssertionTestUtil.createPatientConfirmationPlain(assertionService, new URL(mockedConfigurationManager.getProperty("secman.sts.url")), clinicalAssertion, patientId, PurposeOfUse.TREATMENT.name());
+        final Assertion treatmentConfirmationAssertion = AssertionTestUtil.createPatientConfirmationPlain(assertionService, new URL(mockedConfigurationManager.getProperty("secman.sts.url")), clinicalAssertion, patientId, "TREATMENT");
         assertions.put(AssertionEnum.TREATMENT, treatmentConfirmationAssertion);
 
-        GenericDocumentCode classCode = objectFactory.createGenericDocumentCode();
+        final GenericDocumentCode classCode = objectFactory.createGenericDocumentCode();
         classCode.setNodeRepresentation(ClassCode.PS_CLASSCODE.getCode());
-        classCode.setSchema(IheConstants.CLASSCODE_SCHEME);
+        classCode.setSchema("2.16.840.1.113883.6.1");
         classCode.setValue(Constants.PS_TITLE);
 
-        EpsosDocument document = clientConnectorService.retrieveDocument(assertions, "BE", documentId, "1.3.6.1.4.1.48336", classCode, null);
+        final EpsosDocument document = clientConnectorService.retrieveDocument(assertions, "BE", documentId, "1.3.6.1.4.1.48336", classCode, null);
         assertThat(document).isNotNull();
     }
 
