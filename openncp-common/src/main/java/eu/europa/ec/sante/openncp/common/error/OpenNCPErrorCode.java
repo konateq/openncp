@@ -49,6 +49,8 @@ public enum OpenNCPErrorCode implements ErrorCode {
     ERROR_PS_MISSING_BASIC_DATA("ERROR_PS_MISSING_BASIC_DATA", "The Patient Summary is missing required information and can not be provided."),
     ERROR_PS_NO_CONSENT("ERROR_PS_NO_CONSENT", "The patient has not given consent to the service."),
 
+    ERROR_PS_NOT_FOUND("ERROR_PS_NOT_FOUND", "The request is not containing a proper PS identifier."),
+
     // 06. Make ePrescription available to HP
     ERROR_EP_GENERIC("ERROR_EP_GENERIC", "ePrescription generic error"),
     WARNING_EP_GENERIC("WARNING_EP_GENERIC", "ePrescription generic warning"),
@@ -62,6 +64,7 @@ public enum OpenNCPErrorCode implements ErrorCode {
     ERROR_EP_INTERNAL_ERROR("ERROR_EP_INTERNAL_ERROR", "The application encountered an unexpected error."),
     ERROR_EP_MISSING_BASIC_DATA("ERROR_EP_MISSING_BASIC_DATA", "The ePrescription is missing required information and can not be provided."),
     ERROR_EP_NO_CONSENT("ERROR_EP_NO_CONSENT", "The patient has not given consent to the service."),
+    ERROR_EP_NOT_FOUND("ERROR_EP_NOT_FOUND", "No ePrescription is registered for the given patient. "),
     ERROR_EP_LIST_INCORRECT_FORMATTING("ERROR_EP_INCORRECT_FORMATTING", "ePrescription request contains a syntax error."),
     ERROR_EP_LIST_MISSING_REQUIRED_FIELDS("ERROR_EP_MISSING_REQUIRED_FIELDS", "ePrescription request is missing values that are needed to process the request."),
     ERROR_EP_LIST_REGISTRY_NOT_AVAILABLE("ERROR_EP_REGISTRY_NOT_AVAILABLE", "The national ePrescription registry service is unavailable."),
@@ -123,8 +126,7 @@ public enum OpenNCPErrorCode implements ErrorCode {
     //  Old MyHealth@EU error codes
     ERROR_NOT_VALID_ASSERTION("1001", "Assertion is not valid."),
     ERROR_NOT_VALID_TRC_ASSERTION("1002", "The given TRC Assertion does not validate against the Identity Assertion"),
-    ERROR_EP_NOT_FOUND("1101", "No ePrescription is registered for the given patient. "),
-    ERROR_PS_NOT_FOUND("1102", "No PS is registered for the given patient."),
+
     ERROR_MRO_NO_DATA("1103", "No Data for MRO"),
     ERROR_ORCD_NOT_FOUND("1104", "No ORCD document is registered for the given patient."),
     ERROR_DOCUMENT_NOT_FOUND("1100", "No documents are registered for the given patient."),

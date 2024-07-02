@@ -121,11 +121,11 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         if (!outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()) {
             String detail = outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getContent();
             if (detail.startsWith("(")) {
-                var code = detail.substring(1, 5);
-                eventLog.setEM_ParticipantObjectID(code);
-                if (StringUtils.equals(code, "1102")) {
+                if(detail.startsWith("(ERROR_PS_NOT_FOUND")) {
+                    eventLog.setEM_ParticipantObjectID("ERROR_PS_NOT_FOUND");
                     eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.TEMPORAL_FAILURE);
                 } else {
+                    eventLog.setEM_ParticipantObjectID(detail.substring(1, 5));
                     eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.PERMANENT_FAILURE);
                 }
             } else {
