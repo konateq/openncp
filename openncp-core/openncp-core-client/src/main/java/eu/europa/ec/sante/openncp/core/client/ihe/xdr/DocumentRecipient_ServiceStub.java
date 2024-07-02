@@ -10,7 +10,6 @@ import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.common.HttpsClientConfiguration;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.DynamicDiscoveryService;
@@ -24,10 +23,12 @@ import eu.europa.ec.sante.openncp.core.common.ihe.eadc.EadcUtil;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.EadcUtilWrapper;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XDRException;
-import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
+import eu.europa.ec.sante.openncp.core.common.ssl.HttpsClientConfiguration;
+import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.*;
+import org.apache.axiom.om.ds.AbstractOMDataSource;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -89,7 +90,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
         try {
             jaxbContext = JAXBContext.newInstance(ProvideAndRegisterDocumentSetRequestType.class, RegistryResponseType.class);
 
-        } catch (final JAXBException ex) {
+        } catch (JAXBException ex) {
 
             LOGGER.error("Unable to create JAXBContext: '{}'", ex.getMessage(), ex);
             Runtime.getRuntime().exit(-1);
@@ -111,14 +112,14 @@ public class DocumentRecipient_ServiceStub extends Stub {
     /**
      * Constructor that takes in a configContext
      */
-    public DocumentRecipient_ServiceStub(final ConfigurationContext configurationContext, final String targetEndpoint) throws AxisFault {
+    public DocumentRecipient_ServiceStub(ConfigurationContext configurationContext, String targetEndpoint) throws AxisFault {
         this(configurationContext, targetEndpoint, false);
     }
 
     /**
      * Constructor that takes in a configContext and use separate listener
      */
-    public DocumentRecipient_ServiceStub(final ConfigurationContext configurationContext, final String targetEndpoint, final boolean useSeparateListener) throws AxisFault {
+    public DocumentRecipient_ServiceStub(ConfigurationContext configurationContext, String targetEndpoint, boolean useSeparateListener) throws AxisFault {
 
         // To populate AxisService
         populateAxisService();
@@ -140,30 +141,16 @@ public class DocumentRecipient_ServiceStub extends Stub {
                     .setProperty(HTTPConstants.CACHED_HTTP_CLIENT, HttpsClientConfiguration.getSSLClient());
             _serviceClient.getServiceContext().getConfigurationContext()
                     .setProperty(HTTPConstants.REUSE_HTTP_CLIENT, false);
-        } catch (final NoSuchAlgorithmException | KeyManagementException | IOException | CertificateException |
-                       KeyStoreException | UnrecoverableKeyException e) {
-            throw new RuntimeException("SSL Context cannot be initialized");
+        } catch (NoSuchAlgorithmException | KeyManagementException | IOException | CertificateException |
+                 KeyStoreException | UnrecoverableKeyException e) {
+            throw new AxisFault("SSL Context cannot be initialized");
         }
-    }
-
-    /**
-     * Default Constructor
-     */
-    public DocumentRecipient_ServiceStub(final ConfigurationContext configurationContext) throws AxisFault {
-        this(configurationContext, "http://195.142.27.167:8111/epsos/services/xdsrepositoryb");
-    }
-
-    /**
-     * Default Constructor
-     */
-    public DocumentRecipient_ServiceStub() throws AxisFault {
-        this("http://195.142.27.167:8111/epsos/services/xdsrepositoryb");
     }
 
     /**
      * Constructor taking the target endpoint
      */
-    public DocumentRecipient_ServiceStub(final String targetEndpoint) throws AxisFault {
+    public DocumentRecipient_ServiceStub(String targetEndpoint) throws AxisFault {
         this(null, targetEndpoint);
     }
 
@@ -176,7 +163,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
         return System.currentTimeMillis() + "_" + counter;
     }
 
-    public void setCountryCode(final String countryCode) {
+    public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
 
@@ -184,7 +171,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
      * Methods
      */
 
-    public void setClassCode(final ClassCode classCode) {
+    public void setClassCode(ClassCode classCode) {
         this.classCode = classCode;
     }
 
@@ -193,8 +180,8 @@ public class DocumentRecipient_ServiceStub extends Stub {
      * @see DocumentRecipient_ServiceStub#documentRecipient_ProvideAndRegisterDocumentSetB
      */
     public RegistryResponseType documentRecipient_ProvideAndRegisterDocumentSetB(
-            final ProvideAndRegisterDocumentSetRequestType provideAndRegisterDocumentSetRequest,
-            final Map<AssertionEnum, Assertion> assertionMap) throws RemoteException, XDRException {
+            ProvideAndRegisterDocumentSetRequestType provideAndRegisterDocumentSetRequest,
+            Map<AssertionEnum, Assertion> assertionMap) throws RemoteException, XDRException {
 
         MessageContext messageContext = null;
         MessageContext returnMessageContext = null;
@@ -222,38 +209,25 @@ public class DocumentRecipient_ServiceStub extends Stub {
                     optimizeContent(new QName(XDRConstants.NAMESPACE_URI, XDRConstants.SOAP_HEADERS.NAMESPACE_REQUEST_LOCAL_PART)));
 
             //  Adding SOAP soap_headers
-            final var omFactory = OMAbstractFactory.getOMFactory();
-            final OMNamespace ns2 = omFactory.createOMNamespace(XDRConstants.SOAP_HEADERS.OM_NAMESPACE, "");
+            var omFactory = OMAbstractFactory.getOMFactory();
+            OMNamespace ns2 = omFactory.createOMNamespace(XDRConstants.SOAP_HEADERS.OM_NAMESPACE, "");
 
-            final SOAPHeaderBlock action = OMAbstractFactory.getSOAP12Factory().createSOAPHeaderBlock(XDRConstants.SOAP_HEADERS.ACTION_STR, ns2);
-            final OMNode node = omFactory.createOMText(XDRConstants.SOAP_HEADERS.REQUEST_ACTION);
+            SOAPHeaderBlock action = OMAbstractFactory.getSOAP12Factory().createSOAPHeaderBlock(XDRConstants.SOAP_HEADERS.ACTION_STR, ns2);
+            OMNode node = omFactory.createOMText(XDRConstants.SOAP_HEADERS.REQUEST_ACTION);
             action.addChild(node);
 
-            final OMAttribute omAttribute = omFactory.createOMAttribute(XDRConstants.SOAP_HEADERS.MUST_UNDERSTAND_STR, soapEnvelope.getNamespace(), "1");
+            OMAttribute omAttribute = omFactory.createOMAttribute(XDRConstants.SOAP_HEADERS.MUST_UNDERSTAND_STR, soapEnvelope.getNamespace(), "1");
             action.addAttribute(omAttribute);
 
-            final SOAPHeaderBlock id = OMAbstractFactory.getSOAP12Factory().createSOAPHeaderBlock(XDRConstants.SOAP_HEADERS.MESSAGEID_STR, ns2);
-            final OMNode node2 = omFactory.createOMText(Constants.UUID_PREFIX + UUID.randomUUID());
+            SOAPHeaderBlock id = OMAbstractFactory.getSOAP12Factory().createSOAPHeaderBlock(XDRConstants.SOAP_HEADERS.MESSAGEID_STR, ns2);
+            OMNode node2 = omFactory.createOMText(Constants.UUID_PREFIX + UUID.randomUUID());
             id.addChild(node2);
 
 
-            final OMNamespace ns = omFactory.createOMNamespace(XDRConstants.SOAP_HEADERS.SECURITY_XSD, "wsse");
-            final SOAPHeaderBlock security = OMAbstractFactory.getSOAP12Factory().createSOAPHeaderBlock(XDRConstants.SOAP_HEADERS.SECURITY_STR, ns);
+            OMNamespace ns = omFactory.createOMNamespace(XDRConstants.SOAP_HEADERS.SECURITY_XSD, "wsse");
+            SOAPHeaderBlock security = OMAbstractFactory.getSOAP12Factory().createSOAPHeaderBlock(XDRConstants.SOAP_HEADERS.SECURITY_STR, ns);
 
-            try {
-
-                if (assertionMap.containsKey(AssertionEnum.NEXT_OF_KIN)) {
-                    final var assertionNextOfKin = assertionMap.get(AssertionEnum.NEXT_OF_KIN);
-                    security.addChild(XMLUtils.toOM(assertionNextOfKin.getDOM()));
-                }
-                final var assertionId = assertionMap.get(AssertionEnum.CLINICIAN);
-                security.addChild(XMLUtils.toOM(assertionId.getDOM()));
-                final var assertionTreatment = assertionMap.get(AssertionEnum.TREATMENT);
-                security.addChild(XMLUtils.toOM(assertionTreatment.getDOM()));
-                _serviceClient.addHeader(security);
-            } catch (final Exception ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
-            }
+            addSecurityHeader(assertionMap, security);
 
             /* The WSA To header is not being manually added, it's added by the client-connector axis2.xml configurations
             (which globally engages the addressing module, adding the wsa:To header based on the endpoint value from the transport)
@@ -271,18 +245,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
             operationClient.addMessageContext(messageContext);    // add the message context to the operation client
 
             /* Log soap request */
-            final String requestLogMsg;
-            try {
-                final String logRequestMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(soapEnvelope));
-                if (LOGGER_CLINICAL.isDebugEnabled()
-                        && !StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
-                    LOGGER_CLINICAL.debug("{} {} '{}'", XDRConstants.LOG.OUTGOING_XDR_PROVIDEANDREGISTER_MESSAGE,
-                            System.getProperty("line.separator"), logRequestMsg);
-                }
-                requestLogMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(soapEnvelope.getBody()));
-            } catch (final Exception ex) {
-                throw new XDRException(OpenNCPErrorCode.ERROR_GENERIC, ex);
-            }
+            String requestLogMsg = getSoapResponseRequestMsg(soapEnvelope, XDRConstants.LOG.OUTGOING_XDR_PROVIDEANDREGISTER_MESSAGE);
 
             /* Perform validation of request message */
             if (OpenNCPValidation.isValidationEnable()) {
@@ -292,16 +255,16 @@ public class DocumentRecipient_ServiceStub extends Stub {
              * Execute Operation
              */
             transactionStartTime = new Date();
-            final SOAPEnvelope returnEnv;
+            SOAPEnvelope returnEnv;
             try {
                 operationClient.execute(true);
-            } catch (final AxisFault e) {
+            } catch (AxisFault e) {
                 LOGGER.error("Axis Fault error: '{}'", e.getMessage());
                 LOGGER.error("Trying to automatically solve the problem by fetching configurations from the Central Services...");
                 String endpoint = null;
 
                 LOGGER.debug("ClassCode: '{}'", this.classCode);
-                final DynamicDiscoveryService dynamicDiscoveryService = new DynamicDiscoveryService();
+                DynamicDiscoveryService dynamicDiscoveryService = new DynamicDiscoveryService();
                 switch (classCode) {
                     case ED_CLASSCODE:
                         endpoint = dynamicDiscoveryService.getEndpointUrl(
@@ -323,17 +286,17 @@ public class DocumentRecipient_ServiceStub extends Stub {
                     _serviceClient.getOptions().setTo(new EndpointReference(endpoint));
 
                     /* we need a new OperationClient, otherwise we'll face the error "A message was added that is not valid. However, the operation context was complete." */
-                    final OperationClient newOperationClient = _serviceClient.createClient(axisOperations[0].getName());
+                    OperationClient newOperationClient = _serviceClient.createClient(axisOperations[0].getName());
                     newOperationClient.getOptions().setAction(XDRConstants.SOAP_HEADERS.REQUEST_ACTION);
                     newOperationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
                     addPropertyToOperationClient(newOperationClient, WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
 
-                    final SOAPFactory newSoapFactory = getFactory(newOperationClient.getOptions().getSoapVersionURI());
+                    SOAPFactory newSoapFactory = getFactory(newOperationClient.getOptions().getSoapVersionURI());
 
                     /* we need to create a new SOAP payload so that the wsa:To header is correctly set
                     (i.e., copied from the Transport information to the wsa:To during the running of the Addressing Phase,
                     as defined by the global engagement of the addressing module in axis2.xml). The old payload still contains the old endpoint. */
-                    final SOAPEnvelope newEnv = toEnvelope(newSoapFactory, provideAndRegisterDocumentSetRequest,
+                    SOAPEnvelope newEnv = toEnvelope(newSoapFactory, provideAndRegisterDocumentSetRequest,
                             optimizeContent(new QName(XCAConstants.SOAP_HEADERS.NAMESPACE_URI, XCAConstants.SOAP_HEADERS.RETRIEVE.NAMESPACE_REQUEST_LOCAL_PART)));
 
                     /* we set the previous headers in the new SOAP envelope. Note: the wsa:To header is not manually set (only Action and MessageID are) but instead handled by the
@@ -343,7 +306,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
                     _serviceClient.addHeadersToEnvelope(newEnv);
 
                     /* we create a new Message Context with the new SOAP envelope */
-                    final var newMessageContext = new MessageContext();
+                    var newMessageContext = new MessageContext();
                     newMessageContext.setEnvelope(newEnv);
 
                     /* add the new message context to the new operation client */
@@ -380,18 +343,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
                 eadcError = EadcUtilWrapper.getTransactionErrorDescription(returnEnv);
             }
             //  Log SOAP response message.
-            final String responseLogMsg;
-            try {
-                if (LOGGER_CLINICAL.isDebugEnabled()
-                        && !StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
-                    final String logResponseMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(returnEnv));
-                    LOGGER_CLINICAL.debug("{} {} '{}'", XDRConstants.LOG.INCOMING_XDR_PROVIDEANDREGISTER_MESSAGE,
-                            System.getProperty("line.separator"), logResponseMsg);
-                }
-                responseLogMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(returnEnv.getBody()));
-            } catch (final Exception ex) {
-                throw new XDRException(OpenNCPErrorCode.ERROR_GENERIC, ex);
-            }
+            String responseLogMsg = getSoapResponseRequestMsg(returnEnv, XDRConstants.LOG.INCOMING_XDR_PROVIDEANDREGISTER_MESSAGE);
 
             /* Perform validation of response message */
             if (OpenNCPValidation.isValidationEnable()) {
@@ -400,34 +352,36 @@ public class DocumentRecipient_ServiceStub extends Stub {
             /*
              * Return
              */
-            final Object object = fromOM(returnEnv.getBody().getFirstElement(), RegistryResponseType.class);
-            final RegistryResponseType registryResponse = (RegistryResponseType) object;
-            final EventLog eventLog = createAndSendEventLogConsent(provideAndRegisterDocumentSetRequest, registryResponse.getRegistryErrorList(),
-                    messageContext, returnEnv, soapEnvelope, assertionMap.get(AssertionEnum.CLINICIAN), assertionMap.get(AssertionEnum.TREATMENT),
+            Object object = fromOM(returnEnv.getBody().getFirstElement(), RegistryResponseType.class);
+
+            RegistryResponseType registryResponse = (RegistryResponseType) object;
+
+            EventLog eventLog = createAndSendEventLogConsent(provideAndRegisterDocumentSetRequest, registryResponse.getRegistryErrorList(),
+                    messageContext, returnEnv, assertionMap.get(AssertionEnum.CLINICIAN), assertionMap.get(AssertionEnum.TREATMENT),
                     this._getServiceClient().getOptions().getTo().getAddress());
 
             return registryResponse;
 
-        } catch (final AxisFault axisFault) {
-            // TODO audit log on exception
+        } catch (AxisFault axisFault) {
+            // Audit log on exception
 
-            final OMElement faultElt = axisFault.getDetail();
+            OMElement faultElt = axisFault.getDetail();
             if (faultElt != null && faultExceptionNameMap.containsKey(faultElt.getQName())) {
                 // make the fault by reflection
                 try {
-                    final String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
-                    final Class exceptionClass = Class.forName(exceptionClassName);
-                    final Exception ex = (Exception) exceptionClass.getDeclaredConstructor().newInstance();
+                    String exceptionClassName = (String) faultExceptionClassNameMap.get(faultElt.getQName());
+                    Class exceptionClass = Class.forName(exceptionClassName);
+                    Exception ex = (Exception) exceptionClass.getDeclaredConstructor().newInstance();
                     // message class
-                    final String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
-                    final Class messageClass = Class.forName(messageClassName);
-                    final Object messageObject = fromOM(faultElt, messageClass);
-                    final Method method = exceptionClass.getMethod("setFaultMessage", messageClass);
+                    String messageClassName = (String) faultMessageMap.get(faultElt.getQName());
+                    Class messageClass = Class.forName(messageClassName);
+                    Object messageObject = fromOM(faultElt, messageClass);
+                    Method method = exceptionClass.getMethod("setFaultMessage", messageClass);
                     method.invoke(ex, messageObject);
 
                     throw new RemoteException(ex.getMessage(), ex);
 
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     // Class cannot be instantiated - throwing the original Axis fault
                     eadcError = e.getMessage();
                     throw new XDRException(OpenNCPErrorCode.ERROR_GENERIC_CONNECTION_NOT_POSSIBLE, e);
@@ -447,20 +401,54 @@ public class DocumentRecipient_ServiceStub extends Stub {
         }
     }
 
+    private static String getSoapResponseRequestMsg(SOAPEnvelope soapEnvelope, String type) throws XDRException {
+        String msg;
+        try {
+            if (LOGGER_CLINICAL.isDebugEnabled()
+                    && !StringUtils.equals(System.getProperty(OpenNCPConstants.SERVER_EHEALTH_MODE), ServerMode.PRODUCTION.name())) {
+                String logResponseMsg = XMLUtil.prettyPrint(XMLUtils.toDOM(soapEnvelope));
+                LOGGER_CLINICAL.debug("{} {} '{}'", type,
+                        System.getProperty("line.separator"), logResponseMsg);
+            }
+            msg = XMLUtil.prettyPrint(XMLUtils.toDOM(soapEnvelope.getBody()));
+        } catch (Exception ex) {
+            throw new XDRException(OpenNCPErrorCode.ERROR_GENERIC, ex);
+        }
+
+        return msg;
+
+    }
+
+    private void addSecurityHeader(Map<AssertionEnum, Assertion> assertionMap, SOAPHeaderBlock security) {
+        try {
+            if (assertionMap.containsKey(AssertionEnum.NEXT_OF_KIN)) {
+                var assertionNextOfKin = assertionMap.get(AssertionEnum.NEXT_OF_KIN);
+                security.addChild(XMLUtils.toOM(assertionNextOfKin.getDOM()));
+            }
+            var assertionId = assertionMap.get(AssertionEnum.CLINICIAN);
+            security.addChild(XMLUtils.toOM(assertionId.getDOM()));
+            var assertionTreatment = assertionMap.get(AssertionEnum.TREATMENT);
+            security.addChild(XMLUtils.toOM(assertionTreatment.getDOM()));
+            _serviceClient.addHeader(security);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
+    }
+
     /**
      * get the default envelope
      */
-    private SOAPEnvelope toEnvelope(final SOAPFactory factory) {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory) {
 
         return factory.getDefaultEnvelope();
     }
 
-    private boolean optimizeContent(final QName opName) {
+    private boolean optimizeContent(QName opName) {
 
         if (opNameArray == null) {
             return false;
         }
-        for (final QName anOpNameArray : opNameArray) {
+        for (QName anOpNameArray : opNameArray) {
             if (opName.equals(anOpNameArray)) {
                 return true;
             }
@@ -468,48 +456,48 @@ public class DocumentRecipient_ServiceStub extends Stub {
         return false;
     }
 
-    private OMElement toOM(final SubmitObjectsRequest param) throws AxisFault {
+    private OMElement toOM(SubmitObjectsRequest param) throws AxisFault {
 
         try {
-            final Marshaller marshaller = wsContext.createMarshaller();
+            Marshaller marshaller = wsContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 
-            final OMFactory factory = OMAbstractFactory.getOMFactory();
+            OMFactory factory = OMAbstractFactory.getOMFactory();
 
-            final JaxbRIDataSource source;
+            JaxbRIDataSource source;
             source = new JaxbRIDataSource(SubmitObjectsRequest.class, param, marshaller, XDRConstants.REGREP_LCM, "SubmitObjectsRequest");
-            final OMNamespace namespace = factory.createOMNamespace(XDRConstants.REGREP_LCM, null);
+            OMNamespace namespace = factory.createOMNamespace(XDRConstants.REGREP_LCM, null);
             return factory.createOMElement(source, "SubmitObjectsRequest", namespace);
 
-        } catch (final JAXBException bex) {
+        } catch (JAXBException bex) {
             throw AxisFault.makeFault(bex);
         }
     }
 
-    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final ProvideAndRegisterDocumentSetRequestType param,
-                                    final boolean optimizeContent) throws AxisFault {
+    private SOAPEnvelope toEnvelope(SOAPFactory factory, ProvideAndRegisterDocumentSetRequestType param,
+                                                          boolean optimizeContent) throws AxisFault {
 
-        final SOAPEnvelope envelope = factory.getDefaultEnvelope();
-        final OMNamespace namespace = factory.createOMNamespace(XDRConstants.NAMESPACE_URI, "xdr");
+        SOAPEnvelope envelope = factory.getDefaultEnvelope();
+        OMNamespace namespace = factory.createOMNamespace(XDRConstants.NAMESPACE_URI, "xdr");
 
-        final OMElement provideAndRegisterDoc = factory.createOMElement(XDRConstants.PROVIDE_AND_REGISTER_DOCUMENT_SET_REQ_STR, namespace);
-        final OMElement submitObjectsRequest = toOM(param.getSubmitObjectsRequest());
+        OMElement provideAndRegisterDoc = factory.createOMElement(XDRConstants.PROVIDE_AND_REGISTER_DOCUMENT_SET_REQ_STR, namespace);
+        OMElement submitObjectsRequest = toOM(param.getSubmitObjectsRequest());
         provideAndRegisterDoc.addChild(submitObjectsRequest);
         envelope.getBody().addChild(provideAndRegisterDoc);
 
-        final List<ProvideAndRegisterDocumentSetRequestType.Document> documents = param.getDocument();
-        for (final ProvideAndRegisterDocumentSetRequestType.Document document : documents) {
-            final OMElement documentElement = factory.createOMElement("Document", namespace);
+        List<ProvideAndRegisterDocumentSetRequestType.Document> documents = param.getDocument();
+        for (ProvideAndRegisterDocumentSetRequestType.Document document : documents) {
+            OMElement documentElement = factory.createOMElement("Document", namespace);
             provideAndRegisterDoc.addChild(submitObjectsRequest);
 
-            final ByteArrayDataSource rawData = new ByteArrayDataSource(document.getValue());
-            final DataHandler dH = new DataHandler(rawData);
-            final OMText textData = factory.createOMText(dH, true);
+            ByteArrayDataSource rawData = new ByteArrayDataSource(document.getValue());
+            DataHandler dH = new DataHandler(rawData);
+            OMText textData = factory.createOMText(dH, true);
             textData.setOptimize(true);
             textData.setContentID(document.getId());
-            final String contentID = textData.getContentID();
+            String contentID = textData.getContentID();
 
-            final OMAttribute att = factory.createOMAttribute("id", null, contentID);
+            OMAttribute att = factory.createOMAttribute("id", null, contentID);
             documentElement.addAttribute(att);
 
             documentElement.addChild(textData);
@@ -519,25 +507,25 @@ public class DocumentRecipient_ServiceStub extends Stub {
         return envelope;
     }
 
-    private Object fromOM(final OMElement param, final Class type) throws AxisFault {
+    private Object fromOM(OMElement param, Class type) throws AxisFault {
 
         try {
 
-            final Unmarshaller unmarshaller = wsContext.createUnmarshaller();
+            Unmarshaller unmarshaller = wsContext.createUnmarshaller();
 
             return unmarshaller.unmarshal(param.getXMLStreamReaderWithoutCaching(), type).getValue();
 
-        } catch (final JAXBException bex) {
+        } catch (JAXBException bex) {
             throw AxisFault.makeFault(bex);
         }
     }
 
-    // TODO A.R. eDispensation handling
-    private EventLog createAndSendEventLogConsent(final ProvideAndRegisterDocumentSetRequestType request, final RegistryErrorList rel,
-                                                  final MessageContext msgContext, final SOAPEnvelope _returnEnv, final SOAPEnvelope env,
-                                                  final Assertion idAssertion, final Assertion trcAssertion, final String address) {
+    // A.R. eDispensation handling
+    private EventLog createAndSendEventLogConsent(ProvideAndRegisterDocumentSetRequestType request, RegistryErrorList rel,
+                                                  MessageContext msgContext, SOAPEnvelope returnEnv,
+                                                  Assertion idAssertion, Assertion trcAssertion, String address) {
 
-        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address);
+        EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, returnEnv, address);
         EventLogClientUtil.logIdAssertion(eventLog, idAssertion);
         EventLogClientUtil.logTrcAssertion(eventLog, trcAssertion);
         EventLogUtil.prepareXDRCommonLog(eventLog, request, rel);
@@ -553,7 +541,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
         addAnonymousOperations();
 
         // creating the operations
-        final AxisOperation operation = new OutInAxisOperation();
+        AxisOperation operation = new OutInAxisOperation();
         operation.setName(new QName(XDRConstants.NAMESPACE_URI, XDRConstants.PROVIDE_AND_REGISTER_DOCUMENT_SET_REQ_STR));
 
         axisOperations = new AxisOperation[1];
@@ -563,9 +551,10 @@ public class DocumentRecipient_ServiceStub extends Stub {
 
     // populates the faults
     private void populateFaults() {
+        // populates the faults
     }
 
-    static class JaxbRIDataSource implements OMDataSource {
+    static class JaxbRIDataSource extends AbstractOMDataSource {
 
         /**
          * Bound object for output.
@@ -594,7 +583,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
          * @param obj
          * @param marshaller
          */
-        public JaxbRIDataSource(final Class clazz, final Object obj, final Marshaller marshaller, final String nsuri, final String name) {
+        public JaxbRIDataSource(Class clazz, Object obj, Marshaller marshaller, String nsuri, String name) {
             this.outClazz = clazz;
             this.outObject = obj;
             this.marshaller = marshaller;
@@ -604,28 +593,26 @@ public class DocumentRecipient_ServiceStub extends Stub {
 
         /**
          * @param output
-         * @param format
          * @throws XMLStreamException
          */
-        public void serialize(final OutputStream output, final OMOutputFormat format) throws XMLStreamException {
+        public void serialize(OutputStream output) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
-            } catch (final JAXBException e) {
+            } catch (JAXBException e) {
                 throw new XMLStreamException(XDRConstants.EXCEPTIONS.ERROR_JAXB_MARSHALLING, e);
             }
         }
 
         /**
          * @param writer
-         * @param format
          * @throws XMLStreamException
          */
-        public void serialize(final Writer writer, final OMOutputFormat format) throws XMLStreamException {
+        public void serialize(Writer writer) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), writer);
-            } catch (final JAXBException e) {
+            } catch (JAXBException e) {
                 throw new XMLStreamException(XDRConstants.EXCEPTIONS.ERROR_JAXB_MARSHALLING, e);
             }
         }
@@ -634,12 +621,12 @@ public class DocumentRecipient_ServiceStub extends Stub {
          * @param xmlWriter
          * @throws XMLStreamException
          */
-        public void serialize(final XMLStreamWriter xmlWriter) throws XMLStreamException {
+        public void serialize(XMLStreamWriter xmlWriter) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), xmlWriter);
 
-            } catch (final JAXBException e) {
+            } catch (JAXBException e) {
                 throw new XMLStreamException(XDRConstants.EXCEPTIONS.ERROR_JAXB_MARSHALLING, e);
             }
         }
@@ -652,15 +639,25 @@ public class DocumentRecipient_ServiceStub extends Stub {
 
             try {
 
-                final OMDocument omDocument = OMAbstractFactory.getOMFactory().createOMDocument();
-                final Marshaller marshaller = wsContext.createMarshaller();
+                OMDocument omDocument = OMAbstractFactory.getOMFactory().createOMDocument();
+                Marshaller marshaller = wsContext.createMarshaller();
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), omDocument.getSAXResult());
 
                 return omDocument.getOMDocumentElement().getXMLStreamReader();
 
-            } catch (final JAXBException e) {
+            } catch (JAXBException e) {
                 throw new XMLStreamException(XDRConstants.EXCEPTIONS.ERROR_JAXB_MARSHALLING, e);
             }
+        }
+
+        @Override
+        public boolean isDestructiveRead() {
+            return false;
+        }
+
+        @Override
+        public boolean isDestructiveWrite() {
+            return false;
         }
     }
 }

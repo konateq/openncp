@@ -43,7 +43,7 @@ public final class RespondingGateway_RequestSender {
             endpointUrl = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH),
                                                                  RegisteredService.PATIENT_IDENTIFICATION_SERVICE);
         } catch (final ConfigurationManagerException e) {
-            throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC, e);
+            throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_NO_MATCH, e);
         }
 
         final String dstHomeCommunityId = OidUtil.getHomeCommunityId(countryCode.toLowerCase(Locale.ENGLISH));

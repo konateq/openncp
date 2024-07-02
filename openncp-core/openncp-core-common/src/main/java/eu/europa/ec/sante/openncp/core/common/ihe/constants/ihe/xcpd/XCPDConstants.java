@@ -64,6 +64,6 @@ public class XCPDConstants {
         public static final String NAMESPACE_REQUEST_LOCAL_PART = "respondingGateway_PRPA_IN201305UV02";
 
         /* Response */
-        //TODO: Insert response hard-coded properties here.
+        // Insert response hard-coded properties here.
     }
 }

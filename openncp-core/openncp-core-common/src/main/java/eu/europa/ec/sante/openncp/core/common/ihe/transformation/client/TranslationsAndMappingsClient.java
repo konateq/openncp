@@ -25,73 +25,73 @@ public class TranslationsAndMappingsClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TranslationsAndMappingsClient.class);
 
-    public static TMResponseStructure translate(final Document cdaPivot, final String targetLanguage) throws DocumentTransformationException {
-        try (final CloseableHttpClient httpclient = HttpClients.createDefault()) {
+    public static TMResponseStructure translate(Document cdaPivot, String targetLanguage) throws DocumentTransformationException {
+        try(CloseableHttpClient httpclient = HttpClients.createDefault()){
             LOGGER.debug("TM - TRANSLATION START.");
-            final var mapper = new ObjectMapper();
-            final var node = mapper.createObjectNode();
+            var mapper = new ObjectMapper();
+            var node = mapper.createObjectNode();
             node.put("pivotCDA", Base64Util.encode(cdaPivot));
             node.put("targetLanguageCode", targetLanguage);
-            final var jsonString = node.toString();
-            final var entity = new StringEntity(jsonString, HTTP.UTF_8);
+            var jsonString = node.toString();
+            var entity = new StringEntity(jsonString, StandardCharsets.UTF_8);
             entity.setContentType(ContentType.APPLICATION_JSON.getMimeType());
-            final var postRequest = new HttpPost(getTranslationsAndMappingsWsUrl() + "/translate");
+            var postRequest = new HttpPost(getTranslationsAndMappingsWsUrl() + "/translate");
             postRequest.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
             postRequest.setEntity(entity);
-            try (final CloseableHttpResponse response = httpclient.execute(postRequest)) {
+            try (CloseableHttpResponse response = httpclient.execute(postRequest)) {
                 LOGGER.debug("HTTP statusCode : " + response.getStatusLine().getStatusCode());
 
-                final var responseEntity = response.getEntity();
-                final var encodingHeader = responseEntity.getContentEncoding();
-                final var encoding = encodingHeader == null ? StandardCharsets.UTF_8 :
+                var responseEntity = response.getEntity();
+                var encodingHeader = responseEntity.getContentEncoding();
+                var encoding = encodingHeader == null ? StandardCharsets.UTF_8 :
                         Charsets.toCharset(encodingHeader.getValue());
 
-                final var json = EntityUtils.toString(responseEntity, encoding);
+                var json = EntityUtils.toString(responseEntity, encoding);
                 LOGGER.debug("Generated json response : " + json);
-                final var tmResponse = mapper.readValue(json, TMResponseStructure.class);
+                var tmResponse = mapper.readValue(json, TMResponseStructure.class);
 
                 LOGGER.debug("TM - TRANSLATION STOP");
                 return tmResponse;
             }
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             throw new DocumentTransformationException(OpenNCPErrorCode.ERROR_GENERIC, ex.getMessage(), ex.getMessage());
         }
     }
 
-    public static TMResponseStructure transcode(final Document cdaFriendly) throws DocumentTransformationException {
-        try (final CloseableHttpClient httpclient = HttpClients.createDefault()) {
+    public static TMResponseStructure transcode(Document cdaFriendly) throws DocumentTransformationException {
+        try(CloseableHttpClient httpclient = HttpClients.createDefault()){
             LOGGER.debug("TM - TRANSCODING START.");
-            final var mapper = new ObjectMapper();
-            final var node = mapper.createObjectNode();
+            var mapper = new ObjectMapper();
+            var node = mapper.createObjectNode();
             node.put("friendlyCDA", Base64Util.encode(cdaFriendly));
-            final var jsonString = node.toString();
-            final var entity = new StringEntity(jsonString, StandardCharsets.UTF_8);
+            var jsonString = node.toString();
+            var entity = new StringEntity(jsonString, HTTP.UTF_8);
             entity.setContentType(ContentType.APPLICATION_JSON.getMimeType());
-            final var postRequest = new HttpPost(getTranslationsAndMappingsWsUrl() + "/transcode");
+            var postRequest = new HttpPost(getTranslationsAndMappingsWsUrl() + "/transcode");
             postRequest.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
             postRequest.setEntity(entity);
-            try (final CloseableHttpResponse response = httpclient.execute(postRequest)) {
+            try (CloseableHttpResponse response = httpclient.execute(postRequest)) {
                 LOGGER.debug("HTTP statusCode : " + response.getStatusLine().getStatusCode());
 
-                final var responseEntity = response.getEntity();
-                final var encodingHeader = responseEntity.getContentEncoding();
-                final var encoding = encodingHeader == null ? StandardCharsets.UTF_8 :
+                var responseEntity = response.getEntity();
+                var encodingHeader = responseEntity.getContentEncoding();
+                var encoding = encodingHeader == null ? StandardCharsets.UTF_8 :
                         Charsets.toCharset(encodingHeader.getValue());
 
-                final var json = EntityUtils.toString(responseEntity, encoding);
-                final var tmResponse = mapper.readValue(json, TMResponseStructure.class);
+                var json = EntityUtils.toString(responseEntity, encoding);
+                var tmResponse = mapper.readValue(json, TMResponseStructure.class);
 
                 LOGGER.debug("TM - TRANSCODING STOP");
                 return tmResponse;
             }
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             throw new DocumentTransformationException(OpenNCPErrorCode.ERROR_GENERIC, ex.getMessage(), ex.getMessage());
         }
     }
 
 
     private static String getTranslationsAndMappingsWsUrl() {
-        final var translationsAndMappingsUrl = ConfigurationManagerFactory.getConfigurationManager().getProperty("TRANSLATIONS_AND_MAPPINGS_WS_URL");
+        var translationsAndMappingsUrl = ConfigurationManagerFactory.getConfigurationManager().getProperty("TRANSLATIONS_AND_MAPPINGS_WS_URL");
         LOGGER.info("Translations and Mappings WS URL: '{}'", translationsAndMappingsUrl);
         return translationsAndMappingsUrl;
     }
