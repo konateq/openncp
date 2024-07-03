@@ -277,20 +277,29 @@ public class AssertionTestUtil {
 
         final String signatureKeystorePath = Constants.NCP_SIG_KEYSTORE_PATH;
         final String signatureKeystorePassword = Constants.NCP_SIG_KEYSTORE_PASSWORD;
+        final String truststorePath = Constants.TRUSTSTORE_PATH;
+        final String truststorePassword = Constants.TRUSTSTORE_PASSWORD;
         final String signatureKeyAlias = Constants.NCP_SIG_PRIVATEKEY_ALIAS;
         final String signatureKeyPassword = Constants.NCP_SIG_PRIVATEKEY_PASSWORD;
+
+        final KeyStoreManager keyManager = new DefaultKeyStoreManager(signatureKeystorePath,
+                signatureKeystorePassword,
+                truststorePath,
+                truststorePassword,
+                signatureKeyAlias,
+                signatureKeyPassword);
 
         final X509Certificate signatureCertificate;
         PrivateKey privateKey = null;
 
         if (keyAlias == null) {
-            signatureCertificate = (X509Certificate) keyStoreManager.getDefaultCertificate();
+            signatureCertificate = (X509Certificate) keyManager.getDefaultCertificate();
         } else {
             final var keyStore = KeyStore.getInstance("JKS");
             final var file = new File(signatureKeystorePath);
             keyStore.load(new FileInputStream(file), signatureKeystorePassword.toCharArray());
             privateKey = (PrivateKey) keyStore.getKey(signatureKeyAlias, signatureKeyPassword.toCharArray());
-            signatureCertificate = (X509Certificate) keyStoreManager.getCertificate(keyAlias);
+            signatureCertificate = (X509Certificate) keyManager.getCertificate(keyAlias);
         }
 
         LOGGER.info("Keystore & Signature Certificate loaded: '{}'", signatureCertificate.getSerialNumber());

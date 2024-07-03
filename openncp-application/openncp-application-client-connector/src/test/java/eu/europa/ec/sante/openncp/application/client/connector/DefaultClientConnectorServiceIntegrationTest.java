@@ -52,7 +52,6 @@ class DefaultClientConnectorServiceIntegrationTest {
         when(mockedConfigurationManager.getProperty(Constant.TRUSTSTORE_PATH)).thenReturn("src/test/resources/eu-truststore.jks");
         when(mockedConfigurationManager.getProperty(Constant.TRUSTSTORE_PASSWORD)).thenReturn("changeit");
 
-
         when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_KEYSTORE_PATH)).thenReturn("src/test/resources/gazelle-signature-keystore.jks");
         when(mockedConfigurationManager.getProperty("NCP_SIG_KEYSTORE_PATH")).thenReturn("src/test/resources/gazelle-signature-keystore.jks");
         when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_KEYSTORE_PASSWORD)).thenReturn("gazelle");
@@ -99,7 +98,7 @@ class DefaultClientConnectorServiceIntegrationTest {
         final ObjectFactory objectFactory = new ObjectFactory();
         final PatientId patientId = objectFactory.createPatientId();
         patientId.setRoot("1.3.6.1.4.1.48336");
-        patientId.setExtension("2-1234-W7");
+        patientId.setExtension("2-1234-W8");
 
         final PatientDemographics patientDemographics = objectFactory.createPatientDemographics();
         patientDemographics.getPatientId().add(patientId);
@@ -116,7 +115,7 @@ class DefaultClientConnectorServiceIntegrationTest {
         final ObjectFactory objectFactory = new ObjectFactory();
         final PatientId patientId = objectFactory.createPatientId();
         patientId.setRoot("1.3.6.1.4.1.48336");
-        patientId.setExtension("2-1234-W7");
+        patientId.setExtension("2-1234-W8");
 
         assertions.put(AssertionEnum.CLINICIAN, clinicalAssertion);
         final Assertion treatmentConfirmationAssertion = AssertionTestUtil.createPatientConfirmationPlain(assertionService, new URL(mockedConfigurationManager.getProperty("secman.sts.url")), clinicalAssertion, patientId, "TREATMENT");
@@ -139,10 +138,10 @@ class DefaultClientConnectorServiceIntegrationTest {
         final ObjectFactory objectFactory = new ObjectFactory();
         final PatientId patientId = objectFactory.createPatientId();
         patientId.setRoot("1.3.6.1.4.1.48336");
-        patientId.setExtension("2-1234-W7");
+        patientId.setExtension("2-1234-W8");
 
         final var documentId = objectFactory.createDocumentId();
-        documentId.setDocumentUniqueId("1.2.752.129.2.1.2.1^PS_W7_EU.1");
+        documentId.setDocumentUniqueId("1.2.752.129.2.1.2.1^PS_W8_EU.1");
         documentId.setRepositoryUniqueId("1.3.6.1.4.1.48336");
 
         assertions.put(AssertionEnum.CLINICIAN, clinicalAssertion);
