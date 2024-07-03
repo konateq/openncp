@@ -182,7 +182,7 @@ public class MessageSender {
 
         final File u = new File("/Users/mathiasghys/Development/EC/ehdsi_properties/keystore/eu-truststore.jks");
         final KeystoreDetails trust = new KeystoreDetails(u.toString(), "changeit",
-                "gazelle.ncp-signature.openncp.dg-sante.eu");
+                null);
         final File uu = new File("/Users/mathiasghys/Development/EC/ehdsi_properties/keystore/gazelle-service-consumer-keystore.jks");
         final KeystoreDetails key = new KeystoreDetails(uu.toString(),
                 "gazelle",
@@ -207,4 +207,5 @@ public class MessageSender {
         final boolean success = messageSender.sendMessage(auditMessage, "", "1");
         System.out.println(success);
     }
+
 }

@@ -163,7 +163,7 @@ services:
     ports:
       - "${NCP_OPENATNA_CONNECTOR_PORT}:${NCP_OPENATNA_CONNECTOR_PORT}"
       - "${NCP_OPENATNA_CONNECTOR_SECURE_PORT}:${NCP_OPENATNA_CONNECTOR_SECURE_PORT}"
-      - "2861:2861"
+      - "2861:2861/udp"
       - "2862:2862"
     depends_on:
       mysql:
