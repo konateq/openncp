@@ -2,7 +2,7 @@ package eu.europa.ec.sante.openncp.core.client.ihe.xdr;
 
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryError;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryErrorList;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryResponseType;
@@ -65,18 +65,18 @@ public final class XdrDocumentSource {
      * @param countryCode - Country code of the requesting country in ISO format.
      */
     public static XdrResponse provideAndRegisterDocSet(final XdrRequest request, final String countryCode,
-                                                       final Map<AssertionEnum, Assertion> assertionMap, ClassCode docClassCode)
+                                                       final Map<AssertionEnum, Assertion> assertionMap, final ClassCode docClassCode)
             throws XDRException {
 
-        RegistryResponseType response;
+        final RegistryResponseType response;
 
         try {
             response = new XDSbRepositoryServiceInvoker().provideAndRegisterDocumentSet(request, countryCode, assertionMap, docClassCode);
             if (response.getRegistryErrorList() != null) {
-                var registryErrorList = response.getRegistryErrorList();
+                final var registryErrorList = response.getRegistryErrorList();
                 processRegistryErrors(registryErrorList);
             }
-        } catch (RemoteException e) {
+        } catch (final RemoteException e) {
             throw new XDRException(getErrorCode(docClassCode), e);
         }
         return XdrResponseDts.newInstance(response);
@@ -93,20 +93,20 @@ public final class XdrDocumentSource {
             return;
         }
 
-        List<RegistryError> errorList = registryErrorList.getRegistryError();
+        final List<RegistryError> errorList = registryErrorList.getRegistryError();
         if (errorList == null) {
             return;
         }
 
-        var stringBuilder = new StringBuilder();
+        final var stringBuilder = new StringBuilder();
         var hasError = false;
 
-        for (RegistryError error : errorList) {
-            String errorCode = error.getErrorCode();
-            String value = error.getValue();
-            String location = error.getLocation();
-            String severity = error.getSeverity();
-            String codeContext = error.getCodeContext();
+        for (final RegistryError error : errorList) {
+            final String errorCode = error.getErrorCode();
+            final String value = error.getValue();
+            final String location = error.getLocation();
+            final String severity = error.getSeverity();
+            final String codeContext = error.getCodeContext();
 
             LOGGER.error("errorCode='{}'\ncodeContext='{}'\nlocation='{}'\nseverity='{}'\n'{}'\n",
                     errorCode, codeContext, location, severity, value);
@@ -116,7 +116,7 @@ public final class XdrDocumentSource {
                 hasError = true;
             }
 
-            OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
+            final OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
             if(openncpErrorCode == null){
                 LOGGER.warn("No EHDSI error code found in the XDR response for : {}", errorCode);
             }
@@ -127,7 +127,7 @@ public final class XdrDocumentSource {
         }
     }
 
-    private static OpenNCPErrorCode getErrorCode(ClassCode classCode){
+    private static OpenNCPErrorCode getErrorCode(final ClassCode classCode) {
         switch (classCode){
             case ED_CLASSCODE:
                 return OpenNCPErrorCode.ERROR_ED_GENERIC;

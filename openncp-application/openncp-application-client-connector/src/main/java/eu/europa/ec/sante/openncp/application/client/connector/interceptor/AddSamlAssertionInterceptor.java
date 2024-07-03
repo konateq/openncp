@@ -1,11 +1,8 @@
 package eu.europa.ec.sante.openncp.application.client.connector.interceptor;
 
-import java.util.Map;
-import java.util.Optional;
-
 import eu.europa.ec.sante.openncp.application.client.connector.ClientConnectorException;
 import eu.europa.ec.sante.openncp.application.client.connector.ClientConnectorServicePortTypeWrapper;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
 import org.apache.cxf.binding.soap.SoapHeader;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
@@ -21,6 +18,9 @@ import org.opensaml.soap.wssecurity.impl.SecurityBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Adding SOAP header with SAML assertion to request.
