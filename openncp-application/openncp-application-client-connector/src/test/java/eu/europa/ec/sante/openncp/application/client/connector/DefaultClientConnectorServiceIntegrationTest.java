@@ -54,9 +54,13 @@ class DefaultClientConnectorServiceIntegrationTest {
 
 
         when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_KEYSTORE_PATH)).thenReturn("src/test/resources/gazelle-signature-keystore.jks");
+        when(mockedConfigurationManager.getProperty("NCP_SIG_KEYSTORE_PATH")).thenReturn("src/test/resources/gazelle-signature-keystore.jks");
         when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_KEYSTORE_PASSWORD)).thenReturn("gazelle");
+        when(mockedConfigurationManager.getProperty("NCP_SIG_KEYSTORE_PASSWORD")).thenReturn("gazelle");
         when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_PRIVATEKEY_ALIAS)).thenReturn("gazelle.ncp-signature.openncp.dg-sante.eu");
+        when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_ALIAS")).thenReturn("gazelle.ncp-signature.openncp.dg-sante.eu");
         when(mockedConfigurationManager.getProperty(Constant.NCP_SIG_PRIVATEKEY_PASSWORD)).thenReturn("gazelle");
+        when(mockedConfigurationManager.getProperty("NCP_SIG_PRIVATEKEY_PASSWORD")).thenReturn("gazelle");
 
         when(mockedConfigurationManager.getProperty("secman.sts.url")).thenReturn("https://localhost:2443/TRC-STS/STSServiceService");
         when(mockedConfigurationManager.getProperty("secman.sts.checkHostname")).thenReturn("false");
@@ -174,7 +178,7 @@ class DefaultClientConnectorServiceIntegrationTest {
         conceptRole.setCodeSystemName("ISCO");
         conceptRole.setDisplayName("Medical Doctors");
 
-        return AssertionTestUtil.createHCPAssertion(fullName, email, "BE", "BElgium", "homecommid", conceptRole,
+        return AssertionTestUtil.createHCPAssertion(keyStoreManager, fullName, email, "BE", "BElgium", "homecommid", conceptRole,
                 "eHealth OpenNCP EU Portal", "urn:hl7ii:1.2.3.4:ABCD", "Resident Physician", "TREATMENT",
                 "eHDSI EU Testing MedCare Center", permissions, null);
     }

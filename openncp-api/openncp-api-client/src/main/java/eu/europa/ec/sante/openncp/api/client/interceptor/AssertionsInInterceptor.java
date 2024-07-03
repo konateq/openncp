@@ -29,7 +29,7 @@ public class AssertionsInInterceptor extends AbstractSoapInterceptor {
 
     private Map<AssertionEnum, Assertion> processAssertionList(final List<Assertion> assertionList) {
 
-        logger.info("[ClientConnector] Processing Assertions list from SOAP Header:");
+        logger.info("[Client] Processing Assertions list from SOAP Header:");
         final Map<AssertionEnum, Assertion> assertionEnumMap = new EnumMap<>(AssertionEnum.class);
         for (final Assertion assertion : assertionList) {
             switch (assertion.getIssuer().getNameQualifier()) {

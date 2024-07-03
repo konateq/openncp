@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.api.common.config;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.ContextResource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -37,6 +38,7 @@ public class LocalConfig {
         return new DataSourcePropertyHolder();
     }
 
+
     @Bean
     public TomcatServletWebServerFactory tomcatFactory(final List<DataSourcePropertyHolder> dataSourcePropertyHolders) {
         final TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
@@ -53,7 +55,33 @@ public class LocalConfig {
                         .forEach(contextResource -> context.getNamingResources().addResource(contextResource));
             }
         };
+        tomcat.addAdditionalTomcatConnectors(createSslConnector());
         return tomcat;
+    }
+
+    private Connector createSslConnector() {
+        Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+        connector.setScheme("https");
+        connector.setSecure(true);
+        connector.setPort(8223);
+        connector.setProperty("keyAlias", "gazelle.ncp-sp.openncp.dg-sante.eu");
+        connector.setProperty("keystorePass", "gazelle");
+        connector.setProperty("keystoreFile", "/Users/kimwauters/Projects/Work/EU_dg_sante/ehealth/openncp-docker/certificates/gazelle-service-provider-keystore.jks");
+        connector.setProperty("keystoreType", "PKCS12");
+        connector.setProperty("clientAuth", "false");
+        connector.setProperty("sslProtocol", "TLS");
+        connector.setProperty("truststoreFile", "/Users/kimwauters/Projects/Work/EU_dg_sante/ehealth/openncp-docker/certificates/eu-truststore.jks");
+        connector.setProperty("truststorePass", "changeit");
+        return connector;
+    }
+
+    private Connector redirectConnector() {
+        final Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+        connector.setScheme("http");
+        connector.setPort(8080);
+        connector.setSecure(false);
+        connector.setRedirectPort(8443);
+        return connector;
     }
 
     public static class DataSourcePropertyHolder {

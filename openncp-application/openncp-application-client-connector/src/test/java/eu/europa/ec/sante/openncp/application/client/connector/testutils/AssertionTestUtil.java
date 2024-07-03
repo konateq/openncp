@@ -129,7 +129,7 @@ public class AssertionTestUtil {
         }
     }
 
-    public static Assertion createHCPAssertion(final String fullName, final String email, final String countryCode,
+    public static Assertion createHCPAssertion(KeyStoreManager keyStoreManager, final String fullName, final String email, final String countryCode,
                                                final String countryName, final String homeCommId, final Concept role, final String organization,
                                                final String organizationId, final String facilityType, final String purposeOfUse,
                                                final String locality, final List<String> permissions, final String onBehalfId) {
@@ -257,7 +257,7 @@ public class AssertionTestUtil {
             attrStmt.getAttributes().add(attrPID8);
 
             assertion.getStatements().add(attrStmt);
-            signSAMLAssertion(assertion, "gazelle.ncp-signature.openncp.dg-sante.eu");
+            signSAMLAssertion(keyStoreManager, assertion, "gazelle.ncp-signature.openncp.dg-sante.eu");
             LOGGER.info("AssertionId: '{}'", assertion.getID());
 
             final var marshaller = new AssertionMarshaller();
@@ -271,34 +271,26 @@ public class AssertionTestUtil {
         return assertion;
     }
 
-    private static void signSAMLAssertion(final SignableSAMLObject signableSAMLObject, final String keyAlias) throws Exception {
+    private static void signSAMLAssertion(KeyStoreManager keyStoreManager, final SignableSAMLObject signableSAMLObject, final String keyAlias) throws Exception {
 
         LOGGER.info("method signSAMLAssertion('{}')", keyAlias);
 
         final String signatureKeystorePath = Constants.NCP_SIG_KEYSTORE_PATH;
         final String signatureKeystorePassword = Constants.NCP_SIG_KEYSTORE_PASSWORD;
-        final String truststorePath = Constants.TRUSTSTORE_PATH;
-        final String truststorePassword = Constants.TRUSTSTORE_PASSWORD;
         final String signatureKeyAlias = Constants.NCP_SIG_PRIVATEKEY_ALIAS;
         final String signatureKeyPassword = Constants.NCP_SIG_PRIVATEKEY_PASSWORD;
 
-        final KeyStoreManager keyManager = new DefaultKeyStoreManager(signatureKeystorePath,
-                signatureKeystorePassword,
-                truststorePath,
-                truststorePassword,
-                signatureKeyAlias,
-                signatureKeyPassword);
         final X509Certificate signatureCertificate;
         PrivateKey privateKey = null;
 
         if (keyAlias == null) {
-            signatureCertificate = (X509Certificate) keyManager.getDefaultCertificate();
+            signatureCertificate = (X509Certificate) keyStoreManager.getDefaultCertificate();
         } else {
             final var keyStore = KeyStore.getInstance("JKS");
             final var file = new File(signatureKeystorePath);
             keyStore.load(new FileInputStream(file), signatureKeystorePassword.toCharArray());
             privateKey = (PrivateKey) keyStore.getKey(signatureKeyAlias, signatureKeyPassword.toCharArray());
-            signatureCertificate = (X509Certificate) keyManager.getCertificate(keyAlias);
+            signatureCertificate = (X509Certificate) keyStoreManager.getCertificate(keyAlias);
         }
 
         LOGGER.info("Keystore & Signature Certificate loaded: '{}'", signatureCertificate.getSerialNumber());
