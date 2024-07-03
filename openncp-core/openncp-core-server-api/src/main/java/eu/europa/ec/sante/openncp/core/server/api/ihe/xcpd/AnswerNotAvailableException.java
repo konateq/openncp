@@ -10,4 +10,9 @@ public class AnswerNotAvailableException extends XCPDNIException {
 	public AnswerNotAvailableException(String message) {
 		super(XCPDErrorCode.AnswerNotAvailable, OpenNCPErrorCode.ERROR_PI_NO_MATCH, message);
 	}
+
+	public AnswerNotAvailableException(OpenNCPErrorCode code) {
+		super(XCPDErrorCode.AnswerNotAvailable, code, code.getDescription());
+	}
+
 }

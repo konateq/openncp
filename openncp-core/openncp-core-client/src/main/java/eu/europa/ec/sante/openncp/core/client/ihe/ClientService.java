@@ -1,13 +1,13 @@
 package eu.europa.ec.sante.openncp.core.client.ihe;
 
-import java.util.List;
-
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.api.EpsosDocument;
+import eu.europa.ec.sante.openncp.core.client.api.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryPatientOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.RetrieveDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.SubmitDocumentOperation;
+
+import java.util.List;
 
 
 public interface ClientService {

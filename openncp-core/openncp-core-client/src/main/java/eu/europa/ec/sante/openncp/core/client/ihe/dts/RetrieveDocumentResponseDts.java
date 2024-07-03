@@ -1,8 +1,8 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
 
-import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.client.RetrieveDocumentResponse;
+import eu.europa.ec.sante.openncp.core.client.api.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.client.api.RetrieveDocumentResponse;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 
 /**
@@ -15,7 +15,7 @@ public class RetrieveDocumentResponseDts {
     private RetrieveDocumentResponseDts() {
     }
 
-    public static RetrieveDocumentResponse newInstance(RetrieveDocumentSetResponseType.DocumentResponse documentResponse) {
+    public static RetrieveDocumentResponse newInstance(final RetrieveDocumentSetResponseType.DocumentResponse documentResponse) {
 
         if (documentResponse == null) {
             return null;

@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import eu.europa.ec.sante.openncp.core.client.GenericDocumentCode;
+import eu.europa.ec.sante.openncp.core.client.api.GenericDocumentCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class GenericDocumentCodeDts {
 
-    public static GenericDocumentCode newInstance(eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode genericDocCode) {
+    public static GenericDocumentCode newInstance(final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode genericDocCode) {
         final GenericDocumentCode result = new GenericDocumentCode();
         result.setSchema(genericDocCode.getSchema());
         result.setValue(genericDocCode.getValue());
@@ -19,11 +19,11 @@ public class GenericDocumentCodeDts {
         return result;
     }
 
-    public static List<eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode> newInstance(List<GenericDocumentCode> documentCodes) {
+    public static List<eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode> newInstance(final List<GenericDocumentCode> documentCodes) {
         final List<eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode> result = new ArrayList<>();
 
-        for (GenericDocumentCode documentCode: documentCodes) {
-            eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode genericDocumentCode = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode();
+        for (final GenericDocumentCode documentCode: documentCodes) {
+            final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode genericDocumentCode = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode();
             genericDocumentCode.setSchema(documentCode.getSchema());
             genericDocumentCode.setValue(documentCode.getNodeRepresentation());
             result.add(genericDocumentCode);
@@ -31,7 +31,7 @@ public class GenericDocumentCodeDts {
         return result;
     }
 
-    public static eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode newInstance(GenericDocumentCode documentCode) {
+    public static eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode newInstance(final GenericDocumentCode documentCode) {
         final eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode result = new eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode();
 
         result.setSchema(documentCode.getSchema());

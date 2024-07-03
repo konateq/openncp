@@ -8,12 +8,13 @@ import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.client.transformation.DomUtils;
+import eu.europa.ec.sante.openncp.core.client.transformation.TranslationsAndMappingsClient;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.DynamicDiscoveryService;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.*;
@@ -134,7 +135,7 @@ public class XDSbRepositoryServiceInvoker {
         final ProvideAndRegisterDocumentSetRequestType.Document xdrDocument = new ProvideAndRegisterDocumentSetRequestType.Document();
         xdrDocument.setId(uuid);
 
-        final byte[] cdaBytes = request.getCda().getBytes(StandardCharsets.UTF_8);
+        byte[] cdaBytes = request.getCda().getBytes(StandardCharsets.UTF_8);
         try {
             /* Validate CDA epSOS Friendly */
             if (OpenNCPValidation.isValidationEnable()) {

@@ -5,7 +5,9 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This is a Data Transformation Service. This provides functions to transform data into a PatientDemographics object.
@@ -26,7 +28,7 @@ public final class PatientDemographicsDts {
      * @throws ParseException
      * @see PatientDemographics
      */
-    public static PatientDemographics toDataModel(final eu.europa.ec.sante.openncp.core.client.PatientDemographics patientDemographics) throws ParseException {
+    public static PatientDemographics toDataModel(final eu.europa.ec.sante.openncp.core.client.api.PatientDemographics patientDemographics) throws ParseException {
 
         if (patientDemographics == null) {
             return null;
@@ -71,13 +73,13 @@ public final class PatientDemographicsDts {
         return result;
     }
 
-    public static eu.europa.ec.sante.openncp.core.client.PatientDemographics fromDataModel(final PatientDemographics patientDemographics) {
+    public static eu.europa.ec.sante.openncp.core.client.api.PatientDemographics fromDataModel(final PatientDemographics patientDemographics) {
 
         if (patientDemographics == null) {
             return null;
         }
 
-        final eu.europa.ec.sante.openncp.core.client.PatientDemographics result = new eu.europa.ec.sante.openncp.core.client.PatientDemographics();
+        final eu.europa.ec.sante.openncp.core.client.api.PatientDemographics result = new eu.europa.ec.sante.openncp.core.client.api.PatientDemographics();
 
         if (patientDemographics.getAdministrativeGender() != null) {
             result.setAdministrativeGender(patientDemographics.getAdministrativeGender().toString());
@@ -99,15 +101,15 @@ public final class PatientDemographicsDts {
         return result;
     }
 
-    public static List<eu.europa.ec.sante.openncp.core.client.PatientDemographics> fromDataModel(final List<PatientDemographics> patientDemList) {
+    public static List<eu.europa.ec.sante.openncp.core.client.api.PatientDemographics> fromDataModel(final List<PatientDemographics> patientDemList) {
 
         if (patientDemList == null) {
             return Collections.emptyList();
         }
 
-        final List<eu.europa.ec.sante.openncp.core.client.PatientDemographics> result = new ArrayList<>(patientDemList.size());
+        final List<eu.europa.ec.sante.openncp.core.client.api.PatientDemographics> result = new ArrayList<>(patientDemList.size());
 
-        for (PatientDemographics pd : patientDemList) {
+        for (final PatientDemographics pd : patientDemList) {
             result.add(fromDataModel(pd));
         }
 

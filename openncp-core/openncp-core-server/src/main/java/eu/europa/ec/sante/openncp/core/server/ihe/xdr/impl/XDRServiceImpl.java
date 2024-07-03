@@ -17,6 +17,7 @@ import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.ihe.IHEEventType;
 import eu.europa.ec.sante.openncp.core.common.ihe.RegistryErrorSeverity;
 import eu.europa.ec.sante.openncp.core.common.ihe.XDRServiceInterface;
+import eu.europa.ec.sante.openncp.core.common.ihe.XDRServiceInterface;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
@@ -41,7 +42,6 @@ import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.DomUtils;
 import eu.europa.ec.sante.openncp.core.server.api.ihe.xdr.DocumentSubmitInterface;
 import eu.europa.ec.sante.openncp.core.server.ihe.AdhocQueryResponseStatus;
 import eu.europa.ec.sante.openncp.core.server.ihe.RegistryErrorUtils;
-import eu.europa.ec.sante.openncp.core.server.ihe.exception.NationalInfrastructureException;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -363,12 +363,9 @@ public class XDRServiceImpl implements XDRServiceInterface {
             discardDetails.setHealthCareProviderOrganizationId(Helper.getOrganizationId(soapHeaderElement));
             documentSubmitInterface.cancelDispensation(discardDetails, epsosDocument);
 
-        } catch (final NationalInfrastructureException e) {
-            logger.error("DocumentSubmitException: '{}'-'{}'", e.getOpenncpErrorCode(), e.getMessage());
-            registryErrorList.getRegistryError().add(createErrorMessage(e.getOpenncpErrorCode(), e.getOpenncpErrorCode().getDescription() + " ( " + documentId + " )", "", e.getMessage(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR));
         } catch (final NIException e) {
-            logger.error("NIException: '{}'", e.getMessage());
-            registryErrorList.getRegistryError().add(createErrorMessage(e.getOpenncpErrorCode(), e.getOpenncpErrorCode().getDescription(), "", e.getMessage(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR));
+            logger.error("NIException: [{}] - [{}]", e.getOpenncpErrorCode(), e.getMessage());
+            registryErrorList.getRegistryError().add(createErrorMessage(e.getOpenncpErrorCode(), e.getOpenncpErrorCode().getDescription() + "^" + e.getMessage(), "", e.getMessage(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR));
         } catch (final Exception e) {
             logger.error("Generic Exception: '{}'", e.getMessage(), e);
             RegistryErrorUtils.addErrorMessage(
@@ -497,7 +494,6 @@ public class XDRServiceImpl implements XDRServiceInterface {
             for (int i = 0; i < request.getDocument().size(); i++) {
 
                 final ProvideAndRegisterDocumentSetRequestType.Document doc = request.getDocument().get(i);
-                String documentId = "";
                 byte[] docBytes = doc.getValue();
                 org.w3c.dom.Document domDocument = null;
                 try {
@@ -540,7 +536,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
                         logger.error(ExceptionUtils.getStackTrace(e));
                     }
                     // Call to National Connector
-                    documentId = getDocumentId(epsosDocument.getDocument());
+                    final String documentId = getDocumentId(epsosDocument.getDocument());
                     documentSubmitInterface.submitDispensation(epsosDocument);
 
                     // Evidence for response from NI for XDR submit (dispensation)
@@ -559,12 +555,9 @@ public class XDRServiceImpl implements XDRServiceInterface {
 //                    } catch (Exception e) {
 //                        logger.error(ExceptionUtils.getStackTrace(e));
 //                    }
-                } catch (final NationalInfrastructureException e) {
-                    logger.error("DocumentSubmitException: '{}'-'{}'", e.getOpenncpErrorCode(), e.getMessage());
-                    registryErrorList.getRegistryError().add(createErrorMessage(e.getOpenncpErrorCode(), e.getOpenncpErrorCode().getDescription() + " ( " + documentId + " )", "", e.getMessage(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR));
                 } catch (final NIException e) {
-                    logger.error("NIException: '{}'", e.getMessage());
-                    registryErrorList.getRegistryError().add(createErrorMessage(e.getOpenncpErrorCode(), e.getOpenncpErrorCode().getDescription(), "", e.getMessage(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR));
+                    logger.error("NIException: [{}] - [{}]", e.getOpenncpErrorCode(), e.getMessage());
+                    registryErrorList.getRegistryError().add(createErrorMessage(e.getOpenncpErrorCode(), e.getOpenncpErrorCode().getDescription() + "^" + e.getMessage(), "", e.getMessage(), RegistryErrorSeverity.ERROR_SEVERITY_ERROR));
                 } catch (final Exception e) {
                     logger.error("Generic Exception: '{}'", e.getMessage(), e);
                     RegistryErrorUtils.addErrorMessage(

@@ -3,7 +3,7 @@ package eu.europa.ec.sante.openncp.core.client.ihe;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
-import eu.europa.ec.sante.openncp.core.client.*;
+import eu.europa.ec.sante.openncp.core.client.api.*;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryPatientOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.RetrieveDocumentOperation;
@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Service("iheClientService")
 public class ClientServiceImpl implements ClientService {
 
     private static final String UNSUPPORTED_CLASS_CODE_SCHEME_EXCEPTION = "Unsupported Class Code scheme: ";

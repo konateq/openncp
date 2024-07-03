@@ -1,16 +1,9 @@
 package eu.europa.ec.sante.openncp.api.client.interceptor;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import javax.xml.namespace.QName;
-
 import eu.europa.ec.sante.openncp.api.client.AssertionContextProvider;
 import eu.europa.ec.sante.openncp.api.client.ImmutableAssertionContext;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.common.security.util.AssertionUtil;
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.headers.Header;
@@ -23,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
+import javax.xml.namespace.QName;
+import java.util.*;
+
 public class AssertionsInInterceptor extends AbstractSoapInterceptor {
 
     private final Logger logger = LoggerFactory.getLogger(AssertionsInInterceptor.class);
@@ -33,7 +29,7 @@ public class AssertionsInInterceptor extends AbstractSoapInterceptor {
 
     private Map<AssertionEnum, Assertion> processAssertionList(final List<Assertion> assertionList) {
 
-        logger.info("[ClientConnector] Processing Assertions list from SOAP Header:");
+        logger.info("[Client] Processing Assertions list from SOAP Header:");
         final Map<AssertionEnum, Assertion> assertionEnumMap = new EnumMap<>(AssertionEnum.class);
         for (final Assertion assertion : assertionList) {
             switch (assertion.getIssuer().getNameQualifier()) {

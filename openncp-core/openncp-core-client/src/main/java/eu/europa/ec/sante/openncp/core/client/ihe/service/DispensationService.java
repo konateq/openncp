@@ -2,19 +2,17 @@ package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.client.api.EpsosDocument;
+import eu.europa.ec.sante.openncp.core.client.api.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrDocumentSource;
-import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequest;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequestDts;
+import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequest;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XDRException;
-import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -73,7 +71,7 @@ public class DispensationService {
 
         LOGGER.info("[CC] Dispense Service: Initialize");
         final XdrRequest request = XdrRequestDts.newInstance(document, patient);
-        return xdrDocumentSource.initialize(request, countryCode, assertionMap);
+        return XdrDocumentSource.initialize(request, countryCode, assertionMap);
     }
 
     /**
@@ -107,12 +105,12 @@ public class DispensationService {
             nodeAttr = namedNodeMap.getNamedItem("root");
             nodeAttr.setTextContent("1.3.6.1.4.1.12559.11.10.1.3.1.1.2-DISCARD");
 
-            final String updated = XMLUtil.documentToString(dispense);
+            String updated = XMLUtil.documentToString(dispense);
             document.setBase64Binary(updated.getBytes(StandardCharsets.UTF_8));
-        } catch (final ParserConfigurationException | SAXException | IOException | TransformerException e) {
+        } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
             LOGGER.error("Exception: '{}'", e.getMessage());
         }
         final XdrRequest request = XdrRequestDts.newInstance(document, patient);
-        return xdrDocumentSource.discard(request, countryCode, assertionMap);
+        return XdrDocumentSource.discard(request, countryCode, assertionMap);
     }
 }
