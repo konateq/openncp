@@ -96,9 +96,9 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
 
     /**
      * @param friendlyCDA Medical document in its original data format as provided from the NationalConnector
-     *                          to this component. The provided document is compliant with the epSOS pivot CDA
-     *                          (see D 3.5.2 Appendix C) unless the adoption of the element binding with the epSOS
-     *                          reference Value Sets. [Mandatory]
+     *                    to this component. The provided document is compliant with the epSOS pivot CDA
+     *                    (see D 3.5.2 Appendix C) unless the adoption of the element binding with the epSOS
+     *                    reference Value Sets. [Mandatory]
      * @return
      */
     public TMResponseStructure transcode(final Document friendlyCDA) {
@@ -154,15 +154,6 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
             // validate schema
             inputDocbytes = XmlUtil.doc2bytes(inputDocument);
             final Document namespaceAwareDoc = XmlUtil.getNamespaceAwareDocument(inputDocbytes);
-            if (inputDocument == null) {
-                errors.add(TMError.ERROR_NULL_INPUT_DOCUMENT);
-                responseStructure = new TMResponseStructure(null, errors, warnings);
-                logger.error("Error, null input document!");
-                return responseStructure;
-            } else {
-                // validate schema
-                inputDocbytes = XmlUtil.doc2bytes(inputDocument);
-                final Document namespaceAwareDoc = XmlUtil.getNamespaceAwareDocument(inputDocbytes);
 
             // Checking Document type and if the Document is structured or unstructured
             final Document namespaceNotAwareDoc = inputDocument;
@@ -250,15 +241,13 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
             if (logger.isDebugEnabled()) {
                 logger.debug("TM result:\n{}", responseStructure);
             }
-        } catch (final TMException e) {
-
+        } catch( final TMException e){
             // Writing TMException to ResponseStructure
             logger.error("TMException: '{}'\nReason: '{}'", e.getMessage(), e.getReason().toString(), e);
             errors.add(e.getReason());
             responseStructure = new TMResponseStructure(Base64Util.encode(inputDocument), errors, warnings);
 
-        } catch (final Exception e) {
-
+        } catch( final Exception e){
             // Writing ERROR to ResponseStructure
             logger.error("Exception: '{}'", e.getMessage(), e);
             errors.add(TMError.ERROR_PROCESSING_ERROR);
@@ -282,7 +271,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @return Constant which determines one of six Document types
      * @throws Exception
      */
-    public String getCDADocumentType(final Document document) throws Exception {
+    public String getCDADocumentType ( final Document document) throws Exception {
 
         final List<Node> nodeList = XmlUtil.getNodeList(document, XPATH_CLINICALDOCUMENT_CODE);
 
@@ -348,8 +337,9 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @param warnings           empty list for TMWarnings
      * @return
      */
-    private void translateDocument(final Document document, final String targetLanguageCode, final List<ITMTSAMError> errors,
-                                   final List<ITMTSAMError> warnings, final String cdaDocumentType) {
+    private void translateDocument ( final Document document, final String targetLanguageCode,
+                                     final List<ITMTSAMError> errors,
+                                     final List<ITMTSAMError> warnings, final String cdaDocumentType){
 
         logger.info("Translating Document '{}' to target Language: '{}'", cdaDocumentType, targetLanguageCode);
         processDocument(document, targetLanguageCode, errors, warnings, cdaDocumentType, Boolean.FALSE);
@@ -366,7 +356,8 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @param cdaDocumentType Type of CDA document to process
      * @return
      */
-    private void transcodeDocument(final Document document, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings, final String cdaDocumentType) {
+    private void transcodeDocument ( final Document document, final List<ITMTSAMError> errors,
+                                     final List<ITMTSAMError> warnings, final String cdaDocumentType){
 
         logger.info("Transcoding Document '{}'", cdaDocumentType);
         processDocument(document, null, errors, warnings, cdaDocumentType, Boolean.TRUE);
@@ -381,8 +372,9 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @param isTranscode
      * @return
      */
-    private void processDocument(final Document document, final String targetLanguageCode, final List<ITMTSAMError> errors,
-                                 final List<ITMTSAMError> warnings, final String cdaDocumentType, final boolean isTranscode) {
+    private void processDocument ( final Document document, final String targetLanguageCode,
+                                   final List<ITMTSAMError> errors,
+                                   final List<ITMTSAMError> warnings, final String cdaDocumentType, final boolean isTranscode){
 
         //TODO: Check is an attribute shall/can also be translated and/or transcoded like the XML element.
         logger.info("Processing Document '{}' to target Language: '{}' Transcoding: '{}'", cdaDocumentType, targetLanguageCode, isTranscode);
@@ -489,7 +481,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
                     final boolean success = (isTranscode ?
                             transcodeElement(originalElement, document, hmReffId_DisplayName, null, null, errors, warnings) :
                             translateElement(originalElement, document, targetLanguageCode, hmReffId_DisplayName, null, null, errors, warnings));
-                    if(!success) {
+                    if (!success) {
                         logger.error("Required coded element was not translated");
                     }
                 }
@@ -509,16 +501,19 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @param errors
      * @return boolean - true if SUCCES otherwise false
      */
-    private boolean transcodeElement(final Element originalElement, final Document document, final HashMap<String, String> hmReffIdDisplayName,
-                                     final String valueSet, final String valueSetVersion, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
+    private boolean transcodeElement ( final Element originalElement, final Document document,
+                                       final HashMap<String, String> hmReffIdDisplayName,
+                                       final String valueSet, final String valueSetVersion, final List<ITMTSAMError> errors,
+                                       final List<ITMTSAMError> warnings){
 
         return processElement(originalElement, document, null, hmReffIdDisplayName, valueSet,
                 valueSetVersion, true, errors, warnings);
     }
 
-    private boolean translateElement(final Element originalElement, final Document document, final String targetLanguageCode,
-                                     final HashMap<String, String> hmReffIdDisplayName, final String valueSet, final String valueSetVersion,
-                                     final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
+    private boolean translateElement ( final Element originalElement, final Document document,
+                                       final String targetLanguageCode,
+                                       final HashMap<String, String> hmReffIdDisplayName, final String valueSet, final String valueSetVersion,
+                                       final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings){
 
         return processElement(originalElement, document, targetLanguageCode, hmReffIdDisplayName, valueSet,
                 valueSetVersion, false, errors, warnings);
@@ -536,9 +531,10 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @param warnings
      * @return
      */
-    private boolean processElement(final Element originalElement, final Document document, final String targetLanguageCode,
-                                   final HashMap<String, String> hmReffIdDisplayName, final String valueSet, final String valueSetVersion,
-                                   final boolean isTranscode, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings) {
+    private boolean processElement ( final Element originalElement, final Document document,
+                                     final String targetLanguageCode,
+                                     final HashMap<String, String> hmReffIdDisplayName, final String valueSet, final String valueSetVersion,
+                                     final boolean isTranscode, final List<ITMTSAMError> errors, final List<ITMTSAMError> warnings){
 
         //TODO: Update the translation Node while the translation/transcoding process
         try {
@@ -548,7 +544,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
                 return checkAttributes;
             }
 
-            final CodeConcept codeConcept = CodeConcept.from(originalElement,valueSet,valueSetVersion);
+            final CodeConcept codeConcept = CodeConcept.from(originalElement, valueSet, valueSetVersion);
 
             // looking for a nested translation element
             Node oldTranslationElement = findOldTranslation(originalElement);
@@ -657,7 +653,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
         }
     }
 
-    private void writeAuditTrail(final TMResponseStructure responseStructure, final NcpSide ncpSide) {
+    private void writeAuditTrail ( final TMResponseStructure responseStructure, final NcpSide ncpSide){
 
         logger.debug("[Transformation Service] Audit trail BEGIN");
 
@@ -696,7 +692,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
         }
     }
 
-    private Node findOldTranslation(final Element originalElement) {
+    private Node findOldTranslation ( final Element originalElement){
 
         Node oldTranslationElement = null;
         final NodeList nodeList = originalElement.getChildNodes();
@@ -718,7 +714,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @param originalElement
      * @param warnings
      */
-    private void checkCodedElementType(final Element originalElement, final List<ITMTSAMError> warnings) {
+    private void checkCodedElementType ( final Element originalElement, final List<ITMTSAMError> warnings){
 
         if (originalElement != null && StringUtils.isNotBlank(originalElement.getAttribute(XSI_TYPE))) {
 
@@ -748,7 +744,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @param warnings
      * @return Returns true if it is allowed not to have mandatory attributes, false if not, null if everything is ok
      */
-    private Boolean checkAttributes(final Element originalElement, final List<ITMTSAMError> warnings) {
+    private Boolean checkAttributes ( final Element originalElement, final List<ITMTSAMError> warnings){
 
         final String elName = XmlUtil.getElementPath(originalElement);
         if (logger.isDebugEnabled()) {
@@ -789,7 +785,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
      * @param clinicalDocument - Current CDA processed.
      * @return Formatted OID identifying the CDA document.
      */
-    private String getOIDFromDocument(final Document clinicalDocument) {
+    private String getOIDFromDocument ( final Document clinicalDocument){
 
         String oid = "";
         if (clinicalDocument.getElementsByTagNameNS(EHDSI_HL7_NAMESPACE, "id").getLength() > 0) {
@@ -807,7 +803,7 @@ public class CDATransformationServiceImpl implements CDATransformationService, T
         return oid;
     }
 
-    public void fillServiceTypeMaps() {
+    public void fillServiceTypeMaps () {
         logger.debug("Filling service type maps");
 
         level1Type = new HashMap<>();
