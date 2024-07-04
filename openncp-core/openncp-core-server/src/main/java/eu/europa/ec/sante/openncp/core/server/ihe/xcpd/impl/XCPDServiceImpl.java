@@ -9,6 +9,8 @@ import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.OpenNCPErrorCodeException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.saml.SAML2Validator;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
@@ -119,11 +121,11 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         if (!outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()) {
             String detail = outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getContent();
             if (detail.startsWith("(")) {
-                var code = detail.substring(1, 5);
-                eventLog.setEM_ParticipantObjectID(code);
-                if (StringUtils.equals(code, "1102")) {
+                if(detail.startsWith("(ERROR_PS_NOT_FOUND")) {
+                    eventLog.setEM_ParticipantObjectID("ERROR_PS_NOT_FOUND");
                     eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.TEMPORAL_FAILURE);
                 } else {
+                    eventLog.setEM_ParticipantObjectID(detail.substring(1, 5));
                     eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.PERMANENT_FAILURE);
                 }
             } else {
@@ -723,10 +725,8 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                         // No patient data can be sent to Country B.
                         fillOutputMessage(outputMessage,
                                 XCPDErrorCode.InsufficientRights,
-                                OpenNCPErrorCode.ERROR_PI_GENERIC,
-                                " : Either the security policy of country A or a privacy " +
-                                        "policy of the patient (that was given in country A) does not allow the requested operation " +
-                                        "to be performed by the HCP .");
+                                OpenNCPErrorCode.WARNING_PI_NO_CONSENT,
+                                OpenNCPErrorCode.WARNING_PI_NO_CONSENT.getDescription());
                         outputMessage.getAcknowledgement().get(0).getTypeCode().setCode("AE");
                     }
                 }
@@ -734,6 +734,12 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                 // Preparing demographic query not allowed error
                 fillOutputMessage(outputMessage, XCPDErrorCode.DemographicsQueryNotAllowed, OpenNCPErrorCode.ERROR_PI_GENERIC, "Queries are only available with patient identifiers");
             }
+        } catch (MissingFieldException missingFieldException){
+            logger.error(missingFieldException.getMessage(), missingFieldException);
+            fillOutputMessage(outputMessage, XCPDErrorCode.InternalError, OpenNCPErrorCode.ERROR_PI_MISSING_REQUIRED_FIELDS, missingFieldException.getMessage());
+        } catch (InvalidFieldException invalidFieldException){
+            logger.error(invalidFieldException.getMessage(), invalidFieldException);
+            fillOutputMessage(outputMessage, XCPDErrorCode.InternalError, OpenNCPErrorCode.ERROR_PI_INCORRECT_FORMATTING, invalidFieldException.getMessage());
         } catch (OpenNCPErrorCodeException e) {
             logger.error(e.getMessage(), e);
             fillOutputMessage(outputMessage, XCPDErrorCode.InsufficientRights, e.getErrorCode(), e.getMessage());

@@ -8,6 +8,11 @@ public class AnswerNotAvailableException extends XCPDNIException {
 	private static final long serialVersionUID = 7640387067196506306L;
 
 	public AnswerNotAvailableException(String message) {
-		super(XCPDErrorCode.AnswerNotAvailable, OpenNCPErrorCode.ERROR_PI_GENERIC, message);
+		super(XCPDErrorCode.AnswerNotAvailable, OpenNCPErrorCode.ERROR_PI_NO_MATCH, message);
 	}
+
+	public AnswerNotAvailableException(OpenNCPErrorCode code) {
+		super(XCPDErrorCode.AnswerNotAvailable, code, code.getDescription());
+	}
+
 }

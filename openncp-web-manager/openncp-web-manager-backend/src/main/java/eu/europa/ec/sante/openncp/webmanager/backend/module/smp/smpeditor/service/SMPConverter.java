@@ -31,6 +31,7 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
 import java.lang.Object;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -68,6 +69,8 @@ public class SMPConverter {
     private File generatedFile;
     private boolean nullExtension = false;
 
+    private static final Path targetPath = new File(Constants.SMP_DIR_PATH + File.separator).toPath().normalize();
+
     @Autowired
     public SMPConverter(Environment environment) {
         this.environment = environment;
@@ -80,7 +83,7 @@ public class SMPConverter {
                              String tecContact, String tecInformation, Date servActDate, Date servExpDate,
                              String extension, FileInputStream certificateFile, String fileName,
                              SMPFieldProperties businessLevelSignature, SMPFieldProperties minimumAuthLevel,
-                             String certificateUID, String redirectHref) {
+                             String certificateUID, String redirectHref) throws IOException {
 
         logger.debug("Converting SMP Model to XML");
         ObjectFactory objectFactory = new ObjectFactory();
@@ -88,7 +91,12 @@ public class SMPConverter {
 
         //XML file generated at path
         PermissionUtil.initializeFolders(Constants.SMP_DIR_PATH);
-        generatedFile = new File(Constants.SMP_DIR_PATH + File.separator + fileName);
+        generatedFile = new File(targetPath + fileName);
+
+        if (!generatedFile.toPath().normalize().startsWith(targetPath)) {
+            throw new IOException("Entry is outside of the target directory");
+        }
+
 
         //Type of SMP File -> Redirect | Service Information
         if ("Redirect".equals(type)) {
@@ -164,7 +172,7 @@ public class SMPConverter {
 
                                 for (Certificate certificate : certs) {
                                     logger.debug("Certificate Info: '{}' - '{}'", ((X509Certificate) certificate).getSerialNumber(),
-                                            ((X509Certificate) certificate).getSubjectDN().getName());
+                                            ((X509Certificate) certificate).getSubjectX500Principal().getName());
                                 }
                             }
                             if (certs[0] instanceof X509Certificate) {

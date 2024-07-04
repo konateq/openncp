@@ -12,49 +12,49 @@ import java.util.List;
  */
 public final class PatientIdDts {
 
-    public static PatientId toDataModel(final eu.europa.ec.sante.openncp.core.client.PatientId patientId) {
+    public static PatientId toDataModel(final eu.europa.ec.sante.openncp.core.client.api.PatientId patientId) {
 
         if (patientId == null) {
             return null;
         }
 
-        PatientId result = new PatientId();
+        final PatientId result = new PatientId();
         result.setRoot(StringUtils.trim(patientId.getRoot()));
         result.setExtension(StringUtils.trim(patientId.getExtension()));
         return result;
     }
 
-    public static eu.europa.ec.sante.openncp.core.client.PatientId fromDataModel(final PatientId patientId) {
+    public static eu.europa.ec.sante.openncp.core.client.api.PatientId fromDataModel(final PatientId patientId) {
 
         if (patientId == null) {
             return null;
         }
 
-        eu.europa.ec.sante.openncp.core.client.PatientId result = new eu.europa.ec.sante.openncp.core.client.PatientId();
+        final eu.europa.ec.sante.openncp.core.client.api.PatientId result = new eu.europa.ec.sante.openncp.core.client.api.PatientId();
         result.setRoot(patientId.getRoot());
         result.setExtension(patientId.getExtension());
         return result;
     }
 
-    public static List<PatientId> toDataModel(final List<eu.europa.ec.sante.openncp.core.client.PatientId> patientIds) {
+    public static List<PatientId> toDataModel(final List<eu.europa.ec.sante.openncp.core.client.api.PatientId> patientIds) {
 
         if (patientIds == null) {
             return Collections.emptyList();
         }
-        List<PatientId> result = new ArrayList<>();
-        for (eu.europa.ec.sante.openncp.core.client.PatientId patientId : patientIds) {
+        final List<PatientId> result = new ArrayList<>();
+        for (final eu.europa.ec.sante.openncp.core.client.api.PatientId patientId : patientIds) {
             result.add(toDataModel(patientId));
         }
         return result;
     }
 
-    public static List<eu.europa.ec.sante.openncp.core.client.PatientId> fromDataModel(final List<PatientId> patientIds) {
+    public static List<eu.europa.ec.sante.openncp.core.client.api.PatientId> fromDataModel(final List<PatientId> patientIds) {
 
         if (patientIds == null) {
             return Collections.emptyList();
         }
-        List<eu.europa.ec.sante.openncp.core.client.PatientId> result = new ArrayList<>();
-        for(PatientId patientId: patientIds) {
+        final List<eu.europa.ec.sante.openncp.core.client.api.PatientId> result = new ArrayList<>();
+        for (final PatientId patientId : patientIds) {
             result.add(fromDataModel(patientId));
         }
         return result;

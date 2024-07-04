@@ -67,7 +67,7 @@ public class PatientSearchMockImpl extends NationalConnectorGateway implements P
             File rootDir = new File(patientFile + patientId.getRoot());
             //  Patient ID 999999 will throw an Exception from National Connector
             if (StringUtils.equals(patientId.getExtension(), "999999")) {
-                throw new NIException(OpenNCPErrorCode.ERROR_PI_GENERIC, "Mocked Patient Repository not working");
+                throw new NIException(OpenNCPErrorCode.ERROR_PI_REGISTRY_NOT_AVAILABLE);
             }
 
             if (rootDir.exists()) {
@@ -124,7 +124,7 @@ public class PatientSearchMockImpl extends NationalConnectorGateway implements P
 
         } catch (Exception e) {
             logger.error("[National Infrastructure Mock] Patient Not Found Exception: '{}'", e.getMessage(), e);
-            throw new AnswerNotAvailableException("[National Infrastructure Mock] Could not load the Patient Demographics");
+            throw new AnswerNotAvailableException(OpenNCPErrorCode.ERROR_PI_INTERNAL_ERROR);
         }
 
         return result;

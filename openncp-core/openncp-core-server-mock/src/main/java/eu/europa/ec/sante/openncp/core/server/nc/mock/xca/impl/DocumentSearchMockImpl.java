@@ -650,7 +650,7 @@ public class DocumentSearchMockImpl extends NationalConnectorGateway implements 
                 return epsosDocument;
             }
         }
-        throw new NIException(OpenNCPErrorCode.ERROR_GENERIC, "[National Infrastructure Mock] Error Retrieving Document");
+        throw new NIException(OpenNCPErrorCode.ERROR_GENERIC_DOCUMENT_MISSING, "[National Infrastructure Mock] Error Retrieving Document");
     }
 
     private String getOIDFromDocument(Document document) {

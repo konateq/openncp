@@ -20,6 +20,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.eadc.EadcUtilWrapper;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
 import org.apache.axiom.om.*;
+import org.apache.axiom.om.ds.AbstractOMDataSource;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
@@ -464,7 +465,7 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
         return f;
     }
 
-    class JaxbRIDataSource implements OMDataSource {
+    class JaxbRIDataSource  extends AbstractOMDataSource {
 
         /**
          * Bound object for output.
@@ -501,24 +502,6 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
             this.name = name;
         }
 
-        public void serialize(OutputStream output, OMOutputFormat format) throws XMLStreamException {
-
-            try {
-                marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
-
-            } catch (JAXBException e) {
-                throw new XMLStreamException("Error in JAXB marshalling", e);
-            }
-        }
-
-        public void serialize(Writer writer, OMOutputFormat format) throws XMLStreamException {
-
-            try {
-                marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), writer);
-            } catch (JAXBException e) {
-                throw new XMLStreamException("Error in JAXB marshalling", e);
-            }
-        }
 
         public void serialize(XMLStreamWriter xmlWriter) throws XMLStreamException {
 
@@ -543,6 +526,16 @@ public class XCA_ServiceMessageReceiverInOut extends AbstractInOutMessageReceive
             } catch (JAXBException e) {
                 throw new XMLStreamException("Error in JAXB marshalling", e);
             }
+        }
+
+        @Override
+        public boolean isDestructiveRead() {
+            return false;
+        }
+
+        @Override
+        public boolean isDestructiveWrite() {
+            return false;
         }
     }
 }

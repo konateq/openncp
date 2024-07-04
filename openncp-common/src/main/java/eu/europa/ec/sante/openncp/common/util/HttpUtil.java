@@ -83,20 +83,31 @@ public class HttpUtil {
                 @Override
                 public void checkClientTrusted(X509Certificate[] certificates, String authType) {
                     try {
-                        this.getAcceptedIssuers()[0].checkValidity();
+                        if(this.getAcceptedIssuers().length > 0) {
+                            this.getAcceptedIssuers()[0].checkValidity();
+                        }
                     } catch (CertificateExpiredException | CertificateNotYetValidException e) {
-                        LOGGER.error("Error: Invalid client certificate : {} : {}", this.getAcceptedIssuers()[0].getSubjectDN().getName(), authType);
+                        if(this.getAcceptedIssuers().length > 0) {
+                            LOGGER.error("Error: Invalid server certificate : {} : {}", this.getAcceptedIssuers()[0].getSubjectDN().getName(), authType);
+                        } else {
+                            LOGGER.error("Error: Invalid server certificate : UNKNOWN : {}", authType);
+                        }
                     }
                 }
 
                 @Override
                 public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
                     try {
-                        this.getAcceptedIssuers()[0].checkValidity();
+                        if(this.getAcceptedIssuers().length > 0) {
+                            this.getAcceptedIssuers()[0].checkValidity();
+                        }
                     } catch (CertificateExpiredException | CertificateNotYetValidException e) {
-                        LOGGER.error("Error: Invalid server certificate : {} : {}", this.getAcceptedIssuers()[0].getSubjectDN().getName(), arg1);
+                        if(this.getAcceptedIssuers().length > 0) {
+                            LOGGER.error("Error: Invalid server certificate : {} : {}", this.getAcceptedIssuers()[0].getSubjectDN().getName(), arg1);
+                        } else {
+                            LOGGER.error("Error: Invalid server certificate : UNKNOWN : {}", arg1);
+                        }
                     }
-
                 }
             }
             };

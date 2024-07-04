@@ -1,13 +1,10 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.xcpd;
 
-import java.util.Locale;
-import java.util.Map;
-
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerException;
 import eu.europa.ec.sante.openncp.common.configuration.RegisteredService;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.DynamicDiscoveryService;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.org.hl7.v3.PRPAIN201305UV02;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.org.hl7.v3.PRPAIN201306UV02;
@@ -17,6 +14,9 @@ import eu.europa.ec.sante.openncp.core.common.util.OidUtil;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * RespondingGateway_RequestSender class.
@@ -43,7 +43,7 @@ public final class RespondingGateway_RequestSender {
             endpointUrl = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH),
                                                                  RegisteredService.PATIENT_IDENTIFICATION_SERVICE);
         } catch (final ConfigurationManagerException e) {
-            throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC, e);
+            throw new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_NO_MATCH, e);
         }
 
         final String dstHomeCommunityId = OidUtil.getHomeCommunityId(countryCode.toLowerCase(Locale.ENGLISH));

@@ -15,7 +15,7 @@
         <locator-core.version>0.52</locator-core.version>
         <commons-compress.version>1.21</commons-compress.version>
         <java-jwt.version>3.18.3</java-jwt.version>
-        <jaxb-runtime.version>3.0.2</jaxb-runtime.version>
+        <jaxb-runtime.version>2.4.0-b180830.0438</jaxb-runtime.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <passay.version>1.6.1</passay.version>
         <poi-ooxml.version>5.2.2</poi-ooxml.version>
@@ -165,6 +165,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-oxm</artifactId>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>

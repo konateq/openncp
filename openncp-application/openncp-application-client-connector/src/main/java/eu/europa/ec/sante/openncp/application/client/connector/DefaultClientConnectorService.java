@@ -3,8 +3,7 @@ package eu.europa.ec.sante.openncp.application.client.connector;
 import eu.europa.ec.sante.openncp.application.client.connector.interceptor.AddSamlAssertionInterceptor;
 import eu.europa.ec.sante.openncp.application.client.connector.interceptor.TransportTokenInInterceptor;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
-import eu.europa.ec.sante.openncp.core.client.*;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.client.api.*;
 import org.apache.commons.lang3.Validate;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
@@ -42,7 +41,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
     // Logger
     private final Logger logger = LoggerFactory.getLogger(DefaultClientConnectorService.class);
     private final ConfigurationManager configurationManager;
-    // URL of the targeted NCP-B - ClientConnectorService.wsdl
+    // URL of the targeted NCP-B - ClientService.wsdl
     private final String endpointReference;
 
     private static final String DCCS_SC_KEYSTORE_PASSWORD = "SC_KEYSTORE_PASSWORD";
@@ -62,8 +61,8 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         this.configurationManager = Validate.notNull(configurationManager);
         this.endpointReference = Validate.notBlank(configurationManager.getProperty("PORTAL_CLIENT_CONNECTOR_URL"));
 
-        final eu.europa.ec.sante.openncp.core.client.ClientConnectorService ss = new eu.europa.ec.sante.openncp.core.client.ClientConnectorService();
-        clientConnectorService = new ClientConnectorServicePortTypeWrapper(ss.getClientConnectorServicePort());
+        final ClientService ss = new ClientService();
+        clientConnectorService = new ClientConnectorServicePortTypeWrapper(ss.getClientServicePort());
         clientConnectorService.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointReference);
 
 
@@ -88,24 +87,23 @@ public class DefaultClientConnectorService implements ClientConnectorService {
     }
 
 
-
     private SSLSocketFactory getSSLSocketFactory() {
         // Load the Keystore
         KeyStore keyStore = null;
         try {
             keyStore = KeyStore.getInstance("JKS");
-        } catch (KeyStoreException e) {
+        } catch (final KeyStoreException e) {
             throw new ClientConnectorException("Error creating the keystore instance", e);
         }
         InputStream keystoreStream = null;
         try {
             keystoreStream = new FileInputStream(configurationManager.getProperty("SC_KEYSTORE_PATH"));
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             throw new ClientConnectorException("Could not find the keystore", e);
         }
         try {
             keyStore.load(keystoreStream, configurationManager.getProperty(DCCS_SC_KEYSTORE_PASSWORD).toCharArray());
-        } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
+        } catch (final IOException | NoSuchAlgorithmException | CertificateException e) {
             throw new ClientConnectorException("Error loading the keystore", e);
         }
 
@@ -113,43 +111,43 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         KeyManagerFactory keyManagerFactory = null;
         try {
             keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new ClientConnectorException("Could not create the key manager factory", e);
         }
         try {
             keyManagerFactory.init(keyStore, configurationManager.getProperty(DCCS_SC_KEYSTORE_PASSWORD).toCharArray());
-        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+        } catch (final KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             throw new ClientConnectorException("Could not initialize the keystore", e);
         }
 
         final TrustManagerFactory trustManagerFactory;
         try {
             trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new ClientConnectorException("Could not create the trust manager factory", e);
         }
 
         KeyStore trustStore = null;
         try {
             trustStore = KeyStore.getInstance("JKS");
-        } catch (KeyStoreException e) {
+        } catch (final KeyStoreException e) {
             throw new ClientConnectorException("Error creating the truststore instance", e);
         }
         InputStream trustStoreStream = null;
         try {
             trustStoreStream = new FileInputStream(configurationManager.getProperty("SC_KEYSTORE_PATH"));
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             throw new ClientConnectorException("Could not find the truststore", e);
         }
         try {
             trustStore.load(trustStoreStream, configurationManager.getProperty(DCCS_SC_KEYSTORE_PASSWORD).toCharArray());
-        } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
+        } catch (final IOException | NoSuchAlgorithmException | CertificateException e) {
             throw new ClientConnectorException("Error loading the truststore", e);
         }
 
         try {
             trustManagerFactory.init(trustStore);
-        } catch (KeyStoreException e) {
+        } catch (final KeyStoreException e) {
             throw new ClientConnectorException("Could not initialize the truststore", e);
         }
 
@@ -157,12 +155,12 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         SSLContext context = null;
         try {
             context = SSLContext.getInstance("TLS");
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new ClientConnectorException("Could not get the ssl context instance", e);
         }
         try {
             context.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
-        } catch (KeyManagementException e) {
+        } catch (final KeyManagementException e) {
             throw new ClientConnectorException("Could not initialize the SSL context", e);
         }
         return context.getSocketFactory();
@@ -194,7 +192,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
 
         clientConnectorService.setAssertions(assertions);
 
-        List<EpsosDocument> epsosDocuments = clientConnectorService.getClientConnectorServicePortType().queryDocuments(queryDocumentRequest);
+        final List<EpsosDocument> epsosDocuments = clientConnectorService.getClientConnectorServicePortType().queryDocuments(queryDocumentRequest);
         logger.info("epsosDocuments : {}", epsosDocuments);
         return epsosDocuments;
     }
@@ -218,7 +216,6 @@ public class DefaultClientConnectorService implements ClientConnectorService {
 
         clientConnectorService.setAssertions(assertions);
 
-        //set assertions to soap call
         return clientConnectorService.getClientConnectorServicePortType().queryPatient(queryPatientRequest);
     }
 
@@ -232,7 +229,7 @@ public class DefaultClientConnectorService implements ClientConnectorService {
     public String sayHello(final Map<AssertionEnum, Assertion> assertions, final String name) throws ClientConnectorException {
 
         logger.info("[National Connector] sayHello(name:'{}')", name);
-        //set assertions to soap call
+
         return clientConnectorService.getClientConnectorServicePortType().sayHello(name);
     }
 
@@ -262,7 +259,6 @@ public class DefaultClientConnectorService implements ClientConnectorService {
 
         clientConnectorService.setAssertions(assertions);
 
-        //set assertions to soap call
         return clientConnectorService.getClientConnectorServicePortType().retrieveDocument(retrieveDocumentRequest);
     }
 
@@ -284,7 +280,6 @@ public class DefaultClientConnectorService implements ClientConnectorService {
         submitDocumentRequest.setCountryCode(countryCode);
         submitDocumentRequest.setPatientDemographics(patientDemographics);
 
-        //set assertions to soap call
         clientConnectorService.setAssertions(assertions);
 
         final SubmitDocumentResponse submitDocumentResponse = objectFactory.createSubmitDocumentResponse();

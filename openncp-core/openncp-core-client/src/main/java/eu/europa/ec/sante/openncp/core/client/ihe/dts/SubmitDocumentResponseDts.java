@@ -1,7 +1,7 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
-import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.client.SubmitDocumentResponse;
+import eu.europa.ec.sante.openncp.core.client.api.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.client.api.SubmitDocumentResponse;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
 
 /**
@@ -17,7 +17,7 @@ public class SubmitDocumentResponseDts {
 
     static final ObjectFactory objectFactory = new ObjectFactory();
 
-    public static SubmitDocumentResponse newInstance(XdrResponse xdrResponse) {
+    public static SubmitDocumentResponse newInstance(final XdrResponse xdrResponse) {
 
         final SubmitDocumentResponse result = objectFactory.createSubmitDocumentResponse();
         result.setResponseStatus(xdrResponse.getResponseStatus());

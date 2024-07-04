@@ -1,10 +1,19 @@
 package eu.europa.ec.sante.openncp.core.common.ihe.transformation.service;
 
+import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMResponseStructure;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.w3c.dom.Document;
 
 public interface CDATransformationService {
+
+    /**
+     * Service with no NcpSide parameter, called typically by the REST API
+     * @param pivotCDA
+     * @param targetLanguageCode
+     * @return
+     */
+    TMResponseStructure translate(Document pivotCDA, String targetLanguageCode);
 
     /**
      * After having received a translate() request, this component starts to
@@ -47,13 +56,22 @@ public interface CDATransformationService {
      *
      * @param pivotCDA           Document in epSOS pivot format (with eHDSI codes )
      * @param targetLanguageCode Identifier (code) of the target language.
-     * @return TranslatedEpSOSCDA - response structure including the epSOS pivot
+     * @param ncpSide NCP Side calling the operation (needed for the audit logging)
+     * @return TMResponseStructure - response structure including the epSOS pivot
      * CDA with translated epSOS codes into the consumer country
      * language and the response status structure. The response status
      * structure provides information about the operation results,
      * including possible errors and warning.
      */
-    TMResponseStructure translate(Document pivotCDA, String targetLanguageCode);
+    TMResponseStructure translate(Document pivotCDA, String targetLanguageCode, NcpSide ncpSide);
+
+    /**
+     * Service with no NcpSide parameter, called typically by the REST API
+     *
+     * @param friendlyCDA
+     * @return
+     */
+    TMResponseStructure transcode(Document friendlyCDA);
 
     /**
      * After having received a transcode() request, this component takes the EpSOSOriginalData
@@ -81,14 +99,15 @@ public interface CDATransformationService {
      * <i>tm.schematron.validation.enabled)</i></li>
      *
      * @param friendlyCDA Medical document in its original data format as provided from the NationalConnector to
-     *                          this component. The provided document is compliant with the epSOS pivot CDA (see D 3.5.2 Appendix C)
-     *                          unless the adoption of the element binding with the epSOS reference Value Sets. [Mandatory]
-     * @return - EpSOSCDA structure - Response structure including the epSOS
+     *                    this component. The provided document is compliant with the epSOS pivot CDA (see D 3.5.2 Appendix C)
+     *                    unless the adoption of the element binding with the epSOS reference Value Sets. [Mandatory]
+     * @param ncpSide     NCP Side calling the operation (needed for the audit logging)
+     * @return - TMResponseStructure - Response structure including the epSOS
      * pivot CDA and the response status structure. The response status
      * structure provides information about the operation results,
      * including possible errors and warning.
      */
-    TMResponseStructure transcode(Document friendlyCDA);
+    TMResponseStructure transcode(Document friendlyCDA, NcpSide ncpSide);
 
     ValueSet translateValueSet(String oid, String targetLanguage);
 }

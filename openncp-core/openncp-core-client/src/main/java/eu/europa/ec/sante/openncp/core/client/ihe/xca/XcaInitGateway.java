@@ -8,12 +8,11 @@ import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.client.ihe.datamodel.AdhocQueryRequestCreator;
 import eu.europa.ec.sante.openncp.core.client.ihe.datamodel.AdhocQueryResponseConverter;
 import eu.europa.ec.sante.openncp.core.client.transformation.DomUtils;
-import eu.europa.ec.sante.openncp.core.client.transformation.TranslationsAndMappingsClient;
 import eu.europa.ec.sante.openncp.core.common.ihe.DynamicDiscoveryService;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.FilterParams;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.GenericDocumentCode;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientId;
@@ -26,15 +25,18 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.query._3.AdhocQu
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryError;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryErrorList;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XCAException;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATransformationService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
-import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
@@ -47,9 +49,8 @@ import java.util.stream.Collectors;
  * This is an implementation of a IHE XCA Initiation Gateway.
  * This class provides the necessary operations to query and retrieve documents.
  *
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
- * @author Marcelo Fonseca<code> - marcelo.fonseca@iuz.pt</code>
  */
+@Service
 public class XcaInitGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XcaInitGateway.class);
@@ -58,13 +59,13 @@ public class XcaInitGateway {
 
     private static final String ERROR_SEVERITY_ERROR = "urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error";
 
-    /**
-     * Private constructor to disable class instantiation.
-     */
-    private XcaInitGateway() {
+    private final CDATransformationService cdaTransformationService;
+
+    public XcaInitGateway(final CDATransformationService cdaTransformationService) {
+        this.cdaTransformationService = Validate.notNull(cdaTransformationService, "CDATransformationService cannot be null");
     }
 
-    public static QueryResponse crossGatewayQuery(final PatientId pid, final String countryCode,
+    public QueryResponse crossGatewayQuery(final PatientId pid, final String countryCode,
                                                   final List<GenericDocumentCode> documentCodes,
                                                   final FilterParams filterParams,
                                                   final Map<AssertionEnum, Assertion> assertionMap,
@@ -75,7 +76,7 @@ public class XcaInitGateway {
             builder.append("[");
             documentCodes.forEach(s -> builder.append(s.getValue()).append(","));
             builder.replace(builder.length() - 1, builder.length(), "]");
-            String classCodes = builder.toString();
+            final String classCodes = builder.toString();
             LOGGER_CLINICAL.info("QueryResponse crossGatewayQuery('{}','{}','{}','{}','{}','{}')", pid.getExtension(), countryCode,
                     classCodes, assertionMap.get(AssertionEnum.CLINICIAN).getID(), assertionMap.get(AssertionEnum.TREATMENT).getID(), service);
             if (filterParams != null) {
@@ -89,62 +90,55 @@ public class XcaInitGateway {
         try {
 
             /* queryRequest */
-            AdhocQueryRequest queryRequest = AdhocQueryRequestCreator.createAdhocQueryRequest(pid.getExtension(), pid.getRoot(), documentCodes, filterParams);
+            final AdhocQueryRequest queryRequest = AdhocQueryRequestCreator.createAdhocQueryRequest(pid.getExtension(), pid.getRoot(), documentCodes, filterParams);
 
             /* Stub */
-            var respondingGatewayStub = new RespondingGateway_ServiceStub();
-            var dynamicDiscoveryService = new DynamicDiscoveryService();
-            String epr = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
+            final var respondingGatewayStub = new RespondingGateway_ServiceStub();
+            final var dynamicDiscoveryService = new DynamicDiscoveryService();
+            final String epr = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
             respondingGatewayStub.setAddr(epr);
             respondingGatewayStub._getServiceClient().getOptions().setTo(new EndpointReference(epr));
             EventLogClientUtil.createDummyMustUnderstandHandler(respondingGatewayStub);
             respondingGatewayStub.setCountryCode(countryCode);
 
             /* queryResponse */
-            List<ClassCode> documentClassCodes = new ArrayList<>();
-            for (GenericDocumentCode genericDocumentCode : documentCodes) {
+            final List<ClassCode> documentClassCodes = new ArrayList<>();
+            for (final GenericDocumentCode genericDocumentCode : documentCodes) {
                 documentClassCodes.add(ClassCode.getByCode(genericDocumentCode.getValue()));
             }
-            AdhocQueryResponse queryResponse = respondingGatewayStub.respondingGateway_CrossGatewayQuery(queryRequest, assertionMap, documentClassCodes);
+            final AdhocQueryResponse queryResponse = respondingGatewayStub.respondingGateway_CrossGatewayQuery(queryRequest, assertionMap, documentClassCodes);
             processRegistryErrors(queryResponse.getRegistryErrorList());
 
             if (queryResponse.getRegistryObjectList() != null) {
                 result = AdhocQueryResponseConverter.convertAdhocQueryResponse(queryResponse);
             }
-        } catch (RemoteException | RuntimeException ex) {
+        } catch (final RemoteException | RuntimeException ex) {
             throw new RuntimeException(ex);
         }
 
         return result;
     }
 
-    public static RetrieveDocumentSetResponseType.DocumentResponse crossGatewayRetrieve(final XDSDocument document, final String homeCommunityId,
-                                                                                        final String countryCode, final String targetLanguage,
-                                                                                        final Map<AssertionEnum, Assertion> assertionMap,
-                                                                                        String service) throws XCAException {
+    public RetrieveDocumentSetResponseType.DocumentResponse crossGatewayRetrieve(final XDSDocument document, final String homeCommunityId,
+                                                                                 final String countryCode, final String targetLanguage,
+                                                                                 final Map<AssertionEnum, Assertion> assertionMap,
+                                                                                 final String service) throws XCAException {
 
         LOGGER.info("QueryResponse crossGatewayQuery('{}','{}','{}','{}','{}', '{}')", homeCommunityId, countryCode,
                 targetLanguage, assertionMap.get(AssertionEnum.CLINICIAN).getID(),
                 assertionMap.get(AssertionEnum.TREATMENT).getID(), service);
         RetrieveDocumentSetResponseType.DocumentResponse result = null;
-        RetrieveDocumentSetResponseType queryResponse;
+        final RetrieveDocumentSetResponseType queryResponse;
         ClassCode classCode = null;
 
         try {
 
-            RetrieveDocumentSetRequestType queryRequest = new RetrieveDocumentSetRequestTypeCreator().createRetrieveDocumentSetRequestType(
+            final RetrieveDocumentSetRequestType queryRequest = new RetrieveDocumentSetRequestTypeCreator().createRetrieveDocumentSetRequestType(
                     document.getDocumentUniqueId(), homeCommunityId, document.getRepositoryUniqueId());
 
-            RespondingGateway_ServiceStub stub = new RespondingGateway_ServiceStub();
-            DynamicDiscoveryService dynamicDiscoveryService = new DynamicDiscoveryService();
-            String endpointReference;
-            if (service.equals(Constants.MroService)) {
-
-                endpointReference = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.PATIENT_SERVICE);
-            } else {
-
-                endpointReference = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
-            }
+            final RespondingGateway_ServiceStub stub = new RespondingGateway_ServiceStub();
+            final DynamicDiscoveryService dynamicDiscoveryService = new DynamicDiscoveryService();
+            final String endpointReference = dynamicDiscoveryService.getEndpointUrl(countryCode.toLowerCase(Locale.ENGLISH), RegisteredService.fromName(service));
             stub.setAddr(endpointReference);
             stub._getServiceClient().getOptions().setTo(new EndpointReference(endpointReference));
             stub.setCountryCode(countryCode);
@@ -153,7 +147,6 @@ public class XcaInitGateway {
             switch (service) {
                 case Constants.OrderService:
                 case Constants.PatientService:
-                case Constants.MroService:
                 case Constants.OrCDService:
                     classCode = ClassCode.getByCode(document.getClassCode().getValue());
                     break;
@@ -165,10 +158,10 @@ public class XcaInitGateway {
 
             if (queryResponse.getRegistryResponse() != null) {
 
-                var registryErrorList = queryResponse.getRegistryResponse().getRegistryErrorList();
+                final var registryErrorList = queryResponse.getRegistryResponse().getRegistryErrorList();
                 processRegistryErrors(registryErrorList);
             }
-        } catch (RemoteException ex) {
+        } catch (final RemoteException ex) {
             throw new RuntimeException(ex);
         }
 
@@ -179,7 +172,7 @@ public class XcaInitGateway {
                 // Shall be a fatal ERROR
             }
             // review this try - catch - finally mechanism and the transformation/translation mechanism.
-            byte[] pivotDocument = queryResponse.getDocumentResponse().get(0).getDocument();
+            final byte[] pivotDocument = queryResponse.getDocumentResponse().get(0).getDocument();
 
             try {
                 //  Validate CDA Pivot
@@ -190,15 +183,15 @@ public class XcaInitGateway {
                 if (service.equals(Constants.OrCDService)) {
                     queryResponse.getDocumentResponse().get(0).setDocument(pivotDocument);
                 } else {
-                    //  Resets the response document to a translated version.
-                    var tmResponseStructure = TranslationsAndMappingsClient.translate(DomUtils.byteToDocument(pivotDocument), targetLanguage);
-                    var domDocument = tmResponseStructure.getResponseCDA();
-                    byte[] translatedCDA = XMLUtils.toOM(Base64Util.decode(domDocument).getDocumentElement()).toString().getBytes(StandardCharsets.UTF_8);
+                    //  Sets the response document to a translated version.
+                    final var tmResponseStructure = cdaTransformationService.translate(DomUtils.byteToDocument(pivotDocument), targetLanguage, NcpSide.NCP_B);
+                    final var domDocument = tmResponseStructure.getResponseCDA();
+                    final byte[] translatedCDA = XMLUtils.toOM(Base64Util.decode(domDocument).getDocumentElement()).toString().getBytes(StandardCharsets.UTF_8);
                     queryResponse.getDocumentResponse().get(0).setDocument(translatedCDA);
 
                 }
 
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOGGER.warn("DocumentTransformationException: CDA cannot be translated: Please check the TM result");
             } finally {
                 LOGGER.debug("[XCA Init Gateway] Returns Original Document");
@@ -221,22 +214,22 @@ public class XcaInitGateway {
      * @param registryErrorList the list of errors from the {@link AdhocQueryResponse} message.
      * @throws XCAException thrown when an error has a severity of type "urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error".
      */
-    private static void processRegistryErrors(RegistryErrorList registryErrorList) throws XCAException {
+    private static void processRegistryErrors(final RegistryErrorList registryErrorList) throws XCAException {
         // A.R. ++ Error processing. For retrieve. Is it needed?
         // We don't want to break on TSAM errors anyway...
 
         if (registryErrorList != null) {
-            List<RegistryError> errorList = registryErrorList.getRegistryError();
+            final List<RegistryError> errorList = registryErrorList.getRegistryError();
 
             if (errorList != null) {
-                StringBuilder msg = new StringBuilder();
+                final StringBuilder msg = new StringBuilder();
                 boolean hasError = false;
-                for (RegistryError error : errorList) {
-                    String errorCode = error.getErrorCode();
-                    String value = error.getValue();
-                    String location = error.getLocation();
-                    String severity = error.getSeverity();
-                    String codeContext = error.getCodeContext();
+                for (final RegistryError error : errorList) {
+                    final String errorCode = error.getErrorCode();
+                    final String value = error.getValue();
+                    final String location = error.getLocation();
+                    final String severity = error.getSeverity();
+                    final String codeContext = error.getCodeContext();
                     LOGGER.debug("\nerrorCode='{}'\ncodeContext='{}'\nlocation='{}'\nseverity='{}'\n'{}'\n",
                             errorCode, codeContext, location, severity, value);
 
@@ -254,7 +247,7 @@ public class XcaInitGateway {
                         continue;
                     }
 
-                    OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
+                    final OpenNCPErrorCode openncpErrorCode = OpenNCPErrorCode.getErrorCode(errorCode);
                     if(openncpErrorCode == null){
                         LOGGER.warn("No EHDSI error code found in the XCA response for : {}", errorCode);
                     }
@@ -277,7 +270,7 @@ public class XcaInitGateway {
      * @param errorCode Error Code associated to the action performed.
      * @return True | false according the Error Codes List.
      */
-    private static boolean checkTransformationErrors(String errorCode) {
+    private static boolean checkTransformationErrors(final String errorCode) {
         return TM_ERROR_CODES.contains(errorCode);
     }
 }

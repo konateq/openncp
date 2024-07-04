@@ -17,6 +17,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.eadc.EadcUtilWrapper;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
 import org.apache.axiom.om.*;
+import org.apache.axiom.om.ds.AbstractOMDataSource;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
@@ -30,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -191,33 +191,6 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         }
     }
 
-    private OMElement toOM(PRPAIN201305UV02 param) throws AxisFault {
-
-        try {
-
-            Marshaller marshaller = wsContext.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-
-            OMFactory factory = OMAbstractFactory.getOMFactory();
-            JaxbRIDataSource source = new JaxbRIDataSource(PRPAIN201305UV02.class, param, marshaller,
-                    URN_HL_7_ORG_V_3, PRPA_IN_201305_UV_02);
-            OMNamespace namespace = factory.createOMNamespace(URN_HL_7_ORG_V_3, null);
-
-            return factory.createOMElement(source, PRPA_IN_201305_UV_02, namespace);
-
-        } catch (JAXBException bex) {
-            throw AxisFault.makeFault(bex);
-        }
-    }
-
-    private SOAPEnvelope toEnvelope(SOAPFactory factory, PRPAIN201305UV02 param) throws AxisFault {
-
-        SOAPEnvelope envelope = factory.getDefaultEnvelope();
-        envelope.getBody().addChild(toOM(param));
-
-        return envelope;
-    }
-
     private OMElement toOM(PRPAIN201306UV02 param) throws AxisFault {
 
         try {
@@ -242,14 +215,6 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         envelope.getBody().addChild(toOM(param));
 
         return envelope;
-    }
-
-    /**
-     * get the default envelope
-     */
-    private SOAPEnvelope toEnvelope(SOAPFactory factory) {
-
-        return factory.getDefaultEnvelope();
     }
 
     private Object fromOM(OMElement param, Class type, Map extraNamespaces) throws AxisFault {
@@ -278,20 +243,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
         return returnMap;
     }
 
-    private AxisFault createAxisFault(Exception e) {
-
-        AxisFault f;
-        Throwable cause = e.getCause();
-        if (cause != null) {
-            f = new AxisFault(e.getMessage(), cause);
-        } else {
-            f = new AxisFault(e.getMessage());
-        }
-
-        return f;
-    }
-
-    class JaxbRIDataSource implements OMDataSource {
+    class JaxbRIDataSource extends AbstractOMDataSource {
 
         /**
          * Bound object for output.
@@ -328,7 +280,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
             this.name = name;
         }
 
-        public void serialize(OutputStream output, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(OutputStream output) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
@@ -338,7 +290,7 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
             }
         }
 
-        public void serialize(Writer writer, OMOutputFormat format) throws XMLStreamException {
+        public void serialize(Writer writer) throws XMLStreamException {
 
             try {
                 marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), writer);
@@ -371,6 +323,16 @@ public class XCPD_ServiceMessageReceiverInOut extends AbstractInOutMessageReceiv
             } catch (JAXBException e) {
                 throw new XMLStreamException("Error in JAXB marshalling", e);
             }
+        }
+
+        @Override
+        public boolean isDestructiveRead() {
+            return false;
+        }
+
+        @Override
+        public boolean isDestructiveWrite() {
+            return false;
         }
     }
 }
