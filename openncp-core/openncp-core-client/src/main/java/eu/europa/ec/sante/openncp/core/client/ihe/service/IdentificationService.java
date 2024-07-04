@@ -1,18 +1,24 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.service;
 
 
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.client.ihe.xcpd.XcpdInitGateway;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.NoPatientIdDiscoveredException;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
-public final class IdentificationService {
+@Service
+public class IdentificationService {
 
-    private IdentificationService() {
+    final XcpdInitGateway xcpdInitGateway;
+
+    public IdentificationService(final XcpdInitGateway xcpdInitGateway) {
+        this.xcpdInitGateway = Validate.notNull(xcpdInitGateway, "XcpdInitGateway cannot be null");
     }
 
     /**
@@ -48,11 +54,11 @@ public final class IdentificationService {
      * @return The Patients found
      * @throws NoPatientIdDiscoveredException containing the error message
      */
-    public static List<PatientDemographics> findIdentityByTraits(final PatientDemographics patient,
+    public List<PatientDemographics> findIdentityByTraits(final PatientDemographics patient,
                                                                  final Map<AssertionEnum, Assertion> assertionMap,
                                                                  final String countryCode)
             throws NoPatientIdDiscoveredException {
 
-        return XcpdInitGateway.patientDiscovery(patient, assertionMap, countryCode);
+        return xcpdInitGateway.patientDiscovery(patient, assertionMap, countryCode);
     }
 }

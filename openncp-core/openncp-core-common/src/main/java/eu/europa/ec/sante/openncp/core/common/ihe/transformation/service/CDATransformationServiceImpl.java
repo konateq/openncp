@@ -37,7 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
-public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATransformationService, TMConstants {
+public class CDATransformationServiceImpl implements CDATransformationService, TMConstants {
 
     private static final DatatypeFactory DATATYPE_FACTORY;
 
@@ -72,10 +72,15 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
     }
 
     public TMResponseStructure translate(final Document pivotCDA, final String targetLanguageCode) {
+        return translate(pivotCDA, targetLanguageCode, null);
+    }
+
+    @Override
+    public TMResponseStructure translate(final Document pivotCDA, final String targetLanguageCode, final NcpSide ncpSide) {
         logger.info("Translating OpenNCP CDA Document [START]");
         final StopWatch watch = new StopWatch();
         watch.start();
-        final TMResponseStructure responseStructure = process(pivotCDA, targetLanguageCode, false);
+        final TMResponseStructure responseStructure = process(pivotCDA, targetLanguageCode, false, ncpSide);
         if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && loggerClinical.isDebugEnabled()) {
             try {
                 loggerClinical.debug("Translate CDA: \n'{}'", XMLUtil.prettyPrint(responseStructure.getDocument()));
@@ -97,11 +102,15 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
      * @return
      */
     public TMResponseStructure transcode(final Document friendlyCDA) {
+        return transcode(friendlyCDA, null);
+    }
 
+    @Override
+    public TMResponseStructure transcode(final Document friendlyCDA, final NcpSide ncpSide) {
         logger.info("Transcoding OpenNCP CDA Document [START]");
         final StopWatch watch = new StopWatch();
         watch.start();
-        final TMResponseStructure responseStructure = process(friendlyCDA, null, true);
+        final TMResponseStructure responseStructure = process(friendlyCDA, null, true, ncpSide);
 
         watch.stop();
         logger.info("Transformation of CDA executed in: '{}ms'", watch.getTotalTimeMillis());
@@ -131,7 +140,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         return conceptReferenceComponent;
     }
 
-    private TMResponseStructure process(final Document inputDocument, final String targetLanguageCode, final boolean isTranscode) {
+    private TMResponseStructure process(final Document inputDocument, final String targetLanguageCode, final boolean isTranscode, final NcpSide ncpSide) {
 
         logger.info("Processing CDA Document: '{}', Target Language: '{}', Transcoding: '{}'",
                 inputDocument.toString(), targetLanguageCode, isTranscode);
@@ -142,6 +151,9 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         final byte[] inputDocbytes;
 
         try {
+            // validate schema
+            inputDocbytes = XmlUtil.doc2bytes(inputDocument);
+            final Document namespaceAwareDoc = XmlUtil.getNamespaceAwareDocument(inputDocbytes);
             if (inputDocument == null) {
                 errors.add(TMError.ERROR_NULL_INPUT_DOCUMENT);
                 responseStructure = new TMResponseStructure(null, errors, warnings);
@@ -152,92 +164,91 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                 inputDocbytes = XmlUtil.doc2bytes(inputDocument);
                 final Document namespaceAwareDoc = XmlUtil.getNamespaceAwareDocument(inputDocbytes);
 
-                // Checking Document type and if the Document is structured or unstructured
-                final Document namespaceNotAwareDoc = inputDocument;
-                final String cdaDocumentType = getCDADocumentType(namespaceNotAwareDoc);
+            // Checking Document type and if the Document is structured or unstructured
+            final Document namespaceNotAwareDoc = inputDocument;
+            final String cdaDocumentType = getCDADocumentType(namespaceNotAwareDoc);
 
-                // XSD Validation disabled: boolean schemaValid = Validator.validateToSchema(namespaceAwareDoc);
+            // XSD Validation disabled: boolean schemaValid = Validator.validateToSchema(namespaceAwareDoc);
 
-                // MDA validation
-                if (config.isModelValidationEnabled()) {
-                    final ModelValidatorResult validateMDA = validator.validateMDA(new String(inputDocbytes), cdaDocumentType, isTranscode);
+            // MDA validation
+            if (config.isModelValidationEnabled()) {
+                final ModelValidatorResult validateMDA = validator.validateMDA(new String(inputDocbytes), cdaDocumentType, isTranscode);
 
-                    if (!validateMDA.isSchemaValid()) {
-                        warnings.add(TMError.WARNING_INPUT_XSD_VALIDATION_FAILED);
-                    }
-                    if (!validateMDA.isModelValid()) {
-                        warnings.add(TMError.WARNING_OUTPUT_MDA_VALIDATION_FAILED);
-                    }
+                if (!validateMDA.isSchemaValid()) {
+                    warnings.add(TMError.WARNING_INPUT_XSD_VALIDATION_FAILED);
                 }
-
-                //  XSD Schema Validation
-                if (config.isSchemaValidationEnabled()) {
-
-                    final boolean schemaValid = validator.validateToSchema(namespaceAwareDoc);
-                    // if model validation is enabled schema validation is done as part of it so there is no point doing it again
-                    if (!schemaValid) {
-                        warnings.add(TMError.WARNING_INPUT_XSD_VALIDATION_FAILED);
-                    }
+                if (!validateMDA.isModelValid()) {
+                    warnings.add(TMError.WARNING_OUTPUT_MDA_VALIDATION_FAILED);
                 }
+            }
 
-                // Schematron Validation
-                if (config.isSchematronValidationEnabled()) {
-                    // if transcoding, validate against friendly scheme,
-                    // else against pivot scheme
-                    final boolean validateFriendly = isTranscode;
-                    final SchematronResult result = validator.validateSchematron(inputDocument, cdaDocumentType, validateFriendly);
-                    if (result == null || !result.isValid()) {
-                        warnings.add(TMError.WARNING_INPUT_SCHEMATRON_VALIDATION_FAILED);
-                        logger.error("Schematron validation error, input document is invalid!");
-                        if (result != null) {
-                            logger.error(result.toString());
-                        }
-                    }
-                } else {
-                    logger.info("Schematron validation disabled");
+            //  XSD Schema Validation
+            if (config.isSchemaValidationEnabled()) {
+
+                final boolean schemaValid = validator.validateToSchema(namespaceAwareDoc);
+                // if model validation is enabled schema validation is done as part of it so there is no point doing it again
+                if (!schemaValid) {
+                    warnings.add(TMError.WARNING_INPUT_XSD_VALIDATION_FAILED);
                 }
-                logger.info(isTranscode ? "Transcoding of the CDA Document: '{}'" : "Translating of the CDA Document: '{}'", cdaDocumentType);
-                // transcode/translate document
-                if (isTranscode) {
-                    transcodeDocument(namespaceNotAwareDoc, errors, warnings, cdaDocumentType);
-                } else {
-                    translateDocument(namespaceNotAwareDoc, targetLanguageCode, errors, warnings, cdaDocumentType);
-                }
+            }
 
-                final Document finalDoc = XmlUtil.removeEmptyXmlns(namespaceNotAwareDoc);
-
-                if (config.isModelValidationEnabled()) {
-                    final ModelValidatorResult validateMDA = validator.validateMDA(XmlUtil.xmlToString(finalDoc),
-                            cdaDocumentType, !isTranscode);
-                    if (!validateMDA.isSchemaValid()) {
-                        warnings.add(TMError.WARNING_OUTPUT_XSD_VALIDATION_FAILED);
-                    }
-                    if (!validateMDA.isModelValid()) {
-                        warnings.add(TMError.WARNING_OUTPUT_MDA_VALIDATION_FAILED);
+            // Schematron Validation
+            if (config.isSchematronValidationEnabled()) {
+                // if transcoding, validate against friendly scheme,
+                // else against pivot scheme
+                final boolean validateFriendly = isTranscode;
+                final SchematronResult result = validator.validateSchematron(inputDocument, cdaDocumentType, validateFriendly);
+                if (result == null || !result.isValid()) {
+                    warnings.add(TMError.WARNING_INPUT_SCHEMATRON_VALIDATION_FAILED);
+                    logger.error("Schematron validation error, input document is invalid!");
+                    if (result != null) {
+                        logger.error(result.toString());
                     }
                 }
-                // validate RESULT (schematron)
-                if (config.isSchematronValidationEnabled()) {
+            } else {
+                logger.info("Schematron validation disabled");
+            }
+            logger.info(isTranscode ? "Transcoding of the CDA Document: '{}'" : "Translating of the CDA Document: '{}'", cdaDocumentType);
+            // transcode/translate document
+            if (isTranscode) {
+                transcodeDocument(namespaceNotAwareDoc, errors, warnings, cdaDocumentType);
+            } else {
+                translateDocument(namespaceNotAwareDoc, targetLanguageCode, errors, warnings, cdaDocumentType);
+            }
 
-                    final SchematronResult result = validator.validateSchematron(finalDoc, cdaDocumentType, !isTranscode);
-                    if (result == null || !result.isValid()) {
-                        warnings.add(TMError.WARNING_OUTPUT_SCHEMATRON_VALIDATION_FAILED);
-                        responseStructure = new TMResponseStructure(Base64Util.encode(finalDoc), errors, warnings);
-                        logger.error("Schematron validation error, result document is invalid!");
-                        if (logger.isErrorEnabled() && result != null) {
-                            logger.error(result.toString());
-                        }
-                        return responseStructure;
+            final Document finalDoc = XmlUtil.removeEmptyXmlns(namespaceNotAwareDoc);
+
+            if (config.isModelValidationEnabled()) {
+                final ModelValidatorResult validateMDA = validator.validateMDA(XmlUtil.xmlToString(finalDoc),
+                        cdaDocumentType, !isTranscode);
+                if (!validateMDA.isSchemaValid()) {
+                    warnings.add(TMError.WARNING_OUTPUT_XSD_VALIDATION_FAILED);
+                }
+                if (!validateMDA.isModelValid()) {
+                    warnings.add(TMError.WARNING_OUTPUT_MDA_VALIDATION_FAILED);
+                }
+            }
+            // validate RESULT (schematron)
+            if (config.isSchematronValidationEnabled()) {
+
+                final SchematronResult result = validator.validateSchematron(finalDoc, cdaDocumentType, !isTranscode);
+                if (result == null || !result.isValid()) {
+                    warnings.add(TMError.WARNING_OUTPUT_SCHEMATRON_VALIDATION_FAILED);
+                    responseStructure = new TMResponseStructure(Base64Util.encode(finalDoc), errors, warnings);
+                    logger.error("Schematron validation error, result document is invalid!");
+                    if (logger.isErrorEnabled() && result != null) {
+                        logger.error(result.toString());
                     }
-                } else {
-                    logger.debug("Schematron validation disabled");
+                    return responseStructure;
                 }
+            } else {
+                logger.debug("Schematron validation disabled");
+            }
 
-                // create & fill TMResponseStructure
-                responseStructure = new TMResponseStructure(Base64Util.encode(finalDoc), errors, warnings);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("TM result:\n{}", responseStructure);
-                }
+            // create & fill TMResponseStructure
+            responseStructure = new TMResponseStructure(Base64Util.encode(finalDoc), errors, warnings);
+            if (logger.isDebugEnabled()) {
+                logger.debug("TM result:\n{}", responseStructure);
             }
         } catch (final TMException e) {
 
@@ -256,7 +267,9 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         }
 
         // Transformation Service - Audit Message Handling
-        writeAuditTrail(responseStructure);
+        if (ncpSide != null) {
+            writeAuditTrail(responseStructure, ncpSide);
+        }
 
         return responseStructure;
     }
@@ -644,7 +657,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         }
     }
 
-    private void writeAuditTrail(final TMResponseStructure responseStructure) {
+    private void writeAuditTrail(final TMResponseStructure responseStructure, final NcpSide ncpSide) {
 
         logger.debug("[Transformation Service] Audit trail BEGIN");
 
@@ -669,7 +682,7 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
                         IPUtil.getPrivateServerIp()
                 );
                 eventLog.setEventType(EventType.PIVOT_TRANSLATION);
-                eventLog.setNcpSide(NcpSide.valueOf(config.getNcpSide()));
+                eventLog.setNcpSide(ncpSide);
 
                 AuditServiceFactory.getInstance().write(eventLog, config.getAuditTrailFacility(), config.getAuditTrailSeverity());
                 logger.info("Write AuditTrail: '{}'", eventLog.getEventType());
@@ -691,7 +704,6 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE && StringUtils.equals(TMConstants.TRANSLATION, node.getLocalName())) {
-
                     oldTranslationElement = node;
                     logger.debug("Old translation found");
                     break;
@@ -713,15 +725,11 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
             final Attr attr = originalElement.getAttributeNodeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "type");
 
             if (attr != null) {
-
-                final String prefix;
                 final String suffix;
                 final int colon = attr.getValue().indexOf(':');
                 if (colon == -1) {
-                    prefix = "";
                     suffix = attr.getValue();
                 } else {
-                    prefix = attr.getValue().substring(0, colon);
                     suffix = attr.getValue().substring(colon + 1);
                 }
                 if (!StringUtils.equals(suffix, CE) && !StringUtils.equals(suffix, CD)) {
@@ -746,12 +754,10 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         if (logger.isDebugEnabled()) {
             logger.debug("Required attributes for Element Path:\n'{}'", elName);
         }
-        // ak je nullFlavor, neprekladat, nevyhadzovat chybu
         if (originalElement.hasAttribute("nullFlavor")) {
             logger.debug("nullFlavor, skippink: '{}'", elName);
             return true;
         } else {
-            // ak chyba code alebo codeSystem vyhodit warning
             boolean noCode = false;
             boolean noCodeSystem = false;
             if (!originalElement.hasAttribute("code")) {
@@ -807,14 +813,10 @@ public class CDATransformationServiceImpl implements eu.europa.ec.sante.openncp.
         level1Type = new HashMap<>();
         level1Type.put(config.getPatientSummaryCode(), PATIENT_SUMMARY1);
         level1Type.put(config.getePrescriptionCode(), EPRESCRIPTION1);
-        level1Type.put(config.getHcerCode(), HCER1);
-        level1Type.put(config.getMroCode(), MRO1);
 
         level3Type = new HashMap<>();
         level3Type.put(config.getPatientSummaryCode(), PATIENT_SUMMARY3);
         level3Type.put(config.geteDispensationCode(), EDISPENSATION3);
         level3Type.put(config.getePrescriptionCode(), EPRESCRIPTION3);
-        level3Type.put(config.getHcerCode(), HCER3);
-        level3Type.put(config.getMroCode(), MRO3);
     }
 }

@@ -2,10 +2,10 @@ package eu.europa.ec.sante.openncp.core.client.ihe.dts;
 
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.core.client.Author;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.ObjectFactory;
-import eu.europa.ec.sante.openncp.core.client.ReasonOfHospitalisation;
+import eu.europa.ec.sante.openncp.core.client.api.Author;
+import eu.europa.ec.sante.openncp.core.client.api.EpsosDocument;
+import eu.europa.ec.sante.openncp.core.client.api.ObjectFactory;
+import eu.europa.ec.sante.openncp.core.client.api.ReasonOfHospitalisation;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.OrCDDocumentMetaData;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.XDSDocument;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xds.XDSDocumentAssociation;
@@ -14,11 +14,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +42,7 @@ public class DocumentDts {
      * @param document the document to be converted.
      * @return the result of the conversion, as a Document.
      */
-    public static EpsosDocument newInstance(XDSDocument document) {
+    public static EpsosDocument newInstance(final XDSDocument document) {
 
         if (document == null) {
             return null;
@@ -74,7 +76,7 @@ public class DocumentDts {
         result.setSubstitution(document.getSubstitution());
 
         if (result.getClassCode() != null && !result.getClassCode().getNodeRepresentation().isEmpty()) {
-            var classCode = result.getClassCode().getNodeRepresentation();
+            final var classCode = result.getClassCode().getNodeRepresentation();
             switch (ClassCode.getByCode(classCode)) {
                 case PS_CLASSCODE:
                     result.setTitle(Constants.PS_TITLE);
@@ -107,11 +109,11 @@ public class DocumentDts {
         return result;
     }
 
-    private static List<Author> convertAuthorList(List<OrCDDocumentMetaData.Author> authors) {
+    private static List<Author> convertAuthorList(final List<OrCDDocumentMetaData.Author> authors) {
         return authors.stream().map(author -> {
-            var convertedAuthor = objectFactory.createAuthor();
+            final var convertedAuthor = objectFactory.createAuthor();
 
-            String authorPerson = author.getAuthorPerson();
+            final String authorPerson = author.getAuthorPerson();
             convertedAuthor.setPerson(authorPerson);
             if (author.getAuthorSpeciality() != null) {
                 convertedAuthor.getSpecialty().addAll(author.getAuthorSpeciality());
@@ -120,9 +122,9 @@ public class DocumentDts {
         }).collect(Collectors.toList());
     }
 
-    private static ReasonOfHospitalisation convertReasonOfHospitalisation(OrCDDocumentMetaData.ReasonOfHospitalisation reasonOfHospitalisation) {
+    private static ReasonOfHospitalisation convertReasonOfHospitalisation(final OrCDDocumentMetaData.ReasonOfHospitalisation reasonOfHospitalisation) {
 
-        var convertedReasonOfHospitalisation = objectFactory.createReasonOfHospitalisation();
+        final var convertedReasonOfHospitalisation = objectFactory.createReasonOfHospitalisation();
         convertedReasonOfHospitalisation.setCode(reasonOfHospitalisation.getCode());
         convertedReasonOfHospitalisation.setText(reasonOfHospitalisation.getText());
         return convertedReasonOfHospitalisation;
@@ -134,16 +136,16 @@ public class DocumentDts {
      * @param documentAssociation the list of XDSDocument.
      * @return the result of the conversion, as a list of Document.
      */
-    public static List<EpsosDocument> newInstance(List<XDSDocumentAssociation> documentAssociation) {
+    public static List<EpsosDocument> newInstance(final List<XDSDocumentAssociation> documentAssociation) {
 
-        List<EpsosDocument> resultList = new ArrayList<>();
+        final List<EpsosDocument> resultList = new ArrayList<>();
         if (documentAssociation == null || documentAssociation.isEmpty()) {
             return resultList;
         }
 
-        for (XDSDocumentAssociation doc : documentAssociation) {
-            EpsosDocument xmlDoc = DocumentDts.newInstance(doc.getCdaXML());
-            EpsosDocument pdfDoc = DocumentDts.newInstance(doc.getCdaPDF());
+        for (final XDSDocumentAssociation doc : documentAssociation) {
+            final EpsosDocument xmlDoc = DocumentDts.newInstance(doc.getCdaXML());
+            final EpsosDocument pdfDoc = DocumentDts.newInstance(doc.getCdaPDF());
 
             //  If CDA L1 and L3 are existing then we shall create an association between the 2 documents.
             if (xmlDoc != null && pdfDoc != null) {
@@ -170,7 +172,7 @@ public class DocumentDts {
      * @param documentResponse the document to be converted.
      * @return the result of the conversion, as a Document.
      */
-    public static EpsosDocument newInstance(RetrieveDocumentSetResponseType.DocumentResponse documentResponse) {
+    public static EpsosDocument newInstance(final RetrieveDocumentSetResponseType.DocumentResponse documentResponse) {
 
         if (documentResponse == null) {
             return null;
@@ -191,12 +193,12 @@ public class DocumentDts {
      * @param dateString a String representation of the Date.
      * @return an XMLGregorianCalendar instance, with the given String values.
      */
-    private static Calendar convertDate(String dateString) {
+    private static Calendar convertDate(final String dateString) {
 
 
-        var pattern1 = "yyyyMMddHHmmss";
-        var pattern2 = "yyyyMMdd";
-        String selectedPattern;
+        final var pattern1 = "yyyyMMddHHmmss";
+        final var pattern2 = "yyyyMMdd";
+        final String selectedPattern;
 
         if (dateString != null) {
             if (dateString.length() == pattern1.length()) {
@@ -210,13 +212,13 @@ public class DocumentDts {
             return null;
         }
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(selectedPattern);
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(selectedPattern);
         try {
-            Date date = simpleDateFormat.parse(dateString);
-            Calendar calendar = Calendar.getInstance();
+            final Date date = simpleDateFormat.parse(dateString);
+            final Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             return calendar;
-        } catch (ParseException e) {
+        } catch (final ParseException e) {
             throw new RuntimeException(e);
         }
     }

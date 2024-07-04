@@ -8,13 +8,12 @@ import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
+import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.client.transformation.DomUtils;
-import eu.europa.ec.sante.openncp.core.client.transformation.TranslationsAndMappingsClient;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.DynamicDiscoveryService;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.constants.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rim._3.*;
@@ -22,16 +21,19 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryRe
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.DocumentTransformationException;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XDRException;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.domain.TMResponseStructure;
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATransformationService;
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -40,14 +42,17 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * @author erdem
- */
+@Service
 public class XDSbRepositoryServiceInvoker {
 
     //This class implementation needs to be reviewed deeply
     private static final ObjectFactory ofRim = new ObjectFactory();
     private final Logger logger = LoggerFactory.getLogger(XDSbRepositoryServiceInvoker.class);
+    private final CDATransformationService cdaTransformationService;
+
+    public XDSbRepositoryServiceInvoker(final CDATransformationService cdaTransformationService) {
+        this.cdaTransformationService = Validate.notNull(cdaTransformationService, "CDATransformationService cannot be null");
+    }
 
     /**
      * Provide And Register Document Set
@@ -137,7 +142,7 @@ public class XDSbRepositoryServiceInvoker {
                 OpenNCPValidation.validateCdaDocument(request.getCda(), NcpSide.NCP_B, docClassCode, false);
             }
             if (!docClassCode.equals(ClassCode.EDD_CLASSCODE)) {
-                final TMResponseStructure tmResponseStructure = TranslationsAndMappingsClient.transcode(DomUtils.byteToDocument(cdaBytes));
+                final TMResponseStructure tmResponseStructure = cdaTransformationService.transcode(DomUtils.byteToDocument(cdaBytes), NcpSide.NCP_B);
                 final var base64EncodedDocument = tmResponseStructure.getResponseCDA();
                 final byte[] transformedCda = XMLUtils.toOM(Base64Util.decode(base64EncodedDocument).getDocumentElement()).toString().getBytes(StandardCharsets.UTF_8);
                 xdrDocument.setValue(transformedCda);

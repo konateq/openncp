@@ -193,6 +193,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+        </dependency>
         <!-- Saaj dependencies -->
         <dependency>
             <groupId>com.sun.xml.messaging.saaj</groupId>

@@ -1,12 +1,12 @@
 package eu.europa.ec.sante.openncp.core.client.ihe.xdr;
 
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
+import eu.europa.ec.sante.openncp.core.client.api.EpsosDocument;
+import eu.europa.ec.sante.openncp.core.client.api.PatientDemographics;
+import eu.europa.ec.sante.openncp.core.client.ihe.dts.PatientDemographicsDts;
+
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
-
-import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.core.client.EpsosDocument;
-import eu.europa.ec.sante.openncp.core.client.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.client.ihe.dts.PatientDemographicsDts;
 
 public class XdrRequestDts {
 
@@ -18,7 +18,7 @@ public class XdrRequestDts {
         if (document == null) {
             return null;
         }
-        XdrRequest result = new XdrRequest();
+        final XdrRequest result = new XdrRequest();
         // Review if the GenericDocumentCode is required at this level.
         result.setCda(new String(document.getBase64Binary(), StandardCharsets.UTF_8));
         result.setCdaId(document.getUuid());
