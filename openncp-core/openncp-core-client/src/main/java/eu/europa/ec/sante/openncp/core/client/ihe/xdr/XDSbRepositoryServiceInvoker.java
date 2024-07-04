@@ -27,6 +27,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
@@ -50,7 +51,7 @@ public class XDSbRepositoryServiceInvoker {
     private final CDATransformationService cdaTransformationService;
 
     public XDSbRepositoryServiceInvoker(final CDATransformationService cdaTransformationService) {
-        this.cdaTransformationService = cdaTransformationService;
+        this.cdaTransformationService = Validate.notNull(cdaTransformationService, "CDATransformationService cannot be null");
     }
 
     /**
