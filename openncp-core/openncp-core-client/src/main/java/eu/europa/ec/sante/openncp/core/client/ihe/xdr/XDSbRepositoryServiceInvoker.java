@@ -10,7 +10,6 @@ import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
 import eu.europa.ec.sante.openncp.core.client.transformation.DomUtils;
-import eu.europa.ec.sante.openncp.core.client.transformation.TranslationsAndMappingsClient;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.IheConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
@@ -135,7 +134,7 @@ public class XDSbRepositoryServiceInvoker {
         final ProvideAndRegisterDocumentSetRequestType.Document xdrDocument = new ProvideAndRegisterDocumentSetRequestType.Document();
         xdrDocument.setId(uuid);
 
-        byte[] cdaBytes = request.getCda().getBytes(StandardCharsets.UTF_8);
+        final byte[] cdaBytes = request.getCda().getBytes(StandardCharsets.UTF_8);
         try {
             /* Validate CDA epSOS Friendly */
             if (OpenNCPValidation.isValidationEnable()) {

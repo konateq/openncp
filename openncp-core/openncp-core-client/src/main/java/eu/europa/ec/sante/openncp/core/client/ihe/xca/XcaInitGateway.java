@@ -30,6 +30,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
 import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
@@ -184,7 +185,9 @@ public class XcaInitGateway {
                 } else {
                     //  Sets the response document to a translated version.
                     final var tmResponseStructure = cdaTransformationService.translate(DomUtils.byteToDocument(pivotDocument), targetLanguage, NcpSide.NCP_B);
-                    queryResponse.getDocumentResponse().get(0).setDocument(tmResponseStructure.getResponseCDA().getBytes(StandardCharsets.UTF_8));
+                    final var domDocument = tmResponseStructure.getResponseCDA();
+                    final byte[] translatedCDA = XMLUtils.toOM(Base64Util.decode(domDocument).getDocumentElement()).toString().getBytes(StandardCharsets.UTF_8);
+                    queryResponse.getDocumentResponse().get(0).setDocument(translatedCDA);
 
                 }
 
