@@ -10,9 +10,11 @@ import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequest;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrRequestDts;
 import eu.europa.ec.sante.openncp.core.client.ihe.xdr.XdrResponse;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XDRException;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -26,11 +28,15 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.Map;
 
+@Service
 public class DispensationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DispensationService.class);
 
-    private DispensationService() {
+    private final XdrDocumentSource xdrDocumentSource;
+
+    public DispensationService(final XdrDocumentSource xdrDocumentSource) {
+        this.xdrDocumentSource = Validate.notNull(xdrDocumentSource, "XdrDocumentSource cannot be null");
     }
 
     /**
@@ -62,12 +68,12 @@ public class DispensationService {
      * @param assertionMap HCP Assertion
      * @throws ParseException
      */
-    public static XdrResponse initialize(final EpsosDocument document, final PatientDemographics patient, final String countryCode,
+    public XdrResponse initialize(final EpsosDocument document, final PatientDemographics patient, final String countryCode,
                                          final Map<AssertionEnum, Assertion> assertionMap) throws XDRException, ParseException {
 
         LOGGER.info("[CC] Dispense Service: Initialize");
         final XdrRequest request = XdrRequestDts.newInstance(document, patient);
-        return XdrDocumentSource.initialize(request, countryCode, assertionMap);
+        return xdrDocumentSource.initialize(request, countryCode, assertionMap);
     }
 
     /**
@@ -83,7 +89,7 @@ public class DispensationService {
      * <dl> <dt><b>Warning Conditions: </b> <dd>eDispensation data is not processed by the country of affiliation
      * <dd>eDispensations are not rolled back automatically by the country of affiliation </dl>
      */
-    public static XdrResponse discard(final EpsosDocument document, final PatientDemographics patient, final String countryCode,
+    public XdrResponse discard(final EpsosDocument document, final PatientDemographics patient, final String countryCode,
                                       final Map<AssertionEnum, Assertion> assertionMap) throws XDRException, ParseException {
 
         LOGGER.info("[CC] Dispense Service: DISCARD");
@@ -107,6 +113,6 @@ public class DispensationService {
             LOGGER.error("Exception: '{}'", e.getMessage());
         }
         final XdrRequest request = XdrRequestDts.newInstance(document, patient);
-        return XdrDocumentSource.discard(request, countryCode, assertionMap);
+        return xdrDocumentSource.discard(request, countryCode, assertionMap);
     }
 }

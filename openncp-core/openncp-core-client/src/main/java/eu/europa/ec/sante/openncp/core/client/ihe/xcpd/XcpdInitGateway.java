@@ -5,6 +5,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.org.hl7.v3.PRPAIN201306UV02;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.NoPatientIdDiscoveredException;
 import org.opensaml.saml.saml2.core.Assertion;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -12,18 +13,13 @@ import java.util.Map;
 
 /**
  * XCPD Initiating Gateway
- * <p>
  * This is an implementation of a IHE XCPD Initiation Gateway. This class provides the necessary operations to perform
  * PatientDiscovery.
  *
  */
+@Service
 public class XcpdInitGateway {
 
-    /**
-     * Private constructor to disable class instantiation.
-     */
-    private XcpdInitGateway() {
-    }
 
     /**
      * Performs a Patient Discovery for the given Patient Demographics.
@@ -34,7 +30,7 @@ public class XcpdInitGateway {
      * @return a List of matching Patient Demographics, each representing a patient person.
      * @throws NoPatientIdDiscoveredException contains the error message
      */
-    public static List<PatientDemographics> patientDiscovery(final PatientDemographics patientDemographics,
+    public List<PatientDemographics> patientDiscovery(final PatientDemographics patientDemographics,
                                                              final Map<AssertionEnum, Assertion> assertionMap,
                                                              final String countryCode) throws NoPatientIdDiscoveredException {
 

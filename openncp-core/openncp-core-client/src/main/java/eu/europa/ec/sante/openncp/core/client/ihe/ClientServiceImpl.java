@@ -40,7 +40,22 @@ public class ClientServiceImpl implements ClientService {
 
     private final ObjectFactory objectFactory = new ObjectFactory();
 
-    public ClientServiceImpl() {
+    private final IdentificationService identificationService;
+    private final PatientService patientService;
+    private final OrderService orderService;
+    private final OrCDService orCDService;
+    private final DispensationService dispensationService;
+
+    public ClientServiceImpl(final IdentificationService identificationService,
+                             final PatientService patientService,
+                             final OrderService orderService,
+                             final OrCDService orCDService,
+                             final DispensationService dispensationService) {
+        this.identificationService = Validate.notNull(identificationService, "IdentificationService cannot be null");
+        this.patientService = Validate.notNull(patientService, "PatientService cannot be null");
+        this.orderService = Validate.notNull(orderService, "OrderService cannot be null");
+        this.orCDService = Validate.notNull(orCDService, "OrCDService cannot be null");
+        this.dispensationService = Validate.notNull(dispensationService, "DispensationService cannot be null");
     }
 
     @Override
@@ -74,13 +89,13 @@ public class ClientServiceImpl implements ClientService {
 
                 case ED_CLASSCODE:
                     if (StringUtils.equals(nodeRepresentation, "urn:eHDSI:ed:discard:2020")) {
-                        response = DispensationService.discard(submitDocument, patientDemographics, countryCode, assertionMap);
+                        response = dispensationService.discard(submitDocument, patientDemographics, countryCode, assertionMap);
                     } else {
-                        response = DispensationService.initialize(submitDocument, patientDemographics, countryCode, assertionMap);
+                        response = dispensationService.initialize(submitDocument, patientDemographics, countryCode, assertionMap);
                     }
                     break;
                 case EDD_CLASSCODE:
-                    response = DispensationService.discard(submitDocument, patientDemographics, countryCode, assertionMap);
+                    response = dispensationService.discard(submitDocument, patientDemographics, countryCode, assertionMap);
                     break;
                 default:
                     throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_EXCEPTION + classCodeNode);
@@ -114,18 +129,18 @@ public class ClientServiceImpl implements ClientService {
                 final String classCode = documentCodes.get(0).getNodeRepresentation();
                 switch (ClassCode.getByCode(classCode)) {
                     case PS_CLASSCODE:
-                        response = PatientService.list(PatientIdDts.toDataModel(patientId), countryCode,
+                        response = patientService.list(PatientIdDts.toDataModel(patientId), countryCode,
                                                        GenericDocumentCodeDts.newInstance(documentCodes.get(0)), assertionMap);
                         break;
                     case EP_CLASSCODE:
-                        response = OrderService.list(PatientIdDts.toDataModel(patientId), countryCode,
+                        response = orderService.list(PatientIdDts.toDataModel(patientId), countryCode,
                                                      GenericDocumentCodeDts.newInstance(documentCodes.get(0)), assertionMap);
                         break;
                     case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
                     case ORCD_LABORATORY_RESULTS_CLASSCODE:
                     case ORCD_MEDICAL_IMAGING_REPORTS_CLASSCODE:
                     case ORCD_MEDICAL_IMAGES_CLASSCODE:
-                        response = OrCDService.list(PatientIdDts.toDataModel(patientId), countryCode,
+                        response = orCDService.list(PatientIdDts.toDataModel(patientId), countryCode,
                                                     GenericDocumentCodeDts.newInstance(documentCodes), FilterParamsDts.newInstance(filterParams),
                                                     assertionMap);
                         break;
@@ -134,7 +149,7 @@ public class ClientServiceImpl implements ClientService {
                 }
             } else {
                 if (!documentCodes.contains(ClassCode.EP_CLASSCODE.getCode()) && !documentCodes.contains(ClassCode.PS_CLASSCODE.getCode())) {
-                    response = OrCDService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes),
+                    response = orCDService.list(PatientIdDts.toDataModel(patientId), countryCode, GenericDocumentCodeDts.newInstance(documentCodes),
                                                 FilterParamsDts.newInstance(filterParams), assertionMap);
                 } else {
                     throw new ClientConnectorException("Invalid combination of document codes provided: only OrCD document codes can be combined.");
@@ -185,16 +200,16 @@ public class ClientServiceImpl implements ClientService {
             final RetrieveDocumentSetResponseType.DocumentResponse documentResponse;
             switch (classCode) {
                 case PS_CLASSCODE:
-                    documentResponse = PatientService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage, assertionMap);
+                    documentResponse = patientService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage, assertionMap);
                     break;
                 case EP_CLASSCODE:
-                    documentResponse = OrderService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage, assertionMap);
+                    documentResponse = orderService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage, assertionMap);
                     break;
                 case ORCD_HOSPITAL_DISCHARGE_REPORTS_CLASSCODE:
                 case ORCD_LABORATORY_RESULTS_CLASSCODE:
                 case ORCD_MEDICAL_IMAGING_REPORTS_CLASSCODE:
                 case ORCD_MEDICAL_IMAGES_CLASSCODE:
-                    documentResponse = OrCDService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage, assertionMap);
+                    documentResponse = orCDService.retrieve(xdsDocument, homeCommunityId, countryCode, targetLanguage, assertionMap);
                     break;
                 default:
                     throw new ClientConnectorException(UNSUPPORTED_CLASS_CODE_EXCEPTION + documentCode.getValue());
@@ -220,7 +235,7 @@ public class ClientServiceImpl implements ClientService {
             final Map<AssertionEnum, Assertion> assertionMap = queryPatientOperation.getAssertions();
 
             final List<eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientDemographics> patientDemographicsList =
-                    IdentificationService.findIdentityByTraits(
+                    identificationService.findIdentityByTraits(
                     PatientDemographicsDts.toDataModel(patientDemographics), assertionMap, countryCode);
 
             final List<PatientDemographics> returnedPatientDemographics = PatientDemographicsDts.fromDataModel(patientDemographicsList);

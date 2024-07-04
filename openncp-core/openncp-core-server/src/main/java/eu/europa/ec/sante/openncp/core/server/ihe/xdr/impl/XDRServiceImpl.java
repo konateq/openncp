@@ -17,6 +17,7 @@ import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.ihe.IHEEventType;
 import eu.europa.ec.sante.openncp.core.common.ihe.RegistryErrorSeverity;
 import eu.europa.ec.sante.openncp.core.common.ihe.XDRServiceInterface;
+import eu.europa.ec.sante.openncp.core.common.ihe.XDRServiceInterface;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;

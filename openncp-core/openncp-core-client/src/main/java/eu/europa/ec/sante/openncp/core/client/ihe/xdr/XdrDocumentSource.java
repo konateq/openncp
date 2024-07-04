@@ -8,9 +8,11 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryEr
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.rs._3.RegistryResponseType;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XDRException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -19,19 +21,18 @@ import java.util.Map;
 /**
  * Represents a Document Source Actor, from the IHE XDR (Cross-enterprise Document Reliable Interchange) Profile.
  *
- * @author Marcelo Fonseca<code> - marcelo.fonseca@iuz.pt</code>
- * @author Luís Pinto<code> - luis.pinto@iuz.pt</code>
  */
+@Service
 public final class XdrDocumentSource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XdrDocumentSource.class);
 
     private static final String ERROR_SEVERITY_ERROR = "urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error";
 
-    /**
-     * Private constructor to disable class instantiation.
-     */
-    private XdrDocumentSource() {
+    final XDSbRepositoryServiceInvoker xDSbRepositoryServiceInvoker;
+
+    public XdrDocumentSource(final XDSbRepositoryServiceInvoker xDSbRepositoryServiceInvoker) {
+        this.xDSbRepositoryServiceInvoker = Validate.notNull(xDSbRepositoryServiceInvoker, "XDSbRepositoryServiceInvoker cannot be null");
     }
 
     /**
@@ -40,7 +41,7 @@ public final class XdrDocumentSource {
      * @param request     - XDR request encapsulating the CDA and it's Metadata.
      * @param countryCode - Country code of the requesting country in ISO format.
      */
-    public static XdrResponse discard(final XdrRequest request, final String countryCode,
+    public XdrResponse discard(final XdrRequest request, final String countryCode,
                                       final Map<AssertionEnum, Assertion> assertionMap) throws XDRException {
 
         return provideAndRegisterDocSet(request, countryCode, assertionMap, ClassCode.EDD_CLASSCODE);
@@ -52,7 +53,7 @@ public final class XdrDocumentSource {
      * @param request     - XDR request encapsulating the CDA and it's Metadata.
      * @param countryCode - Country code of the requesting country in ISO format.
      */
-    public static XdrResponse initialize(final XdrRequest request, final String countryCode,
+    public XdrResponse initialize(final XdrRequest request, final String countryCode,
                                          final Map<AssertionEnum, Assertion> assertionMap) throws XDRException {
 
         return provideAndRegisterDocSet(request, countryCode, assertionMap, ClassCode.ED_CLASSCODE);
@@ -64,14 +65,14 @@ public final class XdrDocumentSource {
      * @param request     - XDR request encapsulating the CDA and it's Metadata.
      * @param countryCode - Country code of the requesting country in ISO format.
      */
-    public static XdrResponse provideAndRegisterDocSet(final XdrRequest request, final String countryCode,
-                                                       final Map<AssertionEnum, Assertion> assertionMap, final ClassCode docClassCode)
+    public XdrResponse provideAndRegisterDocSet(final XdrRequest request, final String countryCode,
+                                                final Map<AssertionEnum, Assertion> assertionMap, final ClassCode docClassCode)
             throws XDRException {
 
         final RegistryResponseType response;
 
         try {
-            response = new XDSbRepositoryServiceInvoker().provideAndRegisterDocumentSet(request, countryCode, assertionMap, docClassCode);
+            response = xDSbRepositoryServiceInvoker.provideAndRegisterDocumentSet(request, countryCode, assertionMap, docClassCode);
             if (response.getRegistryErrorList() != null) {
                 final var registryErrorList = response.getRegistryErrorList();
                 processRegistryErrors(registryErrorList);
@@ -87,7 +88,7 @@ public final class XdrDocumentSource {
      *
      * @param registryErrorList the Registry Error List to be processed.
      */
-    private static void processRegistryErrors(final RegistryErrorList registryErrorList) throws XDRException {
+    private void processRegistryErrors(final RegistryErrorList registryErrorList) throws XDRException {
 
         if (registryErrorList == null) {
             return;
@@ -98,7 +99,6 @@ public final class XdrDocumentSource {
             return;
         }
 
-        final var stringBuilder = new StringBuilder();
         var hasError = false;
 
         for (final RegistryError error : errorList) {
@@ -112,7 +112,6 @@ public final class XdrDocumentSource {
                     errorCode, codeContext, location, severity, value);
 
             if (StringUtils.equals(ERROR_SEVERITY_ERROR,severity)) {
-                stringBuilder.append(errorCode).append(" ").append(codeContext).append(" ").append(value);
                 hasError = true;
             }
 
