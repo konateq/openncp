@@ -710,11 +710,11 @@ public class XCAServiceImpl implements XCAServiceInterface {
             if (isTranscode) {
                 operationType = "transcode";
                 logger.debug("Transforming friendly CDA document to pivot CDA...");
-                tmResponse = cdaTransformationService.transcode(doc);
+                tmResponse = cdaTransformationService.transcode(doc, NcpSide.NCP_A);
             } else {
                 operationType = "translate";
                 logger.debug("Translating document to [{}]'", Constants.LANGUAGE_CODE);
-                tmResponse = cdaTransformationService.translate(doc, Constants.LANGUAGE_CODE);
+                tmResponse = cdaTransformationService.translate(doc, Constants.LANGUAGE_CODE, NcpSide.NCP_A);
             }
 
             final OMNamespace ns = registryResponseElement.getNamespace();

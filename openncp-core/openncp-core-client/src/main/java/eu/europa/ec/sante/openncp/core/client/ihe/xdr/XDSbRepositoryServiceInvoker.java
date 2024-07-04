@@ -141,7 +141,7 @@ public class XDSbRepositoryServiceInvoker {
                 OpenNCPValidation.validateCdaDocument(request.getCda(), NcpSide.NCP_B, docClassCode, false);
             }
             if (!docClassCode.equals(ClassCode.EDD_CLASSCODE)) {
-                final TMResponseStructure tmResponseStructure = cdaTransformationService.transcode(DomUtils.byteToDocument(cdaBytes));
+                final TMResponseStructure tmResponseStructure = cdaTransformationService.transcode(DomUtils.byteToDocument(cdaBytes), NcpSide.NCP_B);
                 final var base64EncodedDocument = tmResponseStructure.getResponseCDA();
                 final byte[] transformedCda = XMLUtils.toOM(Base64Util.decode(base64EncodedDocument).getDocumentElement()).toString().getBytes(StandardCharsets.UTF_8);
                 xdrDocument.setValue(transformedCda);
