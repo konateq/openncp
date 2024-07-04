@@ -7,7 +7,5 @@ envsubst < /opt/ehealth-openncp/openncp-configuration-utility/application.templa
 envsubst < /opt/ehealth-openncp/openncp-configuration-utility/openncp-configuration.template.properties > \
 /opt/ehealth-openncp/openncp-configuration-utility/openncp-configuration.properties
 
-envsubst < /opt/openncp-configuration/ATNA_resources/ArrConnections.template.xml > /opt/openncp-configuration/ATNA_resources/ArrConnections.xml
-
 # Run the standard container command.
 exec "$@"
