@@ -1,8 +1,8 @@
 package eu.europa.ec.sante.openncp.common.util;
 
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
-import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.StandardProperties;
+import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.util.proxy.CustomProxySelector;
 import eu.europa.ec.sante.openncp.common.util.proxy.ProxyCredentials;
 import org.cryptacular.util.CertUtil;
@@ -20,28 +20,28 @@ import java.net.ProxySelector;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.*;
-import java.security.cert.*;
 import java.security.cert.Certificate;
+import java.security.cert.*;
 
 public class HttpUtil {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
     private static final String WARNING_NO_CERTIFICATE_FOUND = "Warning!: No Server certificate found!";
 
-    public static String getHostIpAddress(String host) {
+    public static String getHostIpAddress(final String host) {
 
         try {
             return InetAddress.getByName(host).getHostAddress();
-        } catch (UnknownHostException e) {
+        } catch (final UnknownHostException e) {
             return "Server IP Unknown";
         }
     }
 
-    public static String getClientCertificate(HttpServletRequest request) {
+    public static String getClientCertificate(final HttpServletRequest request) {
 
         LOGGER.info("Trying to find certificate from : '{}'", request.getRequestURI());
-        String result;
-        X509Certificate[] certs = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+        final String result;
+        final X509Certificate[] certs = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
 
         if (certs != null && certs.length > 0) {
             result = getCommonName(certs[0]);
@@ -57,23 +57,33 @@ public class HttpUtil {
         return result;
     }
 
-    public static String getTlsCertificateCommonName(String host) {
 
-        Certificate[] certificates = getSSLPeerCertificate(host, false);
+    public static String getTlsCertificateCommonName(final CertificatesDataHolder.CertificateData certificateData, final String host) {
+        final Certificate[] certificates = getSSLPeerCertificate(certificateData, host, false);
         if (certificates != null && certificates.length > 0) {
-            X509Certificate cert = (X509Certificate) certificates[0];
+            final X509Certificate cert = (X509Certificate) certificates[0];
             return getCommonName(cert);
         }
         return WARNING_NO_CERTIFICATE_FOUND;
     }
 
-    private static Certificate[] getSSLPeerCertificate(String host, boolean sslValidation) {
+    public static String getTlsCertificateCommonName(final String host) {
+        final CertificatesDataHolder.CertificateData certificateData = ImmutableCertificateData.builder()
+                .path(Constants.SC_KEYSTORE_PATH)
+                .password(Constants.SC_KEYSTORE_PASSWORD)
+                .alias(Constants.SC_PRIVATEKEY_ALIAS)
+                .build();
+
+        return getTlsCertificateCommonName(certificateData, host);
+    }
+
+    private static Certificate[] getSSLPeerCertificate(final CertificatesDataHolder.CertificateData certificateData, final String host, final boolean sslValidation) {
 
         HttpsURLConnection urlConnection = null;
 
         if (!sslValidation) {
 
-            var trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            final var trustAllCerts = new TrustManager[]{new X509TrustManager() {
 
                 @Override
                 public X509Certificate[] getAcceptedIssuers() {
@@ -81,13 +91,13 @@ public class HttpUtil {
                 }
 
                 @Override
-                public void checkClientTrusted(X509Certificate[] certificates, String authType) {
+                public void checkClientTrusted(final X509Certificate[] certificates, final String authType) {
                     try {
-                        if(this.getAcceptedIssuers().length > 0) {
+                        if (this.getAcceptedIssuers().length > 0) {
                             this.getAcceptedIssuers()[0].checkValidity();
                         }
-                    } catch (CertificateExpiredException | CertificateNotYetValidException e) {
-                        if(this.getAcceptedIssuers().length > 0) {
+                    } catch (final CertificateExpiredException | CertificateNotYetValidException e) {
+                        if (this.getAcceptedIssuers().length > 0) {
                             LOGGER.error("Error: Invalid server certificate : {} : {}", this.getAcceptedIssuers()[0].getSubjectDN().getName(), authType);
                         } else {
                             LOGGER.error("Error: Invalid server certificate : UNKNOWN : {}", authType);
@@ -96,13 +106,13 @@ public class HttpUtil {
                 }
 
                 @Override
-                public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
+                public void checkServerTrusted(final X509Certificate[] arg0, final String arg1) {
                     try {
-                        if(this.getAcceptedIssuers().length > 0) {
+                        if (this.getAcceptedIssuers().length > 0) {
                             this.getAcceptedIssuers()[0].checkValidity();
                         }
-                    } catch (CertificateExpiredException | CertificateNotYetValidException e) {
-                        if(this.getAcceptedIssuers().length > 0) {
+                    } catch (final CertificateExpiredException | CertificateNotYetValidException e) {
+                        if (this.getAcceptedIssuers().length > 0) {
                             LOGGER.error("Error: Invalid server certificate : {} : {}", this.getAcceptedIssuers()[0].getSubjectDN().getName(), arg1);
                         } else {
                             LOGGER.error("Error: Invalid server certificate : UNKNOWN : {}", arg1);
@@ -112,21 +122,22 @@ public class HttpUtil {
             }
             };
 
-            try (var keystoreInputStream = getKeystoreInputStream(Constants.SC_KEYSTORE_PATH)) {
+
+            try (final var keystoreInputStream = getKeystoreInputStream(certificateData.getPath())) {
 
                 // Install the all-trusting trust manager
-                var keyStore = KeyStore.getInstance("JKS");
-                keyStore.load(keystoreInputStream, Constants.SC_KEYSTORE_PASSWORD.toCharArray());
-                var keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-                keyManagerFactory.init(keyStore, Constants.SC_KEYSTORE_PASSWORD.toCharArray());
+                final var keyStore = KeyStore.getInstance("JKS");
+                keyStore.load(keystoreInputStream, certificateData.getPassword().toCharArray());
+                final var keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+                keyManagerFactory.init(keyStore, certificateData.getPassword().toCharArray());
 
                 // Install the all-trusting trust manager
-                SSLContext sslContext;
+                final SSLContext sslContext;
                 sslContext = SSLContext.getInstance("TLSv1.2");
                 sslContext.init(keyManagerFactory.getKeyManagers(), trustAllCerts, new java.security.SecureRandom());
                 HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
 
-                URL url;
+                final URL url;
                 url = new URL(host);
                 urlConnection = (HttpsURLConnection) url.openConnection();
                 urlConnection.setHostnameVerifier((hostname, session) -> session.isValid() && !hostname.isEmpty());
@@ -134,8 +145,8 @@ public class HttpUtil {
                 urlConnection.connect();
                 return urlConnection.getServerCertificates();
 
-            } catch (IOException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
-                     | KeyManagementException | CertificateException e) {
+            } catch (final IOException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
+                           | KeyManagementException | CertificateException e) {
                 LOGGER.error("Error: '{}'", e.getMessage(), e);
             } finally {
 
@@ -147,17 +158,17 @@ public class HttpUtil {
         return new Certificate[]{};
     }
 
-    private static InputStream getKeystoreInputStream(String location) {
+    private static InputStream getKeystoreInputStream(final String location) {
 
         try {
-            var file = new File(location);
+            final var file = new File(location);
             if (file.exists()) {
                 return new FileInputStream(file);
             }
-            var url = new URL(location);
+            final var url = new URL(location);
             return url.openStream();
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Exception: '{}'", e.getMessage(), e);
         }
 
@@ -165,7 +176,7 @@ public class HttpUtil {
         return null;
     }
 
-    public static String getServerCertificate(String endpoint) {
+    public static String getServerCertificate(final String endpoint) {
 
         LOGGER.debug("Trying to find certificate from : '{}'", endpoint);
         var result = "";
@@ -175,24 +186,24 @@ public class HttpUtil {
             if (!endpoint.startsWith("https")) {
                 result = WARNING_NO_CERTIFICATE_FOUND;
             } else {
-                var sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                URL url;
+                final var sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+                final URL url;
                 url = new URL(endpoint);
                 urlConnection = (HttpsURLConnection) url.openConnection();
                 urlConnection.setHostnameVerifier((hostname, session) -> session.isValid() && !hostname.isEmpty());
                 urlConnection.setSSLSocketFactory(sslSocketFactory);
                 urlConnection.connect();
-                Certificate[] certs = urlConnection.getServerCertificates();
+                final Certificate[] certs = urlConnection.getServerCertificates();
 
                 // Get the first certificate
                 if (certs != null && certs.length > 0) {
-                    X509Certificate cert = (X509Certificate) certs[0];
+                    final X509Certificate cert = (X509Certificate) certs[0];
                     result = getCommonName(cert);
                 } else {
                     result = WARNING_NO_CERTIFICATE_FOUND;
                 }
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error("IOException: '{}'", e.getMessage(), e);
         } finally {
             if (urlConnection != null) {
@@ -204,34 +215,44 @@ public class HttpUtil {
 
     }
 
-    public static String getSubjectDN(boolean isProvider) {
-
-        Certificate cert;
-        String keystorePath;
+    public static String getSubjectDN(final CertificatesDataHolder certificatesDataHolder, final boolean isProvider) {
+        final CertificatesDataHolder.CertificateData certificateData;
         if (isProvider) {
-            keystorePath = Constants.SP_KEYSTORE_PATH;
+            certificateData = certificatesDataHolder.getServiceProviderData();
         } else {
-            keystorePath = Constants.SC_KEYSTORE_PATH;
+            certificateData = certificatesDataHolder.getServiceConsumerData();
         }
 
-        try (var inputStream = new FileInputStream(keystorePath)) {
+        try (final var inputStream = new FileInputStream(certificateData.getPath())) {
+            final var keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keystore.load(inputStream, certificateData.getPassword().toCharArray());
+            final Certificate cert = keystore.getCertificate(certificateData.getAlias());
 
-            var keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-            if (isProvider) {
-                keystore.load(inputStream, Constants.SP_KEYSTORE_PASSWORD.toCharArray());
-                cert = keystore.getCertificate(Constants.SP_PRIVATEKEY_ALIAS);
-            } else {
-                keystore.load(inputStream, Constants.SC_KEYSTORE_PASSWORD.toCharArray());
-                cert = keystore.getCertificate(Constants.SC_PRIVATEKEY_ALIAS);
-            }
             if (cert instanceof X509Certificate) {
-                var x509Certificate = (X509Certificate) cert;
+                final var x509Certificate = (X509Certificate) cert;
                 return getCommonName(x509Certificate);
             }
-        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
+        } catch (final KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             LOGGER.error("{}: '{}'", e.getClass(), e.getMessage(), e);
         }
         return "";
+    }
+
+    public static String getSubjectDN(final boolean isProvider) {
+        final CertificatesDataHolder certificatesDataHolder = ImmutableCertificatesDataHolder.builder()
+                .serviceProviderData(ImmutableCertificateData.builder()
+                        .path(Constants.SP_KEYSTORE_PATH)
+                        .password(Constants.SP_KEYSTORE_PASSWORD)
+                        .alias(Constants.SP_PRIVATEKEY_ALIAS)
+                        .build())
+                .serviceConsumerData(ImmutableCertificateData.builder()
+                        .path(Constants.SC_KEYSTORE_PATH)
+                        .password(Constants.SC_KEYSTORE_PASSWORD)
+                        .alias(Constants.SC_PRIVATEKEY_ALIAS)
+                        .build())
+                .build();
+
+        return getSubjectDN(certificatesDataHolder, isProvider);
     }
 
     public static boolean isBehindProxy() {
@@ -241,7 +262,7 @@ public class HttpUtil {
 
     public static ProxyCredentials getProxyCredentials() {
 
-        var credentials = new ProxyCredentials();
+        final var credentials = new ProxyCredentials();
         credentials.setProxyAuthenticated(Boolean.parseBoolean(ConfigurationManagerFactory.getConfigurationManager().getProperty(StandardProperties.HTTP_PROXY_USED)));
         credentials.setHostname(ConfigurationManagerFactory.getConfigurationManager().getProperty(StandardProperties.HTTP_PROXY_HOST));
         credentials.setPassword(ConfigurationManagerFactory.getConfigurationManager().getProperty(StandardProperties.HTTP_PROXY_PASSWORD));
@@ -250,15 +271,16 @@ public class HttpUtil {
         return credentials;
     }
 
-    private static String getCommonName(java.security.cert.X509Certificate cert) {
+    private static String getCommonName(final java.security.cert.X509Certificate cert) {
         return CertUtil.subjectCN(cert);
     }
 
+
     public CustomProxySelector setCustomProxyServerForURLConnection() {
 
-        CustomProxySelector customProxySelector;
+        final CustomProxySelector customProxySelector;
         if (isBehindProxy()) {
-            var proxyCredentials = getProxyCredentials();
+            final var proxyCredentials = getProxyCredentials();
             customProxySelector = new CustomProxySelector(ProxySelector.getDefault(), proxyCredentials);
             return customProxySelector;
         }

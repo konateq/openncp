@@ -1,13 +1,16 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service;
 
+import eu.europa.ec.sante.openncp.common.Constant;
 import eu.europa.ec.sante.openncp.common.NcpSide;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
-import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
 import eu.europa.ec.sante.openncp.common.audit.*;
-import eu.europa.ec.sante.openncp.common.audit.AuditService;
-import eu.europa.ec.sante.openncp.common.audit.AuditServiceFactory;
+import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
+import eu.europa.ec.sante.openncp.common.util.CertificatesDataHolder;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
+import eu.europa.ec.sante.openncp.common.util.ImmutableCertificateData;
+import eu.europa.ec.sante.openncp.common.util.ImmutableCertificatesDataHolder;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.DateTimeUtil;
+import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,8 +39,10 @@ import java.net.URISyntaxException;
 public class AuditManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditManager.class);
+    private final PropertyService propertyService;
 
-    private AuditManager() {
+    public AuditManager(final PropertyService propertyService) {
+        this.propertyService = Validate.notNull(propertyService, "PropertyService must not be null");
     }
 
     /**
@@ -46,11 +51,11 @@ public class AuditManager {
      * @param errorMessagePartObjectId
      * @param errorMessagePartObjectDetail
      */
-    public static void handleDynamicDiscoveryQuery(String smpServerUri, String objectID, String errorMessagePartObjectId,
-                                                   byte[] errorMessagePartObjectDetail) {
+    public void handleDynamicDiscoveryQuery(final String smpServerUri, final String objectID, final String errorMessagePartObjectId,
+                                            final byte[] errorMessagePartObjectDetail) {
 
-        AuditService auditService = AuditServiceFactory.getInstance();
-        EventLog eventLog = createDynamicDiscoveryEventLog(TransactionName.SMP_QUERY, objectID, errorMessagePartObjectId,
+        final AuditService auditService = AuditServiceFactory.getInstance();
+        final EventLog eventLog = createDynamicDiscoveryEventLog(TransactionName.SMP_QUERY, objectID, errorMessagePartObjectId,
                 errorMessagePartObjectDetail, smpServerUri);
         eventLog.setEventType(EventType.SMP_QUERY);
         eventLog.setNcpSide(NcpSide.NCP_A);
@@ -63,11 +68,11 @@ public class AuditManager {
      * @param errorMessagePartObjectId
      * @param errorMessagePartObjectDetail
      */
-    public static void handleDynamicDiscoveryPush(String smpServerUri, String objectID, String errorMessagePartObjectId,
-                                                  byte[] errorMessagePartObjectDetail) {
+    public void handleDynamicDiscoveryPush(final String smpServerUri, final String objectID, final String errorMessagePartObjectId,
+                                           final byte[] errorMessagePartObjectDetail) {
 
-        AuditService auditService = AuditServiceFactory.getInstance();
-        EventLog eventLog = createDynamicDiscoveryEventLog(TransactionName.SMP_PUSH, objectID, errorMessagePartObjectId,
+        final AuditService auditService = AuditServiceFactory.getInstance();
+        final EventLog eventLog = createDynamicDiscoveryEventLog(TransactionName.SMP_PUSH, objectID, errorMessagePartObjectId,
                 errorMessagePartObjectDetail, smpServerUri);
         eventLog.setEventType(EventType.SMP_PUSH);
         eventLog.setNcpSide(NcpSide.NCP_A);
@@ -78,21 +83,22 @@ public class AuditManager {
      * @param bytes
      * @return
      */
-    public static String prepareEventLog(byte[] bytes) {
+    public String prepareEventLog(final byte[] bytes) {
 
-        StringWriter sw = new StringWriter();
+        final StringWriter sw = new StringWriter();
         try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilderFactory.setXIncludeAware(false);
-            ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-            DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-            Document doc = builder.parse(stream);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            final ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
+            final DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+            final Document doc = builder.parse(stream);
+            final TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            Transformer transformer = transformerFactory.newTransformer();
+            final Transformer transformer = transformerFactory.newTransformer();
             transformer.transform(new DOMSource(doc), new StreamResult(sw));
 
-        } catch (TransformerException | ParserConfigurationException | UnsupportedOperationException | SAXException | IOException e) {
+        } catch (final TransformerException | ParserConfigurationException | UnsupportedOperationException |
+                       SAXException | IOException e) {
             LOGGER.error("{} response: '{}'", e.getClass(), SimpleErrorHandler.printExceptionStackTrace(e));
         }
         return sw.toString();
@@ -106,18 +112,32 @@ public class AuditManager {
      * @param smpServerUri
      * @return
      */
-    private static EventLog createDynamicDiscoveryEventLog(TransactionName transactionName, String objectID,
-                                                           String errorMessagePartObjectId, byte[] errorMessagePartObjectDetail,
-                                                           String smpServerUri) {
+    private EventLog createDynamicDiscoveryEventLog(final TransactionName transactionName, final String objectID,
+                                                    final String errorMessagePartObjectId, final byte[] errorMessagePartObjectDetail,
+                                                    final String smpServerUri) {
+        final ImmutableCertificateData providerCertificateData = ImmutableCertificateData.builder()
+                .path(propertyService.getPropertyValueMandatory(Constant.SP_KEYSTORE_PATH.getKey()))
+                .password(propertyService.getPropertyValueMandatory(Constant.SP_KEYSTORE_PASSWORD.getKey()))
+                .alias(propertyService.getPropertyValueMandatory(Constant.SP_PRIVATEKEY_ALIAS.getKey()))
+                .build();
+        final ImmutableCertificateData consumerCertificateData = ImmutableCertificateData.builder()
+                .path(propertyService.getPropertyValueMandatory(Constant.SC_KEYSTORE_PATH.getKey()))
+                .password(propertyService.getPropertyValueMandatory(Constant.SC_KEYSTORE_PASSWORD.getKey()))
+                .alias(propertyService.getPropertyValueMandatory(Constant.SC_PRIVATEKEY_ALIAS.getKey()))
+                .build();
+        final CertificatesDataHolder certificatesDataHolder = ImmutableCertificatesDataHolder.builder()
+                .serviceProviderData(providerCertificateData)
+                .serviceConsumerData(consumerCertificateData)
+                .build();
 
-        String serviceConsumerUserId = HttpUtil.getSubjectDN(false);
-        String serviceProviderUserId = HttpUtil.getTlsCertificateCommonName(smpServerUri);
-        String localIp = IPUtil.getPrivateServerIp();
-        String participantId = ConfigurationManagerFactory.getConfigurationManager().getProperty("COUNTRY_PRINCIPAL_SUBDIVISION");
+        final String serviceConsumerUserId = HttpUtil.getSubjectDN(certificatesDataHolder, false);
+        final String serviceProviderUserId = HttpUtil.getTlsCertificateCommonName(consumerCertificateData, smpServerUri);
+        final String localIp = IPUtil.getPrivateServerIp();
+        final String participantId = propertyService.getPropertyValueMandatory("COUNTRY_PRINCIPAL_SUBDIVISION");
         URI uri = null;
         try {
             uri = new URI(smpServerUri);
-        } catch (URISyntaxException e) {
+        } catch (final URISyntaxException e) {
             LOGGER.error("URISyntaxException: '{}'", e.getMessage(), e);
         }
 

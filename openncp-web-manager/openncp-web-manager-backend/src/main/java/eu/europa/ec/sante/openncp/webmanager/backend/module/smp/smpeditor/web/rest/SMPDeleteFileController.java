@@ -24,6 +24,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,16 +76,28 @@ public class SMPDeleteFileController {
     private static final String TECHNICAL_EXCEPTION = "TechnicalException";
     private final Logger logger = LoggerFactory.getLogger(SMPDeleteFileController.class);
     private final DynamicDiscoveryClient dynamicDiscoveryClient;
+    private final DynamicDiscoveryService dynamicDiscoveryService;
     private final ReadSMPProperties readProperties;
     private final Environment env;
     private final PropertyService propertyService;
+    private final AuditManager auditManager;
+    private final SslUtil sslUtil;
 
     @Autowired
-    public SMPDeleteFileController(final DynamicDiscoveryClient dynamicDiscoveryClient, final ReadSMPProperties readProperties, final Environment env, final PropertyService propertyService) {
+    public SMPDeleteFileController(final DynamicDiscoveryClient dynamicDiscoveryClient,
+                                   final DynamicDiscoveryService dynamicDiscoveryService,
+                                   final ReadSMPProperties readProperties,
+                                   final Environment env,
+                                   final PropertyService propertyService,
+                                   final AuditManager auditManager,
+                                   final SslUtil sslUtil) {
         this.dynamicDiscoveryClient = dynamicDiscoveryClient;
+        this.dynamicDiscoveryService = Validate.notNull(dynamicDiscoveryService, "DynamicDiscoveryService must not be null");
         this.readProperties = readProperties;
         this.env = env;
         this.propertyService = Validate.notNull(propertyService, "PropertyService must not be null");
+        this.auditManager = Validate.notNull(auditManager, "AuditManager must not be null");
+        this.sslUtil = Validate.notNull(sslUtil, "SslUtil must not be null");
     }
 
     @GetMapping(path = "smpeditor/smpfileinfo")
@@ -185,10 +198,10 @@ public class SMPDeleteFileController {
         final byte[] encodedObjectID = Base64.encodeBase64(objectID.getBytes());
 
         if (success) {
-            AuditManager.handleDynamicDiscoveryQuery(smpURI.toString(), new String(encodedObjectID), null, null);
+            auditManager.handleDynamicDiscoveryQuery(smpURI.toString(), new String(encodedObjectID), null, null);
             return ResponseEntity.ok(referenceCollection);
         } else {
-            AuditManager.handleDynamicDiscoveryQuery(smpURI.toString(), new String(encodedObjectID), "500", errorType.getBytes());
+            auditManager.handleDynamicDiscoveryQuery(smpURI.toString(), new String(encodedObjectID), "500", errorType.getBytes());
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, errorType);
         }
     }
@@ -234,14 +247,14 @@ public class SMPDeleteFileController {
         }
 
         // Trust own CA and all self-signed certs
-        final SSLContext sslcontext = SslUtil.createSSLContext();
+        final SSLContext sslcontext = sslUtil.createSSLContext();
 
         //DELETE
         final HttpDelete httpdelete = new HttpDelete(uri);
 
         final CloseableHttpResponse response;
-        try {
-            response = DynamicDiscoveryService.buildHttpClient(sslcontext).execute(httpdelete);
+        try (final CloseableHttpClient closeableHttpClient = dynamicDiscoveryService.buildHttpClient(sslcontext)) {
+            response = closeableHttpClient.execute(httpdelete);
         } catch (final IOException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "IOException - " + SimpleErrorHandler.printExceptionStackTrace(ex));
         }
@@ -266,18 +279,18 @@ public class SMPDeleteFileController {
             case 503:
             case 405:
                 //Audit error
-                AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
+                auditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         Integer.toString(responseStatus), encodedObjectDetail);
                 throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty(ERROR_SERVER_FAILED));
             case 401:
                 //Audit error
-                AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
+                auditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         Integer.toString(responseStatus), encodedObjectDetail);
                 throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty(ERROR_NOUSER));
             case 200:
             case 201:
                 //Audit Success
-                AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
+                auditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         null, null);
                 return ResponseEntity.ok().build();
             default:
@@ -321,10 +334,10 @@ public class SMPDeleteFileController {
         }
 
         /*transform xml to string in order to send in Audit*/
-        final String errorResult = AuditManager.prepareEventLog(bytes);
+        final String errorResult = auditManager.prepareEventLog(bytes);
         logger.debug(ERROR_RESULT, errorResult);
         //Audit error
-        AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
+        auditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                 Integer.toString(responseStatus), errorResult.getBytes());
 
         return ResponseEntity.status(responseStatus).build();
@@ -366,15 +379,14 @@ public class SMPDeleteFileController {
         }
 
         // Trust own CA and all self-signed certs
-        final SSLContext sslcontext = SslUtil.createSSLContext();
+        final SSLContext sslcontext = sslUtil.createSSLContext();
 
         //DELETE
         final HttpDelete httpdelete = new HttpDelete(uri);
 
         final CloseableHttpResponse response;
-
-        try {
-            response = DynamicDiscoveryService.buildHttpClient(sslcontext).execute(httpdelete);
+        try (final CloseableHttpClient closeableHttpClient = dynamicDiscoveryService.buildHttpClient(sslcontext)) {
+            response = closeableHttpClient.execute(httpdelete);
         } catch (final IOException e) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, IOEXCEPTION + SimpleErrorHandler.printExceptionStackTrace(e));
         }
@@ -397,19 +409,19 @@ public class SMPDeleteFileController {
             case 405:
                 //Audit error
                 byte[] encodedObjectDetail = Base64.encodeBase64(responseReason.getBytes());
-                AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
+                auditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         Integer.toString(responseStatus), encodedObjectDetail);
                 throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty(ERROR_SERVER_FAILED));
             case 401:
                 //Audit error
                 encodedObjectDetail = Base64.encodeBase64(responseReason.getBytes());
-                AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
+                auditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         Integer.toString(responseStatus), encodedObjectDetail);
                 throw new ApiException(HttpStatus.valueOf(responseStatus), env.getProperty(ERROR_NOUSER));
             case 200:
             case 201:
                 //Audit Success
-                AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
+                auditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                         null, null);
                 return ResponseEntity.ok().build();
             default:
@@ -451,10 +463,10 @@ public class SMPDeleteFileController {
         }
 
         /*transform xml to string in order to send in Audit*/
-        final String errorResult = AuditManager.prepareEventLog(bytes);
+        final String errorResult = auditManager.prepareEventLog(bytes);
         logger.debug(ERROR_RESULT, errorResult);
         //Audit error
-        AuditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
+        auditManager.handleDynamicDiscoveryPush(remoteIp, new String(encodedObjectID),
                 Integer.toString(responseStatus), errorResult.getBytes());
 
         return ResponseEntity.status(responseStatus).build();
