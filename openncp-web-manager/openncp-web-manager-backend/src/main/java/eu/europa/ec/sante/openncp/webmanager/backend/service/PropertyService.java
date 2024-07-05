@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -13,7 +14,7 @@ public class PropertyService {
 
     private final PropertyRepository propertyRepository;
 
-    public PropertyService(PropertyRepository propertyRepository) {
+    public PropertyService(final PropertyRepository propertyRepository) {
         this.propertyRepository = propertyRepository;
     }
 
@@ -21,7 +22,15 @@ public class PropertyService {
         return propertyRepository.findAll();
     }
 
-    public Property getProperty(String name) {
+    public Property getProperty(final String name) {
         return propertyRepository.findById(name).orElseThrow();
+    }
+
+    public Optional<String> getPropertyValue(final String propertyName) {
+        return propertyRepository.findById(propertyName).map(Property::getName);
+    }
+
+    public String getPropertyValueMandatory(final String propertyName) {
+        return getProperty(propertyName).getValue();
     }
 }
