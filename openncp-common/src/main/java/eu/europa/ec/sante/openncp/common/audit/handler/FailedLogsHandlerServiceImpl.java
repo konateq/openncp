@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.common.audit.handler;
 
 import eu.europa.ec.sante.openncp.common.audit.serialization.AuditLogSerializer;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,14 +22,14 @@ public class FailedLogsHandlerServiceImpl implements FailedLogsHandlerService {
     private static final int WAIT_FOR_TERMINATION = 5000;
     private static final long DEFAULT_SCHEDULER_TIME_MINUTES = 60;
     private ScheduledExecutorService scheduledExecutorService = null;
-    private MessageHandlerListener listener;
-    private AuditLogSerializer.Type type;
+    private final MessageHandlerListener listener;
+    private final AuditLogSerializer.Type type;
 
     /**
      * @param listener
      * @param type
      */
-    public FailedLogsHandlerServiceImpl(MessageHandlerListener listener, AuditLogSerializer.Type type) {
+    public FailedLogsHandlerServiceImpl(final MessageHandlerListener listener, final AuditLogSerializer.Type type) {
         this.listener = listener;
         this.type = type;
     }
@@ -40,11 +41,10 @@ public class FailedLogsHandlerServiceImpl implements FailedLogsHandlerService {
 
         LOGGER.info("Starting FailedLogsHandlerService...");
         if (scheduledExecutorService == null) {
-            FailedLogsHandler failedLogsHandlerCommand = new FailedLogsHandlerImpl(listener, type);
+            final FailedLogsHandler failedLogsHandlerCommand = new FailedLogsHandlerImpl(listener, type);
             scheduledExecutorService = new ScheduledThreadPoolExecutor(SCHEDULED_THREAD_POOL_SIZE);
-            long timeBetween = getTimeBetween();
-            scheduledExecutorService.scheduleWithFixedDelay(failedLogsHandlerCommand,  timeBetween, timeBetween, TimeUnit.MINUTES);
-            LOGGER.info("Started FailedLogsHandlerService. Logs will be scanned every '{}' minutes.", timeBetween);
+            scheduledExecutorService.scheduleWithFixedDelay(failedLogsHandlerCommand, getTimeBetween(), getTimeBetween(), TimeUnit.MINUTES);
+            LOGGER.info("Started FailedLogsHandlerService. Logs will be scanned every '{}' minutes.", getTimeBetween());
         } else {
             LOGGER.warn("Attempted to start FailedLogsHandlerService even already running.");
         }
@@ -62,7 +62,7 @@ public class FailedLogsHandlerServiceImpl implements FailedLogsHandlerService {
             boolean shutdownOk = false;
             try {
                 shutdownOk = scheduledExecutorService.awaitTermination(WAIT_FOR_TERMINATION, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
                 LOGGER.error("InterruptedException: '{}'", e.getMessage(), e);
             }
@@ -83,19 +83,23 @@ public class FailedLogsHandlerServiceImpl implements FailedLogsHandlerService {
      * @return Interval in minute
      */
     private long getTimeBetween() {
-        long l;
-        try {
-            String sValue = ConfigurationManagerFactory.getConfigurationManager()
-                    .getProperty(KEY_SCHEDULED_TIME_BETWEEN_FAILED_LOGS_HANDLING);
+        final ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
+        if (configurationManager == null) {
+            return DEFAULT_SCHEDULER_TIME_MINUTES;
+        } else {
+            final String sValue = configurationManager.getProperty(KEY_SCHEDULED_TIME_BETWEEN_FAILED_LOGS_HANDLING);
             if (StringUtils.isBlank(sValue)) {
                 return DEFAULT_SCHEDULER_TIME_MINUTES;
             }
 
-            l = Long.parseLong(sValue);
-        } catch (Exception e) {
-            LOGGER.error("Exception: '{}'", e.getMessage(), e);
-            return DEFAULT_SCHEDULER_TIME_MINUTES;
+            final long l;
+            try {
+                l = Long.parseLong(sValue);
+            } catch (final Exception e) {
+                LOGGER.error("Exception: '{}'", e.getMessage(), e);
+                return DEFAULT_SCHEDULER_TIME_MINUTES;
+            }
+            return l;
         }
-        return l;
     }
 }
