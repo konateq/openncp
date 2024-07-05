@@ -19,7 +19,7 @@ envsubst < /opt/ehealth-openncp/openncp-configuration-utility/openncp-configurat
 # ip that comes back from the accept SMP discovery url (127.0.0.1:xxx/openncp-ws-server/xxxx)
 socat TCP-LISTEN:8443,fork TCP:host.docker.internal:8443 &
 # Same as the above but for the openatna server, since docker hostnames don't seem to work with SSL
-socat TCP-LISTEN:3443,fork TCP:host.docker.internal:3443 &
+socat TCP-LISTEN:2862,fork TCP:host.docker.internal:2862 &
 
 # Run the standard container command.
 exec "$@"

@@ -8,7 +8,8 @@ envsubst < /opt/ehealth-openncp/openncp-configuration-utility/openncp-configurat
 /opt/ehealth-openncp/openncp-configuration-utility/openncp-configuration.properties
 
 # Expose localhost:3443, since docker hostnames don't seem to work with SSL
-socat TCP-LISTEN:3443,fork TCP:host.docker.internal:3443 &
+socat TCP-LISTEN:2862,fork TCP:host.docker.internal:2862 &
+
 
 # Run the standard container command.
 exec "$@"

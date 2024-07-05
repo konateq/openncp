@@ -11,19 +11,12 @@ import net.RFC3881.dicom.AuditMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Inet4Address;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -50,7 +43,7 @@ public class MessageSender {
      * @param facility
      * @param severity
      */
-    public void send(AuditLogSerializer auditLogSerializer, AuditMessage auditmessage, String facility, String severity) {
+    public void send(final AuditLogSerializer auditLogSerializer, final AuditMessage auditmessage, final String facility, final String severity) {
 
         logger.info("[Audit Service] Message Sender Start...");
         boolean sent = false;
@@ -64,7 +57,7 @@ public class MessageSender {
             } else {
                 logger.info("Try to construct the Audit Message type: '{}'", "N/A");
             }
-            String auditMessage = AuditTrailUtils.constructMessage(auditmessage, true);
+            final String auditMessage = AuditTrailUtils.constructMessage(auditmessage, true);
 
             if (!Utils.isEmpty(auditMessage)) {
                 long timeout = Long.parseLong(Utils.getProperty("audit.time.to.try", "60000", true));
@@ -86,10 +79,10 @@ public class MessageSender {
                 }
             }
             Thread.sleep(1000);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             logger.error("InterruptedException: '{}'", e.getMessage(), e);
             Thread.currentThread().interrupt();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             Thread.currentThread().interrupt();
         } finally {
@@ -112,20 +105,19 @@ public class MessageSender {
      * @param severity
      * @return true/false depending on the success of sending the message
      */
-    private boolean sendMessage(String auditMessage, String facility, String severity) {
+    private boolean sendMessage(final String auditMessage, final String facility, final String severity) {
 
-        SSLSocket sslsocket;
+        final SSLSocket sslsocket;
         boolean sent = false;
-        String facsev = facility + severity;
+        final String facsev = facility + severity;
 
         try {
-            //  EHEALTH-9771: sslsocket = buildSSLSocket();
             sslsocket = createAuditSecuredSocket();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("IOException: Cannot contact Secured Audit Server '{}'", e.getMessage());
             return false;
         }
-        try (BufferedOutputStream outputStream = new BufferedOutputStream(sslsocket.getOutputStream())) {
+        try (final BufferedOutputStream outputStream = new BufferedOutputStream(sslsocket.getOutputStream())) {
 
             //  Set header AuditLogSerializer of syslog message.
             String hostName = sslsocket.getLocalAddress().getHostName();
@@ -134,17 +126,17 @@ public class MessageSender {
                 hostName = IPUtil.getPrivateServerIp();
             }
             logger.info("Syslog Server hostname: '{}'", hostName);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-            Date now = new Date();
-            StringBuilder nowStr = new StringBuilder(dateFormat.format(now));
+            final Date now = new Date();
+            final StringBuilder nowStr = new StringBuilder(dateFormat.format(now));
             if (nowStr.charAt(4) == '0') {
                 nowStr.setCharAt(4, ' ');
             }
-            String header = "<" + facsev + ">1 " + nowStr + " " + hostName + " - - - - ";
+            final String header = "<" + facsev + ">1 " + nowStr + " " + hostName + " - - - - ";
 
             //  Set body of syslog message.
-            int length = header.getBytes().length + 3 + auditMessage.getBytes().length;
+            final int length = header.getBytes().length + 3 + auditMessage.getBytes().length;
             outputStream.write((length + " ").getBytes());
             outputStream.write(header.getBytes());
 
@@ -158,7 +150,7 @@ public class MessageSender {
 
             sent = true;
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Error sending message: '{}'", e.getMessage(), e);
 
         } finally {
@@ -167,7 +159,7 @@ public class MessageSender {
                 // Closing Secured Socket
                 logger.info("Closing SSL Socket");
                 sslsocket.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.warn("Unable to close SSLSocket", e);
             }
         }
@@ -181,48 +173,24 @@ public class MessageSender {
     private SSLSocket createAuditSecuredSocket() throws IOException {
 
         logger.info("Initialization SSLSocket...");
-        String host = ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_URL);
-        int port = Integer.parseInt(ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_PORT));
+        final String host = ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_URL);
+        final int port = Integer.parseInt(ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_PORT));
 
-        File u = new File(ConfigurationManagerFactory.getConfigurationManager().getProperty(TRUSTSTORE));
-        KeystoreDetails trust = new KeystoreDetails(u.toString(),
+        final File u = new File(ConfigurationManagerFactory.getConfigurationManager().getProperty(TRUSTSTORE));
+        final KeystoreDetails trust = new KeystoreDetails(u.toString(),
                 ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TRUSTSTORE_PWD.getValue()),
                 ConfigurationManagerFactory.getConfigurationManager().getProperty(KEY_ALIAS));
-        File uu = new File(ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TLS_KEYSTORE_FILE.getValue()));
-        KeystoreDetails key = new KeystoreDetails(uu.toString(),
+        final File uu = new File(ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TLS_KEYSTORE_FILE.getValue()));
+        final KeystoreDetails key = new KeystoreDetails(uu.toString(),
                 ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TLS_KEYSTORE_PWD.getValue()),
                 ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TLS_PRIVATE_KEY_ALIAS.getValue()),
                 ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TLS_PRIVATE_KEY_PWD.getValue()));
-        AuthSSLSocketFactory authSSLSocketFactory = new AuthSSLSocketFactory(key, trust);
-        SSLSocket sslsocket = (SSLSocket) authSSLSocketFactory.createSecureSocket(host, port);
+        final AuthSSLSocketFactory authSSLSocketFactory = new AuthSSLSocketFactory(key, trust);
+        final SSLSocket sslsocket = (SSLSocket) authSSLSocketFactory.createSecureSocket(host, port);
         sslsocket.setEnabledProtocols(enabledProtocols);
-        String[] suites = sslsocket.getSupportedCipherSuites();
+        final String[] suites = sslsocket.getSupportedCipherSuites();
         sslsocket.setEnabledCipherSuites(suites);
 
         return sslsocket;
-    }
-
-    public SSLSocket buildSSLSocket() throws GeneralSecurityException, IOException {
-
-        String host = ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_URL);
-        int port = Integer.parseInt(ConfigurationManagerFactory.getConfigurationManager().getProperty(AUDIT_REPOSITORY_PORT));
-
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        InputStream is = Files.newInputStream(Paths.get(ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TRUSTSTORE.getValue())));
-        keyStore.load(is, ConfigurationManagerFactory.getConfigurationManager().getProperty(Configuration.TRUSTSTORE_PWD.getValue()).toCharArray());
-
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        trustManagerFactory.init(keyStore);
-
-        SSLContext sslContext = SSLContext.getInstance(enabledProtocols[0]);
-        sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
-
-        SSLSocket socket = (SSLSocket) sslContext.getSocketFactory().createSocket(host, port);
-        socket.setEnabledProtocols(enabledProtocols);
-
-        String[] suites = socket.getSupportedCipherSuites();
-        socket.setEnabledCipherSuites(suites);
-
-        return socket;
     }
 }
