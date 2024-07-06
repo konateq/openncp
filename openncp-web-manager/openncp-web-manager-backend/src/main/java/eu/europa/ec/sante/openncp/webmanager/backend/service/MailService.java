@@ -127,7 +127,7 @@ public class MailService implements MessageSourceAware {
             mail = Boolean.getBoolean(propertyService.getPropertyValueMandatory("GTW_MAIL_ENABLED"));
         } catch(NoSuchElementException e) {
             logger.error("MessagingException: property GTW_MAIL_ENABLED not specified '{}'", e.getMessage());
-            mail = true;
+            mail = false;
         }
 
         if (mail) {
