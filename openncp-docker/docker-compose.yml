@@ -1,4 +1,4 @@
-name: "openncp-lift-and-shift"
+name: "openncp"
 services:
   mysql:
     container_name: openncp_db
@@ -262,6 +262,11 @@ services:
       - "${NCP_WEB_MANAGER_BACKEND_CONNECTOR_PORT}:${NCP_WEB_MANAGER_BACKEND_CONNECTOR_PORT}"
       - "${NCP_WEB_MANAGER_BACKEND_CONNECTOR_SECURE_PORT}:${NCP_WEB_MANAGER_BACKEND_CONNECTOR_SECURE_PORT}"
       - "8000:8000"
+      - "5002:5002"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    dns:
+      - 8.8.8.8
     depends_on:
       mysql:
         condition: service_healthy
@@ -272,7 +277,8 @@ services:
       SPRING_CONFIG_ADDITIONAL-LOCATION: file:/opt/config/application-docker.yml
       CATALINA_OPTS: "
         -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
-        -Dfile.encoding=UTF-8"
+        -Dfile.encoding=UTF-8
+        -Xdebug -agentlib:jdwp=transport=dt_socket,address=0.0.0.0:5002,server=y,suspend=n"
       JAVA_OPTS: "
         -DopenATNA.properties.path=file:/opt/openncp-configuration/ATNA_resources/openatna.properties
         -Dfile.encoding=UTF-8

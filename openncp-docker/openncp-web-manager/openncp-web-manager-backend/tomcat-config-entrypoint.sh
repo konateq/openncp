@@ -2,10 +2,10 @@
 
 # envsubst assumes the image has the full GNU tool set (which is not the case in Alpine based images) if not use SED instead
 envsubst < /usr/local/tomcat/conf/server.template.xml > /usr/local/tomcat/conf/server.xml
-envsubst < /opt/ehealth-openncp/openncp-configuration-utility/application.template.yaml > \
-/opt/ehealth-openncp/openncp-configuration-utility/application.yaml
-envsubst < /opt/ehealth-openncp/openncp-configuration-utility/openncp-configuration.template.properties > \
-/opt/ehealth-openncp/openncp-configuration-utility/openncp-configuration.properties
+#envsubst < /opt/openncp-configuration-utility/application.template.yaml > \
+#/opt/openncp-configuration-utility/application.yaml
+#envsubst < /opt/openncp-configuration-utility/openncp-configuration.template.properties > \
+#/opt/openncp-configuration-utility/openncp-configuration.properties
 
 # The client will call the SMP to discover the correct openNCP server ip.
 # The SMP we use has this hardcoded to (127.0.0.1:8843/openncp-ws-server/xxxx).

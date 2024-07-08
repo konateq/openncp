@@ -1,10 +1,10 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service;
 
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.Constants;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPFieldProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
 import eu.europa.ec.sante.openncp.webmanager.backend.service.PermissionUtil;
+import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
 import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ehdsi.*;
 import org.slf4j.Logger;
@@ -58,13 +58,14 @@ public class SMPConverter {
     static {
         try {
             jaxbContext = JAXBContext.newInstance(SignedServiceMetadata.class, ServiceMetadata.class);
-        } catch (JAXBException e) {
+        } catch (final JAXBException e) {
             throw new IllegalStateException(e);
         }
     }
 
     private final Logger logger = LoggerFactory.getLogger(SMPConverter.class);
     private final Environment environment;
+    private final PropertyService propertyService;
     private String certificateSubjectName;
     private File generatedFile;
     private boolean nullExtension = false;
@@ -72,29 +73,30 @@ public class SMPConverter {
     private static final Path targetPath = new File(Constants.SMP_DIR_PATH + File.separator).toPath().normalize();
 
     @Autowired
-    public SMPConverter(Environment environment) {
+    public SMPConverter(final Environment environment, final PropertyService propertyService) {
         this.environment = environment;
+        this.propertyService = propertyService;
     }
 
     /**
      * Converts the data received from the SMPGenerateFileController to a XML file
      */
-    public void convertToXml(String type, String issuanceType, String countryCode, String endpointUri, String servDescription,
-                             String tecContact, String tecInformation, Date servActDate, Date servExpDate,
-                             String extension, FileInputStream certificateFile, String fileName,
-                             SMPFieldProperties businessLevelSignature, SMPFieldProperties minimumAuthLevel,
-                             String certificateUID, String redirectHref) throws IOException {
+    public void convertToXml(final String type, final String issuanceType, final String countryCode, String endpointUri, final String servDescription,
+                             final String tecContact, final String tecInformation, final Date servActDate, final Date servExpDate,
+                             final String extension, final FileInputStream certificateFile, final String fileName,
+                             final SMPFieldProperties businessLevelSignature, final SMPFieldProperties minimumAuthLevel,
+                             final String certificateUID, final String redirectHref) throws IOException {
 
         logger.debug("Converting SMP Model to XML");
-        ObjectFactory objectFactory = new ObjectFactory();
-        ServiceMetadata serviceMetadata = objectFactory.createServiceMetadata();
+        final ObjectFactory objectFactory = new ObjectFactory();
+        final ServiceMetadata serviceMetadata = objectFactory.createServiceMetadata();
 
         //XML file generated at path
         PermissionUtil.initializeFolders(Constants.SMP_DIR_PATH);
-        generatedFile = new File(targetPath + fileName);
+        generatedFile = new File(targetPath + File.separator + fileName);
 
         if (!generatedFile.toPath().normalize().startsWith(targetPath)) {
-            throw new IOException("Entry is outside of the target directory");
+            throw new IOException(String.format("Generated file [%s] is outside of the target directory [%s]", generatedFile, targetPath));
         }
 
 
@@ -103,7 +105,7 @@ public class SMPConverter {
 
             //  Redirect SMP Type
             logger.debug("Type Redirect");
-            RedirectType redirectType = objectFactory.createRedirectType();
+            final RedirectType redirectType = objectFactory.createRedirectType();
 
             redirectType.setCertificateUID(certificateUID);
             redirectType.setHref(redirectHref);
@@ -112,15 +114,15 @@ public class SMPConverter {
         } else {
             //  ServiceInformation SMP Type
             logger.debug("Type ServiceInformation");
-            DocumentIdentifier documentIdentifier = objectFactory.createDocumentIdentifier();
-            EndpointType endpointType = objectFactory.createEndpointType();
-            ExtensionType extensionType = objectFactory.createExtensionType();
-            ParticipantIdentifierType participantIdentifierType = objectFactory.createParticipantIdentifierType();
-            ProcessIdentifier processIdentifier = objectFactory.createProcessIdentifier();
-            ProcessListType processListType = objectFactory.createProcessListType();
-            ProcessType processType = objectFactory.createProcessType();
-            ServiceEndpointList serviceEndpointList = objectFactory.createServiceEndpointList();
-            ServiceInformationType serviceInformationType = objectFactory.createServiceInformationType();
+            final DocumentIdentifier documentIdentifier = objectFactory.createDocumentIdentifier();
+            final EndpointType endpointType = objectFactory.createEndpointType();
+            final ExtensionType extensionType = objectFactory.createExtensionType();
+            final ParticipantIdentifierType participantIdentifierType = objectFactory.createParticipantIdentifierType();
+            final ProcessIdentifier processIdentifier = objectFactory.createProcessIdentifier();
+            final ProcessListType processListType = objectFactory.createProcessListType();
+            final ProcessType processType = objectFactory.createProcessType();
+            final ServiceEndpointList serviceEndpointList = objectFactory.createServiceEndpointList();
+            final ServiceInformationType serviceInformationType = objectFactory.createServiceInformationType();
 
             createStaticFields(type, issuanceType, countryCode, documentIdentifier, endpointType, participantIdentifierType,
                     processIdentifier, businessLevelSignature, minimumAuthLevel);
@@ -135,7 +137,7 @@ public class SMPConverter {
             /*
              * Dates parse to Calendar
              */
-            Calendar activationDate = Calendar.getInstance();
+            final Calendar activationDate = Calendar.getInstance();
             activationDate.setTime(servActDate);
             endpointType.setServiceActivationDate(activationDate);
 
@@ -144,7 +146,7 @@ public class SMPConverter {
 
                 endpointType.setServiceExpirationDate(null);
             } else {
-                Calendar expirationDate = Calendar.getInstance();
+                final Calendar expirationDate = Calendar.getInstance();
                 expirationDate.setTime(servExpDate);
                 endpointType.setServiceExpirationDate(expirationDate);
             }
@@ -153,31 +155,31 @@ public class SMPConverter {
             if (certificateFile != null) {
 
                 try {
-                    String certPass = environment.getProperty(type + ".certificate.password");
-                    String certAlias = environment.getProperty(type + ".certificate.alias");
-                    String certificatePass = ConfigurationManagerFactory.getConfigurationManager().getProperty(certPass);
-                    String certificateAlias = ConfigurationManagerFactory.getConfigurationManager().getProperty(certAlias);
+                    final String certPass = environment.getProperty(type + ".certificate.password");
+                    final String certAlias = environment.getProperty(type + ".certificate.alias");
+                    final String certificatePass = propertyService.getPropertyValueMandatory(certPass);
+                    final String certificateAlias = propertyService.getPropertyValueMandatory(certAlias);
                     logger.debug("Certificate Info: '{}', '{}', '{}', '{}'", certAlias, certificateAlias, certPass,
                             StringUtils.isNotBlank(certificatePass) ? "******" : "N/A");
 
                     // eHDSI OpenNCP has been using only JKS keystore.
-                    KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+                    final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
                     ks.load(certificateFile, certificatePass.toCharArray());
 
                     if (ks.isKeyEntry(certificateAlias)) {
 
-                        Certificate[] certs = ks.getCertificateChain(certificateAlias);
+                        final Certificate[] certs = ks.getCertificateChain(certificateAlias);
                         if (certs != null) {
                             if (logger.isDebugEnabled()) {
 
-                                for (Certificate certificate : certs) {
+                                for (final Certificate certificate : certs) {
                                     logger.debug("Certificate Info: '{}' - '{}'", ((X509Certificate) certificate).getSerialNumber(),
                                             ((X509Certificate) certificate).getSubjectX500Principal().getName());
                                 }
                             }
                             if (certs[0] instanceof X509Certificate) {
 
-                                X509Certificate x509 = (X509Certificate) certs[0];
+                                final X509Certificate x509 = (X509Certificate) certs[0];
                                 endpointType.setCertificate(x509.getEncoded());
                                 certificateSubjectName = x509.getIssuerX500Principal().getName() + SERIAL_NUMBER + x509.getSerialNumber();
                             }
@@ -186,10 +188,10 @@ public class SMPConverter {
                         }
                     } else if (ks.isCertificateEntry(certificateAlias)) {
 
-                        Certificate c = ks.getCertificate(certificateAlias);
+                        final Certificate c = ks.getCertificate(certificateAlias);
                         if (c != null) {
                             if (c instanceof X509Certificate) {
-                                X509Certificate x509 = (X509Certificate) c;
+                                final X509Certificate x509 = (X509Certificate) c;
                                 endpointType.setCertificate(x509.getEncoded());
                                 certificateSubjectName = x509.getIssuerX500Principal().getName() + SERIAL_NUMBER + x509.getSerialNumber();
                             }
@@ -200,12 +202,12 @@ public class SMPConverter {
                         logger.error("\n ********** '{}' is unknown to this keystore", certificateAlias);
                     }
 
-                } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
+                } catch (final KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
                     logger.error("{}: - '{}'", e.getClass(), e.getMessage(), e);
                 }
 
             } else {
-                byte[] by = "".getBytes();
+                final byte[] by = "".getBytes();
                 endpointType.setCertificate(by);
             }
 
@@ -228,10 +230,10 @@ public class SMPConverter {
             //    Endpoint Extension file parse
             if (StringUtils.isNotBlank(extension)) {
                 nullExtension = false;
-                if(logger.isInfoEnabled()) {
+                if (logger.isInfoEnabled()) {
                     logger.info("XML Extension Content:\n'{}'", sanitizeString(extension));
                 }
-                Document docOriginal = parseStringToDocument(extension);
+                final Document docOriginal = parseStringToDocument(extension);
                 if (docOriginal != null) {
                     //Adding ISM Extension to SMP file.
                     docOriginal.getDocumentElement().normalize();
@@ -284,17 +286,17 @@ public class SMPConverter {
      * @param redirectHref
      * @param certificateUID
      */
-    public void updateToXml(String type, String countryCode, String documentID, String documentIDScheme, String participantID,
-                            String participantIDScheme, String processID, String processIDScheme, String transportProfile,
-                            Boolean requiredBusinessLevelSig, String minimumAutenticationLevel, String endpointUri,
-                            String servDescription, String tecContact, String tecInformation, Date servActDate,
-                            Date servExpDate, byte[] certificate, FileInputStream certificateFile, Element extension,
-                            MultipartFile extensionFile, String fileName, String certificateUID, String redirectHref) {
+    public void updateToXml(final String type, final String countryCode, final String documentID, final String documentIDScheme, final String participantID,
+                            final String participantIDScheme, final String processID, final String processIDScheme, final String transportProfile,
+                            final Boolean requiredBusinessLevelSig, final String minimumAutenticationLevel, String endpointUri,
+                            final String servDescription, final String tecContact, final String tecInformation, final Date servActDate,
+                            final Date servExpDate, final byte[] certificate, final FileInputStream certificateFile, final Element extension,
+                            final MultipartFile extensionFile, final String fileName, final String certificateUID, final String redirectHref) {
 
         logger.debug("Update SMP Model to XML");
 
-        ObjectFactory objectFactory = new ObjectFactory();
-        ServiceMetadata serviceMetadata = objectFactory.createServiceMetadata();
+        final ObjectFactory objectFactory = new ObjectFactory();
+        final ServiceMetadata serviceMetadata = objectFactory.createServiceMetadata();
         //  XML file generated at path
         PermissionUtil.initializeFolders(Constants.SMP_DIR_PATH);
         generatedFile = new File(Constants.SMP_DIR_PATH + File.separator + fileName);
@@ -304,7 +306,7 @@ public class SMPConverter {
 
             //  Redirect SMP Type
             logger.debug("Type Redirect");
-            RedirectType redirectType = objectFactory.createRedirectType();
+            final RedirectType redirectType = objectFactory.createRedirectType();
             redirectType.setCertificateUID(certificateUID);
             redirectType.setHref(redirectHref);
             serviceMetadata.setRedirect(redirectType);
@@ -313,15 +315,15 @@ public class SMPConverter {
 
             //  ServiceInformation SMP Type
             logger.debug("Type ServiceInformation");
-            DocumentIdentifier documentIdentifier = objectFactory.createDocumentIdentifier();
-            EndpointType endpointType = objectFactory.createEndpointType();
-            ExtensionType extensionType = objectFactory.createExtensionType();
-            ParticipantIdentifierType participantIdentifierType = objectFactory.createParticipantIdentifierType();
-            ProcessIdentifier processIdentifier = objectFactory.createProcessIdentifier();
-            ProcessListType processListType = objectFactory.createProcessListType();
-            ProcessType processType = objectFactory.createProcessType();
-            ServiceEndpointList serviceEndpointList = objectFactory.createServiceEndpointList();
-            ServiceInformationType serviceInformationType = objectFactory.createServiceInformationType();
+            final DocumentIdentifier documentIdentifier = objectFactory.createDocumentIdentifier();
+            final EndpointType endpointType = objectFactory.createEndpointType();
+            final ExtensionType extensionType = objectFactory.createExtensionType();
+            final ParticipantIdentifierType participantIdentifierType = objectFactory.createParticipantIdentifierType();
+            final ProcessIdentifier processIdentifier = objectFactory.createProcessIdentifier();
+            final ProcessListType processListType = objectFactory.createProcessListType();
+            final ProcessType processType = objectFactory.createProcessType();
+            final ServiceEndpointList serviceEndpointList = objectFactory.createServiceEndpointList();
+            final ServiceInformationType serviceInformationType = objectFactory.createServiceInformationType();
 
             //  Fields fetched from file
             participantIdentifierType.setScheme(participantIDScheme);
@@ -347,7 +349,7 @@ public class SMPConverter {
             /*
              * Dates parse to Calendar
              */
-            Calendar activationDate = Calendar.getInstance();
+            final Calendar activationDate = Calendar.getInstance();
             activationDate.setTime(servActDate);
             endpointType.setServiceActivationDate(activationDate);
 
@@ -355,7 +357,7 @@ public class SMPConverter {
 
                 endpointType.setServiceExpirationDate(null);
             } else {
-                Calendar expirationDate = Calendar.getInstance();
+                final Calendar expirationDate = Calendar.getInstance();
                 activationDate.setTime(servExpDate);
                 endpointType.setServiceExpirationDate(expirationDate);
             }
@@ -363,24 +365,24 @@ public class SMPConverter {
             // Parsing TLS certificate
             if (certificateFile != null) {
                 try {
-                    String certPass = environment.getProperty(type + ".certificate.password");
-                    String certAlias = environment.getProperty(type + ".certificate.alias");
-                    String certificatePass = ConfigurationManagerFactory.getConfigurationManager().getProperty(certPass);
-                    String certificateAlias = ConfigurationManagerFactory.getConfigurationManager().getProperty(certAlias);
+                    final String certPass = environment.getProperty(type + ".certificate.password");
+                    final String certAlias = environment.getProperty(type + ".certificate.alias");
+                    final String certificatePass = propertyService.getPropertyValueMandatory(certPass);
+                    final String certificateAlias = propertyService.getPropertyValueMandatory(certAlias);
                     logger.info("Certificate Info: '{}', '{}', '{}', '{}'", certAlias, certificateAlias, certPass,
                             StringUtils.isNotBlank(certificatePass) ? "******" : "N/A");
 
-                    KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+                    final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
                     ks.load(certificateFile, null);
 
                     if (ks.isKeyEntry(certificateAlias)) {
 
-                        Certificate[] certs = ks.getCertificateChain(certificateAlias);
+                        final Certificate[] certs = ks.getCertificateChain(certificateAlias);
                         if (certs != null) {
 
                             if (certs[0] instanceof X509Certificate) {
 
-                                X509Certificate x509 = (X509Certificate) certs[0];
+                                final X509Certificate x509 = (X509Certificate) certs[0];
                                 endpointType.setCertificate(x509.getEncoded());
                                 certificateSubjectName = x509.getIssuerX500Principal().getName() + SERIAL_NUMBER + x509.getSerialNumber();
                             }
@@ -389,10 +391,10 @@ public class SMPConverter {
                         }
                     } else if (ks.isCertificateEntry(certificateAlias)) {
 
-                        Certificate c = ks.getCertificate(certificateAlias);
+                        final Certificate c = ks.getCertificate(certificateAlias);
                         if (c != null) {
                             if (c instanceof X509Certificate) {
-                                X509Certificate x509 = (X509Certificate) c;
+                                final X509Certificate x509 = (X509Certificate) c;
                                 endpointType.setCertificate(x509.getEncoded());
                                 certificateSubjectName = x509.getIssuerX500Principal().getName() + SERIAL_NUMBER + x509.getSerialNumber();
                             }
@@ -402,11 +404,11 @@ public class SMPConverter {
                     } else {
                         logger.debug("\n ********** '{}' is unknown to this keystore", certificateAlias);
                     }
-                } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
+                } catch (final KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
                     logger.error("\n{} - '{}'", ex.getClass(), SimpleErrorHandler.printExceptionStackTrace(ex));
                 }
             } else {
-                byte[] by = "".getBytes();
+                final byte[] by = "".getBytes();
                 endpointType.setCertificate(by);
             }
 
@@ -443,20 +445,20 @@ public class SMPConverter {
                 nullExtension = false;
                 Document docOriginal = null;
                 try {
-                    String content = new Scanner(extensionFile.getInputStream()).useDelimiter("\\Z").next();
+                    final String content = new Scanner(extensionFile.getInputStream()).useDelimiter("\\Z").next();
 
                     docOriginal = parseDocument(content);
 
-                } catch (FileNotFoundException ex) {
+                } catch (final FileNotFoundException ex) {
                     nullExtension = true;
                     logger.error("\n FileNotFoundException - '{}'", SimpleErrorHandler.printExceptionStackTrace(ex));
-                } catch (IOException ex) {
+                } catch (final IOException ex) {
                     nullExtension = true;
                     logger.error("\n IOException - '{}'", SimpleErrorHandler.printExceptionStackTrace(ex));
-                } catch (SAXException ex) {
+                } catch (final SAXException ex) {
                     nullExtension = true;
                     logger.error("\n SAXException - '{}'", SimpleErrorHandler.printExceptionStackTrace(ex));
-                } catch (ParserConfigurationException ex) {
+                } catch (final ParserConfigurationException ex) {
                     nullExtension = true;
                     logger.error("\n ParserConfigurationException - '{}'", SimpleErrorHandler.printExceptionStackTrace(ex));
                 }
@@ -487,26 +489,26 @@ public class SMPConverter {
         getXMLFile(serviceMetadata);
     }
 
-    public Object convertFromXml(File file) {
+    public Object convertFromXml(final File file) {
         Object result = null;
 
         try {
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             result = jaxbUnmarshaller.unmarshal(file);
-        } catch (JAXBException ex) {
+        } catch (final JAXBException ex) {
             logger.error("JAXBException - " + ex.getErrorCode(), ex);
         }
 
         return result;
     }
 
-    public boolean isSignedServiceMetadata(Object object) {
+    public boolean isSignedServiceMetadata(final Object object) {
         return (object instanceof SignedServiceMetadata);
     }
 
-    public ServiceMetadata getServiceMetadata(Object object) {
+    public ServiceMetadata getServiceMetadata(final Object object) {
 
-        ServiceMetadata serviceMetadata;
+        final ServiceMetadata serviceMetadata;
 
         if (object instanceof SignedServiceMetadata) {
             serviceMetadata = ((SignedServiceMetadata) object).getServiceMetadata();
@@ -523,10 +525,10 @@ public class SMPConverter {
     /**
      * Defines the static fields of the SMP File
      */
-    private void createStaticFields(String type, String issuanceType, String countryCode, DocumentIdentifier documentIdentifier,
-                                    EndpointType endpointType, ParticipantIdentifierType participantIdentifierType,
-                                    ProcessIdentifier processIdentifier, SMPFieldProperties businessLevelSignature,
-                                    SMPFieldProperties minimumAuthLevel) {
+    private void createStaticFields(final String type, final String issuanceType, final String countryCode, final DocumentIdentifier documentIdentifier,
+                                    final EndpointType endpointType, final ParticipantIdentifierType participantIdentifierType,
+                                    final ProcessIdentifier processIdentifier, final SMPFieldProperties businessLevelSignature,
+                                    final SMPFieldProperties minimumAuthLevel) {
 
     /*
      Document and Participant identifiers definition
@@ -567,7 +569,7 @@ public class SMPConverter {
      BusinessLevelSignature and MinimumAuthenticationLevel definition
      */
         if (businessLevelSignature.isEnable()) {
-            Boolean requireBusinessLevelSignature = Boolean.parseBoolean(environment.getProperty(type + ".RequireBusinessLevelSignature"));
+            final Boolean requireBusinessLevelSignature = Boolean.parseBoolean(environment.getProperty(type + ".RequireBusinessLevelSignature"));
             endpointType.setRequireBusinessLevelSignature(requireBusinessLevelSignature); //in smpeditor.properties
         }
         if (minimumAuthLevel.isEnable()) {
@@ -578,35 +580,35 @@ public class SMPConverter {
     /**
      * Marshal the data to a XML file
      */
-    private void getXMLFile(ServiceMetadata serviceMetadata) {
+    private void getXMLFile(final ServiceMetadata serviceMetadata) {
 
         logger.debug("Generate XML SMP file: '{}'", serviceMetadata.getServiceInformation().getParticipantIdentifier().getValue());
 
         // Generates the final SMP XML file
-        XMLStreamWriter xsw;
+        final XMLStreamWriter xsw;
 
-        try (FileOutputStream generatedFileOS = new FileOutputStream(generatedFile)) {
+        try (final FileOutputStream generatedFileOS = new FileOutputStream(generatedFile)) {
 
             xsw = XMLOutputFactory.newFactory().createXMLStreamWriter(generatedFileOS, StandardCharsets.UTF_8.name());
             xsw.setNamespaceContext(new NamespaceContext() {
                 @Override
-                public Iterator getPrefixes(String namespaceURI) {
+                public Iterator getPrefixes(final String namespaceURI) {
                     return null;
                 }
 
                 @Override
-                public String getPrefix(String namespaceURI) {
+                public String getPrefix(final String namespaceURI) {
                     return "";
                 }
 
                 @Override
-                public String getNamespaceURI(String prefix) {
+                public String getNamespaceURI(final String prefix) {
                     return null;
                 }
             });
 
-            StringWriter stringWriter = new StringWriter();
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+            final StringWriter stringWriter = new StringWriter();
+            final Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
             jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
             jaxbMarshaller.marshal(serviceMetadata, generatedFileOS);
             jaxbMarshaller.marshal(serviceMetadata, stringWriter);
@@ -614,7 +616,7 @@ public class SMPConverter {
             logger.debug("Service Metadata:\n{}", stringWriter);
             generatedFileOS.flush();
 
-        } catch (JAXBException | IOException | XMLStreamException e) {
+        } catch (final JAXBException | IOException | XMLStreamException e) {
             logger.error("Exception:'{}'", SimpleErrorHandler.printExceptionStackTrace(e));
         }
     }
@@ -624,7 +626,7 @@ public class SMPConverter {
         return certificateSubjectName;
     }
 
-    public void setCertificateSubjectName(String certificateSubjectName) {
+    public void setCertificateSubjectName(final String certificateSubjectName) {
         this.certificateSubjectName = certificateSubjectName;
     }
 
@@ -632,7 +634,7 @@ public class SMPConverter {
         return generatedFile;
     }
 
-    public void setFile(File generatedFile) {
+    public void setFile(final File generatedFile) {
         this.generatedFile = generatedFile;
     }
 
@@ -640,48 +642,48 @@ public class SMPConverter {
         return nullExtension;
     }
 
-    public void setNullExtension(boolean nullExtension) {
+    public void setNullExtension(final boolean nullExtension) {
         this.nullExtension = nullExtension;
     }
 
     /*Auxiliary*/
-    public Document parseDocument(String docContent) throws IOException, SAXException, ParserConfigurationException {
+    public Document parseDocument(final String docContent) throws IOException, SAXException, ParserConfigurationException {
 
-        InputStream inputStream = new ByteArrayInputStream(docContent.getBytes(StandardCharsets.UTF_8));
+        final InputStream inputStream = new ByteArrayInputStream(docContent.getBytes(StandardCharsets.UTF_8));
         getDocumentBuilder().setErrorHandler(new SimpleErrorHandler());
         return getDocumentBuilder().parse(inputStream);
     }
 
     private DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setXIncludeAware(false);
         dbf.setNamespaceAware(true);
         return dbf.newDocumentBuilder();
     }
 
-    private Document parseStringToDocument(String document) {
+    private Document parseStringToDocument(final String document) {
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         Document doc = null;
         try {
             dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbf.setXIncludeAware(false);
-            DocumentBuilder db = dbf.newDocumentBuilder();
+            final DocumentBuilder db = dbf.newDocumentBuilder();
             doc = db.parse(new ByteArrayInputStream(document.getBytes(StandardCharsets.UTF_8)));
-        } catch (SAXException e) {
+        } catch (final SAXException e) {
             logger.error("SAXException: ", e);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("IOException: ", e);
-        } catch (ParserConfigurationException e) {
+        } catch (final ParserConfigurationException e) {
             logger.error("ParserConfigurationException: ", e);
         }
         return doc;
     }
 
-    private static String sanitizeString(String stringToSanitize) {
+    private static String sanitizeString(final String stringToSanitize) {
         return stringToSanitize != null ? stringToSanitize.replaceAll("[\n\r]", "_") : "";
     }
 }

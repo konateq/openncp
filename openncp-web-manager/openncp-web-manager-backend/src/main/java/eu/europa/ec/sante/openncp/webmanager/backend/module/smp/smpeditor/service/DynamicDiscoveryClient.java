@@ -7,10 +7,13 @@ import eu.europa.ec.dynamicdiscovery.core.locator.impl.DefaultBDXRLocator;
 import eu.europa.ec.dynamicdiscovery.core.reader.impl.DefaultBDXRReader;
 import eu.europa.ec.dynamicdiscovery.core.security.impl.DefaultSignatureValidator;
 import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerImpl;
+import eu.europa.ec.sante.openncp.common.configuration.ImmutableProxySettings;
+import eu.europa.ec.sante.openncp.common.configuration.ProxySettings;
 import eu.europa.ec.sante.openncp.common.configuration.StandardProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.GatewayProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -29,8 +32,8 @@ public class DynamicDiscoveryClient {
     private final PropertyService propertyService;
     private DynamicDiscovery instance = null;
 
-    private DynamicDiscoveryClient(PropertyService propertyService) {
-        this.propertyService = propertyService;
+    private DynamicDiscoveryClient(final PropertyService propertyService) {
+        this.propertyService = Validate.notNull(propertyService, "PropertyService must not be null");
     }
 
     public synchronized DynamicDiscovery getInstance() throws KeyStoreException, IOException, CertificateException,
@@ -39,16 +42,31 @@ public class DynamicDiscoveryClient {
         logger.info("[Gateway] DynamicDiscovery getInstance()");
         if (instance == null) {
             logger.debug("Instantiating new instance of DynamicDiscovery");
-            KeyStore trustStore = KeyStore.getInstance("JKS");
-            trustStore.load(new FileInputStream(ConfigurationManagerFactory.getConfigurationManager().getProperty(GatewayProperties.GTW_TRUSTSTORE_PATH)),
-                    ConfigurationManagerFactory.getConfigurationManager().getProperty(GatewayProperties.GTW_TRUSTSTORE_PWD).toCharArray());
+            final KeyStore trustStore = KeyStore.getInstance("JKS");
+            trustStore.load(new FileInputStream(propertyService.getPropertyValueMandatory(GatewayProperties.GTW_TRUSTSTORE_PATH)),
+                    propertyService.getPropertyValueMandatory(GatewayProperties.GTW_TRUSTSTORE_PWD).toCharArray());
 
-            trustStore.load(new FileInputStream(ConfigurationManagerFactory.getConfigurationManager().getProperty(GatewayProperties.GTW_TRUSTSTORE_PATH)),
-                    ConfigurationManagerFactory.getConfigurationManager().getProperty(GatewayProperties.GTW_TRUSTSTORE_PWD).toCharArray());
+            trustStore.load(new FileInputStream(propertyService.getPropertyValueMandatory(GatewayProperties.GTW_TRUSTSTORE_PATH)),
+                    propertyService.getPropertyValueMandatory(GatewayProperties.GTW_TRUSTSTORE_PWD).toCharArray());
 
-            DynamicDiscoveryBuilder dynamicDiscoveryBuilder = ConfigurationManagerFactory.getConfigurationManager().initializeDynamicDiscoveryFetcher()
-                    .locator(new DefaultBDXRLocator(ConfigurationManagerFactory.getConfigurationManager()
-                            .getProperty(StandardProperties.SMP_SML_DNS_DOMAIN), new DefaultDNSLookup()))
+            final Boolean isProxyEnabled = propertyService.getPropertyValue(StandardProperties.HTTP_PROXY_USED).map(Boolean::parseBoolean).orElse(false);
+
+            final ProxySettings proxySettings;
+            if (isProxyEnabled) {
+                proxySettings = ImmutableProxySettings.builder()
+                        .enabled(true)
+                        .authenticated(propertyService.getPropertyValue(StandardProperties.HTTP_PROXY_USED).map(Boolean::parseBoolean).orElse(false))
+                        .host(propertyService.getPropertyValue(StandardProperties.HTTP_PROXY_HOST))
+                        .port(propertyService.getPropertyValue(StandardProperties.HTTP_PROXY_PORT).map(Integer::parseInt))
+                        .username(propertyService.getPropertyValue(StandardProperties.HTTP_PROXY_USERNAME))
+                        .password(propertyService.getPropertyValue(StandardProperties.HTTP_PROXY_PASSWORD))
+                        .build();
+            } else {
+                proxySettings = ProxySettings.none();
+            }
+
+            final DynamicDiscoveryBuilder dynamicDiscoveryBuilder = ConfigurationManagerImpl.initializeDynamicDiscoveryFetcher(proxySettings)
+                    .locator(new DefaultBDXRLocator(propertyService.getPropertyValueMandatory(StandardProperties.SMP_SML_DNS_DOMAIN), new DefaultDNSLookup()))
                     .reader(new DefaultBDXRReader(new DefaultSignatureValidator(trustStore)));
             instance = dynamicDiscoveryBuilder.build();
         }

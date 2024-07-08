@@ -6,6 +6,7 @@ import eu.europa.ec.sante.openncp.common.configuration.PropertyNotFoundException
 import eu.europa.ec.sante.openncp.webmanager.backend.config.ApplicationProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.config.SmtpProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.persistence.model.User;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -25,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
 @Service
@@ -41,10 +43,13 @@ public class MailService implements MessageSourceAware {
     private MessageSourceAccessor messages;
     private String resetUrl;
 
-    public MailService(ApplicationProperties applicationProperties, SmtpProperties smtpProperties, JavaMailSender mailSender) {
+    private final PropertyService propertyService;
+
+    public MailService(ApplicationProperties applicationProperties, SmtpProperties smtpProperties, JavaMailSender mailSender, PropertyService propertyService) {
         this.applicationProperties = applicationProperties;
         this.mailSender = mailSender;
         this.smtpProperties = smtpProperties;
+        this.propertyService = Validate.notNull(propertyService, "PropertyService must not be null");
     }
 
     @Override
@@ -119,17 +124,23 @@ public class MailService implements MessageSourceAware {
                     .replaceAll("\\%(URL_RESET)\\%", resetUrl);
 
         try {
-            mail = configurationManager.getBooleanProperty("GTW_MAIL_ENABLED");
-            if (mail) {
+            mail = Boolean.getBoolean(propertyService.getPropertyValueMandatory("GTW_MAIL_ENABLED"));
+        } catch(NoSuchElementException e) {
+            logger.error("MessagingException: property GTW_MAIL_ENABLED not specified '{}'", e.getMessage());
+            mail = false;
+        }
+
+        if (mail) {
+            try {
                 String emailSubject = messages.getMessage(titleKey, "Subject");
                 sendMail(user.getEmail(), emailSubject, emailBody, false, true);
+            } catch (PropertyNotFoundException e) {
+                logger.error("PropertyNotFoundException: '{}'", e.getMessage());
+                content = e.getMessage();
+            } catch (MessagingException e) {
+                logger.error("MessagingException: '{}'", e.getMessage());
+                content = e.getMessage();
             }
-        } catch (PropertyNotFoundException e) {
-            logger.error("PropertyNotFoundException: '{}'", e.getMessage());
-            content = e.getMessage();
-        } catch (MessagingException e) {
-            logger.error("MessagingException: '{}'", e.getMessage());
-            content = e.getMessage();
         }
         return content;
     }

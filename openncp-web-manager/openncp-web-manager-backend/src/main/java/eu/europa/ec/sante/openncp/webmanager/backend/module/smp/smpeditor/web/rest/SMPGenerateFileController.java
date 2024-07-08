@@ -1,6 +1,5 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.web.rest;
 
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.webmanager.backend.error.ApiException;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.cfg.ReadSMPProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.Countries;
@@ -9,6 +8,8 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPFile;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPType;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.BdxSmpValidator;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.SMPConverter;
+import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -38,30 +39,32 @@ public class SMPGenerateFileController {
     private final Environment env;
 
     private final ReadSMPProperties readProperties;
+    private final PropertyService propertyService;
 
-    public SMPGenerateFileController(SMPConverter smpconverter, Environment env, ReadSMPProperties readProperties) {
+    public SMPGenerateFileController(final SMPConverter smpconverter, final Environment env, final ReadSMPProperties readProperties, final PropertyService propertyService) {
 
         this.smpconverter = smpconverter;
         this.env = env;
         this.readProperties = readProperties;
+        this.propertyService = Validate.notNull(propertyService, "propertyService must not be null");
     }
 
     @GetMapping(path = "smpeditor/generate/smptypes")
     public ResponseEntity<Map<String, String>> getSmpTypes() {
-        Map<String, String> map = new HashMap<>();
+        final Map<String, String> map = new HashMap<>();
         Arrays.stream(SMPType.values()).forEach(smpType -> map.put(smpType.name(), smpType.getDescription()));
         return ResponseEntity.ok(map);
     }
 
     @GetMapping(path = "smpeditor/generate/countries")
     public ResponseEntity<Map<String, String>> getCountries() {
-        Map<String, String> map = new HashMap<>();
+        final Map<String, String> map = new HashMap<>();
         Arrays.stream(Countries.values()).forEach(countries -> map.put(countries.name(), countries.getDescription()));
         return ResponseEntity.ok(map);
     }
 
     @GetMapping(path = "smpeditor/generate/smpfields")
-    public ResponseEntity<SMPFields> getSmpFields(@RequestParam SMPType smpType) {
+    public ResponseEntity<SMPFields> getSmpFields(@RequestParam final SMPType smpType) {
         return ResponseEntity.ok(readProperties.readProperties(smpType));
     }
 
@@ -69,14 +72,14 @@ public class SMPGenerateFileController {
      * Generate SMPFile data and create SMP file (the file itself)
      */
     @PostMapping(value = "smpeditor/generate/smpfile")
-    public ResponseEntity<SMPFile> generateSmpFile(@RequestBody SMPFile smpfile) throws IOException {
+    public ResponseEntity<SMPFile> generateSmpFile(@RequestBody final SMPFile smpfile) throws IOException {
 
-        String timeStamp;
-        String fileName;
+        final String timeStamp;
+        final String fileName;
 
         final SMPFields smpfields = readProperties.readProperties(smpfile.getType());
 
-        String type = env.getProperty("type." + smpfile.getType().name());
+        final String type = env.getProperty("type." + smpfile.getType().name());
 
         if ("ServiceInformation".equals(type)) {
             LOGGER.debug("\n****Type Service Information");
@@ -87,14 +90,14 @@ public class SMPGenerateFileController {
             smpfile.setFileName(fileName);
 
             if (smpfields.getCertificate().isEnable()) {
-                String certPath = env.getProperty(smpfile.getType().name() + ".certificate");
-                String certificatePath = ConfigurationManagerFactory.getConfigurationManager().getProperty(certPath);
+                final String certPath = env.getProperty(smpfile.getType().name() + ".certificate");
+                final String certificatePath = propertyService.getPropertyValueMandatory(certPath);
                 LOGGER.info("Generating SMP file with certificate: '{}' '{}'", certPath, certificatePath);
 
                 FileInputStream fis = null;
                 try {
                     fis = new FileInputStream(certificatePath);
-                } catch (FileNotFoundException ex) {
+                } catch (final FileNotFoundException ex) {
                     throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, env.getProperty("FileNotFoundException Certificate"));
                 }
 
@@ -145,21 +148,21 @@ public class SMPGenerateFileController {
              * Get documentIdentification and participantIdentification from redirect href.
              * May change if Document or Participant Identifier specification change.
              */
-            String href = smpfile.getHref();
+            final String href = smpfile.getHref();
             String documentID = "";
             String participantID = "";
-            Pattern pattern = Pattern.compile(env.getProperty("ParticipantIdentifier.Scheme") + ".*"); //SPECIFICATION
-            Matcher matcher = pattern.matcher(href);
+            final Pattern pattern = Pattern.compile(env.getProperty("ParticipantIdentifier.Scheme") + ".*"); //SPECIFICATION
+            final Matcher matcher = pattern.matcher(href);
             if (matcher.find()) {
                 String result = matcher.group(0);
                 result = java.net.URLDecoder.decode(result, StandardCharsets.UTF_8);
                 //SPECIFICATION
-                String[] ids = result.split("/services/");
+                final String[] ids = result.split("/services/");
                 participantID = ids[0];
                 //SPECIFICATION May change if Participant Identifier specification change
-                String[] cc = participantID.split(":");
+                final String[] cc = participantID.split(":");
 
-                for (Countries country : Countries.values()) {
+                for (final Countries country : Countries.values()) {
                     if (cc[4].equals(country.name())) {
                         smpfile.setCountry(cc[4]);
                     }
@@ -168,17 +171,17 @@ public class SMPGenerateFileController {
                     throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, env.getProperty("error.redirect.href.participantID"));
                 }
 
-                String docID = ids[1];
-                Map<String, String> propertiesMap = readProperties.readPropertiesFile();
+                final String docID = ids[1];
+                final Map<String, String> propertiesMap = readProperties.readPropertiesFile();
                 //SPECIFICATION May change if Document Identifier specification change
-                String[] nIDs = docID.split(env.getProperty("DocumentIdentifier.Scheme") + "::");
-                String docuID = nIDs[1];
-                Set<Map.Entry<String, String>> set2 = propertiesMap.entrySet();
-                for (Object aSet2 : set2) {
+                final String[] nIDs = docID.split(env.getProperty("DocumentIdentifier.Scheme") + "::");
+                final String docuID = nIDs[1];
+                final Set<Map.Entry<String, String>> set2 = propertiesMap.entrySet();
+                for (final Object aSet2 : set2) {
 
-                    Map.Entry mentry2 = (Map.Entry) aSet2;
+                    final Map.Entry mentry2 = (Map.Entry) aSet2;
                     if (docuID.equals(mentry2.getKey().toString())) {
-                        String[] docs = mentry2.getValue().toString().split("\\.");
+                        final String[] docs = mentry2.getValue().toString().split("\\.");
                         documentID = docs[0];
                         break;
                     }
@@ -188,7 +191,7 @@ public class SMPGenerateFileController {
             }
 
             // smpeditor.properties
-            String smpType = documentID;
+            final String smpType = documentID;
             if ("".equals(smpType)) {
                 throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, env.getProperty("error.redirect.href.documentID"));
             }
@@ -203,7 +206,7 @@ public class SMPGenerateFileController {
         }
 
         smpfile.setGeneratedFile(smpconverter.getFile());
-        String content = new String(Files.readAllBytes(Paths.get(smpfile.getGeneratedFile().getPath())));
+        final String content = new String(Files.readAllBytes(Paths.get(smpfile.getGeneratedFile().getPath())));
         if (BdxSmpValidator.validateFile(content)) {
             LOGGER.debug("\n****VALID XML File");
         } else {
@@ -214,21 +217,21 @@ public class SMPGenerateFileController {
     }
 
     @PostMapping(value = "smpeditor/generate/download")
-    public void downloadFile(@RequestBody SMPFile smpfile, HttpServletResponse response) {
+    public void downloadFile(@RequestBody final SMPFile smpfile, final HttpServletResponse response) {
         response.setContentType("application/xml");
         response.setHeader("Content-Disposition", "attachment; filename=" + smpfile.getFileName());
         response.setContentLength((int) smpfile.getGeneratedFile().length());
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(smpfile.getGeneratedFile()))) {
+        try (final InputStream inputStream = new BufferedInputStream(new FileInputStream(smpfile.getGeneratedFile()))) {
             FileCopyUtils.copy(inputStream, response.getOutputStream());
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "IOException");
         }
     }
 
     @PostMapping(value = "smpeditor/generate/clean")
-    public ResponseEntity.BodyBuilder cleanFile(@RequestBody SMPFile smpFile) {
+    public ResponseEntity.BodyBuilder cleanFile(@RequestBody final SMPFile smpFile) {
         if (smpFile.getGeneratedFile() != null) {
-            boolean delete = smpFile.getGeneratedFile().delete();
+            final boolean delete = smpFile.getGeneratedFile().delete();
             LOGGER.debug("\n****DELETED ? '{}'", delete);
         }
         return ResponseEntity.ok();

@@ -1,6 +1,5 @@
 package eu.europa.ec.sante.openncp.common.util;
 
-import net.ihe.gazelle.jaxb.certificate.sante.Validate;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +17,7 @@ public class DateUtil {
     public static final String TIME_DATE_FORMAT = "yyyyMMddHHmmss.SSSZZZZ";
     public static final String DATE_FORMAT = "yyyyMMdd";
     private static final DatatypeFactory DATATYPE_FACTORY;
-    private static final int RAND_LIMIT = 10000;
     private static final Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
-    private static final Random rand = new Random();
 
     static {
         try {
@@ -101,14 +98,6 @@ public class DateUtil {
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatString);
         currentTime = dateFormat.format(date);
         return currentTime;
-    }
-
-    // uses local time zone
-    public static String generateUniqueIdExtension() {
-
-        String uniqueIdExt = DateUtil.getCurrentTimeLocal();
-        uniqueIdExt += "." + rand.nextInt(RAND_LIMIT);
-        return uniqueIdExt;
     }
 
     public static Date parseDateFromString(String date, String pattern) throws ParseException {
