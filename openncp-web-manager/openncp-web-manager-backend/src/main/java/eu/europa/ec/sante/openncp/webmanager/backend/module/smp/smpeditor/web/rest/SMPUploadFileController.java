@@ -21,6 +21,7 @@ import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
@@ -207,7 +208,7 @@ public class SMPUploadFileController {
         logger.info("SMP Uri endpoint: '{}'", uri);
 
         String content = "";
-        try (final Scanner scanner = new Scanner(smpHttp.getSmpFile(), StandardCharsets.UTF_8.name())) {
+        try (final Scanner scanner = new Scanner(smpHttp.getSmpFile(), StandardCharsets.UTF_8)) {
             content = scanner.useDelimiter("\\Z").next();
         } catch (final IOException ex) {
             logger.error("IOException: '{}'", SimpleErrorHandler.printExceptionStackTrace(ex));
@@ -225,15 +226,20 @@ public class SMPUploadFileController {
         final HttpPut httpput = new HttpPut(uri);
         httpput.setEntity(entityPut);
         final CloseableHttpResponse response;
+
+        final byte[] responseEntity;
         try (final CloseableHttpClient closeableHttpClient = dynamicDiscoveryService.buildHttpClient(sslcontext)) {
             response = closeableHttpClient.execute(httpput);
+            final HttpEntity entity = response.getEntity();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IOUtils.copy(entity.getContent(), baos);
+            responseEntity = baos.toByteArray();
         } catch (final IOException ex) {
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("error.server.failed"));
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("error.server.failed"), ex);
         }
 
         // Get Http Client response
         smpHttp.setStatusCode(response.getStatusLine().getStatusCode());
-        final org.apache.http.HttpEntity entity = response.getEntity();
 
         logger.debug("Http Client Response Status Code: '{}' - Reason: '{}'", response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase());
@@ -252,12 +258,14 @@ public class SMPUploadFileController {
 
         logger.info("SMP Put request response code: '{}'", smpHttp.getStatusCode());
         if (smpHttp.getStatusCode() == 404 || smpHttp.getStatusCode() == 503 || smpHttp.getStatusCode() == 405) {
+            logger.error("SMP request response body [{}]'", new String(responseEntity, StandardCharsets.UTF_8));
             //Audit Error
             final byte[] encodedObjectDetail = Base64.encodeBase64(response.getStatusLine().getReasonPhrase().getBytes());
             auditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
                     Integer.toString(response.getStatusLine().getStatusCode()), encodedObjectDetail);
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("error.server.failed"));
         } else if (smpHttp.getStatusCode() == 401) {
+            logger.warn("SMP Put request response body [{}]'", new String(responseEntity, StandardCharsets.UTF_8));
             //Audit Error
             final byte[] encodedObjectDetail = Base64.encodeBase64(response.getStatusLine().getReasonPhrase().getBytes());
             auditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
@@ -267,24 +275,12 @@ public class SMPUploadFileController {
 
         if (!(smpHttp.getStatusCode() == 200 || smpHttp.getStatusCode() == 201)) {
             /* Get BusinessCode and ErrorDescription from response */
-
-            //Save InputStream of response in ByteArrayOutputStream in order to read it more than once.
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try {
-                IOUtils.copy(entity.getContent(), baos);
-            } catch (final IOException ex) {
-                logger.error("IOException response: '{}", SimpleErrorHandler.printExceptionStackTrace(ex));
-            } catch (final UnsupportedOperationException ex) {
-                logger.error("UnsupportedOperationException response: '{}", SimpleErrorHandler.printExceptionStackTrace(ex));
-            }
-            final byte[] bytes = baos.toByteArray();
-
             final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             //factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             factory.setXIncludeAware(false);
             final DocumentBuilder builder;
             try {
-                final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                final ByteArrayInputStream bais = new ByteArrayInputStream(responseEntity);
                 builder = factory.newDocumentBuilder();
                 final Document doc = builder.parse(bais);
                 final Element element = doc.getDocumentElement();
@@ -308,7 +304,7 @@ public class SMPUploadFileController {
             }
 
             // Transform XML to String in order to send in Audit
-            final String errorResult = auditManager.prepareEventLog(bytes);
+            final String errorResult = auditManager.prepareEventLog(responseEntity);
             logger.debug("Error Result: '{}", errorResult);
             //Audit error
             auditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),

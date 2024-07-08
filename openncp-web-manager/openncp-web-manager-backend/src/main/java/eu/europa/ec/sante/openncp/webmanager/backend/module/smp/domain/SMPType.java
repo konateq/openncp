@@ -15,7 +15,8 @@ public enum SMPType {
     Request_of_Data_Query("Request of Data - Query"),
     Request_of_Data_Retrieve("Request of Data - Retrieve"),
     International_Search_Mask("International Search Mask"),
-    Redirect("Redirect");
+    Redirect("Redirect"),
+    Fhir_Endpoint("Fhir endpoint service");
 
     private final String description;
 
