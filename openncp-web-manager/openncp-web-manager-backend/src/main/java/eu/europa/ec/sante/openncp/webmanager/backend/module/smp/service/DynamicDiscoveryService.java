@@ -5,11 +5,15 @@ import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.model.DocumentIdentifier;
 import eu.europa.ec.dynamicdiscovery.model.ParticipantIdentifier;
 import eu.europa.ec.dynamicdiscovery.model.ServiceMetadata;
-import eu.europa.ec.sante.openncp.common.configuration.*;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerException;
+import eu.europa.ec.sante.openncp.common.configuration.RegisteredService;
+import eu.europa.ec.sante.openncp.common.configuration.StandardProperties;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.DynamicDiscoveryClient;
+import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -52,9 +56,13 @@ public class DynamicDiscoveryService {
     private static final String APPLICATION_BASE_DIR = System.getenv(StandardProperties.OPENNCP_BASEDIR) + "forms" + System.getProperty("file.separator");
 
     private final DynamicDiscoveryClient dynamicDiscoveryClient;
+    private final AuditManager auditManager;
+    private final PropertyService propertyService;
 
-    public DynamicDiscoveryService(final DynamicDiscoveryClient dynamicDiscoveryClient) {
-        this.dynamicDiscoveryClient = dynamicDiscoveryClient;
+    public DynamicDiscoveryService(final DynamicDiscoveryClient dynamicDiscoveryClient, final AuditManager auditManager, final PropertyService propertyService) {
+        this.dynamicDiscoveryClient = Validate.notNull(dynamicDiscoveryClient, "DynamicDiscoveryClient must not be null");
+        this.auditManager = Validate.notNull(auditManager, "AuditManager must not be null");
+        this.propertyService = Validate.notNull(propertyService, "PropertyService must not be null");
     }
 
     /**
@@ -63,7 +71,7 @@ public class DynamicDiscoveryService {
      * @param sslContext - Secured Context of the OpenNCP Gateway.
      * @return CloseableHttpClient initialized
      */
-    public static CloseableHttpClient buildHttpClient(final SSLContext sslContext) {
+    public CloseableHttpClient buildHttpClient(final SSLContext sslContext) {
 
         // Decision for hostname verification: SSLConnectionSocketFactory.getDefaultHostnameVerifier().
         final SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(
@@ -72,19 +80,20 @@ public class DynamicDiscoveryService {
                 null,
                 new NoopHostnameVerifier());
 
-        final ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
-        final boolean proxyEnabled = configurationManager.getBooleanProperty(StandardProperties.HTTP_PROXY_USED);
+        final boolean proxyEnabled = propertyService.getPropertyValue(StandardProperties.HTTP_PROXY_USED)
+                .map(Boolean::parseBoolean)
+                .orElse(false);
         final CloseableHttpClient httpclient;
-
         if (proxyEnabled) {
-
-            final boolean proxyAuthenticated = configurationManager.getBooleanProperty(StandardProperties.HTTP_PROXY_AUTHENTICATED);
-            final String proxyHost = configurationManager.getProperty(StandardProperties.HTTP_PROXY_HOST);
-            final int proxyPort = configurationManager.getIntegerProperty(StandardProperties.HTTP_PROXY_PORT);
+            final boolean proxyAuthenticated = propertyService.getPropertyValue(StandardProperties.HTTP_PROXY_AUTHENTICATED)
+                    .map(Boolean::parseBoolean)
+                    .orElse(false);
+            final String proxyHost = propertyService.getPropertyValueMandatory(StandardProperties.HTTP_PROXY_HOST);
+            final int proxyPort = Integer.parseInt(propertyService.getPropertyValueMandatory(StandardProperties.HTTP_PROXY_PORT));
 
             if (proxyAuthenticated) {
-                final String proxyUsername = configurationManager.getProperty(StandardProperties.HTTP_PROXY_USERNAME);
-                final String proxyPassword = configurationManager.getProperty(StandardProperties.HTTP_PROXY_PASSWORD);
+                final String proxyUsername = propertyService.getPropertyValueMandatory(StandardProperties.HTTP_PROXY_USERNAME);
+                final String proxyPassword = propertyService.getPropertyValueMandatory(StandardProperties.HTTP_PROXY_PASSWORD);
                 final UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
                 final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
                 credentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), credentials);
@@ -144,7 +153,7 @@ public class DynamicDiscoveryService {
             final URI smpURI = smpClient.getService().getMetadataLocator().lookup(participantIdentifier);
             final URI serviceMetadataUri = smpClient.getService().getMetadataProvider().resolveServiceMetadata(smpURI, participantIdentifier, documentIdentifier);
             final byte[] encodedObjectID = Base64.encodeBase64(serviceMetadataUri.toASCIIString().getBytes());
-            AuditManager.handleDynamicDiscoveryQuery(smpURI.toASCIIString(), new String(encodedObjectID), null, null);
+            auditManager.handleDynamicDiscoveryQuery(smpURI.toASCIIString(), new String(encodedObjectID), null, null);
 
         } catch (final IOException | CertificateException | KeyStoreException | TechnicalException |
                        TransformerException |

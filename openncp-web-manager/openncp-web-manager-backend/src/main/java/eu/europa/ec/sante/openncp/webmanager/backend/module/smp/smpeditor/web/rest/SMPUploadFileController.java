@@ -26,6 +26,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ehdsi.ServiceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,14 +65,26 @@ public class SMPUploadFileController {
     private final Logger logger = LoggerFactory.getLogger(SMPUploadFileController.class);
     private final SMPConverter smpconverter;
     private final Environment environment;
+    private final DynamicDiscoveryService dynamicDiscoveryService;
     private final PropertyService propertyService;
+    private final SslUtil sslUtil;
+    private final AuditManager auditManager;
     private final DynamicDiscoveryClient dynamicDiscoveryClient;
 
-    public SMPUploadFileController(final SMPConverter smpconverter, final Environment environment, final DynamicDiscoveryClient dynamicDiscoveryClient, final PropertyService propertyService) {
+    public SMPUploadFileController(final SMPConverter smpconverter,
+                                   final Environment environment,
+                                   final AuditManager auditManager,
+                                   final DynamicDiscoveryClient dynamicDiscoveryClient,
+                                   final DynamicDiscoveryService dynamicDiscoveryService,
+                                   final PropertyService propertyService,
+                                   final SslUtil sslUtil) {
+        this.auditManager = Validate.notNull(auditManager, "AuditManager must not be null");
         this.dynamicDiscoveryClient = dynamicDiscoveryClient;
         this.smpconverter = smpconverter;
         this.environment = environment;
+        this.dynamicDiscoveryService = Validate.notNull(dynamicDiscoveryService, "DynamicDiscoveryService must not be null");
         this.propertyService = Validate.notNull(propertyService, "PropertyService must not be null");
+        this.sslUtil = Validate.notNull(sslUtil, "SslUtil must not be null");
     }
 
     @PostMapping(path = "/smpeditor/uploader/fromSmpFileOps")
@@ -206,14 +219,14 @@ public class SMPUploadFileController {
         }
 
         // Trust own CA and all self-signed certs
-        final SSLContext sslcontext = SslUtil.createSSLContext();
+        final SSLContext sslcontext = sslUtil.createSSLContext();
 
         //PUT
         final HttpPut httpput = new HttpPut(uri);
         httpput.setEntity(entityPut);
         final CloseableHttpResponse response;
-        try {
-            response = DynamicDiscoveryService.buildHttpClient(sslcontext).execute(httpput);
+        try (final CloseableHttpClient closeableHttpClient = dynamicDiscoveryService.buildHttpClient(sslcontext)) {
+            response = closeableHttpClient.execute(httpput);
         } catch (final IOException ex) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("error.server.failed"));
         }
@@ -241,13 +254,13 @@ public class SMPUploadFileController {
         if (smpHttp.getStatusCode() == 404 || smpHttp.getStatusCode() == 503 || smpHttp.getStatusCode() == 405) {
             //Audit Error
             final byte[] encodedObjectDetail = Base64.encodeBase64(response.getStatusLine().getReasonPhrase().getBytes());
-            AuditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
+            auditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
                     Integer.toString(response.getStatusLine().getStatusCode()), encodedObjectDetail);
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("error.server.failed"));
         } else if (smpHttp.getStatusCode() == 401) {
             //Audit Error
             final byte[] encodedObjectDetail = Base64.encodeBase64(response.getStatusLine().getReasonPhrase().getBytes());
-            AuditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
+            auditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
                     Integer.toString(response.getStatusLine().getStatusCode()), encodedObjectDetail);
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, environment.getProperty("error.nouser"));
         }
@@ -295,16 +308,16 @@ public class SMPUploadFileController {
             }
 
             // Transform XML to String in order to send in Audit
-            final String errorResult = AuditManager.prepareEventLog(bytes);
+            final String errorResult = auditManager.prepareEventLog(bytes);
             logger.debug("Error Result: '{}", errorResult);
             //Audit error
-            AuditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
+            auditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
                     Integer.toString(response.getStatusLine().getStatusCode()), errorResult.getBytes(StandardCharsets.UTF_8));
         }
 
         if (smpHttp.getStatusCode() == 200 || smpHttp.getStatusCode() == 201) {
             //Audit Success
-            AuditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
+            auditManager.handleDynamicDiscoveryPush(serverSMPUrl, new String(encodedObjectID),
                     null, null);
         }
 
