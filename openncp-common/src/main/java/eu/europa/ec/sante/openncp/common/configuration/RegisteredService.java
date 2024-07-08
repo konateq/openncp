@@ -13,7 +13,7 @@ public enum RegisteredService {
     ORCD_SERVICE("OrCDService", "urn:ehealth:RequestOfData::XCA::CrossGatewayQuery##ITI-38"),
     PATIENT_IDENTIFICATION_SERVICE("PatientIdentificationService", "urn:ehealth:PatientIdentificationAndAuthentication::XCPD::CrossGatewayPatientDiscovery##ITI-55"),
     PATIENT_SERVICE("PatientService", "urn:ehealth:RequestOfData::XCA::CrossGatewayQuery##ITI-38"),
-    FHIR_SERVICE("FhirService", "urn:ehealth:SearchPatient##FHIR"),
+    FHIR_SERVICE("FhirService", "urn:ehealth:FhirService"),
     ITI_39("ITI-39", "urn:ehealth:RequestOfData::XCA::CrossGatewayRetrieve##ITI-39"),
     ITI_40("ITI-40", "urn:ehealth:CountryBIdentityProvider::XUA::ProvideX-UserAssertion##ITI-40"),
     ITI_63("ITI-63", "urn:ehealth:RequestOfData::XCF::CrossGatewayFetchRequest##ITI-63"),
