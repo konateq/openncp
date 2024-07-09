@@ -150,8 +150,6 @@ public class TsamSyncManager {
 
                     total += concepts.size();
                     hasNext = concepts.size() == pageSize;
-
-                    break;
                 }
                 logger.info("{}/{}: '{}' completed ({} concepts with '{}' mappings)", index++, catalogue.getValueSetVersions().size(),
                         valueSetVersionModel.getValueSet().getName(), total, numberOfMapping);
