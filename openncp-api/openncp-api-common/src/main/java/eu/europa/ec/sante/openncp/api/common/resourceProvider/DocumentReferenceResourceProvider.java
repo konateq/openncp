@@ -56,8 +56,19 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
                               @Description(shortDefinition = "Date range for the search") @OptionalParam(
                                       name = "date") final DateRangeParam dateRange) {
 
-        final Bundle serverResponse = dispatchingService.dispatchSearch(EuRequestDetails.of(theRequestDetails));
+        String JWTToken = getJwtFromRequest(theServletRequest);
+
+        final Bundle serverResponse = dispatchingService.dispatchSearch(EuRequestDetails.of(theRequestDetails), JWTToken);
 
         return serverResponse;
+    }
+
+    public String getJwtFromRequest(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+
+        if (header != null && header.startsWith("Bearer ")) {
+            return header;
+        }
+        throw new RuntimeException("JWT Token is missing");
     }
 }

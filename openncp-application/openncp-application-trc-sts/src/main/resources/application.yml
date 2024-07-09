@@ -29,6 +29,8 @@ fhirserver:
 fhir:
   server:
     inclusion: false
+server:
+  max-http-header-size: 1MB
 spring:
   jpa:
     generate-ddl: true

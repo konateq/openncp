@@ -13,8 +13,10 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.validation.FhirValidator;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.EuFhirContextFactory;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.EuCorsInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.JwtSamlInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.SecuredOpenApiInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.UnsecuredOpenApiInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.security.TokenProvider;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
@@ -93,6 +95,12 @@ public class FhirConfiguration {
     @Bean
     public OpenApiInterceptor getUnSecuredOpenApiInterceptor() {
         return new UnsecuredOpenApiInterceptor();
+    }
+
+
+    @Bean
+    public JwtSamlInterceptor getJwtSamlInterceptor(TokenProvider tokenProvider){
+        return new JwtSamlInterceptor(tokenProvider);
     }
 
     @Configuration

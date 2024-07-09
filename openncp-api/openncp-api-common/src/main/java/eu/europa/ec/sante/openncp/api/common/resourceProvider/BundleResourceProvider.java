@@ -91,9 +91,21 @@ public class BundleResourceProvider implements IResourceProvider {
             final SearchTotalModeEnum theSearchTotalMode,
 
             final SearchContainedModeEnum theSearchContainedMode) {
-        final Bundle serverResponse = dispatchingService.dispatchSearch(ImmutableEuRequestDetails.of(theRequestDetails));
+
+        String JWTToken = getJwtFromRequest(theServletRequest);
+
+        final Bundle serverResponse = dispatchingService.dispatchSearch(ImmutableEuRequestDetails.of(theRequestDetails), JWTToken);
         final Bundle handledBundle = bundleHandler.handle(serverResponse);
 
         return handledBundle;
+    }
+
+    public String getJwtFromRequest(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+
+        if (header != null && header.startsWith("Bearer ")) {
+            return header;
+        }
+        throw new RuntimeException("JWT Token is missing");
     }
 }

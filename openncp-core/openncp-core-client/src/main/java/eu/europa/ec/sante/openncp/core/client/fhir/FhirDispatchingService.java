@@ -27,11 +27,11 @@ public class FhirDispatchingService implements DispatchingService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends IBaseResource> T dispatchSearch(final EuRequestDetails requestDetails) {
+    public <T extends IBaseResource> T dispatchSearch(final EuRequestDetails requestDetails, String JWTToken) {
         Validate.notNull(requestDetails, "The request details cannot be null");
 
         final FhirDispatchingClient hapiWebClient = hapiWebClientFactory.createClient(requestDetails);
-        final Bundle result = hapiWebClient.dispatch(requestDetails);
+        final Bundle result = hapiWebClient.dispatch(requestDetails, JWTToken);
         validationService.validate(result, requestDetails.getRestOperationType());
 
         return (T) result;
@@ -40,11 +40,11 @@ public class FhirDispatchingService implements DispatchingService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends IBaseResource> T dispatchRead(final EuRequestDetails requestDetails) {
+    public <T extends IBaseResource> T dispatchRead(final EuRequestDetails requestDetails, String JWTToken) {
         Validate.notNull(requestDetails, "The request details cannot be null");
 
         final FhirDispatchingClient hapiWebClient = hapiWebClientFactory.createClient(requestDetails);
-        final Bundle result = hapiWebClient.dispatch(requestDetails);
+        final Bundle result = hapiWebClient.dispatch(requestDetails, JWTToken);
         validationService.validate(result, requestDetails.getRestOperationType());
         
         return (T) result;

@@ -19,7 +19,7 @@ public class FhirDispatchingClient {
         this.genericClient = genericClient;
     }
 
-    public Bundle dispatch(final EuRequestDetails requestDetails) {
+    public Bundle dispatch(final EuRequestDetails requestDetails, String JWTToken) {
         final MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>(
                 requestDetails.getHapiRequestDetails().getParameters().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> Arrays.asList(e.getValue()))));
 
@@ -30,7 +30,11 @@ public class FhirDispatchingClient {
                 .toUriString();
 
         if (requestDetails.getRestOperationType() == RestOperationTypeEnum.SEARCH_TYPE) {
-            return genericClient.search().byUrl(uri).returnBundle(Bundle.class).execute();
+            if(JWTToken != null){
+                return genericClient.search().byUrl(uri).withAdditionalHeader("Authorization", JWTToken).returnBundle(Bundle.class).execute();
+            }else{
+                return genericClient.search().byUrl(uri).returnBundle(Bundle.class).execute();
+            }
         }
         throw new UnsupportedOperationException("Currently only the \"search\" operation is supported");
     }

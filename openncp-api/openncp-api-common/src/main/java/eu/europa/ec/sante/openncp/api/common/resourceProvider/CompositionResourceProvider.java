@@ -52,7 +52,8 @@ public class CompositionResourceProvider implements IResourceProvider {
     @Read
     public CompositionLabReportMyHealthEu find(@IdParam final IdType id, final HttpServletRequest theServletRequest, final HttpServletResponse theServletResponse,
                                        final RequestDetails theRequestDetails) {
-        final CompositionLabReportMyHealthEu handledCompositionLabReportEu = dispatchingService.dispatchRead(EuRequestDetails.of(theRequestDetails));
+        String JWTToken = getJwtFromRequest(theServletRequest);
+        final CompositionLabReportMyHealthEu handledCompositionLabReportEu = dispatchingService.dispatchRead(EuRequestDetails.of(theRequestDetails), JWTToken);
 //        final CompositionLabReportEu handledCompositionLabReportEu = compositionLabReportEuHandler.handle(serverResponse);
 
         return handledCompositionLabReportEu;
@@ -101,7 +102,8 @@ public class CompositionResourceProvider implements IResourceProvider {
             final SearchContainedModeEnum theSearchContainedMode
 
     ) {
-        final Bundle serverResponse = dispatchingService.dispatchSearch(ImmutableEuRequestDetails.of(theRequestDetails));
+        String JWTToken = getJwtFromRequest(theServletRequest);
+        final Bundle serverResponse = dispatchingService.dispatchSearch(ImmutableEuRequestDetails.of(theRequestDetails), JWTToken);
         final Bundle handledBundle = bundleHandler.handle(serverResponse);
 
         return handledBundle;
@@ -129,9 +131,20 @@ public class CompositionResourceProvider implements IResourceProvider {
             @Sort final SortSpec theSortSpec,
             final RequestDetails theRequestDetails) {
 
-        final Bundle handledCompositionLabReportEu = dispatchingService.dispatchRead(ImmutableEuRequestDetails.of(theRequestDetails));
+        String JWTToken = getJwtFromRequest(theServletRequest);
+
+        final Bundle handledCompositionLabReportEu = dispatchingService.dispatchRead(ImmutableEuRequestDetails.of(theRequestDetails), JWTToken);
 
         return handledCompositionLabReportEu;
+    }
+
+    public String getJwtFromRequest(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+
+        if (header != null && header.startsWith("Bearer ")) {
+            return header;
+        }
+        throw new RuntimeException("JWT Token is missing");
     }
 
 }

@@ -9,6 +9,10 @@
     <artifactId>openncp-core-common</artifactId>
     <name>openncp-core-common</name>
 
+    <properties>
+        <java-jwt.version>3.18.1</java-jwt.version>
+    </properties>
+
     <packaging>jar</packaging>
 
     <dependencies>
@@ -217,6 +221,11 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${java-jwt.version}</version>
         </dependency>
     </dependencies>
 

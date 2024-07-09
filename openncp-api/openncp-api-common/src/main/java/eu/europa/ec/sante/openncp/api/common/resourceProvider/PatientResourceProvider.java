@@ -77,9 +77,20 @@ public class PatientResourceProvider implements IResourceProvider {
 
                               @RawParam final Map<String, List<String>> theAdditionalRawParams) {
 
-        final Bundle serverResponse = dispatchingService.dispatchSearch(EuRequestDetails.of(theRequestDetails));
+        String jwt = getJwtFromRequest(theServletRequest);
+
+        final Bundle serverResponse = dispatchingService.dispatchSearch(EuRequestDetails.of(theRequestDetails), jwt);
         final Bundle handledBundle = bundleHandler.handle(serverResponse);
 
         return handledBundle;
+    }
+
+    public String getJwtFromRequest(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+
+        if (header != null && header.startsWith("Bearer ")) {
+            return header;
+        }
+        throw new RuntimeException("JWT Token is missing");
     }
 }

@@ -55,6 +55,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 server:
+  max-http-header-size: 1MB
   error:
     include-message: always
 app:

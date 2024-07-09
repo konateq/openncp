@@ -13,6 +13,9 @@ hapi:
     validation:
       enabled: true
       request-only: true
+    security:
+      jwt:
+        secret: cO8IGFVZa60tBFScaDotntDucC4FphuA
     openapi:
       enabled: true
       secured: false
@@ -27,6 +30,8 @@ fhirserver:
 fhir:
   server:
     inclusion: true
+server:
+    max-http-header-size: 1MB
 spring:
   jpa:
     generate-ddl: true
