@@ -1,12 +1,13 @@
 package eu.europa.ec.sante.openncp.core.client.ihe;
 
+import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
-import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
-import eu.europa.ec.sante.openncp.core.client.api.PatientDemographics;
-import eu.europa.ec.sante.openncp.core.client.api.QueryPatientRequest;
+import eu.europa.ec.sante.openncp.core.client.api.*;
 import eu.europa.ec.sante.openncp.core.client.ihe.dto.QueryPatientOperation;
+import eu.europa.ec.sante.openncp.core.client.ihe.dto.RetrieveDocumentOperation;
 import eu.europa.ec.sante.openncp.core.client.ihe.service.*;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.NoPatientIdDiscoveredException;
+import eu.europa.ec.sante.openncp.core.common.ihe.exception.XCAException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -103,6 +104,34 @@ public class ClientServiceTest {
 
         when(identificationService.findIdentityByTraits(any(),any(),any())).thenThrow(new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_PI_GENERIC,"Patient Identification generic error"));
         assertThrows(ClientConnectorException.class, () -> clientService.queryPatient(queryPatientOperation));
+
+
+    }
+
+
+    @Test
+    public void testExceptionOnRetrieveDocument() throws Exception {
+        RetrieveDocumentRequest retrieveDocumentRequest = new RetrieveDocumentRequest();
+        DocumentId documentId=new DocumentId();
+        retrieveDocumentRequest.setDocumentId(documentId);
+        GenericDocumentCode genericDocumentCode=new GenericDocumentCode();
+        genericDocumentCode.setValue(ClassCode.PS_CLASSCODE.toString());
+        genericDocumentCode.setSchema("2.16.840.1.113883.6.1");
+        retrieveDocumentRequest.setClassCode(genericDocumentCode);
+        final Map<AssertionEnum, Assertion> assertions = new HashMap<>();
+        RetrieveDocumentOperation retrieveDocumentOperation = new RetrieveDocumentOperation() {
+            @Override
+            public Map<AssertionEnum, Assertion> getAssertions() {
+                return assertions;
+            }
+
+            @Override
+            public RetrieveDocumentRequest getRequest() {
+                return retrieveDocumentRequest;
+            }
+        };
+        when(patientService.retrieve(any(),any(),any(),any(),any())).thenThrow(new XCAException(OpenNCPErrorCode.ERROR_GENERIC_DOCUMENT_MISSING,"Patient Document is not found",""));
+        assertThrows(ClientConnectorException.class, () -> clientService.retrieveDocument(retrieveDocumentOperation));
 
 
     }
