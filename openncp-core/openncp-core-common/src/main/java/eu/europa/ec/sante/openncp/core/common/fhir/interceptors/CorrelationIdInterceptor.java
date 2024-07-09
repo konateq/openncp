@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.client.api.IHttpRequest;
 import ca.uhn.fhir.rest.client.api.IHttpResponse;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import eu.europa.ec.sante.openncp.common.context.LogContext;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -38,7 +39,7 @@ public class CorrelationIdInterceptor implements FhirCustomInterceptor, IClientI
             return UUID.randomUUID().toString();
         });
         LogContext.setCorrelationId(correlationId);
-        httpServletResponse.setHeader(X_CORRELATION_ID_HEADER_KEY, LogContext.getCorrelationId());
+        httpServletResponse.setHeader(X_CORRELATION_ID_HEADER_KEY, StringEscapeUtils.escapeJava(LogContext.getCorrelationId()));
     }
 
     @Hook(Pointcut.SERVER_OUTGOING_RESPONSE)
@@ -46,13 +47,13 @@ public class CorrelationIdInterceptor implements FhirCustomInterceptor, IClientI
             final RequestDetails requestDetails,
             final ServletRequestDetails servletRequestDetails
     ) {
-        servletRequestDetails.getServletResponse().setHeader(X_CORRELATION_ID_HEADER_KEY, LogContext.getCorrelationId());
+        servletRequestDetails.getServletResponse().setHeader(X_CORRELATION_ID_HEADER_KEY, StringEscapeUtils.escapeJava(LogContext.getCorrelationId()));
     }
 
     @Override
     public void interceptRequest(final IHttpRequest theRequest) {
         theRequest.removeHeaders(X_CORRELATION_ID_HEADER_KEY);
-        theRequest.addHeader(X_CORRELATION_ID_HEADER_KEY, LogContext.getCorrelationId());
+        theRequest.addHeader(X_CORRELATION_ID_HEADER_KEY, StringEscapeUtils.escapeJava(LogContext.getCorrelationId()));
     }
 
     @Override

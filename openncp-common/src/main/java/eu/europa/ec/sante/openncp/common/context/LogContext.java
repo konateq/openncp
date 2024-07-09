@@ -22,7 +22,6 @@ public final class LogContext {
      * Update the correlationId in the MDC.
      */
     public static void setCorrelationId() {
-        final String existingCorrelationId = getCorrelationId();
         final String correlationId = UUID.randomUUID().toString();
         setCorrelationId(correlationId);
     }
@@ -83,7 +82,7 @@ public final class LogContext {
         // CHECKSTYLE.ON: AbbreviationAsWordInNameCheck
         MDC.remove("correlationId");
         MDC.remove("errorId");
-        MDC.remove("countryCode");
+        MDC.remove("CountryCode");
     }
 
     public static void setCountryCode(final String countryCode) {

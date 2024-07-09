@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.client.api.IClientInterceptor;
 import ca.uhn.fhir.rest.client.api.IHttpRequest;
 import ca.uhn.fhir.rest.client.api.IHttpResponse;
 import eu.europa.ec.sante.openncp.common.context.LogContext;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -28,12 +29,12 @@ public class CountryCodeInterceptor implements FhirCustomInterceptor, IClientInt
     public void setIncomingCorrelationIdToLogContext(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) {
         final String countryCode = httpServletRequest.getHeader(COUNTRY_CODE_HEADER_KEY);
         LogContext.setCountryCode(countryCode);
-        httpServletResponse.setHeader(COUNTRY_CODE_HEADER_KEY, LogContext.getCountryCode());
+        httpServletResponse.setHeader(COUNTRY_CODE_HEADER_KEY, StringEscapeUtils.escapeJava(LogContext.getCountryCode()));
     }
 
     @Override
     public void interceptRequest(final IHttpRequest theRequest) {
-        theRequest.addHeader(COUNTRY_CODE_HEADER_KEY, LogContext.getCountryCode());
+        theRequest.addHeader(COUNTRY_CODE_HEADER_KEY, StringEscapeUtils.escapeJava(LogContext.getCountryCode()));
     }
 
     @Override
