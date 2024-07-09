@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.core.common.fhir.interceptors;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.Constants;
+import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.EuFhirContextFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
@@ -31,6 +32,10 @@ class RewriteUrlInterceptorTest {
         httpServletRequest.addHeader(HttpHeaders.HOST, "localhost:8091");
         httpServletRequest.setScheme("http");
         httpServletRequest.setContextPath("/openncp-client-connector");
+        final ServletRequestDetails servletRequestDetails = new ServletRequestDetails();
+        servletRequestDetails.setFhirServerBase("/fhir");
+        servletRequestDetails.setServletRequest(httpServletRequest);
+
         final FhirContext ctx = EuFhirContextFactory.createFhirContext();
         final IParser parser = ctx.newJsonParser();
         final Bundle bundle = parser.parseResource(Bundle.class, IOUtils.toString(
@@ -38,9 +43,9 @@ class RewriteUrlInterceptorTest {
                 StandardCharsets.UTF_8));
         interceptor.rewriteAttachmentUrl(
                 null,
-                null,
+                servletRequestDetails,
                 bundle,
-                httpServletRequest,
+                null,
                 null);
         final List<String> rewrittenUrls = bundle.getEntry().stream()
                 .map(Bundle.BundleEntryComponent::getResource)
@@ -54,6 +59,6 @@ class RewriteUrlInterceptorTest {
                 .collect(Collectors.toList());
         assertThat(rewrittenUrls)
                 .hasSize(2)
-                .allMatch(url -> url.startsWith("http://localhost:8091/openncp-client-connector/"));
+                .allMatch(url -> url.startsWith("http://localhost:8091/openncp-client-connector/fhir/"));
     }
 }

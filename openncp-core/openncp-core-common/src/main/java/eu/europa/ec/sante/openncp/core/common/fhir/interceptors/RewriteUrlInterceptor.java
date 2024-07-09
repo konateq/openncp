@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.utils.URIBuilder;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
@@ -36,6 +37,7 @@ public class RewriteUrlInterceptor implements FhirCustomInterceptor {
         if (baseResource instanceof Bundle) {
             final Bundle bundle = (Bundle) baseResource;
             if (bundle.getType() == Bundle.BundleType.SEARCHSET) {
+                final String replaceUrl = buildReplaceUrl(servletRequestDetails);
                 bundle.getEntry().stream()
                         .map(Bundle.BundleEntryComponent::getResource)
                         .filter(resource -> resource.getResourceType() == ResourceType.DocumentReference)
@@ -44,18 +46,18 @@ public class RewriteUrlInterceptor implements FhirCustomInterceptor {
                         .flatMap(Collection::stream)
                         .map(DocumentReference.DocumentReferenceContentComponent::getAttachment)
                         .filter(attachment -> attachment.getContentType().equalsIgnoreCase(Constants.CT_FHIR_JSON_NEW))
-                        .forEach(attachment -> rewriteUrl(attachment, buildReplaceUrl(httpServletRequest), "Bundle"));
+                        .forEach(attachment -> rewriteUrl(attachment, replaceUrl, "Bundle"));
             }
         }
     }
 
-    private String buildReplaceUrl(final HttpServletRequest httpServletRequest) {
-        final StringBuilder stringBuilder = new StringBuilder(httpServletRequest.getScheme())
-                .append("://")
-                .append(httpServletRequest.getHeader(HttpHeaders.HOST))
-                .append(httpServletRequest.getContextPath())
-                .append('/');
-        return stringBuilder.toString();
+    private String buildReplaceUrl(final ServletRequestDetails servletRequestDetails) {
+        final HttpServletRequest httpServletRequest = servletRequestDetails.getServletRequest();
+        final URIBuilder uriBuilder = new URIBuilder()
+                .setScheme(httpServletRequest.getScheme())
+                .setHost(httpServletRequest.getHeader(HttpHeaders.HOST))
+                .setPath(httpServletRequest.getContextPath() + servletRequestDetails.getFhirServerBase() + '/');
+        return uriBuilder.toString();
     }
 
     private void rewriteUrl(final Attachment attachment, final String replaceUrl, final String resourceType) {

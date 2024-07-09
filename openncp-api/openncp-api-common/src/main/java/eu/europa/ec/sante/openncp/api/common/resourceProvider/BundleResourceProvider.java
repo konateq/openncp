@@ -13,6 +13,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import eu.europa.ec.sante.openncp.api.common.handler.BundleHandler;
+import eu.europa.ec.sante.openncp.core.common.fhir.context.EuRequestDetails;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.ImmutableEuRequestDetails;
 import eu.europa.ec.sante.openncp.core.common.fhir.services.DispatchingService;
 import org.apache.commons.lang3.Validate;
@@ -46,8 +47,10 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     @Read
-    public Bundle find(@IdParam final IdType id) {
-        return null;
+    public Bundle find(@IdParam final IdType id, final RequestDetails theRequestDetails) {
+        final Bundle bundle = dispatchingService.dispatchRead(EuRequestDetails.of(theRequestDetails));
+        return bundle;
+
     }
 
     @Search(allowUnknownParams = true)

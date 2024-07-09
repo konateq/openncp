@@ -30,14 +30,14 @@ public interface EuRequestDetails {
     }
 
     default Optional<FhirSupportedResourceType> getSupportedResourceType() {
-        return FhirSupportedResourceType.ofRequestPath(getHapiRequestDetails().getRequestPath());
+        return FhirSupportedResourceType.ofRequestPath(getHapiRequestDetails().getResourceName());
     }
 
     default String getResourceType() {
         return getSupportedResourceType()
                 .map(FhirSupportedResourceType::getRestRequestPath)
                 .map(FhirSupportedResourceType.RestRequestPath::getValue)
-                .orElseGet(() -> getHapiRequestDetails().getRequestPath());
+                .orElseGet(() -> getHapiRequestDetails().getResourceName());
     }
 
     default boolean isPatient() {
