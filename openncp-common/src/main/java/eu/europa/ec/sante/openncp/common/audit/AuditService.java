@@ -8,8 +8,6 @@ import eu.europa.ec.sante.openncp.common.audit.serialization.AuditLogSerializerI
 import eu.europa.ec.sante.openncp.common.audit.transformer.AuditMessageTransformer;
 import eu.europa.ec.sante.openncp.common.audit.utils.SerializableMessage;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
-import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
-import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.util.MoreCollectors;
 import net.RFC3881.dicom.AuditMessage;
 import org.apache.commons.lang3.Validate;
@@ -22,8 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * This service provides access to the system defined properties
@@ -71,7 +67,7 @@ public class AuditService implements MessageHandlerListener {
      * @param severity    the severity of the message.
      * @return true if auditLog is attempted to be sent.
      */
-    public synchronized Boolean write(Object eventObject, String facility, String severity) {
+    public synchronized Boolean write(final Object eventObject, final String facility, final String severity) {
 
         logger.info("[Audit Service] Writing Audit Message");
         final AuditMessage message = auditMessageTransformers.stream()
@@ -85,11 +81,11 @@ public class AuditService implements MessageHandlerListener {
     }
 
     @Override
-    public boolean handleMessage(Serializable message) {
+    public boolean handleMessage(final Serializable message) {
 
         if (message instanceof SerializableMessage) {
-            SerializableMessage sm = (SerializableMessage) message;
-            boolean sent = write(sm.getMessage(), sm.getFacility(), sm.getSeverity());
+            final SerializableMessage sm = (SerializableMessage) message;
+            final boolean sent = write(sm.getMessage(), sm.getFacility(), sm.getSeverity());
             logger.info("Attempt to write message to OpenATNA server. Result '{}'", sent);
             return sent;
         } else {
