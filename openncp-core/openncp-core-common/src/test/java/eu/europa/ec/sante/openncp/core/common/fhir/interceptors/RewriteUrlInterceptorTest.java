@@ -13,7 +13,6 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -53,16 +52,8 @@ class RewriteUrlInterceptorTest {
                 .filter(attachment -> attachment.getContentType().equalsIgnoreCase(Constants.CT_FHIR_JSON_NEW))
                 .map(Attachment::getUrl)
                 .collect(Collectors.toList());
-        assertThat(rewrittenUrls).hasSize(2).allMatch(url -> url.startsWith(buildReplaceUrl(httpServletRequest)));
-
-    }
-
-    private String buildReplaceUrl(final HttpServletRequest httpServletRequest) {
-        final StringBuilder stringBuilder = new StringBuilder(httpServletRequest.getScheme())
-                .append("://")
-                .append(httpServletRequest.getHeader(HttpHeaders.HOST))
-                .append(httpServletRequest.getContextPath())
-                .append('/');
-        return stringBuilder.toString();
+        assertThat(rewrittenUrls)
+                .hasSize(2)
+                .allMatch(url -> url.startsWith("http://localhost:8091/openncp-client-connector/"));
     }
 }
