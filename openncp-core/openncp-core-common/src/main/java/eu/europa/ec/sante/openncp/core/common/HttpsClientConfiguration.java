@@ -40,14 +40,21 @@ public class HttpsClientConfiguration {
     }
 
 
-    public static HttpClient getSSLClient() throws UnrecoverableKeyException, CertificateException,
+    public static HttpClient getDefaultSSLClient() throws UnrecoverableKeyException, CertificateException,
             NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
 
         final SSLContext sslContext = buildSSLContext();
-        final SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(
-                sslContext, new String[]{"TLSv1.2", "TLSv1.3"}, null, NoopHostnameVerifier.INSTANCE);
-        final HttpClientBuilder builder = HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory);
+        final SSLConnectionSocketFactory sslConnectionSocketFactory = buildSSLConnectionSocketFactory();
+        final HttpClientBuilder builder = HttpClients.custom().setSSLSocketFactory(sslConnectionSocketFactory).setUserAgent("OpenNCP http client");
         
         return builder.build();
+    }
+
+    public static SSLConnectionSocketFactory buildSSLConnectionSocketFactory() throws UnrecoverableKeyException, CertificateException,
+            NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
+
+        final SSLContext sslContext = buildSSLContext();
+        return new SSLConnectionSocketFactory(
+                sslContext, new String[]{"TLSv1.2", "TLSv1.3"}, null, NoopHostnameVerifier.INSTANCE);
     }
 }

@@ -22,7 +22,6 @@ public class FhirDispatchingClient {
     public Bundle dispatch(final EuRequestDetails requestDetails) {
         final MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>(
                 requestDetails.getHapiRequestDetails().getParameters().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> Arrays.asList(e.getValue()))));
-
         final String uri = UriComponentsBuilder.fromHttpUrl(genericClient.getServerBase())
                 .path(requestDetails.getHapiRequestDetails().getRequestPath())
                 .queryParams(parameterMap)

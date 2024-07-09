@@ -1,0 +1,10 @@
+# EditorConfig http://EditorConfig.org
+# This config attempts to align modern IDE tooling behavior
+
+# top-most EditorConfig file
+root = true
+
+# This makes sure that we use Unix-style newlines with a newline ending when creating new files
+[*]
+end_of_line = lf
+insert_final_newline = true

@@ -1,6 +1,9 @@
 package eu.europa.ec.sante.openncp.common.configuration;
 
+import eu.europa.ec.sante.openncp.common.audit.handler.FailedLogsHandlerServiceImpl;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Deprecated
 public class ConfigurationManagerFactory {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationManagerFactory.class);
     private static ConfigurationManager configurationManager;
 
     /**
@@ -23,6 +26,7 @@ public class ConfigurationManagerFactory {
 
     @Autowired
     public void setConfigurationManager(final ConfigurationManager configurationManager) {
+        LOGGER.info("Wiring a configuration manager.");
         ConfigurationManagerFactory.configurationManager = Validate.notNull(configurationManager);
     }
 }

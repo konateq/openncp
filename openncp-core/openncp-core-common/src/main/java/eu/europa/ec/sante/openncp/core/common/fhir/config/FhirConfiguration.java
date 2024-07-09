@@ -13,6 +13,7 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.validation.FhirValidator;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.EuFhirContextFactory;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.EuCorsInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.FhirCustomInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.SecuredOpenApiInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.UnsecuredOpenApiInterceptor;
 import org.apache.commons.lang3.Validate;
@@ -56,6 +57,7 @@ public class FhirConfiguration {
     public FhirContext fhirContext() {
         return EuFhirContextFactory.createFhirContext();
     }
+
     @Bean
     @ConditionalOnExpression("${hapi.fhir.openapi.enabled:false} == true && ${hapi.fhir.openapi.secured:false} == true")
     public OpenApiInterceptor getSecuredOpenApiInterceptor() {
@@ -78,9 +80,9 @@ public class FhirConfiguration {
         }
 
         final ValidationSupportChain validationSupportChain = new ValidationSupportChain(new DefaultProfileValidationSupport(fhirContext),
-                                                                                         new CommonCodeSystemsTerminologyService(fhirContext),
-                                                                                         new InMemoryTerminologyServerValidationSupport(fhirContext),
-                                                                                         npmPackageSupport);
+                new CommonCodeSystemsTerminologyService(fhirContext),
+                new InMemoryTerminologyServerValidationSupport(fhirContext),
+                npmPackageSupport);
 
         final FhirInstanceValidator instanceValidator = new FhirInstanceValidator(validationSupportChain);
 
@@ -114,13 +116,14 @@ public class FhirConfiguration {
     @ConfigurationProperties("hapi.fhir.rest")
     @SuppressWarnings("serial")
     static class FhirRestfulServerConfiguration extends RestfulServer {
-
+        final Logger LOGGER = LoggerFactory.getLogger(FhirRestfulServerConfiguration.class);
         private final FhirProperties properties;
         private final FhirContext fhirContext;
         private final List<IResourceProvider> resourceProviders;
 
         private final List<IServerInterceptor> interceptors;
         private final OpenApiInterceptor openApiInterceptor;
+        private final List<FhirCustomInterceptor> fhirCustomInterceptors;
         private final IPagingProvider pagingProvider;
         private final EuCorsInterceptor euCorsInterceptor;
 
@@ -129,6 +132,7 @@ public class FhirConfiguration {
                                               final ObjectProvider<List<IServerInterceptor>> interceptors,
                                               final ObjectProvider<IPagingProvider> pagingProvider,
                                               final OpenApiInterceptor openApiInterceptor,
+                                              final List<FhirCustomInterceptor> fhirCustomInterceptors,
                                               final EuCorsInterceptor euCorsInterceptor) {
             this.properties = properties;
             this.fhirContext = fhirContext;
@@ -136,13 +140,14 @@ public class FhirConfiguration {
             this.pagingProvider = pagingProvider.getIfAvailable();
             this.interceptors = interceptors.getIfAvailable();
             this.openApiInterceptor = openApiInterceptor;
+            this.fhirCustomInterceptors = Validate.notNull(fhirCustomInterceptors);
             this.euCorsInterceptor = euCorsInterceptor;
         }
 
         @Bean
         public ServletRegistrationBean<RestfulServer> fhirServerRegistrationBean() {
             final ServletRegistrationBean<RestfulServer> registration = new ServletRegistrationBean<>(this,
-                                                                                                      this.properties.getServer().getServletPath());
+                    this.properties.getServer().getServletPath());
             registration.setLoadOnStartup(1);
             return registration;
         }
@@ -157,9 +162,17 @@ public class FhirConfiguration {
             setServerAddressStrategy(new HardcodedServerAddressStrategy(this.properties.getServer().getBasePath()));
 
             final IInterceptorService interceptorService = getInterceptorService();
-            interceptors.forEach(interceptorService::registerInterceptor);
+            interceptors.forEach(interceptor -> {
+                LOGGER.info("Registering fhir interceptor [{}]", interceptor);
+                interceptorService.registerInterceptor(interceptor);
+            });
             interceptorService.registerInterceptor(this.openApiInterceptor);
             interceptorService.registerInterceptor(this.euCorsInterceptor);
+
+            fhirCustomInterceptors.forEach(interceptor -> {
+                LOGGER.info("Registering fhir custom interceptor [{}]", interceptor);
+                interceptorService.registerInterceptor(interceptor);
+            });
         }
     }
 }

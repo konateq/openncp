@@ -53,7 +53,7 @@ public class PatientResourceProvider implements IResourceProvider {
                               @Description(shortDefinition = "The patient's date of birth") @OptionalParam(
                                       name = "birthdate") final DateRangeParam theBirthdate,
 
-                              @Description(shortDefinition = "A patient identifier") @OptionalParam(
+                              @Description(shortDefinition = "A patient identifier") @RequiredParam(
                                       name = "identifier") final TokenAndListParam theIdentifier,
 
                               @Description(shortDefinition = "Only return resources which were last updated as specified by the given range") @OptionalParam(
