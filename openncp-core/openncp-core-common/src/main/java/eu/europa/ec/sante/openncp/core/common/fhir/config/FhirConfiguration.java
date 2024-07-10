@@ -17,6 +17,7 @@ import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.JwtSamlIntercept
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.SecuredOpenApiInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.UnsecuredOpenApiInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.security.TokenProvider;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.saml.SAML2Validator;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
@@ -99,8 +100,8 @@ public class FhirConfiguration {
 
 
     @Bean
-    public JwtSamlInterceptor getJwtSamlInterceptor(TokenProvider tokenProvider){
-        return new JwtSamlInterceptor(tokenProvider);
+    public JwtSamlInterceptor getJwtSamlInterceptor(TokenProvider tokenProvider, SAML2Validator saml2Validator){
+        return new JwtSamlInterceptor(tokenProvider, saml2Validator);
     }
 
     @Configuration
