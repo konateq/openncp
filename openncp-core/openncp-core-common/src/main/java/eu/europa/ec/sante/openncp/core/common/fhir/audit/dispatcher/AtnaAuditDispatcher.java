@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.fhir.audit;
+package eu.europa.ec.sante.openncp.core.common.fhir.audit.dispatcher;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -19,9 +19,10 @@ public class AtnaAuditDispatcher implements AuditDispatcher {
 
     @Override
     public DispatchResult dispatch(final AuditEvent auditEvent) {
-        final IParser jsonParser = fhirContext.newJsonParser();
-        LOGGER.info("Dispatching event [{}]", jsonParser.encodeResourceToString(auditEvent));
-
-        return DispatchResult.success();
+        final DispatchMetadata dispatchingMetadata = ImmutableDispatchMetadata.builder()
+                .dispatcherUsed(this.getClass())
+                .dispatchingDestination("Atna server url goes here")
+                .build();
+        return DispatchResult.failure(dispatchingMetadata, "ATNA dispatching not implemented yet.");
     }
 }

@@ -4,9 +4,12 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
+import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.api.server.ResponseDetails;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
+import eu.europa.ec.sante.openncp.core.common.fhir.audit.dispatcher.AuditDispatcher;
+import eu.europa.ec.sante.openncp.core.common.fhir.audit.dispatcher.DispatchResult;
 import eu.europa.ec.sante.openncp.core.common.fhir.audit.eventhandler.AuditEventProducer;
 import eu.europa.ec.sante.openncp.core.common.fhir.audit.eventhandler.AuditableEvent;
 import eu.europa.ec.sante.openncp.core.common.fhir.audit.eventhandler.FallbackAuditEventProducer;
@@ -33,13 +36,13 @@ public class AuditInterceptor implements FhirCustomInterceptor {
     private final FhirContext fhirContext;
     private final List<AuditEventProducer> auditEventProducers;
     private final FallbackAuditEventProducer fallbackAuditEventProducer;
-    private final AuditDispatcher auditDispatcher;
+    private final List<AuditDispatcher> auditDispatchers;
 
-    public AuditInterceptor(final FhirContext fhirContext, final List<AuditEventProducer> auditEventProducers, final FallbackAuditEventProducer fallbackAuditEventProducer, final AuditDispatcher auditDispatcher) {
+    public AuditInterceptor(final FhirContext fhirContext, final List<AuditEventProducer> auditEventProducers, final FallbackAuditEventProducer fallbackAuditEventProducer, final List<AuditDispatcher> auditDispatchers) {
         this.fhirContext = Validate.notNull(fhirContext, "fhirContext cannot be null.");
         this.auditEventProducers = Validate.notNull(auditEventProducers, "auditEventProducers cannot be null.");
         this.fallbackAuditEventProducer = Validate.notNull(fallbackAuditEventProducer, "fallbackAuditEventProducer cannot be null.");
-        this.auditDispatcher = Validate.notNull(auditDispatcher, "auditDispatcher cannot be null.");
+        this.auditDispatchers = Validate.notNull(auditDispatchers, "auditDispatchers cannot be null.");
     }
 
     @Hook(Pointcut.SERVER_OUTGOING_RESPONSE)
@@ -62,6 +65,22 @@ public class AuditInterceptor implements FhirCustomInterceptor {
                 .map(auditEventProducer -> auditEventProducer.produce(auditableEvent))
                 .orElseGet(() -> fallbackAuditEventProducer.produce(auditableEvent));
 
-        auditEvents.forEach(auditDispatcher::dispatch);
+        auditEvents.forEach(auditEvent -> auditDispatchers.forEach(auditDispatcher -> {
+            if (LOGGER.isDebugEnabled()) {
+                final IParser jsonParser = fhirContext.newJsonParser();
+                final String auditEventAsJsonString = jsonParser.encodeResourceToString(auditEvent);
+                LOGGER.debug("Audit event dispatching using dispatcher [{}] for audit event [{}]", auditDispatcher.getClass().getSimpleName(), auditEventAsJsonString);
+            }
+
+            final DispatchResult dispatchResult = auditDispatcher.dispatch(auditEvent);
+            LOGGER.debug("Audit event dispatched with result [{}]", dispatchResult);
+            if (dispatchResult.isSuccess()) {
+                LOGGER.info("Audit event successfully dispatched: [{}]", dispatchResult.getMessage());
+            } else {
+                DispatchResult.DispatchError dispatchError = dispatchResult.getError();
+                final String errorMessage = String.format("Dispatching the audit event FAILED: [%s]", dispatchError.getErrorMessage());
+                dispatchError.getThrowable().ifPresentOrElse(throwable -> LOGGER.error(errorMessage, throwable), () -> LOGGER.error(errorMessage));
+            }
+        }));
     }
 }
