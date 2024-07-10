@@ -47,8 +47,7 @@ public class IdentificationServiceTest {
     public void testFindIdentityByTraits() throws NoPatientIdDiscoveredException, ParseException {
         // Arrange
         ArrayList<PatientDemographics> patientDemographicsList = new ArrayList<>();
-        when(xcpdInitGateway.patientDiscovery(Mockito.<PatientDemographics>any(),
-                Mockito.<Map<AssertionEnum, Assertion>>any(), Mockito.<String>any())).thenReturn(patientDemographicsList);
+
 
         PatientDemographics patient = new PatientDemographics();
         patient.setAdministrativeGender(PatientDemographics.Gender.FEMALE);
@@ -64,6 +63,9 @@ public class IdentificationServiceTest {
         patient.setPostalCode("Postal Code");
         patient.setStreetAddress("42 Main St");
         patient.setTelephone("6625550144");
+
+        when(xcpdInitGateway.patientDiscovery(patient,
+                new HashMap<>(), "GB")).thenReturn(patientDemographicsList);
 
         // Act
         List<PatientDemographics> actualFindIdentityByTraitsResult = identificationService.findIdentityByTraits(patient,
@@ -81,11 +83,6 @@ public class IdentificationServiceTest {
      */
     @Test
     public void testFindIdentityByTraits2() throws NoPatientIdDiscoveredException, ParseException {
-        // Arrange
-        when(xcpdInitGateway.patientDiscovery(Mockito.<PatientDemographics>any(),
-                Mockito.<Map<AssertionEnum, Assertion>>any(), Mockito.<String>any()))
-                .thenThrow(new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_GENERIC, "An error occurred"));
-
         PatientDemographics patient = new PatientDemographics();
         patient.setAdministrativeGender(PatientDemographics.Gender.FEMALE);
         patient.setBirthDate(Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant()));
@@ -101,7 +98,10 @@ public class IdentificationServiceTest {
         patient.setStreetAddress("42 Main St");
         patient.setTelephone("6625550144");
 
-        // Act and Assert
+        when(xcpdInitGateway.patientDiscovery(patient,
+                new HashMap<>(), "GB")).thenThrow(new NoPatientIdDiscoveredException(OpenNCPErrorCode.ERROR_GENERIC, "An error occurred"));
+
+
         assertThrows(NoPatientIdDiscoveredException.class,
                 () -> identificationService.findIdentityByTraits(patient, new HashMap<>(), "GB"));
         verify(xcpdInitGateway).patientDiscovery(isA(PatientDemographics.class), isA(Map.class), eq("GB"));
