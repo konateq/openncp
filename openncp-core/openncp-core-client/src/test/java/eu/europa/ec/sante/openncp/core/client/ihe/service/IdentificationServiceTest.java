@@ -82,7 +82,7 @@ public class IdentificationServiceTest {
      * {@link IdentificationService#findIdentityByTraits(PatientDemographics, Map, String)}
      */
     @Test
-    public void testFindIdentityByTraits2() throws NoPatientIdDiscoveredException, ParseException {
+    public void testFindIdentityByTraitsNoPatient() throws NoPatientIdDiscoveredException, ParseException {
         PatientDemographics patient = new PatientDemographics();
         patient.setAdministrativeGender(PatientDemographics.Gender.FEMALE);
         patient.setBirthDate(Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant()));
