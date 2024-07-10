@@ -48,9 +48,8 @@ public class BundleResourceProvider implements IResourceProvider {
 
     @Read
     public Bundle find(@IdParam final IdType id, final RequestDetails theRequestDetails) {
-        final Bundle bundle = dispatchingService.dispatchRead(EuRequestDetails.of(theRequestDetails));
+        final Bundle bundle = dispatchingService.dispatchRead(EuRequestDetails.of(theRequestDetails), null);
         return bundle;
-
     }
 
     @Search(allowUnknownParams = true)
