@@ -129,12 +129,12 @@ public class RespondingGateway_ServiceStub extends Stub {
         // Enabling Axis2 - SSL 2 ways communication (not active by default).
         try {
             _serviceClient.getServiceContext().getConfigurationContext()
-                    .setProperty(HTTPConstants.CACHED_HTTP_CLIENT, HttpsClientConfiguration.getSSLClient());
+                    .setProperty(HTTPConstants.CACHED_HTTP_CLIENT, HttpsClientConfiguration.getDefaultSSLClient());
             _serviceClient.getServiceContext().getConfigurationContext()
                     .setProperty(HTTPConstants.REUSE_HTTP_CLIENT, false);
         } catch (final NoSuchAlgorithmException | KeyManagementException | IOException | CertificateException |
                        KeyStoreException | UnrecoverableKeyException e) {
-            throw new RuntimeException("SSL Context cannot be initialized");
+            throw new RuntimeException("SSL Context cannot be initialized", e);
         }
     }
 

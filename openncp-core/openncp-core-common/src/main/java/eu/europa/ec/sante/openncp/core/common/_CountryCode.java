@@ -14,7 +14,7 @@ abstract class _CountryCode extends Wrapper<String> {
 
     @Value.Check
     protected void check() {
-        Validate.notBlank(value());
-        Validate.isTrue(ISO3166_1_ALPHA_2_COUNTRIES.contains(value()), "not a valid ISO ISO 3166-1 alpha-2 country");
+        Validate.notBlank(value(), "CountryCode cannot be empty and must be a valid ISO 3166-1 alpha-2 code");
+        Validate.isTrue(ISO3166_1_ALPHA_2_COUNTRIES.contains(value()), "The CountryCode provided is not a valid ISO 3166-1 alpha-2 code");
     }
 }

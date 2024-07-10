@@ -4,9 +4,11 @@ import eu.europa.ec.sante.openncp.common.audit.serialization.AuditLogSerializer;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +26,7 @@ public class FailedLogsHandlerServiceImpl implements FailedLogsHandlerService {
     private ScheduledExecutorService scheduledExecutorService = null;
     private final MessageHandlerListener listener;
     private final AuditLogSerializer.Type type;
+    private ConfigurationManager configurationManager;
 
     /**
      * @param listener
@@ -33,6 +36,17 @@ public class FailedLogsHandlerServiceImpl implements FailedLogsHandlerService {
         this.listener = listener;
         this.type = type;
     }
+
+    /**
+     * @param listener
+     * @param type
+     */
+    public FailedLogsHandlerServiceImpl(final MessageHandlerListener listener, final AuditLogSerializer.Type type, final ConfigurationManager configurationManager) {
+        this.listener = listener;
+        this.type = type;
+        this.configurationManager = Validate.notNull(configurationManager, "ConfigurationManager must not be null");
+    }
+
 
     /**
      *
@@ -83,23 +97,19 @@ public class FailedLogsHandlerServiceImpl implements FailedLogsHandlerService {
      * @return Interval in minute
      */
     private long getTimeBetween() {
-        final ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
-        if (configurationManager == null) {
-            return DEFAULT_SCHEDULER_TIME_MINUTES;
-        } else {
-            final String sValue = configurationManager.getProperty(KEY_SCHEDULED_TIME_BETWEEN_FAILED_LOGS_HANDLING);
-            if (StringUtils.isBlank(sValue)) {
-                return DEFAULT_SCHEDULER_TIME_MINUTES;
-            }
+        return getConfigurationManager()
+                .map(configurationManager -> configurationManager.getProperty(KEY_SCHEDULED_TIME_BETWEEN_FAILED_LOGS_HANDLING))
+                .filter(StringUtils::isNotBlank)
+                .map(Long::parseLong)
+                .orElse(DEFAULT_SCHEDULER_TIME_MINUTES);
 
-            final long l;
-            try {
-                l = Long.parseLong(sValue);
-            } catch (final Exception e) {
-                LOGGER.error("Exception: '{}'", e.getMessage(), e);
-                return DEFAULT_SCHEDULER_TIME_MINUTES;
-            }
-            return l;
+    }
+
+    private Optional<ConfigurationManager> getConfigurationManager() {
+        if (configurationManager == null) {
+            configurationManager = ConfigurationManagerFactory.getConfigurationManager();
         }
+
+        return Optional.ofNullable(configurationManager);
     }
 }

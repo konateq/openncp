@@ -4,7 +4,7 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 
 @ResourceDef(name = "DiagnosticReport", profile = DiagnosticReportLabMyHealthEu.PROFILE)
-public class DiagnosticReportLabMyHealthEu extends DiagnosticReport {
+public class DiagnosticReportLabMyHealthEu extends DiagnosticReport implements CustomResource {
 
-    public static final String PROFILE = "http://fhir.ehdsi.eu/laboratory/StructureDefinition/DiagnosticReport-lab-myhealtheu";
+    protected static final String PROFILE = "http://fhir.ehdsi.eu/laboratory/StructureDefinition/DiagnosticReport-lab-myhealtheu";
 }

@@ -15,8 +15,8 @@ public class DefaultExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(DefaultExceptionHandler.class);
 
     @ExceptionHandler(ApiException.class)
-    public void handleApiException(HttpServletResponse response, ApiException ex) throws IOException {
-        logger.error(ex.getMessage(), ex);
+    public void handleApiException(final HttpServletResponse response, final ApiException ex) throws IOException {
+        logger.error(String.format("[%s] with message [%s]", ex.getClass().getSimpleName(), ex.getMessage()), ex.getCause());
         response.sendError(ex.getRawStatusCode());
     }
 }
