@@ -17,12 +17,13 @@ spring:
       ddl-auto: validate
     open-in-view: false
   datasource:
-    default:
-      jndi-name: java:comp/env/jdbc/ConfMgr
-    atna:
-      jndi-name: java:comp/env/jdbc/OPEN_ATNA
-    eadc:
-      jndi-name: java:comp/env/jdbc/EADC
+    jndi:
+      properties:
+        jndiName: java:comp/env/jdbc/ConfMgr
+      atna:
+        jndiName: java:comp/env/jdbc/OPEN_ATNA
+      eadc:
+        jndiName: java:comp/env/jdbc/EADC
     database: default
     hibernate:
       ddl-auto: validate

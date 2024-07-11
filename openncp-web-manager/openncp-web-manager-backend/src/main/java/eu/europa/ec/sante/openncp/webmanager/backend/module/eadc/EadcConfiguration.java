@@ -24,20 +24,20 @@ import javax.sql.DataSource;
 public class EadcConfiguration {
 
     @Bean(name = "eadcDataSourceProperties")
-    @ConfigurationProperties(prefix = "spring.datasource.eadc")
+    @ConfigurationProperties(prefix = "spring.datasource.jndi.eadc")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean(name = "eadcDataSource", destroyMethod = "")
-    public DataSource dataSource(@Qualifier("eadcDataSourceProperties") DataSourceProperties dataSourceProperties) {
-        JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
+    public DataSource dataSource(@Qualifier("eadcDataSourceProperties") final DataSourceProperties dataSourceProperties) {
+        final JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
         return dataSourceLookup.getDataSource(dataSourceProperties.getJndiName());
     }
 
     @Bean(name = "eadcEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder,
-                                                                       @Qualifier("eadcDataSource") DataSource dataSource) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder,
+                                                                       @Qualifier("eadcDataSource") final DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
                 .packages("eu.europa.ec.sante.openncp.webmanager.backend.module.eadc")
@@ -45,7 +45,7 @@ public class EadcConfiguration {
     }
 
     @Bean(name = "eadcTransactionManager")
-    public PlatformTransactionManager transactionManager(@Qualifier("eadcEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
+    public PlatformTransactionManager transactionManager(@Qualifier("eadcEntityManagerFactory") final EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }
 }

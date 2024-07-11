@@ -4,12 +4,12 @@ import eu.europa.ec.sante.openncp.common.Constant;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
+import eu.europa.ec.sante.openncp.common.property.PropertyService;
 import eu.europa.ec.sante.openncp.common.util.CertificatesDataHolder;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.common.util.ImmutableCertificateData;
 import eu.europa.ec.sante.openncp.common.util.ImmutableCertificatesDataHolder;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.DateTimeUtil;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +40,11 @@ public class AuditManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditManager.class);
     private final PropertyService propertyService;
+    private final AuditService auditService;
 
-    public AuditManager(final PropertyService propertyService) {
+    public AuditManager(final PropertyService propertyService, final AuditService auditService) {
         this.propertyService = Validate.notNull(propertyService, "PropertyService must not be null");
+        this.auditService = Validate.notNull(auditService, "AuditService must not be null");
     }
 
     /**
@@ -53,8 +55,6 @@ public class AuditManager {
      */
     public void handleDynamicDiscoveryQuery(final String smpServerUri, final String objectID, final String errorMessagePartObjectId,
                                             final byte[] errorMessagePartObjectDetail) {
-
-        final AuditService auditService = AuditServiceFactory.getInstance();
         final EventLog eventLog = createDynamicDiscoveryEventLog(TransactionName.SMP_QUERY, objectID, errorMessagePartObjectId,
                 errorMessagePartObjectDetail, smpServerUri);
         eventLog.setEventType(EventType.SMP_QUERY);
@@ -70,8 +70,6 @@ public class AuditManager {
      */
     public void handleDynamicDiscoveryPush(final String smpServerUri, final String objectID, final String errorMessagePartObjectId,
                                            final byte[] errorMessagePartObjectDetail) {
-
-        final AuditService auditService = AuditServiceFactory.getInstance();
         final EventLog eventLog = createDynamicDiscoveryEventLog(TransactionName.SMP_PUSH, objectID, errorMessagePartObjectId,
                 errorMessagePartObjectDetail, smpServerUri);
         eventLog.setEventType(EventType.SMP_PUSH);

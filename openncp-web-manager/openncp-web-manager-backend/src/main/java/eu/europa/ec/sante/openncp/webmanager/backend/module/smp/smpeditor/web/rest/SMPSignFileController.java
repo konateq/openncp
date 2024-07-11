@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.web.rest;
 
+import eu.europa.ec.sante.openncp.common.property.PropertyService;
 import eu.europa.ec.sante.openncp.webmanager.backend.error.ApiException;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.Constants;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.cfg.ReadSMPProperties;
@@ -9,7 +10,6 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.servic
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.SMPConverter;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.SignFileService;
 import eu.europa.ec.sante.openncp.webmanager.backend.service.PermissionUtil;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ehdsi.EndpointType;

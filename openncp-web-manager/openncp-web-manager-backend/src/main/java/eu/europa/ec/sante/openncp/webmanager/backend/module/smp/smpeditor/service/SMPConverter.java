@@ -1,10 +1,10 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service;
 
+import eu.europa.ec.sante.openncp.common.property.PropertyService;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.Constants;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPFieldProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
 import eu.europa.ec.sante.openncp.webmanager.backend.service.PermissionUtil;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
 import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ehdsi.*;
 import org.slf4j.Logger;
