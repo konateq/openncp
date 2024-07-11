@@ -31,7 +31,7 @@ export default {
       .get(process.env.VUE_APP_SERVER_URL + '/api/properties')
       .then((response) => {
         const country = _.find(response.data, (item) => {
-          return item.name === 'COUNTRY_CODE'
+          return item.key === 'COUNTRY_CODE'
         }).value
         this.$store.commit('country', country)
         this.properties = response.data

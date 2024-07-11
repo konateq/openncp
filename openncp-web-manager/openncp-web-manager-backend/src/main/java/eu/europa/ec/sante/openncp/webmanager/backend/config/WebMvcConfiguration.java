@@ -19,34 +19,34 @@ import javax.sql.DataSource;
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(final CorsRegistry registry) {
         registry.addMapping("/**").allowedOrigins("*").allowedMethods("GET", "POST", "PUT", "DELETE");
     }
 
     @Bean
     @Profile("local")
-    public TomcatServletWebServerFactory tomcatFactory(Environment environment) {
+    public TomcatServletWebServerFactory tomcatFactory(final Environment environment) {
         return new TomcatServletWebServerFactory() {
             @Override
-            protected TomcatWebServer getTomcatWebServer(org.apache.catalina.startup.Tomcat tomcat) {
+            protected TomcatWebServer getTomcatWebServer(final org.apache.catalina.startup.Tomcat tomcat) {
                 tomcat.enableNaming();
                 return super.getTomcatWebServer(tomcat);
             }
 
             // Parameter for Datasource used in Embedded Tomcat
             @Override
-            protected void postProcessContext(Context context) {
-                ContextResource defaultResource = new ContextResource();
+            protected void postProcessContext(final Context context) {
+                final ContextResource defaultResource = new ContextResource();
                 defaultResource.setName("jdbc/ConfMgr");
                 defaultResource.setType(DataSource.class.getName());
-                defaultResource.setProperty("driverClassName", environment.getProperty("spring.datasource.default.driver-class-name","com.mysql.cj.jdbc.Driver"));
+                defaultResource.setProperty("driverClassName", environment.getProperty("spring.datasource.properties.driver-class-name", "com.mysql.cj.jdbc.Driver"));
                 defaultResource.setProperty("factory", "com.zaxxer.hikari.HikariJNDIFactory");
-                defaultResource.setProperty("jdbcUrl", environment.getProperty("spring.datasource.default.url","jdbc:mysql://localhost:3306/ehealth_properties"));
-                defaultResource.setProperty("username", environment.getProperty("spring.datasource.default.username","myUsername"));
-                defaultResource.setProperty("password", environment.getProperty("spring.datasource.default.password","myPassword"));
+                defaultResource.setProperty("jdbcUrl", environment.getProperty("spring.datasource.properties.url", "jdbc:mysql://localhost:3306/ehealth_properties"));
+                defaultResource.setProperty("username", environment.getProperty("spring.datasource.properties.username", "myUsername"));
+                defaultResource.setProperty("password", environment.getProperty("spring.datasource.properties.password", "myPassword"));
                 context.getNamingResources().addResource(defaultResource);
 
-                ContextResource atnaResource = new ContextResource();
+                final ContextResource atnaResource = new ContextResource();
                 atnaResource.setName("jdbc/OPEN_ATNA");
                 atnaResource.setType(DataSource.class.getName());
                 atnaResource.setProperty("driverClassName", environment.getProperty("spring.datasource.atna.driver-class-name","com.mysql.cj.jdbc.Driver"));
@@ -56,7 +56,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 atnaResource.setProperty("password", environment.getProperty("spring.datasource.atna.password","myPassword"));
                 context.getNamingResources().addResource(atnaResource);
 
-                ContextResource eadcResource = new ContextResource();
+                final ContextResource eadcResource = new ContextResource();
                 eadcResource.setName("jdbc/EADC");
                 eadcResource.setType(DataSource.class.getName());
                 eadcResource.setProperty("driverClassName", environment.getProperty("spring.datasource.eadc.driver-class-name","com.mysql.cj.jdbc.Driver"));

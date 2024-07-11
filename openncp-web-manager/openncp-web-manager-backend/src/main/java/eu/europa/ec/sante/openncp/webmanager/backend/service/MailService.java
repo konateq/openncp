@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.webmanager.backend.service;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import eu.europa.ec.sante.openncp.common.configuration.PropertyNotFoundException;
+import eu.europa.ec.sante.openncp.common.property.PropertyService;
 import eu.europa.ec.sante.openncp.webmanager.backend.config.ApplicationProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.config.SmtpProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.persistence.model.User;
@@ -45,7 +46,7 @@ public class MailService implements MessageSourceAware {
 
     private final PropertyService propertyService;
 
-    public MailService(ApplicationProperties applicationProperties, SmtpProperties smtpProperties, JavaMailSender mailSender, PropertyService propertyService) {
+    public MailService(final ApplicationProperties applicationProperties, final SmtpProperties smtpProperties, final JavaMailSender mailSender, final PropertyService propertyService) {
         this.applicationProperties = applicationProperties;
         this.mailSender = mailSender;
         this.smtpProperties = smtpProperties;
@@ -53,14 +54,14 @@ public class MailService implements MessageSourceAware {
     }
 
     @Override
-    public void setMessageSource(@NonNull MessageSource messageSource) {
+    public void setMessageSource(@NonNull final MessageSource messageSource) {
         messages = new MessageSourceAccessor(messageSource);
     }
 
     @Async
-    public void sendMail(String to, String subject, String content, boolean multipart, boolean html) throws MessagingException {
+    public void sendMail(final String to, final String subject, final String content, final boolean multipart, final boolean html) throws MessagingException {
 
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         properties.put("mail.smtp.host", smtpProperties.getHost());
         properties.put("mail.smtp.port", smtpProperties.getPort());
         properties.put("mail.smtp.auth", smtpProperties.getSmtp().getAuth());
@@ -72,7 +73,7 @@ public class MailService implements MessageSourceAware {
         properties.put("mail.smtp.ssl.enable", smtpProperties.getSmtp().getSsl().getEnable());
         properties.put("mail.smtp.ssl.trust", smtpProperties.getSmtp().getSsl().getTrust());
 
-        Session session;
+        final Session session;
         if (smtpProperties.getSmtp().getAuth()) {
             session = Session.getInstance(properties, new Authenticator() {
                 @Override
@@ -83,7 +84,7 @@ public class MailService implements MessageSourceAware {
         } else {
             session = Session.getInstance(properties);
         }
-        MimeMessage mimeMessage = new MimeMessage(session);
+        final MimeMessage mimeMessage = new MimeMessage(session);
         mimeMessage.setFrom(new InternetAddress(applicationProperties.getMail().getFrom(), false));
         mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
         mimeMessage.setSubject(subject);
@@ -93,11 +94,11 @@ public class MailService implements MessageSourceAware {
     }
 
     @Async
-    public String sendMailFromTemplate(User user, String titleKey) {
-        ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
+    public String sendMailFromTemplate(final User user, final String titleKey) {
+        final ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
         boolean mail;
 
-        String resetUrl = "<a href='" +
+        final String resetUrl = "<a href='" +
                 applicationProperties.getPortal().getBaseUrl() +
                 "/#/reset?key=" +
                 user.getResetKey() +
@@ -106,16 +107,16 @@ public class MailService implements MessageSourceAware {
         String emailBody = "<html></html>";
         String content = resetUrl;
 
-        String email = user.getUsername() + " [" + user.getEmail() + "]";
+        final String email = user.getUsername() + " [" + user.getEmail() + "]";
 
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("/templates/mails/passwordResetMail.html");
-        try (InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-             BufferedReader reader = new BufferedReader(streamReader)) {
+        final InputStream inputStream = getClass().getClassLoader().getResourceAsStream("/templates/mails/passwordResetMail.html");
+        try (final InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             final BufferedReader reader = new BufferedReader(streamReader)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 emailBody += line;
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("IOException: '{}'", e.getMessage());
         }
 
@@ -125,19 +126,19 @@ public class MailService implements MessageSourceAware {
 
         try {
             mail = Boolean.getBoolean(propertyService.getPropertyValueMandatory("GTW_MAIL_ENABLED"));
-        } catch(NoSuchElementException e) {
+        } catch (final NoSuchElementException e) {
             logger.error("MessagingException: property GTW_MAIL_ENABLED not specified '{}'", e.getMessage());
             mail = false;
         }
 
         if (mail) {
             try {
-                String emailSubject = messages.getMessage(titleKey, "Subject");
+                final String emailSubject = messages.getMessage(titleKey, "Subject");
                 sendMail(user.getEmail(), emailSubject, emailBody, false, true);
-            } catch (PropertyNotFoundException e) {
+            } catch (final PropertyNotFoundException e) {
                 logger.error("PropertyNotFoundException: '{}'", e.getMessage());
                 content = e.getMessage();
-            } catch (MessagingException e) {
+            } catch (final MessagingException e) {
                 logger.error("MessagingException: '{}'", e.getMessage());
                 content = e.getMessage();
             }
@@ -146,7 +147,7 @@ public class MailService implements MessageSourceAware {
     }
 
     @Async
-    public String sendPasswordResetMail(User user) {
+    public String sendPasswordResetMail(final User user) {
         return sendMailFromTemplate(user, "Mail.SmpEditor.PasswordReset.Title");
     }
 }

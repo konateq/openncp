@@ -1,5 +1,6 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.web.rest;
 
+import eu.europa.ec.sante.openncp.common.property.PropertyService;
 import eu.europa.ec.sante.openncp.webmanager.backend.error.ApiException;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.cfg.ReadSMPProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.Countries;
@@ -8,7 +9,6 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPFile;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.SMPType;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.BdxSmpValidator;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.SMPConverter;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

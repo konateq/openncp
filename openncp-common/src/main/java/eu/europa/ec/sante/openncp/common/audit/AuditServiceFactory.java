@@ -1,17 +1,10 @@
 package eu.europa.ec.sante.openncp.common.audit;
 
-import eu.europa.ec.sante.openncp.common.audit.transformer.AuditMessagePassThroughTransformer;
-import eu.europa.ec.sante.openncp.common.audit.transformer.AuditMessageTransformer;
-import eu.europa.ec.sante.openncp.common.audit.transformer.EventLogToAuditMessageTransformer;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
-import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManagerFactory;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * @deprecated Use spring bean wiring instead of this factory method.

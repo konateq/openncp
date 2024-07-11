@@ -6,6 +6,7 @@ import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.model.DocumentIdentifier;
 import eu.europa.ec.dynamicdiscovery.model.ParticipantIdentifier;
 import eu.europa.ec.sante.openncp.common.configuration.StandardProperties;
+import eu.europa.ec.sante.openncp.common.property.PropertyService;
 import eu.europa.ec.sante.openncp.webmanager.backend.error.ApiException;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.cfg.ReadSMPProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.domain.ReferenceCollection;
@@ -15,7 +16,6 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.DynamicD
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.smpeditor.service.DynamicDiscoveryClient;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util.SslUtil;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;

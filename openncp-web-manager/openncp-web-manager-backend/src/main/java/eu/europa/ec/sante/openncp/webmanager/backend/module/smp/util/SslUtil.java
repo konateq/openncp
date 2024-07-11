@@ -1,8 +1,8 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.smp.util;
 
+import eu.europa.ec.sante.openncp.common.property.PropertyService;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.GatewayProperties;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.smp.service.SimpleErrorHandler;
-import eu.europa.ec.sante.openncp.webmanager.backend.service.PropertyService;
 import org.apache.commons.lang3.Validate;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.ssl.PrivateKeyStrategy;

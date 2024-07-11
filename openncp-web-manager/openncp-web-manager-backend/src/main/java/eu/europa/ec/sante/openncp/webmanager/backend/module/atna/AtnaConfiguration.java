@@ -28,20 +28,20 @@ import java.util.Map;
 public class AtnaConfiguration {
 
     @Bean(name = "atnaDataSourceProperties")
-    @ConfigurationProperties(prefix = "spring.datasource.atna")
+    @ConfigurationProperties(prefix = "spring.datasource.jndi.atna")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean(name = "atnaDataSource", destroyMethod = "")
-    public DataSource dataSource(@Qualifier("atnaDataSourceProperties") DataSourceProperties dataSourceProperties) {
-        JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
+    public DataSource dataSource(@Qualifier("atnaDataSourceProperties") final DataSourceProperties dataSourceProperties) {
+        final JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
         return dataSourceLookup.getDataSource(dataSourceProperties.getJndiName());
     }
 
     @Bean(name = "atnaEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder,
-                                                                       @Qualifier("atnaDataSource") DataSource dataSource) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder,
+                                                                       @Qualifier("atnaDataSource") final DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
                 .packages("eu.europa.ec.sante.openncp.webmanager.backend.module.atna")
@@ -49,16 +49,16 @@ public class AtnaConfiguration {
     }
 
     @Bean(name = "atnaTransactionManager")
-    public PlatformTransactionManager transactionManager(@Qualifier("atnaEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
+    public PlatformTransactionManager transactionManager(@Qualifier("atnaEntityManagerFactory") final EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }
 
     @Bean
     public Jaxb2Marshaller marshaller() {
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setPackagesToScan("generated");
 
-        Map<String, Object> properties = new HashMap<>();
+        final Map<String, Object> properties = new HashMap<>();
         properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.setMarshallerProperties(properties);
         return marshaller;

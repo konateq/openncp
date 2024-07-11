@@ -5,11 +5,11 @@ application:
       secret: cO8IGFVZa60tBFScaDotntDucC4FphuA
 spring:
   datasource:
-    default:
-      url: jdbc:mysql://127.0.0.1:3307/ehealth_properties?useSSL=false
+    properties:
+      url: jdbc:mysql://localhost:3307/ehealth_properties?allowPublicKeyRetrieval=true&useSSL=false
       username: root
       password: Password1
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
     atna:
       url: jdbc:mysql://127.0.0.1:3307/ehealth_atna?useSSL=false
       username: root
