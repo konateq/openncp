@@ -11,6 +11,7 @@ import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
 import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.client.api.AssertionEnum;
+import eu.europa.ec.sante.openncp.core.common.HttpsClientConfiguration;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.DynamicDiscoveryService;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
@@ -24,7 +25,6 @@ import eu.europa.ec.sante.openncp.core.common.ihe.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XCAException;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
-import eu.europa.ec.sante.openncp.core.common.ssl.HttpsClientConfiguration;
 import org.apache.axiom.om.*;
 import org.apache.axiom.om.ds.AbstractOMDataSource;
 import org.apache.axiom.soap.SOAP12Constants;
@@ -137,7 +137,7 @@ public class RespondingGateway_ServiceStub extends Stub {
         // Enabling Axis2 - SSL 2 ways communication (not active by default).
         try {
             _serviceClient.getServiceContext().getConfigurationContext()
-                    .setProperty(HTTPConstants.CACHED_HTTP_CLIENT, HttpsClientConfiguration.getSSLClient());
+                    .setProperty(HTTPConstants.CACHED_HTTP_CLIENT, HttpsClientConfiguration.getDefaultSSLClient());
             _serviceClient.getServiceContext().getConfigurationContext()
                     .setProperty(HTTPConstants.REUSE_HTTP_CLIENT, false);
         } catch (final NoSuchAlgorithmException | KeyManagementException | IOException | CertificateException |

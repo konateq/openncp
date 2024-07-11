@@ -5,14 +5,21 @@ import eu.europa.ec.sante.openncp.common.audit.handler.FailedLogsHandlerServiceI
 import eu.europa.ec.sante.openncp.common.audit.handler.MessageHandlerListener;
 import eu.europa.ec.sante.openncp.common.audit.serialization.AuditLogSerializer;
 import eu.europa.ec.sante.openncp.common.audit.serialization.AuditLogSerializerImpl;
+import eu.europa.ec.sante.openncp.common.audit.transformer.AuditMessageTransformer;
 import eu.europa.ec.sante.openncp.common.audit.utils.SerializableMessage;
-import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
-import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
+import eu.europa.ec.sante.openncp.common.util.MoreCollectors;
 import net.RFC3881.dicom.AuditMessage;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * This service provides access to the system defined properties
@@ -20,18 +27,35 @@ import java.io.Serializable;
  * @author Kostas Karkaletsis
  * @see net.RFC3881 http://www.rfc3881.net/ generated classes using JAXB Library for populating audit trail entries
  */
+@Service
 public class AuditService implements MessageHandlerListener {
 
     private final Logger logger = LoggerFactory.getLogger(AuditService.class);
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
-    private final FailedLogsHandlerService failedLogsHandlerService;
-    private final AuditLogSerializer auditLogSerializer;
+    private FailedLogsHandlerService failedLogsHandlerService;
+    private AuditLogSerializer auditLogSerializer;
 
-    protected AuditService() {
+    private final List<AuditMessageTransformer> auditMessageTransformers;
 
+    @Autowired
+    private ConfigurationManager configurationManager;
+
+    @Autowired
+    public AuditService(final List<AuditMessageTransformer> auditMessageTransformers, final ConfigurationManager configurationManager) {
+        this(auditMessageTransformers);
+        this.configurationManager = Validate.notNull(configurationManager, "Configuration manager cannot be null.");
+    }
+
+    public AuditService(final List<AuditMessageTransformer> auditMessageTransformers) {
+        this.auditMessageTransformers = Validate.notEmpty(auditMessageTransformers, "At least one audit message transformer is needed for the audit service.");
+    }
+
+    @PostConstruct
+    public void postConstruct() {
         logger.debug("Initializing Audit Service...");
+
         auditLogSerializer = new AuditLogSerializerImpl(AuditLogSerializer.Type.AUDIT_MANAGER);
-        failedLogsHandlerService = new FailedLogsHandlerServiceImpl(this, AuditLogSerializer.Type.AUDIT_MANAGER);
+        failedLogsHandlerService = new FailedLogsHandlerServiceImpl(this, AuditLogSerializer.Type.AUDIT_MANAGER, configurationManager);
         failedLogsHandlerService.start();
     }
 
@@ -43,38 +67,25 @@ public class AuditService implements MessageHandlerListener {
      * @param severity    the severity of the message.
      * @return true if auditLog is attempted to be sent.
      */
-    public synchronized Boolean write(Object eventObject, String facility, String severity) {
+    public synchronized Boolean write(final Object eventObject, final String facility, final String severity) {
 
         logger.info("[Audit Service] Writing Audit Message");
+        final AuditMessage message = auditMessageTransformers.stream()
+                .filter(transformer -> transformer.accepts(eventObject))
+                .collect(MoreCollectors.oneOrNone(eventObject, auditMessageTransformers))
+                .map(transformer -> transformer.transform(eventObject))
+                .orElseThrow(() -> new IllegalArgumentException("No audit message transformer found for message [%s]"));
 
-        try {
-            if (eventObject instanceof EventLog) {
-                if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && loggerClinical.isDebugEnabled()) {
-                    loggerClinical.debug("Processing EventLog: '{}'", eventObject);
-                }
-
-                EventLog eventLog = (EventLog) eventObject;
-                AuditMessage auditMessage = AuditTrailUtils.getInstance().createAuditMessage(eventLog);
-                AuditTrailUtils.getInstance().sendATNASyslogMessage(auditLogSerializer, auditMessage, facility, severity);
-            } else if (eventObject instanceof AuditMessage) {
-                AuditMessage auditMessage = (AuditMessage) eventObject;
-                AuditTrailUtils.getInstance().sendATNASyslogMessage(auditLogSerializer, auditMessage, facility, severity);
-            } else {
-                throw new IllegalArgumentException("Unsupported message format: " + eventObject.getClass().getCanonicalName());
-            }
-            return true;
-        } catch (Exception e) {
-            logger.warn("Exception: '{}'", e.getMessage(), e);
-            return false;
-        }
+        AuditTrailUtils.getInstance().sendATNASyslogMessage(auditLogSerializer, message, facility, severity);
+        return true;
     }
 
     @Override
-    public boolean handleMessage(Serializable message) {
+    public boolean handleMessage(final Serializable message) {
 
         if (message instanceof SerializableMessage) {
-            SerializableMessage sm = (SerializableMessage) message;
-            boolean sent = write(sm.getMessage(), sm.getFacility(), sm.getSeverity());
+            final SerializableMessage sm = (SerializableMessage) message;
+            final boolean sent = write(sm.getMessage(), sm.getFacility(), sm.getSeverity());
             logger.info("Attempt to write message to OpenATNA server. Result '{}'", sent);
             return sent;
         } else {
@@ -83,6 +94,7 @@ public class AuditService implements MessageHandlerListener {
         }
     }
 
+    @PreDestroy
     protected void stopFailedHandler() {
         this.failedLogsHandlerService.stop();
     }

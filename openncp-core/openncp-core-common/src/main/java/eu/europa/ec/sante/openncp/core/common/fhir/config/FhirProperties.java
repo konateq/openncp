@@ -29,6 +29,7 @@ public class FhirProperties {
     private FhirVersionEnum version = FhirVersionEnum.R4;
     private Server server = new Server();
     private Validation validation = new Validation();
+    private Security security = new Security();
 
     public FhirVersionEnum getVersion() {
         return version;
@@ -53,6 +54,15 @@ public class FhirProperties {
     public void setValidation(final Validation validation) {
         this.validation = validation;
     }
+
+    public Security getSecurity() {
+        return security;
+    }
+
+    public void setSecurity(Security security) {
+        this.security = security;
+    }
+
 
     public static class Server {
 
@@ -110,4 +120,26 @@ public class FhirProperties {
             this.requestOnly = requestOnly;
         }
     }
+
+    public static class Security {
+        private final Jwt jwt = new Jwt();
+
+        public Jwt getJwt() {
+            return jwt;
+        }
+
+        public static class Jwt {
+
+            private String secret;
+
+            public String getSecret() {
+                return secret;
+            }
+
+            public void setSecret(String secret) {
+                this.secret = secret;
+            }
+        }
+    }
+
 }

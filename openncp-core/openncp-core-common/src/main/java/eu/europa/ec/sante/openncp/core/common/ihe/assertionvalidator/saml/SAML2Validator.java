@@ -88,6 +88,46 @@ public class SAML2Validator {
         return sigCountryCode;
     }
 
+    public void validateXCPDHeader(Assertion assertion) throws MissingFieldException, InsufficientRightsException,
+            InvalidFieldException, XSDValidationException, SMgrException {
+
+        LOGGER.debug("[SAML] Validating XCPD Header.");
+
+        try {
+            RequiredFieldValidators.validateVersion(assertion);
+            RequiredFieldValidators.validateID(assertion);
+            RequiredFieldValidators.validateIssueInstant(assertion);
+            RequiredFieldValidators.validateIssuer(assertion);
+            RequiredFieldValidators.validateSubject(assertion);
+            RequiredFieldValidators.validateNameID(assertion);
+            RequiredFieldValidators.validateFormat(assertion);
+            RequiredFieldValidators.validateSubjectConfirmation(assertion);
+            RequiredFieldValidators.validateMethod(assertion);
+            RequiredFieldValidators.validateConditions(assertion);
+            RequiredFieldValidators.validateNotBefore(assertion);
+            RequiredFieldValidators.validateNotOnOrAfter(assertion);
+            RequiredFieldValidators.validateAuthnStatement(assertion);
+            RequiredFieldValidators.validateAuthnInstant(assertion);
+            RequiredFieldValidators.validateAuthnContext(assertion);
+            RequiredFieldValidators.validateAuthnContextClassRef(assertion);
+            RequiredFieldValidators.validateAttributeStatement(assertion);
+
+            FieldValueValidators.validateVersionValue(assertion);
+            FieldValueValidators.validateIssuerValue(assertion);
+            FieldValueValidators.validateNameIDValue(assertion);
+            FieldValueValidators.validateNotBeforeValue(assertion);
+            FieldValueValidators.validateNotOnOrAfterValue(assertion);
+            FieldValueValidators.validateTimeSpanForHCP(assertion);
+            FieldValueValidators.validateAuthnContextClassRefValueForHCP(assertion);
+
+        } catch (MissingFieldException e){
+            throw new MissingFieldException(OpenNCPErrorCode.ERROR_HPI_GENERIC, e.getMessage());
+        } catch (InvalidFieldException e){
+            throw new InvalidFieldException(OpenNCPErrorCode.ERROR_HPI_GENERIC, e.getMessage());
+        }
+
+    }
+
     public String validateXCAHeader(final Element soapHeader, final ClassCode classCode)
             throws InsufficientRightsException, MissingFieldException, InvalidFieldException, SMgrException {
 

@@ -1,20 +1,24 @@
 package eu.europa.ec.sante.openncp.core.common.ihe.transformation.util;
 
+import eu.europa.ec.sante.openncp.core.common.ihe.transformation.config.TMConfiguration;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class CodedElementList implements InitializingBean, TMConstants {
+@Component
+public class CodedElementList implements TMConstants {
 
     private static final String XML_CODED_ELEMENT_LIST = "coded_element_list_ehdsi.xml";
 
@@ -35,50 +39,27 @@ public class CodedElementList implements InitializingBean, TMConstants {
     private static Collection<CodedElementListItem> hcerl1;
     private static Collection<CodedElementListItem> mrol3;
     private static Collection<CodedElementListItem> mrol1;
-    private static CodedElementList instance = null;
+    private static final CodedElementList instance = null;
     private static final HashMap<String, Collection<CodedElementListItem>> hmDocAndLists = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(CodedElementList.class);
+    private final TMConfiguration tmConfiguration;
     private boolean isInitialized = false;
-    // Path to xml file with Coded Element List
-    private String codedElementListPath;
-    // True means configurable Element identification is used; false means no
-    private boolean configurableElementIdentification;
-    // True means that the coded element list will be overridden by the user.
-    private boolean codedElementListOverride = false;
 
-    private CodedElementList() {
-    }
 
-    public static CodedElementList getInstance() {
-        if (instance == null) {
-            instance = new CodedElementList();
-        }
-        return instance;
+    public CodedElementList(final TMConfiguration tmConfiguration) {
+        this.tmConfiguration = Validate.notNull(tmConfiguration, "tmConfiguration cannot be null");
     }
 
     public boolean isCodedElementListOverride() {
-        return codedElementListOverride;
-    }
-
-    public void setCodedElementListOverride(boolean codedElementListOverride) {
-        this.codedElementListOverride = codedElementListOverride;
+        return this.tmConfiguration.isCodedElementListOverride();
     }
 
     public boolean isConfigurableElementIdentification() {
-        return configurableElementIdentification;
-    }
-
-    public void setConfigurableElementIdentification(
-            boolean configurableElementIdentification) {
-        this.configurableElementIdentification = configurableElementIdentification;
+        return this.tmConfiguration.isConfigurableElementIdentification();
     }
 
     public String getCodedElementListPath() {
-        return codedElementListPath;
-    }
-
-    public void setCodedElementListPath(String codedElementListPath) {
-        this.codedElementListPath = codedElementListPath;
+        return this.tmConfiguration.getCodedElementListPath();
     }
 
     public Collection<CodedElementListItem> getPatientSummaryl3() {
@@ -110,24 +91,24 @@ public class CodedElementList implements InitializingBean, TMConstants {
      * This method allows the bean instance to perform validation of its overall configuration and final initialization
      * of the Transformation Manager.
      */
-    @Override
+    @PostConstruct
     public void afterPropertiesSet() throws Exception {
 
         // Read xml file (coded_element_list_ehdsi.xml)
-        if (configurableElementIdentification && !isInitialized) {
+        if (isConfigurableElementIdentification() && !isInitialized) {
             logger.info("[TM] Configurable Coded Element List used - Override enabled: '{}'", isCodedElementListOverride());
-            Document doc;
+            final Document doc;
             // If the default coded element configuration is overridden, trying to load the national configuration file.
             if (isCodedElementListOverride()) {
-                doc = XmlUtil.getDocument(new File(codedElementListPath), true);
+                doc = XmlUtil.getDocument(new File(getCodedElementListPath()), true);
             } else {
                 // Otherwise the default eHDSI Coded Element List is used.
-                InputStream inputStream = CodedElementList.class.getClassLoader().getResourceAsStream(XML_CODED_ELEMENT_LIST);
+                final InputStream inputStream = CodedElementList.class.getClassLoader().getResourceAsStream(XML_CODED_ELEMENT_LIST);
                 doc = XmlUtil.getDocument(inputStream, true);
             }
 
-            Element root = doc.getDocumentElement();
-            NodeList codedElements = root.getElementsByTagName(CODED_ELEMENT);
+            final Element root = doc.getDocumentElement();
+            final NodeList codedElements = root.getElementsByTagName(CODED_ELEMENT);
             logger.info("[TM] '{}' Coded Elements found", codedElements.getLength());
 
             // Starting to fill collections.
@@ -137,13 +118,13 @@ public class CodedElementList implements InitializingBean, TMConstants {
             for (int i = 0; i < codedElements.getLength(); i++) {
                 codedElement = (Element) codedElements.item(i);
 
-                NodeList usageNL = codedElement.getElementsByTagName(USAGE);
+                final NodeList usageNL = codedElement.getElementsByTagName(USAGE);
                 // exactly 1 element usage expected
                 usageElement = (Element) usageNL.item(0);
 
-                NodeList docTypesUsageNL = usageElement.getChildNodes();
+                final NodeList docTypesUsageNL = usageElement.getChildNodes();
                 for (int j = 0; j < docTypesUsageNL.getLength(); j++) {
-                    Node node = docTypesUsageNL.item(j);
+                    final Node node = docTypesUsageNL.item(j);
                     if (node.getNodeType() == Node.ELEMENT_NODE) {
                         docTypeElement = (Element) node;
 
@@ -205,20 +186,20 @@ public class CodedElementList implements InitializingBean, TMConstants {
         }
     }
 
-    private Collection<CodedElementListItem> addItem(Element docTypeElement, Element codedElement, Collection<CodedElementListItem> collection) {
+    private Collection<CodedElementListItem> addItem(final Element docTypeElement, final Element codedElement, Collection<CodedElementListItem> collection) {
 
-        String usage = docTypeElement.getTextContent();
+        final String usage = docTypeElement.getTextContent();
         if (collection == null) {
             collection = new ArrayList<>();
         }
         try {
             if (isNeeded(usage)) {
-                CodedElementListItem item = new CodedElementListItem();
+                final CodedElementListItem item = new CodedElementListItem();
 
-                String xPath = codedElement.getElementsByTagName(ELEMENT_PATH).item(0).getTextContent();
-                String valueSet = codedElement.getElementsByTagName(VALUE_SET).item(0).getTextContent();
-                String valueSetVersion = codedElement.getElementsByTagName(VALUE_SET_VERSION).item(0).getTextContent();
-                String targetLanguageCode = codedElement.getElementsByTagName(TARGET_LANGUAGE_CODE).item(0).getTextContent();
+                final String xPath = codedElement.getElementsByTagName(ELEMENT_PATH).item(0).getTextContent();
+                final String valueSet = codedElement.getElementsByTagName(VALUE_SET).item(0).getTextContent();
+                final String valueSetVersion = codedElement.getElementsByTagName(VALUE_SET_VERSION).item(0).getTextContent();
+                final String targetLanguageCode = codedElement.getElementsByTagName(TARGET_LANGUAGE_CODE).item(0).getTextContent();
 
                 item.setxPath(xPath);
                 item.setUsage(usage);
@@ -229,13 +210,13 @@ public class CodedElementList implements InitializingBean, TMConstants {
                     collection.add(item);
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Exception: '{}'", e.getMessage(), e);
         }
         return collection;
     }
 
-    private boolean isNeeded(String usage) {
+    private boolean isNeeded(final String usage) {
         return (usage != null && !usage.isEmpty() && (usage.equals(R) || usage.equals(RNFA) || usage.equals(O)));
     }
 
@@ -245,7 +226,7 @@ public class CodedElementList implements InitializingBean, TMConstants {
      * @param cdaDocumentType - Type af Clinical Document supported by eHDSI.
      * @return List of CodedElementListItems.
      */
-    public Collection<CodedElementListItem> getList(String cdaDocumentType) {
+    public Collection<CodedElementListItem> getList(final String cdaDocumentType) {
         return hmDocAndLists.get(cdaDocumentType);
     }
 }

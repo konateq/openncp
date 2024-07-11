@@ -1,63 +1,68 @@
 package eu.europa.ec.sante.openncp.core.common.tsam;
 
+import eu.europa.ec.sante.openncp.common.immutables.Domain;
 import eu.europa.ec.sante.openncp.core.common.ihe.tsam.util.CodedElement;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Coding;
-import org.immutables.value.Value;
 import org.w3c.dom.Element;
 
 import java.util.Optional;
 
-@Value.Immutable
+@Domain
 public interface CodeConcept {
-    String getCodeSystemOid();
 
-    String getCodeSystemVersion();
+    String getCode();
 
-    String getCodeSystemName();
+    Optional<String> getCodeSystemVersion();
+
+    Optional<String> getCodeSystemOid();
+
+    Optional<String> getCodeSystemUrl();
+
+    Optional<String> getCodeSystemName();
 
     Optional<String> getValueSetOid();
 
     Optional<String> getValueSetVersion();
 
-    String getCode();
-
     Optional<String> getDisplayName();
 
-    static CodeConcept from(CodedElement codedElement) {
+    static CodeConcept from(final CodedElement codedElement) {
         Validate.notNull(codedElement);
         return ImmutableCodeConcept.builder()
                 .code(codedElement.getCode())
-                .codeSystemName(codedElement.getCodeSystem())
                 .codeSystemVersion(codedElement.getVersion())
+                .codeSystemOid(codedElement.getOid())
+                .codeSystemName(codedElement.getCodeSystem())
+                .displayName(codedElement.getDisplayName())
                 .valueSetOid(codedElement.getVsOid())
                 .valueSetVersion(codedElement.getValueSetVersion())
                 .build();
     }
 
-    static CodeConcept from(Element iheElement, String valueSetOid, String valueSetVersion) {
+    static CodeConcept from(final Element iheElement, final String valueSetOid, final String valueSetVersion) {
         Validate.notNull(iheElement);
-        Validate.notNull(valueSetOid);
-        Validate.notNull(valueSetVersion);
 
         return ImmutableCodeConcept.builder()
                 .code(iheElement.getAttribute("code"))
-                .codeSystemName(iheElement.getAttribute("codeSystemName"))
-                .codeSystemVersion(iheElement.getAttribute("codeSystemVersion"))
+                .codeSystemVersion(Optional.of(iheElement.getAttribute("codeSystemVersion")).filter(StringUtils::isNotBlank))
+                .codeSystemName(Optional.of(iheElement.getAttribute("codeSystemName")).filter(StringUtils::isNotBlank))
                 .codeSystemOid(iheElement.getAttribute("codeSystem"))
                 .displayName(iheElement.getAttribute("displayName"))
-                .valueSetOid(valueSetOid)
-                .valueSetVersion(valueSetVersion)
+                .valueSetOid(Optional.ofNullable(valueSetOid))
+                .valueSetVersion(Optional.ofNullable(valueSetVersion))
                 .build();
     }
 
-    static CodeConcept from(Coding coding) {
+    static CodeConcept from(final Coding coding) {
         Validate.notNull(coding);
         return ImmutableCodeConcept.builder()
                 .code(coding.getCode())
-                .codeSystemName(coding.getSystem())
-                .codeSystemOid(coding.getId())
-                .codeSystemVersion(coding.getVersion())
+                .codeSystemVersion(Optional.ofNullable(coding.getVersion()))
+                .codeSystemName(Optional.ofNullable(coding.getSystem()))
+                .codeSystemUrl(Optional.ofNullable(coding.getSystem()))
+                .displayName(Optional.ofNullable(coding.getDisplay()))
                 .build();
     }
 

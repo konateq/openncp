@@ -12,8 +12,13 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.validation.FhirValidator;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.EuFhirContextFactory;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.EuCorsInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.JwtSamlInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.FhirCustomInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.SecuredOpenApiInterceptor;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.UnsecuredOpenApiInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.security.TokenProvider;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.saml.SAML2Validator;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
@@ -70,14 +75,16 @@ public class FhirConfiguration {
             npmPackageSupport.loadPackageFromClasspath("classpath:package/eulab_0.1.0-ballot.tgz");
             LOG.info("Loading ips.r4_1.1.0.tgz package");
             npmPackageSupport.loadPackageFromClasspath("classpath:package/ips.r4_1.1.0.tgz");
+            LOG.info("Loading myhealtheu_lab_0.0.1.tgz package");
+            npmPackageSupport.loadPackageFromClasspath("classpath:package/myhealtheu_lab_0.0.1.tgz");
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
 
         final ValidationSupportChain validationSupportChain = new ValidationSupportChain(new DefaultProfileValidationSupport(fhirContext),
-                                                                                         new CommonCodeSystemsTerminologyService(fhirContext),
-                                                                                         new InMemoryTerminologyServerValidationSupport(fhirContext),
-                                                                                         npmPackageSupport);
+                new CommonCodeSystemsTerminologyService(fhirContext),
+                new InMemoryTerminologyServerValidationSupport(fhirContext),
+                npmPackageSupport);
 
         final FhirInstanceValidator instanceValidator = new FhirInstanceValidator(validationSupportChain);
 
@@ -90,6 +97,12 @@ public class FhirConfiguration {
     @Bean
     public OpenApiInterceptor getUnSecuredOpenApiInterceptor() {
         return new UnsecuredOpenApiInterceptor();
+    }
+
+
+    @Bean
+    public JwtSamlInterceptor getJwtSamlInterceptor(TokenProvider tokenProvider, SAML2Validator saml2Validator){
+        return new JwtSamlInterceptor(tokenProvider, saml2Validator);
     }
 
     @Configuration
@@ -111,31 +124,38 @@ public class FhirConfiguration {
     @ConfigurationProperties("hapi.fhir.rest")
     @SuppressWarnings("serial")
     static class FhirRestfulServerConfiguration extends RestfulServer {
-
+        final Logger LOGGER = LoggerFactory.getLogger(FhirRestfulServerConfiguration.class);
         private final FhirProperties properties;
         private final FhirContext fhirContext;
         private final List<IResourceProvider> resourceProviders;
 
         private final List<IServerInterceptor> interceptors;
         private final OpenApiInterceptor openApiInterceptor;
+        private final List<FhirCustomInterceptor> fhirCustomInterceptors;
         private final IPagingProvider pagingProvider;
+        private final EuCorsInterceptor euCorsInterceptor;
 
         public FhirRestfulServerConfiguration(final FhirProperties properties, final FhirContext fhirContext,
                                               final ObjectProvider<List<IResourceProvider>> resourceProviders,
                                               final ObjectProvider<List<IServerInterceptor>> interceptors,
-                                              final ObjectProvider<IPagingProvider> pagingProvider, final OpenApiInterceptor openApiInterceptor) {
+                                              final ObjectProvider<IPagingProvider> pagingProvider,
+                                              final OpenApiInterceptor openApiInterceptor,
+                                              final List<FhirCustomInterceptor> fhirCustomInterceptors,
+                                              final EuCorsInterceptor euCorsInterceptor) {
             this.properties = properties;
             this.fhirContext = fhirContext;
             this.resourceProviders = resourceProviders.getIfAvailable();
             this.pagingProvider = pagingProvider.getIfAvailable();
             this.interceptors = interceptors.getIfAvailable();
             this.openApiInterceptor = openApiInterceptor;
+            this.fhirCustomInterceptors = Validate.notNull(fhirCustomInterceptors);
+            this.euCorsInterceptor = euCorsInterceptor;
         }
 
         @Bean
         public ServletRegistrationBean<RestfulServer> fhirServerRegistrationBean() {
             final ServletRegistrationBean<RestfulServer> registration = new ServletRegistrationBean<>(this,
-                                                                                                      this.properties.getServer().getServletPath());
+                    this.properties.getServer().getServletPath());
             registration.setLoadOnStartup(1);
             return registration;
         }
@@ -150,8 +170,17 @@ public class FhirConfiguration {
             setServerAddressStrategy(new HardcodedServerAddressStrategy(this.properties.getServer().getBasePath()));
 
             final IInterceptorService interceptorService = getInterceptorService();
-            interceptors.forEach(interceptorService::registerInterceptor);
+            interceptors.forEach(interceptor -> {
+                LOGGER.info("Registering fhir interceptor [{}]", interceptor);
+                interceptorService.registerInterceptor(interceptor);
+            });
             interceptorService.registerInterceptor(this.openApiInterceptor);
+            interceptorService.registerInterceptor(this.euCorsInterceptor);
+
+            fhirCustomInterceptors.forEach(interceptor -> {
+                LOGGER.info("Registering fhir custom interceptor [{}]", interceptor);
+                interceptorService.registerInterceptor(interceptor);
+            });
         }
     }
 }

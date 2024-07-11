@@ -5,12 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-//@PropertySource("classpath:tm.properties")
 @PropertySource("file:${EPSOS_PROPS_PATH}tm.properties")
 public class TMConfiguration {
-
-    private static TMConfiguration instance;
-
     @Value("${tm.audittrail.facility}")
     private String auditTrailFacility;
 
@@ -95,18 +91,47 @@ public class TMConfiguration {
     @Value( "${tm.documenttype.mro}" ) // LOINC codes could also be hardcoded as it is unlikely they will change - 56445-0
     private String mroCode;
 
-    public static TMConfiguration getInstance() {
-        if (instance == null) {
-            instance = new TMConfiguration();
-        }
-        return instance;
+
+    @Value("${tm.codedelementlist.path}")
+    private String codedElementListPath;
+
+
+    @Value("${tm.codedelementlist.enabled}")
+    private boolean configurableElementIdentification;
+
+
+    @Value("${tm.codedelementlist.overridden}")
+    private boolean codedElementListOverride;
+
+    public String getCodedElementListPath() {
+        return codedElementListPath;
+    }
+
+    public void setCodedElementListPath(final String codedElementListPath) {
+        this.codedElementListPath = codedElementListPath;
+    }
+
+    public boolean isConfigurableElementIdentification() {
+        return configurableElementIdentification;
+    }
+
+    public void setConfigurableElementIdentification(final boolean configurableElementIdentification) {
+        this.configurableElementIdentification = configurableElementIdentification;
+    }
+
+    public boolean isCodedElementListOverride() {
+        return codedElementListOverride;
+    }
+
+    public void setCodedElementListOverride(final boolean codedElementListOverride) {
+        this.codedElementListOverride = codedElementListOverride;
     }
 
     public boolean isSchematronValidationEnabled() {
         return schematronValidationEnabled;
     }
 
-    public void setSchematronValidationEnabled(boolean schematronValidationEnabled) {
+    public void setSchematronValidationEnabled(final boolean schematronValidationEnabled) {
         this.schematronValidationEnabled = schematronValidationEnabled;
     }
 
@@ -114,7 +139,7 @@ public class TMConfiguration {
         return schemaValidationEnabled;
     }
 
-    public void setSchemaValidationEnabled(boolean schemaValidationEnabled) {
+    public void setSchemaValidationEnabled(final boolean schemaValidationEnabled) {
         this.schemaValidationEnabled = schemaValidationEnabled;
     }
 
@@ -122,7 +147,7 @@ public class TMConfiguration {
         return modelValidationEnabled;
     }
 
-    public void setModelValidationEnabled(boolean modelValidationEnabled) {
+    public void setModelValidationEnabled(final boolean modelValidationEnabled) {
         this.modelValidationEnabled = modelValidationEnabled;
     }
 
@@ -130,7 +155,7 @@ public class TMConfiguration {
         return auditTrailFacility;
     }
 
-    public void setAuditTrailFacility(String auditTrailFacility) {
+    public void setAuditTrailFacility(final String auditTrailFacility) {
         this.auditTrailFacility = auditTrailFacility;
     }
 
@@ -138,7 +163,7 @@ public class TMConfiguration {
         return auditTrailSeverity;
     }
 
-    public void setAuditTrailSeverity(String auditTrailSeverity) {
+    public void setAuditTrailSeverity(final String auditTrailSeverity) {
         this.auditTrailSeverity = auditTrailSeverity;
     }
 
@@ -146,7 +171,7 @@ public class TMConfiguration {
         return ncpSide;
     }
 
-    public void setNcpSide(String ncpSide) {
+    public void setNcpSide(final String ncpSide) {
         this.ncpSide = ncpSide;
     }
 
@@ -154,7 +179,7 @@ public class TMConfiguration {
         return mdaCdaXsdPath;
     }
 
-    public void setMdaCdaXsdPath(String mdaCdaXsdPath) {
+    public void setMdaCdaXsdPath(final String mdaCdaXsdPath) {
         this.mdaCdaXsdPath = mdaCdaXsdPath;
     }
 
@@ -162,7 +187,7 @@ public class TMConfiguration {
         return mdaCdaEpsosXsdPath;
     }
 
-    public void setMdaCdaEpsosXsdPath(String mdaCdaEpsosXsdPath) {
+    public void setMdaCdaEpsosXsdPath(final String mdaCdaEpsosXsdPath) {
         this.mdaCdaEpsosXsdPath = mdaCdaEpsosXsdPath;
     }
 
@@ -170,7 +195,7 @@ public class TMConfiguration {
         return mdaCdaXslTransformerPath;
     }
 
-    public void setMdaCdaXslTransformerPath(String mdaCdaXslTransformerPath) {
+    public void setMdaCdaXslTransformerPath(final String mdaCdaXslTransformerPath) {
         this.mdaCdaXslTransformerPath = mdaCdaXslTransformerPath;
     }
 
@@ -178,7 +203,7 @@ public class TMConfiguration {
         return mdaValuesetRepositoryPath;
     }
 
-    public void setMdaValuesetRepositoryPath(String mdaValuesetRepositoryPath) {
+    public void setMdaValuesetRepositoryPath(final String mdaValuesetRepositoryPath) {
         this.mdaValuesetRepositoryPath = mdaValuesetRepositoryPath;
     }
 
@@ -186,7 +211,7 @@ public class TMConfiguration {
         return schemaFilePath;
     }
 
-    public void setSchemaFilePath(String schemaFilePath) {
+    public void setSchemaFilePath(final String schemaFilePath) {
         this.schemaFilePath = schemaFilePath;
     }
 
@@ -195,7 +220,7 @@ public class TMConfiguration {
         return patientSummarySchematronFriendlyPath;
     }
 
-    public void setPatientSummarySchematronFriendlyPath(String patientSummarySchematronFriendlyPath) {
+    public void setPatientSummarySchematronFriendlyPath(final String patientSummarySchematronFriendlyPath) {
         this.patientSummarySchematronFriendlyPath = patientSummarySchematronFriendlyPath;
     }
 
@@ -203,7 +228,7 @@ public class TMConfiguration {
         return ePrescriptionSchematronFriendlyPath;
     }
 
-    public void setePrescriptionSchematronFriendlyPath(String ePrescriptionSchematronFriendlyPath) {
+    public void setePrescriptionSchematronFriendlyPath(final String ePrescriptionSchematronFriendlyPath) {
         this.ePrescriptionSchematronFriendlyPath = ePrescriptionSchematronFriendlyPath;
     }
 
@@ -211,7 +236,7 @@ public class TMConfiguration {
         return eDispensationSchematronFriendlyPath;
     }
 
-    public void seteDispensationSchematronFriendlyPath(String eDispensationSchematronFriendlyPath) {
+    public void seteDispensationSchematronFriendlyPath(final String eDispensationSchematronFriendlyPath) {
         this.eDispensationSchematronFriendlyPath = eDispensationSchematronFriendlyPath;
     }
 
@@ -219,7 +244,7 @@ public class TMConfiguration {
         return hcerSchematronFriendlyPath;
     }
 
-    public void setHcerSchematronFriendlyPath(String hcerSchematronFriendlyPath) {
+    public void setHcerSchematronFriendlyPath(final String hcerSchematronFriendlyPath) {
         this.hcerSchematronFriendlyPath = hcerSchematronFriendlyPath;
     }
 
@@ -227,7 +252,7 @@ public class TMConfiguration {
         return mroSchematronFriendlyPath;
     }
 
-    public void setMroSchematronFriendlyPath(String mroSchematronFriendlyPath) {
+    public void setMroSchematronFriendlyPath(final String mroSchematronFriendlyPath) {
         this.mroSchematronFriendlyPath = mroSchematronFriendlyPath;
     }
 
@@ -235,7 +260,7 @@ public class TMConfiguration {
         return scannedDocFriendlyPath;
     }
 
-    public void setScannedDocFriendlyPath(String scannedDocFriendlyPath) {
+    public void setScannedDocFriendlyPath(final String scannedDocFriendlyPath) {
         this.scannedDocFriendlyPath = scannedDocFriendlyPath;
     }
 
@@ -243,7 +268,7 @@ public class TMConfiguration {
         return patientSummarySchematronPivotPath;
     }
 
-    public void setPatientSummarySchematronPivotPath(String patientSummarySchematronPivotPath) {
+    public void setPatientSummarySchematronPivotPath(final String patientSummarySchematronPivotPath) {
         this.patientSummarySchematronPivotPath = patientSummarySchematronPivotPath;
     }
 
@@ -251,7 +276,7 @@ public class TMConfiguration {
         return ePrescriptionSchematronPivotPath;
     }
 
-    public void setePrescriptionSchematronPivotPath(String ePrescriptionSchematronPivotPath) {
+    public void setePrescriptionSchematronPivotPath(final String ePrescriptionSchematronPivotPath) {
         this.ePrescriptionSchematronPivotPath = ePrescriptionSchematronPivotPath;
     }
 
@@ -259,7 +284,7 @@ public class TMConfiguration {
         return eDispensationSchematronPivotPath;
     }
 
-    public void seteDispensationSchematronPivotPath(String eDispensationSchematronPivotPath) {
+    public void seteDispensationSchematronPivotPath(final String eDispensationSchematronPivotPath) {
         this.eDispensationSchematronPivotPath = eDispensationSchematronPivotPath;
     }
 
@@ -267,7 +292,7 @@ public class TMConfiguration {
         return hcerSchematronPivotPath;
     }
 
-    public void setHcerSchematronPivotPath(String hcerSchematronPivotPath) {
+    public void setHcerSchematronPivotPath(final String hcerSchematronPivotPath) {
         this.hcerSchematronPivotPath = hcerSchematronPivotPath;
     }
 
@@ -275,7 +300,7 @@ public class TMConfiguration {
         return mroSchematronPivotPath;
     }
 
-    public void setMroSchematronPivotPath(String mroSchematronPivotPath) {
+    public void setMroSchematronPivotPath(final String mroSchematronPivotPath) {
         this.mroSchematronPivotPath = mroSchematronPivotPath;
     }
 
@@ -283,7 +308,7 @@ public class TMConfiguration {
         return scannedDocPivotPath;
     }
 
-    public void setScannedDocPivotPath(String scannedDocPivotPath) {
+    public void setScannedDocPivotPath(final String scannedDocPivotPath) {
         this.scannedDocPivotPath = scannedDocPivotPath;
     }
 
@@ -292,7 +317,7 @@ public class TMConfiguration {
         return patientSummaryCode;
     }
 
-    public void setPatientSummaryCode(String patientSummaryCode) {
+    public void setPatientSummaryCode(final String patientSummaryCode) {
         this.patientSummaryCode = patientSummaryCode;
     }
 
@@ -300,7 +325,7 @@ public class TMConfiguration {
         return ePrescriptionCode;
     }
 
-    public void setePrescriptionCode(String ePrescriptionCode) {
+    public void setePrescriptionCode(final String ePrescriptionCode) {
         this.ePrescriptionCode = ePrescriptionCode;
     }
 
@@ -308,7 +333,7 @@ public class TMConfiguration {
         return hcerCode;
     }
 
-    public void setHcerCode(String hcerCode) {
+    public void setHcerCode(final String hcerCode) {
         this.hcerCode = hcerCode;
     }
 
@@ -316,7 +341,7 @@ public class TMConfiguration {
         return mroCode;
     }
 
-    public void setMroCode(String mroCode) {
+    public void setMroCode(final String mroCode) {
         this.mroCode = mroCode;
     }
 
@@ -324,7 +349,7 @@ public class TMConfiguration {
         return eDispensationCode;
     }
 
-    public void seteDispensationCode(String eDispensationCode) {
+    public void seteDispensationCode(final String eDispensationCode) {
         this.eDispensationCode = eDispensationCode;
     }
 }

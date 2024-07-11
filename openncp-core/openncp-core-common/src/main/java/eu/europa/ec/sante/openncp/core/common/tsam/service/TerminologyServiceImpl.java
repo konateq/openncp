@@ -1,8 +1,10 @@
 package eu.europa.ec.sante.openncp.core.common.tsam.service;
 
-import eu.europa.ec.sante.openncp.core.common.tsam.RetrievedConcept;
 import eu.europa.ec.sante.openncp.core.common.ihe.tsam.util.DebugUtils;
+import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
+import eu.europa.ec.sante.openncp.core.common.tsam.RetrievedConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.TSAMException;
+import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
 import eu.europa.ec.sante.openncp.core.common.tsam.config.TsamConfiguration;
 import eu.europa.ec.sante.openncp.core.common.tsam.dao.TsamDao;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.CodeSystem;
@@ -10,9 +12,8 @@ import eu.europa.ec.sante.openncp.core.common.tsam.domain.CodeSystemConcept;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.CodeSystemVersion;
 import eu.europa.ec.sante.openncp.core.common.tsam.domain.Designation;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TSAMError;
-import eu.europa.ec.sante.openncp.core.common.tsam.TSAMResponseStructure;
-import eu.europa.ec.sante.openncp.core.common.tsam.CodeConcept;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,30 +30,29 @@ public class TerminologyServiceImpl implements TerminologyService {
 
     private static final String CURRENT = "current";
     private final Logger logger = LoggerFactory.getLogger(TerminologyServiceImpl.class);
-    private TsamDao dao;
-    private TsamConfiguration config;
+    private final TsamDao dao;
+    private final TsamConfiguration config;
 
-    public TSAMResponseStructure getDesignation(CodeConcept codeConcept, String targetLanguageCode) {
+    public TerminologyServiceImpl(final TsamDao dao, final TsamConfiguration config) {
+        this.dao = Validate.notNull(dao);
+        this.config = Validate.notNull(config);
+    }
+
+    public TSAMResponseStructure getDesignation(final CodeConcept codeConcept, final String targetLanguageCode) {
 
         logger.debug("getDesignation BEGIN ('{}', lang: '{}')", codeConcept, targetLanguageCode);
         DebugUtils.showTransactionStatus("getDesignationByEpSOSConcept()");
-        TSAMResponseStructure response = new TSAMResponseStructure(codeConcept);
+        final TSAMResponseStructure response = new TSAMResponseStructure(codeConcept);
         try {
-            CodeSystem system = dao.getCodeSystem(codeConcept.getCodeSystemOid());
-            checkCodeSystemName(system, codeConcept.getCodeSystemName(), response);
+            final Optional<CodeSystemConcept> concept = retrieveCodeSystemConcept(codeConcept, response);
 
-            // obtain CodeSystemVersion
-            CodeSystemVersion codeSystemVersion = dao.getVersion(codeConcept.getCodeSystemVersion(), system);
-
-            // obtain Concept
-            Optional<CodeSystemConcept> concept = dao.getConcept(codeConcept.getCode(), codeSystemVersion);
             if (concept.isEmpty()) {
                 return response;
             } else {
-                final String targetLanguageCodeToUse = StringUtils.isNotEmpty(targetLanguageCode) ? targetLanguageCode : config.getTranslationLang();
+                final String targetLanguageCodeToUse = StringUtils.isNotEmpty(targetLanguageCode) ? targetLanguageCode : config.getTranslationLanguage();
                 final CodeSystemConcept conceptToTranslate = concept.get();
-                List<Designation> designations = dao.getDesignation(conceptToTranslate, targetLanguageCodeToUse);
-                Designation designation = designations.get(0);
+                final List<Designation> designations = dao.getDesignation(conceptToTranslate, targetLanguageCodeToUse);
+                final Designation designation = designations.get(0);
                 response.setDesignation(designation.getDesignation());
 
                 checkConceptStatus(conceptToTranslate, response);
@@ -61,10 +61,10 @@ public class TerminologyServiceImpl implements TerminologyService {
             }
 
 
-        } catch (TSAMException e) {
+        } catch (final TSAMException e) {
             response.addError(e.getReason(), codeConcept.toString());
             logger.debug("No '{}' Translation available - {}", targetLanguageCode, codeConcept);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             response.addError(TSAMError.ERROR_PROCESSING_ERROR, codeConcept.toString());
             logger.error(codeConcept.toString(), e);
         }
@@ -72,75 +72,78 @@ public class TerminologyServiceImpl implements TerminologyService {
         return response;
     }
 
-    public TSAMResponseStructure getTargetConcept(CodeConcept codeConcept) {
+    private Optional<CodeSystemConcept> retrieveCodeSystemConcept(final CodeConcept codeConcept, final TSAMResponseStructure response) throws TSAMException {
+        final CodeSystem codeSystem = dao.getCodeSystem(codeConcept);
+        codeConcept.getCodeSystemName().ifPresent(codeSystemName -> checkCodeSystemName(codeSystem, codeSystemName, response));
+
+        // obtain CodeSystemVersion
+        final Optional<CodeSystemConcept> concept;
+        if (codeConcept.getCodeSystemVersion().isPresent()) {
+            final CodeSystemVersion codeSystemVersion = dao.getVersion(codeConcept.getCodeSystemVersion().get(), codeSystem);
+            concept = dao.getConcept(codeConcept.getCode(), codeSystemVersion);
+        } else {
+            final List<Long> codeSystemVersionIds = dao.getCodeSystemVersionIds(codeConcept);
+            concept = dao.getConceptByCodeSystemVersionIds(codeConcept.getCode(), codeSystemVersionIds);
+        }
+        return concept;
+    }
+
+    public TSAMResponseStructure getTargetConcept(final CodeConcept codeConcept) {
 
         logger.debug("getTargetConcept BEGIN ('{}')", codeConcept);
         DebugUtils.showTransactionStatus("getEpSOSConceptByCode()");
-        TSAMResponseStructure response = new TSAMResponseStructure(codeConcept);
+        final TSAMResponseStructure response = new TSAMResponseStructure(codeConcept);
 
         try {
             if (logger.isDebugEnabled()) {
                 logger.debug("Searching Concept [{}]", codeConcept);
             }
-            Optional<CodeSystemConcept> concept;
-            // obtain CodeSystem
-            CodeSystem codeSystem = dao.getCodeSystem(codeConcept.getCodeSystemOid());
-            checkCodeSystemName(codeSystem, codeConcept.getCodeSystemName(), response);
-
-            // obtain a Concept by CodeSystemVersion or if it exists in any others versions available.
-            if (StringUtils.isNotBlank(codeConcept.getCodeSystemVersion())) {
-                CodeSystemVersion codeSystemVersion = dao.getVersion(codeConcept.getCodeSystemVersion(), codeSystem);
-                concept = dao.getConcept(codeConcept.getCode(), codeSystemVersion);
-            } else {
-                List<Long> codeSystemVersionIds = dao.getCodeSystemVersionIds(codeConcept.getCodeSystemOid());
-                concept = dao.getConceptByCodeSystemVersionIds(codeConcept.getCode(), codeSystemVersionIds);
-            }
+            final Optional<CodeSystemConcept> concept = retrieveCodeSystemConcept(codeConcept, response);
 
             if (concept.isEmpty()) {
                 return response;
-            } else {
-                CodeSystemConcept codeSystemConcept = concept.get();
-                checkConceptStatus(codeSystemConcept, response);
-
-                // obtain Target Concept and Designation
-                CodeSystemConcept target = dao.getTargetConcept(codeSystemConcept);
-                List<Designation> designations;
-                if (target == null) {
-                    // if target concept is null, get designation for source concept
-                    target = codeSystemConcept;
-                    designations = dao.getSourceDesignation(target);
-                } else {
-                    designations = dao.getDesignation(target, config.getTranscodingLang());
-                }
-                checkConceptStatus(target, response);
-
-                Designation designation = designations.get(0);
-                if (target != null) {
-
-                    response.setCode(target.getCode());
-                    response.setDesignation(designation.getDesignation());
-
-                    // obtain Target Code System Version
-                    CodeSystemVersion targetVersion = target.getCodeSystemVersion();
-                    checkTargetVersion(targetVersion);
-                    response.setCodeSystemVersion(targetVersion.getLocalName());
-
-                    // obtain Target Code System
-                    CodeSystem targetCodeSystem = targetVersion.getCodeSystem();
-                    checkTargetCodeSystem(targetCodeSystem);
-                    response.setCodeSystem(targetCodeSystem.getOid());
-                    response.setCodeSystemName(targetCodeSystem.getName());
-
-                    checkValueSet(codeSystemConcept, codeConcept, response);
-                    checkManyDesignations(response, designations);
-                }
             }
-        } catch(TSAMException e){
+            final CodeSystemConcept codeSystemConcept = concept.get();
+            checkConceptStatus(codeSystemConcept, response);
+
+            // obtain Target Concept and Designation
+            CodeSystemConcept target = dao.getTargetConcept(codeSystemConcept);
+            final List<Designation> designations;
+            if (target == null) {
+                logger.debug("No target concept found. Retrieve designation for source concept.");
+                target = codeSystemConcept;
+                designations = dao.getSourceDesignation(target);
+            } else {
+                designations = dao.getDesignation(target, config.getTranscodingLanguage());
+            }
+            checkConceptStatus(target, response);
+
+            final Designation designation = designations.get(0);
+            if (target != null) {
+
+                response.setCode(target.getCode());
+                response.setDesignation(designation.getDesignation());
+
+                // obtain Target Code System Version
+                final CodeSystemVersion targetVersion = target.getCodeSystemVersion();
+                checkTargetVersion(targetVersion);
+                response.setCodeSystemVersion(targetVersion.getLocalName());
+
+                // obtain Target Code System
+                final CodeSystem targetCodeSystem = targetVersion.getCodeSystem();
+                checkTargetCodeSystem(targetCodeSystem);
+                response.setCodeSystem(targetCodeSystem.getOid());
+                response.setCodeSystemName(targetCodeSystem.getName());
+
+                checkValueSet(codeSystemConcept, codeConcept, response);
+                checkManyDesignations(response, designations);
+            }
+        } catch (final TSAMException e) {
             // TSAM Exception considered as Warning
-            logger.error("TSAMException: '{}'", e.getMessage());
+            logger.error("TSAMException: '{}'", e.getReason().getDescription());
             response.addError(e.getReason(), codeConcept.toString());
             logger.error(codeConcept + ", " + e, e);
-        } catch(Exception e){
+        } catch (final Exception e) {
             // Other Exception considered as Error
             logger.error("Exception: '{}'", e.getMessage());
             response.addError(TSAMError.ERROR_PROCESSING_ERROR, codeConcept.toString());
@@ -153,8 +156,7 @@ public class TerminologyServiceImpl implements TerminologyService {
     }
 
 
-
-    public List<RetrievedConcept> getValueSetConcepts(String valueSetOid, String valueSetVersionName, String language) {
+    public List<RetrievedConcept> getValueSetConcepts(final String valueSetOid, final String valueSetVersionName, final String language) {
 
         DebugUtils.showTransactionStatus("getValueSetConcepts()");
         return dao.getConcepts(valueSetOid, valueSetVersionName, language);
@@ -166,11 +168,11 @@ public class TerminologyServiceImpl implements TerminologyService {
         return dao.getLtrLanguages();
     }
 
-    private void checkCodeSystemName(CodeSystem codeSystem, String name, TSAMResponseStructure response) {
+    private void checkCodeSystemName(final CodeSystem codeSystem, final String name, final TSAMResponseStructure response) {
 
         DebugUtils.showTransactionStatus("checkCodeSystemName()");
         if (name == null || codeSystem == null || !name.equals(codeSystem.getName())) {
-            String ctx;
+            final String ctx;
             if (codeSystem != null) {
                 ctx = codeSystem.getName() + " != " + name;
             } else {
@@ -189,7 +191,7 @@ public class TerminologyServiceImpl implements TerminologyService {
      * @param version
      * @throws TSAMException
      */
-    private void checkTargetVersion(CodeSystemVersion version) throws TSAMException {
+    private void checkTargetVersion(final CodeSystemVersion version) throws TSAMException {
 
         DebugUtils.showTransactionStatus("checkTargetVersion()");
         if (version == null) {
@@ -203,7 +205,7 @@ public class TerminologyServiceImpl implements TerminologyService {
      * @param codeSystem
      * @throws TSAMException
      */
-    private void checkTargetCodeSystem(CodeSystem codeSystem) throws TSAMException {
+    private void checkTargetCodeSystem(final CodeSystem codeSystem) throws TSAMException {
 
         DebugUtils.showTransactionStatus("checkTargetCodeSystem()");
         if (codeSystem == null) {
@@ -221,19 +223,19 @@ public class TerminologyServiceImpl implements TerminologyService {
      * @param response
      * @param designations
      */
-    private void checkManyDesignations(TSAMResponseStructure response, List<Designation> designations) {
+    private void checkManyDesignations(final TSAMResponseStructure response, final List<Designation> designations) {
 
         DebugUtils.showTransactionStatus("checkManyDesignations()");
 
         if (designations.size() > 1) {
             int preferred = 0;
-            for (Designation designation : designations) {
+            for (final Designation designation : designations) {
                 if (designation.isPreferred()) {
                     preferred++;
                 }
             }
             if (preferred == 0) {
-                TSAMError warning = TSAMError.WARNING_MANY_DESIGNATIONS;
+                final TSAMError warning = TSAMError.WARNING_MANY_DESIGNATIONS;
                 response.addWarning(warning, response.getCode());
                 if (logger.isDebugEnabled()) {
                     logger.debug("'{}': '{}'", response.getCodeConcept(), warning);
@@ -250,14 +252,14 @@ public class TerminologyServiceImpl implements TerminologyService {
      * @param codeConcept
      * @param response
      */
-    private void checkValueSet(CodeSystemConcept concept, CodeConcept codeConcept, TSAMResponseStructure response) {
+    private void checkValueSet(final CodeSystemConcept concept, final CodeConcept codeConcept, final TSAMResponseStructure response) {
 
         if (codeConcept.canCheckValueSet()) {
-            boolean valueSetMatches = dao.valueSetMatches(concept, codeConcept.getValueSetOid().get(), codeConcept.getValueSetVersion().get());
+            final boolean valueSetMatches = dao.valueSetMatches(concept, codeConcept.getValueSetOid().get(), codeConcept.getValueSetVersion().get());
             if (!valueSetMatches) {
-                String code = concept.getCode();
-                String warnMsg = "CodeSystemConcept: " + code + ", ValueSetOid: " + codeConcept.getValueSetOid().get();
-                TSAMError warning = TSAMError.WARNING_VS_DOESNT_MATCH;
+                final String code = concept.getCode();
+                final String warnMsg = "CodeSystemConcept: " + code + ", ValueSetOid: " + codeConcept.getValueSetOid().get();
+                final TSAMError warning = TSAMError.WARNING_VS_DOESNT_MATCH;
                 response.addWarning(warning, warnMsg);
                 if (logger.isDebugEnabled()) {
                     logger.debug("[{}]- '{}'", warning, warning);
@@ -270,10 +272,10 @@ public class TerminologyServiceImpl implements TerminologyService {
      * @param concept
      * @param response
      */
-    private void checkConceptStatus(CodeSystemConcept concept, TSAMResponseStructure response) {
+    private void checkConceptStatus(final CodeSystemConcept concept, final TSAMResponseStructure response) {
 
         if (concept != null && !CURRENT.equalsIgnoreCase(concept.getStatus())) {
-            TSAMError warning = TSAMError.WARNING_CONCEPT_STATUS_NOT_CURRENT;
+            final TSAMError warning = TSAMError.WARNING_CONCEPT_STATUS_NOT_CURRENT;
             response.addWarning(warning, concept.getCode());
             if (logger.isDebugEnabled()) {
                 logger.debug("'{}': '{}'", response.getCodeConcept(), warning);
@@ -281,49 +283,32 @@ public class TerminologyServiceImpl implements TerminologyService {
         }
     }
 
-    public TsamDao getDao() {
-        return dao;
-    }
-
-    public void setDao(TsamDao dao) {
-        this.dao = dao;
-    }
-
-    public TsamConfiguration getConfig() {
-        return config;
-    }
-
-    public void setConfig(TsamConfiguration config) {
-        this.config = config;
-    }
-
-    public Map<CodeSystemConcept, CodeSystemConcept> getNationalCodeSystemMappedConcepts(String oid, String version) {
-        logger.debug("OID: {} | Version: {}", oid, version);
+    public Map<CodeSystemConcept, CodeSystemConcept> getNationalCodeSystemMappedConcepts(final CodeConcept codeConcept, final String version) {
+        logger.debug("OID: {} | Version: {}", codeConcept.getCodeSystemOid(), version);
         Map<CodeSystemConcept, CodeSystemConcept> mappedConcepts = null;
 
         try {
-
             // First we get the national CodeSystem from its OID
-            CodeSystem nationalCodeSystem = dao.getCodeSystem(oid);
+            final CodeSystem nationalCodeSystem = dao.getCodeSystem(codeConcept);
             logger.debug("National CodeSystem: ID: {} | OID: {} | Name: {}", nationalCodeSystem.getId(), nationalCodeSystem.getOid(), nationalCodeSystem.getName());
 
             // Then we get the national CodeSystem version
-            CodeSystemVersion nationalCodeSystemVersion = dao.getVersion(version, nationalCodeSystem);
+            final CodeSystemVersion nationalCodeSystemVersion = dao.getVersion(version, nationalCodeSystem);
             logger.debug("National CodeSystem version: ID: {} | FullName: {} | LocalName: {} | Status: {}", nationalCodeSystemVersion.getId(),
                     nationalCodeSystemVersion.getFullName(), nationalCodeSystemVersion.getLocalName(), nationalCodeSystemVersion.getStatus());
 
             // Finally we get the concepts of that CodeSystem version
-            List<CodeSystemConcept> concepts = nationalCodeSystemVersion.getConcepts();
+            final List<CodeSystemConcept> concepts = nationalCodeSystemVersion.getConcepts();
             concepts.forEach(concept -> logger.debug("code: {} | definition: {}", concept.getCode(), concept.getDefinition()));
 
             // Then we get their mapped concepts
             mappedConcepts = new HashMap<>();
-            for (CodeSystemConcept sourceConcept : concepts) {
-                CodeSystemConcept targetConcept = dao.getTargetConcept(sourceConcept);
+            for (final CodeSystemConcept sourceConcept : concepts) {
+                final CodeSystemConcept targetConcept = dao.getTargetConcept(sourceConcept);
                 mappedConcepts.put(sourceConcept, targetConcept);
             }
             mappedConcepts.forEach((sourceConcept, targetConcept) -> logger.debug("Mapping: {} -> {}", sourceConcept.getDefinition(), targetConcept.getCode()));
-        } catch (TSAMException e) {
+        } catch (final TSAMException e) {
             logger.error("TSAMException: '{}'", e.getMessage());
         }
         return mappedConcepts;

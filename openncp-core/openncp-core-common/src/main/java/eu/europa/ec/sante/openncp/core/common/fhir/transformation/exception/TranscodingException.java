@@ -1,6 +1,6 @@
 package eu.europa.ec.sante.openncp.core.common.fhir.transformation.exception;
 
-public class TranscodingException extends BaseException {
+public class TranscodingException extends TransformationException {
 
     public TranscodingException(final String technicalMessage) {
         super(technicalMessage);

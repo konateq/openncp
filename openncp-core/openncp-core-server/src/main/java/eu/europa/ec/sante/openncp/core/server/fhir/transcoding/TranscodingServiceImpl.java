@@ -1,7 +1,8 @@
 package eu.europa.ec.sante.openncp.core.server.fhir.transcoding;
 
 import eu.europa.ec.sante.openncp.core.common.fhir.transformation.domain.TMResponseStructure;
-import eu.europa.ec.sante.openncp.core.server.fhir.transcoding.logic.TranscodingLogicService;
+import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
+import eu.europa.ec.sante.openncp.core.server.fhir.transcoding.resources.ResourceTranscodingService;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
@@ -9,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,24 +19,26 @@ public class TranscodingServiceImpl implements TranscodingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TranscodingServiceImpl.class);
 
-    private final List<TranscodingLogicService<?>> transcodingLogicServices;
+    private final List<ResourceTranscodingService<? extends Resource>> resourceTranscodingServices;
 
-    public TranscodingServiceImpl(final List<TranscodingLogicService<?>> transcodingLogicServices) {
-        this.transcodingLogicServices = Validate.notNull(transcodingLogicServices);
+    public TranscodingServiceImpl(final List<ResourceTranscodingService<? extends Resource>> resourceTranscodingServices) {
+        this.resourceTranscodingServices = Validate.notNull(resourceTranscodingServices);
     }
 
     @Override
     public TMResponseStructure transcode(final Bundle fhirDocument) {
+        final List<ITMTSAMError> errors = new ArrayList<>();
+        final List<ITMTSAMError> warnings = new ArrayList<>();
         fhirDocument.getEntry().forEach(bundleEntryComponent -> {
             final Resource resource = bundleEntryComponent.getResource();
-            retrieveTranscodingLogic(resource).ifPresentOrElse(transcodingLogicService -> transcodingLogicService.transcode(resource),
+            retrieveTranscodingLogic(resource).ifPresentOrElse(resourceTranscodingService -> resourceTranscodingService.transcode(resource, errors, warnings),
                                                                () -> LOGGER.warn("No transcoding logic service found for resource [{}]", resource));
         });
 
-        return new TMResponseStructure(fhirDocument, "success", Collections.emptyList(), Collections.emptyList());
+        return new TMResponseStructure(fhirDocument, "success", errors, warnings);
     }
 
-    private Optional<TranscodingLogicService<?>> retrieveTranscodingLogic(final Resource resource) {
-        return transcodingLogicServices.stream().filter(transcodingLogicService -> transcodingLogicService.accepts(resource)).findFirst();
+    private Optional<ResourceTranscodingService<?>> retrieveTranscodingLogic(final Resource resource) {
+        return resourceTranscodingServices.stream().filter(resourceTranscodingService -> resourceTranscodingService.accepts(resource)).findFirst();
     }
 }

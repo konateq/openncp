@@ -57,6 +57,7 @@
     <Service name="Catalina">
         <Connector port="$CONNECTOR_PORT" protocol="HTTP/1.1"
                    connectionTimeout="20000"
+                   maxHttpHeaderSize="1048576"
                    redirectPort="$CONNECTOR_SECURE_PORT"/>
         <Connector port="$CONNECTOR_SECURE_PORT" SSLEnabled="true" protocol="HTTP/1.1"
                    maxThreads="150" scheme="https" secure="true"
@@ -66,6 +67,7 @@
                    keystorePass="$KEYSTORE_PASSWORD"
                    truststoreFile="/opt/openncp-configuration/keystore/eu-truststore.jks"
                    truststorePass="$TRUSTSTORE_PASSWORD"
+                   maxHttpHeaderSize="1048576"
                    URIEncoding="UTF-8"/>
         <!-- An Engine represents the entry point (within Catalina) that processes
               every request.  The Engine implementation for Tomcat stand alone

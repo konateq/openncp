@@ -16,6 +16,8 @@ hapi:
     openapi:
       enabled: true
       secured: false
+server:
+  max-http-header-size: 1MB
 spring:
   datasource:
     driverClassName: org.h2.Driver
