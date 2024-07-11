@@ -20,7 +20,6 @@ import java.util.Map;
 
 /**
  * Represents a Document Source Actor, from the IHE XDR (Cross-enterprise Document Reliable Interchange) Profile.
- *
  */
 @Service
 public final class XdrDocumentSource {
