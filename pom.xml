@@ -110,6 +110,7 @@
         <spring-tx.version>5.3.37</spring-tx.version>
         <spring-ws.version>3.0.9.RELEASE</spring-ws.version>
         <spring.version>5.3.37</spring.version>
+        <spring.security.version>5.5.8</spring.security.version>
         <javamelody.version>1.94.0</javamelody.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <xerces.version>2.12.2</xerces.version>

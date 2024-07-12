@@ -24,6 +24,8 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -99,6 +101,8 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
 
                 saml2Validator.validateXCPDHeader(hcpIdentityAssertion);
 
+                addAssertionToSecurityContext(hcpIdentityAssertion);
+
             } catch (UnmarshallingException | XMLParserException | ComponentInitializationException ex) {
                 throw new AuthenticationException(Msg.code(333) + ex.getMessage());
             } catch (MissingFieldException e) {
@@ -116,4 +120,11 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
         }
         return true;
     }
+
+    public void addAssertionToSecurityContext(Assertion assertion) {
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(assertion.getSubject().getNameID().getValue(), assertion.getIssuer().getValue(), null);
+        authentication.setDetails(assertion);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
 }
