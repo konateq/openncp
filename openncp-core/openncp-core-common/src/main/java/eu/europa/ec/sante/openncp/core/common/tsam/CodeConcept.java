@@ -49,7 +49,7 @@ public interface CodeConcept {
                 .codeSystemVersion(Optional.of(iheElement.getAttribute("codeSystemVersion")).filter(StringUtils::isNotBlank))
                 .codeSystemName(Optional.of(iheElement.getAttribute("codeSystemName")).filter(StringUtils::isNotBlank))
                 .codeSystemOid(iheElement.getAttribute("codeSystem"))
-                .displayName(iheElement.getAttribute("displayName"))
+                .displayName(Optional.of(iheElement.getAttribute("displayName")).filter(StringUtils::isNotBlank))
                 .valueSetOid(Optional.ofNullable(valueSetOid))
                 .valueSetVersion(Optional.ofNullable(valueSetVersion))
                 .build();
