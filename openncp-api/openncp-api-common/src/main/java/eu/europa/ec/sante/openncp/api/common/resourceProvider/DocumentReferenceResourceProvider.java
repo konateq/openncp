@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class DocumentReferenceResourceProvider implements IResourceProvider {
+public class DocumentReferenceResourceProvider extends AbstractResourceProvider implements IResourceProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentReferenceResourceProvider.class);
 
@@ -56,19 +56,10 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
                               @Description(shortDefinition = "Date range for the search") @OptionalParam(
                                       name = "date") final DateRangeParam dateRange) {
 
-        String JWTToken = getJwtFromRequest(theServletRequest);
+        final String JWTToken = getJwtFromRequest(theServletRequest);
 
         final Bundle serverResponse = dispatchingService.dispatchSearch(EuRequestDetails.of(theRequestDetails), JWTToken);
 
         return serverResponse;
-    }
-
-    public String getJwtFromRequest(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-
-        if (header != null && header.startsWith("Bearer ")) {
-            return header;
-        }
-        throw new RuntimeException("JWT Token is missing");
     }
 }

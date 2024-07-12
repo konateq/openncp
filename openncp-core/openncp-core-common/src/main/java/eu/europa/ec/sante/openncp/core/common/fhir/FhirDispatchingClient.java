@@ -20,7 +20,7 @@ public class FhirDispatchingClient {
         this.genericClient = genericClient;
     }
 
-    public Bundle dispatch(final EuRequestDetails requestDetails, String JWTToken) {
+    public Bundle dispatch(final EuRequestDetails requestDetails, final String JWTToken) {
         final MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>(
                 requestDetails.getHapiRequestDetails().getParameters().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> Arrays.asList(e.getValue()))));
         final String uri = UriComponentsBuilder.fromHttpUrl(genericClient.getServerBase())
@@ -30,14 +30,19 @@ public class FhirDispatchingClient {
                 .toUriString();
 
         if (requestDetails.getRestOperationType() == RestOperationTypeEnum.SEARCH_TYPE) {
-            if(JWTToken != null){
+            if (JWTToken != null) {
                 return genericClient.search().byUrl(uri).withAdditionalHeader("Authorization", JWTToken).returnBundle(Bundle.class).execute();
-            }else{
+            } else {
                 return genericClient.search().byUrl(uri).returnBundle(Bundle.class).execute();
             }
         }
         if (requestDetails.getRestOperationType() == RestOperationTypeEnum.READ) {
-            final IBaseResource response = genericClient.read().resource(requestDetails.getResourceType()).withUrl(uri).execute();
+            final IBaseResource response;
+            if (JWTToken != null) {
+                response = genericClient.read().resource(requestDetails.getResourceType()).withUrl(uri).withAdditionalHeader("Authorization", JWTToken).execute();
+            } else {
+                response = genericClient.read().resource(requestDetails.getResourceType()).withUrl(uri).execute();
+            }
             if (response instanceof Bundle) {
                 return (Bundle) response;
             } else {
