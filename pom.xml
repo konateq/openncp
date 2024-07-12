@@ -39,6 +39,7 @@
         <module>openncp-web-manager</module>
         <module>openncp-tools</module>
         <module>openncp-docker</module>
+        <module>openncp-documentation</module>
     </modules>
 
     <scm>

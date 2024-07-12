@@ -1,0 +1,554 @@
+openapi: 3.0.1
+info:
+  title: myHealth@EU
+  contact: {}
+  version: 8.0.0
+servers:
+  - url: /fhir
+    description: myHealth@EU
+tags:
+  - name: System Level Operations
+    description: Server-level operations
+  - name: Bundle
+    description: "The Bundle FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/Bundle"
+  - name: Composition
+    description: "The Composition FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/Composition"
+  - name: DiagnosticReport
+    description: "The DiagnosticReport FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/DiagnosticReport"
+  - name: DocumentReference
+    description: "The DocumentReference FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/DocumentReference"
+  - name: OperationDefinition
+    description: "The OperationDefinition FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/OperationDefinition"
+  - name: Patient
+    description: "The Patient FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/Patient"
+paths:
+  /metadata:
+    get:
+      tags:
+        - System Level Operations
+      summary: "server-capabilities: Fetch the server FHIR CapabilityStatement"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: "{\n  \"resourceType\": \"CapabilityStatement\"\n}"
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: <CapabilityStatement xmlns="http://hl7.org/fhir"/>
+  /Bundle/{id}:
+    get:
+      tags:
+        - Bundle
+      summary: "read-instance: Read Bundle instance"
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+          example: "123"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /Bundle:
+    get:
+      tags:
+        - Bundle
+      summary: "search-type: Search for Bundle instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: specialty
+          in: query
+          description: Specialty
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /Bundle/_search:
+    get:
+      tags:
+        - Bundle
+      summary: "search-type: Search for Bundle instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: specialty
+          in: query
+          description: Specialty
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /Composition/{id}:
+    get:
+      tags:
+        - Composition
+      summary: "read-instance: Read Composition instance"
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+          example: "123"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /Composition:
+    get:
+      tags:
+        - Composition
+      summary: "search-type: Search for Composition instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: specialty
+          in: query
+          description: Specialty
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /Composition/_search:
+    get:
+      tags:
+        - Composition
+      summary: "search-type: Search for Composition instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: specialty
+          in: query
+          description: Specialty
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /Composition/{id}/$document:
+    get:
+      tags:
+        - Composition
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+          example: "123"
+        - name: _count
+          in: query
+          description: Results from this method are returned across multiple pages.
+            This parameter controls the size of those pages.
+          required: false
+          style: simple
+        - name: _offset
+          in: query
+          description: Results from this method are returned across multiple pages.
+            This parameter controls the offset when fetching a page.
+          required: false
+          style: simple
+        - name: _lastUpdated
+          in: query
+          description: Only return resources which were last updated as specified by
+            the given range
+          required: false
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+    post:
+      tags:
+        - Composition
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+          example: "123"
+      requestBody:
+        content:
+          application/fhir+json:
+            schema:
+              title: FHIR Resource
+              type: object
+            example: "{\n  \"resourceType\": \"Parameters\",\n  \"parameter\": [ {\n\
+              \    \"name\": \"_count\"\n  }, {\n    \"name\": \"_offset\"\n  }, {\n\
+              \    \"name\": \"_lastUpdated\"\n  } ]\n}"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /DiagnosticReport:
+    get:
+      tags:
+        - DiagnosticReport
+      summary: "search-type: Search for DiagnosticReport instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: contenttype
+          in: query
+          description: The type of the content
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /DiagnosticReport/_search:
+    get:
+      tags:
+        - DiagnosticReport
+      summary: "search-type: Search for DiagnosticReport instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: contenttype
+          in: query
+          description: The type of the content
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /DocumentReference:
+    get:
+      tags:
+        - DocumentReference
+      summary: "search-type: Search for DocumentReference instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: contenttype
+          in: query
+          description: The type of the content
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /DocumentReference/_search:
+    get:
+      tags:
+        - DocumentReference
+      summary: "search-type: Search for DocumentReference instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: contenttype
+          in: query
+          description: The type of the content
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /OperationDefinition/{id}:
+    get:
+      tags:
+        - OperationDefinition
+      summary: "read-instance: Read OperationDefinition instance"
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+          example: "123"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /Patient:
+    get:
+      tags:
+        - Patient
+      summary: "search-type: Search for Patient instances"
+      description: This is a search type
+      parameters:
+        - name: identifier
+          in: query
+          description: A patient identifier
+          style: simple
+        - name: _lastUpdated
+          in: query
+          description: Only return resources which were last updated as specified by
+            the given range
+          style: simple
+        - name: birthdate
+          in: query
+          description: The patient's date of birth
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /Patient/_search:
+    get:
+      tags:
+        - Patient
+      summary: "search-type: Search for Patient instances"
+      description: This is a search type
+      parameters:
+        - name: identifier
+          in: query
+          description: A patient identifier
+          style: simple
+        - name: _lastUpdated
+          in: query
+          description: Only return resources which were last updated as specified by
+            the given range
+          style: simple
+        - name: birthdate
+          in: query
+          description: The patient's date of birth
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+components:
+  schemas:
+    FHIR-JSON-RESOURCE:
+      type: object
+      description: A FHIR resource
+    FHIR-XML-RESOURCE:
+      type: object
+      description: A FHIR resource
