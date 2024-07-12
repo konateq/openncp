@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: myHealth@EU
   contact: {}
-  version: 0.0.1
+  version: 8.0.0
 servers:
   - url: /fhir
     description: myHealth@EU
@@ -12,7 +12,11 @@ tags:
   - name: Bundle
     description: "The Bundle FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/Bundle"
   - name: Composition
-    description: "The Composition FHIR resource type<br/>Base profile: http://hl7.eu/fhir/laboratory/StructureDefinition/Composition-eu-lab"
+    description: "The Composition FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/Composition"
+  - name: DiagnosticReport
+    description: "The DiagnosticReport FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/DiagnosticReport"
+  - name: DocumentReference
+    description: "The DocumentReference FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/DocumentReference"
   - name: OperationDefinition
     description: "The OperationDefinition FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/OperationDefinition"
   - name: Patient
@@ -34,7 +38,7 @@ paths:
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: <CapabilityStatement xmlns="http://hl7.org/fhir"></CapabilityStatement>
+              example: <CapabilityStatement xmlns="http://hl7.org/fhir"/>
   /Bundle/{id}:
     get:
       tags:
@@ -49,7 +53,6 @@ paths:
           schema:
             minimum: 1
             type: string
-            example: null
           example: "123"
       responses:
         "200":
@@ -58,11 +61,83 @@ paths:
             application/fhir+json:
               schema:
                 $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
-              example: null
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: null
+  /Bundle:
+    get:
+      tags:
+        - Bundle
+      summary: "search-type: Search for Bundle instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: specialty
+          in: query
+          description: Specialty
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /Bundle/_search:
+    get:
+      tags:
+        - Bundle
+      summary: "search-type: Search for Bundle instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: specialty
+          in: query
+          description: Specialty
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
   /Composition/{id}:
     get:
       tags:
@@ -77,7 +152,6 @@ paths:
           schema:
             minimum: 1
             type: string
-            example: null
           example: "123"
       responses:
         "200":
@@ -86,11 +160,9 @@ paths:
             application/fhir+json:
               schema:
                 $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
-              example: null
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: null
   /Composition:
     get:
       tags:
@@ -98,119 +170,25 @@ paths:
       summary: "search-type: Search for Composition instances"
       description: This is a search type
       parameters:
-        - name: _content
-          in: query
-          description: Search the contents of the resource's data using a fulltext search
-          style: simple
-        - name: _filter
-          in: query
-          description: Search the contents of the resource's data using a filter
-          style: simple
-        - name: _has
-          in: query
-          description: Return resources linked to by the given target
-          style: simple
-        - name: _id
-          in: query
-          description: The ID of the resource
-          style: simple
-        - name: _lastUpdated
-          in: query
-          description: Only return resources which were last updated as specified by
-            the given range
-          style: simple
-        - name: _profile
-          in: query
-          description: Search for resources which have the given profile
-          style: simple
-        - name: _security
-          in: query
-          description: Search for resources which have the given security labels
-          style: simple
-        - name: _source
-          in: query
-          description: Search for resources which have the given source value (Resource.meta.source)
-          style: simple
-        - name: _tag
-          in: query
-          description: Search for resources which have the given tag
-          style: simple
-        - name: _text
-          in: query
-          description: Search the contents of the resource's narrative using a fulltext
-            search
-          style: simple
-        - name: attester
-          in: query
-          description: Who attested the composition
-          style: simple
-        - name: author
-          in: query
-          description: Who and/or what authored the composition
-          style: simple
         - name: category
           in: query
-          description: Categorization of Composition
-          style: simple
-        - name: confidentiality
-          in: query
-          description: As defined by affinity domain
-          style: simple
-        - name: context
-          in: query
-          description: Code(s) that apply to the event being documented
+          description: Study type
           style: simple
         - name: date
           in: query
-          description: Composition editing time
-          style: simple
-        - name: encounter
-          in: query
-          description: Context of the Composition
-          style: simple
-        - name: entry
-          in: query
-          description: A reference to data that supports this section
-          style: simple
-        - name: identifier
-          in: query
-          description: Version-independent identifier for the Composition
+          description: Date range for the search
           style: simple
         - name: patient
           in: query
-          description: Who and/or what the composition is about
+          description: Patient business identifier
           style: simple
-        - name: period
+        - name: specialty
           in: query
-          description: The period covered by the documentation
-          style: simple
-        - name: related-id
-          in: query
-          description: Target of the relationship
-          style: simple
-        - name: related-ref
-          in: query
-          description: Target of the relationship
-          style: simple
-        - name: section
-          in: query
-          description: Classification of section (recommended)
-          style: simple
-        - name: status
-          in: query
-          description: preliminary | final | amended | entered-in-error
-          style: simple
-        - name: subject
-          in: query
-          description: Who and/or what the composition is about
-          style: simple
-        - name: title
-          in: query
-          description: Human Readable name/title
+          description: Specialty
           style: simple
         - name: type
           in: query
-          description: Kind of composition (LOINC if possible)
+          description: The type of the Document
           style: simple
       responses:
         "200":
@@ -219,11 +197,9 @@ paths:
             application/fhir+json:
               schema:
                 $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
-              example: null
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: null
   /Composition/_search:
     get:
       tags:
@@ -231,119 +207,25 @@ paths:
       summary: "search-type: Search for Composition instances"
       description: This is a search type
       parameters:
-        - name: _content
-          in: query
-          description: Search the contents of the resource's data using a fulltext search
-          style: simple
-        - name: _filter
-          in: query
-          description: Search the contents of the resource's data using a filter
-          style: simple
-        - name: _has
-          in: query
-          description: Return resources linked to by the given target
-          style: simple
-        - name: _id
-          in: query
-          description: The ID of the resource
-          style: simple
-        - name: _lastUpdated
-          in: query
-          description: Only return resources which were last updated as specified by
-            the given range
-          style: simple
-        - name: _profile
-          in: query
-          description: Search for resources which have the given profile
-          style: simple
-        - name: _security
-          in: query
-          description: Search for resources which have the given security labels
-          style: simple
-        - name: _source
-          in: query
-          description: Search for resources which have the given source value (Resource.meta.source)
-          style: simple
-        - name: _tag
-          in: query
-          description: Search for resources which have the given tag
-          style: simple
-        - name: _text
-          in: query
-          description: Search the contents of the resource's narrative using a fulltext
-            search
-          style: simple
-        - name: attester
-          in: query
-          description: Who attested the composition
-          style: simple
-        - name: author
-          in: query
-          description: Who and/or what authored the composition
-          style: simple
         - name: category
           in: query
-          description: Categorization of Composition
-          style: simple
-        - name: confidentiality
-          in: query
-          description: As defined by affinity domain
-          style: simple
-        - name: context
-          in: query
-          description: Code(s) that apply to the event being documented
+          description: Study type
           style: simple
         - name: date
           in: query
-          description: Composition editing time
-          style: simple
-        - name: encounter
-          in: query
-          description: Context of the Composition
-          style: simple
-        - name: entry
-          in: query
-          description: A reference to data that supports this section
-          style: simple
-        - name: identifier
-          in: query
-          description: Version-independent identifier for the Composition
+          description: Date range for the search
           style: simple
         - name: patient
           in: query
-          description: Who and/or what the composition is about
+          description: Patient business identifier
           style: simple
-        - name: period
+        - name: specialty
           in: query
-          description: The period covered by the documentation
-          style: simple
-        - name: related-id
-          in: query
-          description: Target of the relationship
-          style: simple
-        - name: related-ref
-          in: query
-          description: Target of the relationship
-          style: simple
-        - name: section
-          in: query
-          description: Classification of section (recommended)
-          style: simple
-        - name: status
-          in: query
-          description: preliminary | final | amended | entered-in-error
-          style: simple
-        - name: subject
-          in: query
-          description: Who and/or what the composition is about
-          style: simple
-        - name: title
-          in: query
-          description: Human Readable name/title
+          description: Specialty
           style: simple
         - name: type
           in: query
-          description: Kind of composition (LOINC if possible)
+          description: The type of the Document
           style: simple
       responses:
         "200":
@@ -352,11 +234,9 @@ paths:
             application/fhir+json:
               schema:
                 $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
-              example: null
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: null
   /Composition/{id}/$document:
     get:
       tags:
@@ -370,7 +250,6 @@ paths:
           schema:
             minimum: 1
             type: string
-            example: null
           example: "123"
         - name: _count
           in: query
@@ -397,11 +276,9 @@ paths:
             application/fhir+json:
               schema:
                 $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
-              example: null
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: null
     post:
       tags:
         - Composition
@@ -414,7 +291,6 @@ paths:
           schema:
             minimum: 1
             type: string
-            example: null
           example: "123"
       requestBody:
         content:
@@ -422,7 +298,6 @@ paths:
             schema:
               title: FHIR Resource
               type: object
-              example: null
             example: "{\n  \"resourceType\": \"Parameters\",\n  \"parameter\": [ {\n\
               \    \"name\": \"_count\"\n  }, {\n    \"name\": \"_offset\"\n  }, {\n\
               \    \"name\": \"_lastUpdated\"\n  } ]\n}"
@@ -433,11 +308,157 @@ paths:
             application/fhir+json:
               schema:
                 $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
-              example: null
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: null
+  /DiagnosticReport:
+    get:
+      tags:
+        - DiagnosticReport
+      summary: "search-type: Search for DiagnosticReport instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: contenttype
+          in: query
+          description: The type of the content
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /DiagnosticReport/_search:
+    get:
+      tags:
+        - DiagnosticReport
+      summary: "search-type: Search for DiagnosticReport instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: contenttype
+          in: query
+          description: The type of the content
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /DocumentReference:
+    get:
+      tags:
+        - DocumentReference
+      summary: "search-type: Search for DocumentReference instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: contenttype
+          in: query
+          description: The type of the content
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+  /DocumentReference/_search:
+    get:
+      tags:
+        - DocumentReference
+      summary: "search-type: Search for DocumentReference instances"
+      description: This is a search type
+      parameters:
+        - name: category
+          in: query
+          description: Study type
+          style: simple
+        - name: contenttype
+          in: query
+          description: The type of the content
+          style: simple
+        - name: date
+          in: query
+          description: Date range for the search
+          style: simple
+        - name: patient
+          in: query
+          description: Patient business identifier
+          style: simple
+        - name: type
+          in: query
+          description: The type of the Document
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
   /OperationDefinition/{id}:
     get:
       tags:
@@ -452,7 +473,6 @@ paths:
           schema:
             minimum: 1
             type: string
-            example: null
           example: "123"
       responses:
         "200":
@@ -461,11 +481,9 @@ paths:
             application/fhir+json:
               schema:
                 $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
-              example: null
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: null
   /Patient:
     get:
       tags:
@@ -473,6 +491,10 @@ paths:
       summary: "search-type: Search for Patient instances"
       description: This is a search type
       parameters:
+        - name: identifier
+          in: query
+          description: A patient identifier
+          style: simple
         - name: _lastUpdated
           in: query
           description: Only return resources which were last updated as specified by
@@ -482,10 +504,6 @@ paths:
           in: query
           description: The patient's date of birth
           style: simple
-        - name: identifier
-          in: query
-          description: A patient identifier
-          style: simple
       responses:
         "200":
           description: Success
@@ -493,11 +511,9 @@ paths:
             application/fhir+json:
               schema:
                 $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
-              example: null
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: null
   /Patient/_search:
     get:
       tags:
@@ -505,6 +521,10 @@ paths:
       summary: "search-type: Search for Patient instances"
       description: This is a search type
       parameters:
+        - name: identifier
+          in: query
+          description: A patient identifier
+          style: simple
         - name: _lastUpdated
           in: query
           description: Only return resources which were last updated as specified by
@@ -514,10 +534,6 @@ paths:
           in: query
           description: The patient's date of birth
           style: simple
-        - name: identifier
-          in: query
-          description: A patient identifier
-          style: simple
       responses:
         "200":
           description: Success
@@ -525,18 +541,14 @@ paths:
             application/fhir+json:
               schema:
                 $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
-              example: null
             application/fhir+xml:
               schema:
                 $ref: '#/components/schemas/FHIR-XML-RESOURCE'
-              example: null
 components:
   schemas:
     FHIR-JSON-RESOURCE:
       type: object
       description: A FHIR resource
-      example: null
     FHIR-XML-RESOURCE:
       type: object
       description: A FHIR resource
-      example: null
