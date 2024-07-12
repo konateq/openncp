@@ -1,0 +1,25 @@
+== Objective
+
+Main objective of the MyHealth@EU Laboratory Result Report prototype is to demonstrate that FHIR standard https://www.hl7.org/fhir/ can be added to the OpenNCP Reference Implementation as an extension and being used in parallel of the usual IHE Technical Framework https://www.ihe.net/resources/technical_frameworks/#IT.
+
+The scope of this prototype is to reuse as much as possible existing MyHealth@EU components and to add this new Use Case https://webgate.ec.europa.eu/fpfis/wikis/x/9AWiTQ using FHIR.
+
+Main feature of MyHealth@EU should be present into the FHIR implementation:
+
+Security and authorization.
+Patient demographics: search and retrieve.
+Laboratory Result report: search and retrieve.
+Secured Audit node.
+
+
+Conceptually, the FHIR PoC can be divided in 3 parts:
+
+.Conceptual overview
+image::media/conceptual_overview.png[]
+
+include::semantic.adoc[]
+
+include::architecture.adoc[]
+
+include::visualisation.adoc[]
+

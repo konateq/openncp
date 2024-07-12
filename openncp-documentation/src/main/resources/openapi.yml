@@ -1,0 +1,542 @@
+openapi: 3.0.1
+info:
+  title: myHealth@EU
+  contact: {}
+  version: 0.0.1
+servers:
+  - url: /fhir
+    description: myHealth@EU
+tags:
+  - name: System Level Operations
+    description: Server-level operations
+  - name: Bundle
+    description: "The Bundle FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/Bundle"
+  - name: Composition
+    description: "The Composition FHIR resource type<br/>Base profile: http://hl7.eu/fhir/laboratory/StructureDefinition/Composition-eu-lab"
+  - name: OperationDefinition
+    description: "The OperationDefinition FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/OperationDefinition"
+  - name: Patient
+    description: "The Patient FHIR resource type<br/>Base profile: http://hl7.org/fhir/StructureDefinition/Patient"
+paths:
+  /metadata:
+    get:
+      tags:
+        - System Level Operations
+      summary: "server-capabilities: Fetch the server FHIR CapabilityStatement"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: "{\n  \"resourceType\": \"CapabilityStatement\"\n}"
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: <CapabilityStatement xmlns="http://hl7.org/fhir"></CapabilityStatement>
+  /Bundle/{id}:
+    get:
+      tags:
+        - Bundle
+      summary: "read-instance: Read Bundle instance"
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+            example: null
+          example: "123"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: null
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: null
+  /Composition/{id}:
+    get:
+      tags:
+        - Composition
+      summary: "read-instance: Read Composition instance"
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+            example: null
+          example: "123"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: null
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: null
+  /Composition:
+    get:
+      tags:
+        - Composition
+      summary: "search-type: Search for Composition instances"
+      description: This is a search type
+      parameters:
+        - name: _content
+          in: query
+          description: Search the contents of the resource's data using a fulltext search
+          style: simple
+        - name: _filter
+          in: query
+          description: Search the contents of the resource's data using a filter
+          style: simple
+        - name: _has
+          in: query
+          description: Return resources linked to by the given target
+          style: simple
+        - name: _id
+          in: query
+          description: The ID of the resource
+          style: simple
+        - name: _lastUpdated
+          in: query
+          description: Only return resources which were last updated as specified by
+            the given range
+          style: simple
+        - name: _profile
+          in: query
+          description: Search for resources which have the given profile
+          style: simple
+        - name: _security
+          in: query
+          description: Search for resources which have the given security labels
+          style: simple
+        - name: _source
+          in: query
+          description: Search for resources which have the given source value (Resource.meta.source)
+          style: simple
+        - name: _tag
+          in: query
+          description: Search for resources which have the given tag
+          style: simple
+        - name: _text
+          in: query
+          description: Search the contents of the resource's narrative using a fulltext
+            search
+          style: simple
+        - name: attester
+          in: query
+          description: Who attested the composition
+          style: simple
+        - name: author
+          in: query
+          description: Who and/or what authored the composition
+          style: simple
+        - name: category
+          in: query
+          description: Categorization of Composition
+          style: simple
+        - name: confidentiality
+          in: query
+          description: As defined by affinity domain
+          style: simple
+        - name: context
+          in: query
+          description: Code(s) that apply to the event being documented
+          style: simple
+        - name: date
+          in: query
+          description: Composition editing time
+          style: simple
+        - name: encounter
+          in: query
+          description: Context of the Composition
+          style: simple
+        - name: entry
+          in: query
+          description: A reference to data that supports this section
+          style: simple
+        - name: identifier
+          in: query
+          description: Version-independent identifier for the Composition
+          style: simple
+        - name: patient
+          in: query
+          description: Who and/or what the composition is about
+          style: simple
+        - name: period
+          in: query
+          description: The period covered by the documentation
+          style: simple
+        - name: related-id
+          in: query
+          description: Target of the relationship
+          style: simple
+        - name: related-ref
+          in: query
+          description: Target of the relationship
+          style: simple
+        - name: section
+          in: query
+          description: Classification of section (recommended)
+          style: simple
+        - name: status
+          in: query
+          description: preliminary | final | amended | entered-in-error
+          style: simple
+        - name: subject
+          in: query
+          description: Who and/or what the composition is about
+          style: simple
+        - name: title
+          in: query
+          description: Human Readable name/title
+          style: simple
+        - name: type
+          in: query
+          description: Kind of composition (LOINC if possible)
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: null
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: null
+  /Composition/_search:
+    get:
+      tags:
+        - Composition
+      summary: "search-type: Search for Composition instances"
+      description: This is a search type
+      parameters:
+        - name: _content
+          in: query
+          description: Search the contents of the resource's data using a fulltext search
+          style: simple
+        - name: _filter
+          in: query
+          description: Search the contents of the resource's data using a filter
+          style: simple
+        - name: _has
+          in: query
+          description: Return resources linked to by the given target
+          style: simple
+        - name: _id
+          in: query
+          description: The ID of the resource
+          style: simple
+        - name: _lastUpdated
+          in: query
+          description: Only return resources which were last updated as specified by
+            the given range
+          style: simple
+        - name: _profile
+          in: query
+          description: Search for resources which have the given profile
+          style: simple
+        - name: _security
+          in: query
+          description: Search for resources which have the given security labels
+          style: simple
+        - name: _source
+          in: query
+          description: Search for resources which have the given source value (Resource.meta.source)
+          style: simple
+        - name: _tag
+          in: query
+          description: Search for resources which have the given tag
+          style: simple
+        - name: _text
+          in: query
+          description: Search the contents of the resource's narrative using a fulltext
+            search
+          style: simple
+        - name: attester
+          in: query
+          description: Who attested the composition
+          style: simple
+        - name: author
+          in: query
+          description: Who and/or what authored the composition
+          style: simple
+        - name: category
+          in: query
+          description: Categorization of Composition
+          style: simple
+        - name: confidentiality
+          in: query
+          description: As defined by affinity domain
+          style: simple
+        - name: context
+          in: query
+          description: Code(s) that apply to the event being documented
+          style: simple
+        - name: date
+          in: query
+          description: Composition editing time
+          style: simple
+        - name: encounter
+          in: query
+          description: Context of the Composition
+          style: simple
+        - name: entry
+          in: query
+          description: A reference to data that supports this section
+          style: simple
+        - name: identifier
+          in: query
+          description: Version-independent identifier for the Composition
+          style: simple
+        - name: patient
+          in: query
+          description: Who and/or what the composition is about
+          style: simple
+        - name: period
+          in: query
+          description: The period covered by the documentation
+          style: simple
+        - name: related-id
+          in: query
+          description: Target of the relationship
+          style: simple
+        - name: related-ref
+          in: query
+          description: Target of the relationship
+          style: simple
+        - name: section
+          in: query
+          description: Classification of section (recommended)
+          style: simple
+        - name: status
+          in: query
+          description: preliminary | final | amended | entered-in-error
+          style: simple
+        - name: subject
+          in: query
+          description: Who and/or what the composition is about
+          style: simple
+        - name: title
+          in: query
+          description: Human Readable name/title
+          style: simple
+        - name: type
+          in: query
+          description: Kind of composition (LOINC if possible)
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: null
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: null
+  /Composition/{id}/$document:
+    get:
+      tags:
+        - Composition
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+            example: null
+          example: "123"
+        - name: _count
+          in: query
+          description: Results from this method are returned across multiple pages.
+            This parameter controls the size of those pages.
+          required: false
+          style: simple
+        - name: _offset
+          in: query
+          description: Results from this method are returned across multiple pages.
+            This parameter controls the offset when fetching a page.
+          required: false
+          style: simple
+        - name: _lastUpdated
+          in: query
+          description: Only return resources which were last updated as specified by
+            the given range
+          required: false
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: null
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: null
+    post:
+      tags:
+        - Composition
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+            example: null
+          example: "123"
+      requestBody:
+        content:
+          application/fhir+json:
+            schema:
+              title: FHIR Resource
+              type: object
+              example: null
+            example: "{\n  \"resourceType\": \"Parameters\",\n  \"parameter\": [ {\n\
+              \    \"name\": \"_count\"\n  }, {\n    \"name\": \"_offset\"\n  }, {\n\
+              \    \"name\": \"_lastUpdated\"\n  } ]\n}"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: null
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: null
+  /OperationDefinition/{id}:
+    get:
+      tags:
+        - OperationDefinition
+      summary: "read-instance: Read OperationDefinition instance"
+      parameters:
+        - name: id
+          in: path
+          description: The resource ID
+          required: true
+          style: simple
+          schema:
+            minimum: 1
+            type: string
+            example: null
+          example: "123"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: null
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: null
+  /Patient:
+    get:
+      tags:
+        - Patient
+      summary: "search-type: Search for Patient instances"
+      description: This is a search type
+      parameters:
+        - name: _lastUpdated
+          in: query
+          description: Only return resources which were last updated as specified by
+            the given range
+          style: simple
+        - name: birthdate
+          in: query
+          description: The patient's date of birth
+          style: simple
+        - name: identifier
+          in: query
+          description: A patient identifier
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: null
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: null
+  /Patient/_search:
+    get:
+      tags:
+        - Patient
+      summary: "search-type: Search for Patient instances"
+      description: This is a search type
+      parameters:
+        - name: _lastUpdated
+          in: query
+          description: Only return resources which were last updated as specified by
+            the given range
+          style: simple
+        - name: birthdate
+          in: query
+          description: The patient's date of birth
+          style: simple
+        - name: identifier
+          in: query
+          description: A patient identifier
+          style: simple
+      responses:
+        "200":
+          description: Success
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/FHIR-JSON-RESOURCE'
+              example: null
+            application/fhir+xml:
+              schema:
+                $ref: '#/components/schemas/FHIR-XML-RESOURCE'
+              example: null
+components:
+  schemas:
+    FHIR-JSON-RESOURCE:
+      type: object
+      description: A FHIR resource
+      example: null
+    FHIR-XML-RESOURCE:
+      type: object
+      description: A FHIR resource
+      example: null
