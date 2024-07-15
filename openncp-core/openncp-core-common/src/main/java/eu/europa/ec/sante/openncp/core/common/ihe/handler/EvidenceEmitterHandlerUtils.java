@@ -27,15 +27,14 @@ public class EvidenceEmitterHandlerUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(EvidenceEmitterHandlerUtils.class);
     private static final Logger LOGGER_CLINICAL = LoggerFactory.getLogger("LOGGER_CLINICAL");
 
-    private static final String CLIENT_CONNECTOR_XML_NAMESPACE = "http://clientconnector.protocolterminator.openncp.epsos/";
-    private static final String CLIENT_CONNECTOR_SUBMIT_DOCUMENT_REQUEST = "submitDocument";
-    private static final String CLIENT_CONNECTOR_SUBMIT_DOCUMENT_RESPONSE = "submitDocumentResponse";
-    private static final String CLIENT_CONNECTOR_QUERY_PATIENT_REQUEST = "queryPatient";
-    private static final String CLIENT_CONNECTOR_QUERY_PATIENT_RESPONSE = "queryPatientResponse";
-    private static final String CLIENT_CONNECTOR_QUERY_DOCUMENTS_REQUEST = "queryDocuments";
-    private static final String CLIENT_CONNECTOR_QUERY_DOCUMENTS_RESPONSE = "queryDocumentsResponse";
-    private static final String CLIENT_CONNECTOR_RETRIEVE_DOCUMENT_REQUEST = "retrieveDocument";
-    private static final String CLIENT_CONNECTOR_RETRIEVE_DOCUMENT_RESPONSE = "retrieveDocumentResponse";
+    private static final String CLIENT_CONNECTOR_SUBMIT_DOCUMENT_REQUEST = "ProvideAndRegisterDocumentSetRequest";
+    private static final String CLIENT_CONNECTOR_SUBMIT_DOCUMENT_RESPONSE = "RegistryResponse";
+    private static final String CLIENT_CONNECTOR_QUERY_PATIENT_REQUEST = "PRPA_IN201305UV02";
+    private static final String CLIENT_CONNECTOR_QUERY_PATIENT_RESPONSE = "PRPA_IN201306UV02";
+    private static final String CLIENT_CONNECTOR_QUERY_DOCUMENTS_REQUEST = "AdhocQueryRequest";
+    private static final String CLIENT_CONNECTOR_QUERY_DOCUMENTS_RESPONSE = "AdhocQueryResponse";
+    private static final String CLIENT_CONNECTOR_RETRIEVE_DOCUMENT_REQUEST = "RetrieveDocumentSetRequest";
+    private static final String CLIENT_CONNECTOR_RETRIEVE_DOCUMENT_RESPONSE = "RetrieveDocumentSetResponse";
 
     private static final List<String> clientConnectorOperations;
     // maps the message type to its related ad-hoc event
