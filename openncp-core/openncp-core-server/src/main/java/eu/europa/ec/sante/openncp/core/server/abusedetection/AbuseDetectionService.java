@@ -1,6 +1,7 @@
-package eu.europa.ec.sante.openncp.core.client.abusedetection;
+package eu.europa.ec.sante.openncp.core.server.abusedetection;
 
 import com.ibatis.common.jdbc.ScriptRunner;
+import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.audit.AuditTrailUtils;
 import eu.europa.ec.sante.openncp.common.audit.EventType;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
@@ -9,14 +10,15 @@ import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import net.RFC3881.dicom.ActiveParticipantContents;
 import net.RFC3881.dicom.AuditMessage;
 import net.RFC3881.dicom.ParticipantObjectIdentificationContents;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.joda.time.*;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.SchedulerException;
+import org.joda.time.*;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.openehealth.ipf.commons.audit.types.CodedValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +38,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class ClientAbuseDetectionService implements Job {
-    public static final String DESCRIPTION_ALL = "[NCP-B] Detected %d transactions within an interval of %d seconds. " +
-            "This is exceeding the indicated threshold of %d transactions for the defind time interval";
-    public static final String DESCRIPTION_POC = "[NCP-B] Detected %d transactions within an interval of %d seconds " +
+public class AbuseDetectionService implements Job {
+    public static final String DESCRIPTION_ALL = "[NCP-A] Detected %d transactions within an interval of %d seconds. " +
+            "This is exceeding the indicated threshold of %d transactions for the defined time interval";
+    public static final String DESCRIPTION_POC = "[NCP-A] Detected %d transactions within an interval of %d seconds " +
             "from a specific Point of care. This is exceeding the indicated threshold of %d transactions for the defined interval";
-    public static final String DESCRIPTION_PAT = "[NCP-B] Detected %d transactions within an interval of %d seconds " +
+    public static final String DESCRIPTION_PAT = "[NCP-A] Detected %d transactions within an interval of %d seconds " +
             "for a specific Patient. This is exceeding the indicated threshold of %d transactions for the defined interval";
     private static final int NUM_DAYS_LOOK_BACK = 3;
     private static final int ANOMALY_DESCRIPTION_SIZE = 2000;
@@ -49,13 +51,14 @@ public class ClientAbuseDetectionService implements Job {
     private static final String PATTERN = "yyyy-MM-dd HH:mm:ss";
     private static final String JDBC_OPEN_ATNA = "jdbc/OPEN_ATNA";
     private static final String JDBC_EHNCP_PROPERTY = "jdbc/ConfMgr";
+    private static final String ORACLE = "oracle";
     private static List<eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent> abuseList = new ArrayList<>();
     private static long lastIdAnalyzed = -1;
-    private final Logger logger = LoggerFactory.getLogger(ClientAbuseDetectionService.class);
+    private final Logger logger = LoggerFactory.getLogger(AbuseDetectionService.class);
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
     private static String databaseProduct = "";
 
-    public ClientAbuseDetectionService() {
+    public AbuseDetectionService() {
     }
 
     public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
@@ -83,10 +86,10 @@ public class ClientAbuseDetectionService implements Job {
                 if (lastIdAnalyzed < 0) {
                     long lastFileTimeAnalyzed = LocalDateTime.now().minusDays(NUM_DAYS_LOOK_BACK).toDate().toInstant().toEpochMilli();
                     LocalDateTime localDateTime = new LocalDateTime(lastFileTimeAnalyzed, DateTimeZone.forTimeZone(TimeZone.getDefault()));
-                    DateTimeFormatter dtf = DateTimeFormat.forPattern(ClientAbuseDetectionService.PATTERN);
+                    DateTimeFormatter dtf = DateTimeFormat.forPattern(AbuseDetectionService.PATTERN);
                     String lastDateTimeFileAnalyzed = localDateTime.toString(dtf);
 
-                    if("oracle".equals(databaseProduct)) {
+                    if(ORACLE.equals(databaseProduct)) {
                         query = "select messages.id, eventActionCode, eventDateTime, eventOutcome, messageContent, sourceAddress, " +
                                 "eventId_id, code from messages inner join codes on (messages.eventId_id = codes.id) " +
                                 "where codes.code IN ('ITI-55', 'ITI-38', 'ITI-39', 'ITI-41', '110152', '110153', '110106', '110107', '110112') " +
@@ -101,7 +104,7 @@ public class ClientAbuseDetectionService implements Job {
                     }
                 } else {
                     // fetch only new records to be analyzed
-                    if ("oracle".equals(databaseProduct)) {
+                    if (ORACLE.equals(databaseProduct)) {
                         query = "select messages.id, eventActionCode, eventDateTime, eventOutcome, messageContent, sourceAddress, " +
                                 "eventId_id, code from messages inner join codes on (messages.eventId_id = codes.id) " +
                                 "where codes.code IN ('ITI-55', 'ITI-38', 'ITI-39', 'ITI-41', '110152', '110153', '110106', '110107', '110112') " +
@@ -156,7 +159,7 @@ public class ClientAbuseDetectionService implements Job {
 
     private void retrieveDbProperties()
     {
-        try (Connection sqlConnection = dbConnect(ClientAbuseDetectionService.JDBC_EHNCP_PROPERTY);
+        try (Connection sqlConnection = dbConnect(AbuseDetectionService.JDBC_EHNCP_PROPERTY);
              Statement stmt = sqlConnection.createStatement()) {
 
             databaseProduct = sqlConnection.getMetaData().getDatabaseProductName().toLowerCase();
@@ -172,7 +175,7 @@ public class ClientAbuseDetectionService implements Job {
 
         List<eu.europa.ec.sante.openncp.core.common.abusedetection.MessagesRecord> listXmlRecords = new ArrayList<>();
 
-        try (Connection sqlConnection = dbConnect(ClientAbuseDetectionService.JDBC_OPEN_ATNA);
+        try (Connection sqlConnection = dbConnect(AbuseDetectionService.JDBC_OPEN_ATNA);
              Statement stmt = sqlConnection.createStatement()) {
 
             ResultSet resultSet = stmt.executeQuery(sqlSelect);
@@ -201,7 +204,7 @@ public class ClientAbuseDetectionService implements Job {
 
     private void runSqlScript(String sqlScript) throws Exception {
 
-        try (Connection sqlConnection = dbConnect(ClientAbuseDetectionService.JDBC_EHNCP_PROPERTY);
+        try (Connection sqlConnection = dbConnect(AbuseDetectionService.JDBC_EHNCP_PROPERTY);
              StringReader stringReader = new StringReader(sqlScript)) {
 
             ScriptRunner objScriptRunner = new ScriptRunner(sqlConnection, false, true);
@@ -214,8 +217,8 @@ public class ClientAbuseDetectionService implements Job {
         }
     }
 
-    private boolean setAbuseErrorEvent(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseType abuseType, String description, int numRequests, eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent eventBegin,
-                                       eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent eventEnd) {
+    private boolean setAbuseErrorEvent(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseType abuseType, String description, int numRequests,
+                                       eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent eventBegin, eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent eventEnd) {
 
         String eventDescription = description.substring(0, Math.min(description.length(), ANOMALY_DESCRIPTION_SIZE));
 
@@ -230,7 +233,7 @@ public class ClientAbuseDetectionService implements Job {
         if (anomalyNotPresent(eventDescription, type, eventStartDate, eventEndDate)) {
             String sqlInsertStatementError;
 
-            if("oracle".equals(databaseProduct)) {
+            if(ORACLE.equals(databaseProduct)) {
                 sqlInsertStatementError = "INSERT INTO EHNCP_ANOMALY( " +
                         "DESCRIPTION, " +
                         "TYPE, " +
@@ -273,28 +276,28 @@ public class ClientAbuseDetectionService implements Job {
 
     private boolean anomalyNotPresent(String description, String type, String eventStartDate, String eventEndDate) {
         int recordCount = 0;
-        try (Connection sqlConnection = dbConnect(ClientAbuseDetectionService.JDBC_EHNCP_PROPERTY);
+        try (Connection sqlConnection = dbConnect(AbuseDetectionService.JDBC_EHNCP_PROPERTY);
              Statement stmt = sqlConnection.createStatement()) {
-                String sqlSelect = "";
+            String sqlSelect = "";
 
-                if("oracle".equals(databaseProduct)) {
-                    sqlSelect = "SELECT id FROM EHNCP_ANOMALY WHERE " +
-                            "DESCRIPTION = '" + StringUtils.replace(description, "'", "''") + "' AND " +
-                            "TYPE = '" + StringUtils.replace(type, "'", "''") + "' AND " +
-                            "EVENT_START_DATE = TO_DATE('" + eventStartDate + "', 'YYYY-MM-DD HH24:MI:SS') AND " +
-                            "EVENT_END_DATE = TO_DATE('" + eventEndDate + "', 'YYYY-MM-DD HH24:MI:SS')";
-                } else {
-                    sqlSelect = "SELECT id FROM EHNCP_ANOMALY WHERE " +
-                            "DESCRIPTION = '" + StringUtils.replace(description, "'", "''") + "' AND " +
-                            "TYPE = '" + StringUtils.replace(type, "'", "''") + "' AND " +
-                            "EVENT_START_DATE = '" + eventStartDate + "' AND " +
-                            "EVENT_END_DATE = '" + eventEndDate + "'";
-                }
+            if(ORACLE.equals(databaseProduct)) {
+                sqlSelect = "SELECT id FROM EHNCP_ANOMALY WHERE " +
+                        "DESCRIPTION = '" + StringUtils.replace(description, "'", "''") + "' AND " +
+                        "TYPE = '" + StringUtils.replace(type, "'", "''") + "' AND " +
+                        "EVENT_START_DATE = TO_DATE('" + eventStartDate + "', 'YYYY-MM-DD HH24:MI:SS') AND " +
+                        "EVENT_END_DATE = TO_DATE('" + eventEndDate + "', 'YYYY-MM-DD HH24:MI:SS')"; // FIX ORA-00933: SQL command not properly ended
+            } else {
+                sqlSelect = "SELECT id FROM EHNCP_ANOMALY WHERE " +
+                        "DESCRIPTION = '" + StringUtils.replace(description, "'", "''") + "' AND " +
+                        "TYPE = '" + StringUtils.replace(type, "'", "''") + "' AND " +
+                        "EVENT_START_DATE = '" + eventStartDate + "' AND " +
+                        "EVENT_END_DATE = '" + eventEndDate + "'";
+            }
 
-                ResultSet rs = stmt.executeQuery(sqlSelect);
-                while (rs.next()) {
-                    recordCount++;
-                }
+            ResultSet rs = stmt.executeQuery(sqlSelect);
+            while (rs.next()) {
+                recordCount++;
+            }
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
@@ -376,22 +379,22 @@ public class ClientAbuseDetectionService implements Job {
                 eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType transactionType = eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType.TRANSACTION_UNKNOWN;
                 if (StringUtils.equals(au.getEventIdentification().getEventID().getCsdCode(),
                         EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS.getCsdCode()) &&
-                        StringUtils.equals("XCPD::CrossGatewayPatientDiscovery",
+                        org.apache.commons.lang3.StringUtils.equals("XCPD::CrossGatewayPatientDiscovery",
                                 EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS.getIheTransactionName()) &&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
-                                .anyMatch(c -> StringUtils.equals(c.getCsdCode(),
+                                .anyMatch(c -> org.apache.commons.lang3.StringUtils.equals(c.getCsdCode(),
                                         EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS.getIheCode()))) {
                     evtPresent = true;
                     transactionType = eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType.XCPD_SERVICE_REQUEST;
                 }
                 if (!evtPresent && StringUtils.equals(au.getEventIdentification().getEventID().getCsdCode(),
                         EventType.PATIENT_SERVICE_LIST.getCsdCode()) &&
-                        StringUtils.equals("XCA::CrossGatewayQuery",
+                        org.apache.commons.lang3.StringUtils.equals("XCA::CrossGatewayQuery",
                                 EventType.PATIENT_SERVICE_LIST.getIheTransactionName()) &&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
-                                .anyMatch(c -> StringUtils.equals(c.getCsdCode(),
+                                .anyMatch(c -> org.apache.commons.lang3.StringUtils.equals(c.getCsdCode(),
                                         EventType.PATIENT_SERVICE_LIST.getIheCode())) /*&&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
@@ -402,11 +405,11 @@ public class ClientAbuseDetectionService implements Job {
                 }
                 if (!evtPresent && /*StringUtils.equals(au.getEventIdentification().getEventID().getCsdCode(),
                         EventType.PATIENT_SERVICE_RETRIEVE.getCsdCode()) &&*/  // csdCode for this event is 110107 on client and 110106 on server, so there would be an ambiguity
-                        StringUtils.equals("XCA::CrossGatewayRetrieve",
+                        org.apache.commons.lang3.StringUtils.equals("XCA::CrossGatewayRetrieve",
                                 EventType.PATIENT_SERVICE_RETRIEVE.getIheTransactionName()) &&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
-                                .anyMatch(c -> StringUtils.equals(c.getCsdCode(),
+                                .anyMatch(c -> org.apache.commons.lang3.StringUtils.equals(c.getCsdCode(),
                                         EventType.PATIENT_SERVICE_RETRIEVE.getIheCode())) /*&&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
@@ -417,11 +420,11 @@ public class ClientAbuseDetectionService implements Job {
                 }
                 if (!evtPresent && StringUtils.equals(au.getEventIdentification().getEventID().getCsdCode(),
                         EventType.ORDER_SERVICE_LIST.getCsdCode()) &&
-                        StringUtils.equals("XCA::CrossGatewayRetrieve",
+                        org.apache.commons.lang3.StringUtils.equals("XCA::CrossGatewayRetrieve",
                                 EventType.ORDER_SERVICE_LIST.getIheTransactionName()) &&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
-                                .anyMatch(c -> StringUtils.equals(c.getCsdCode(),
+                                .anyMatch(c -> org.apache.commons.lang3.StringUtils.equals(c.getCsdCode(),
                                         EventType.ORDER_SERVICE_LIST.getIheCode())) /*&&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
@@ -432,11 +435,11 @@ public class ClientAbuseDetectionService implements Job {
                 }
                 if (!evtPresent && /*StringUtils.equals(au.getEventIdentification().getEventID().getCsdCode(),
                         EventType.PATIENT_SERVICE_RETRIEVE.getCsdCode()) &&*/ // csdCode for this event is 110107 on client and 110106 on server, so there would be an ambiguity
-                        StringUtils.equals("XCA::CrossGatewayRetrieve",
+                        org.apache.commons.lang3.StringUtils.equals("XCA::CrossGatewayRetrieve",
                                 EventType.ORDER_SERVICE_RETRIEVE.getIheTransactionName()) &&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
-                                .anyMatch(c -> StringUtils.equals(c.getCsdCode(),
+                                .anyMatch(c -> org.apache.commons.lang3.StringUtils.equals(c.getCsdCode(),
                                         EventType.ORDER_SERVICE_RETRIEVE.getIheCode())) /*&&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
@@ -447,11 +450,11 @@ public class ClientAbuseDetectionService implements Job {
                 }
                 if (!evtPresent && StringUtils.equals(au.getEventIdentification().getEventID().getCsdCode(),
                         EventType.DISPENSATION_SERVICE_INITIALIZE.getCsdCode()) &&
-                        StringUtils.equals("XDR::ProvideandRegisterDocumentSet-b",
+                        org.apache.commons.lang3.StringUtils.equals("XDR::ProvideandRegisterDocumentSet-b",
                                 EventType.DISPENSATION_SERVICE_INITIALIZE.getIheTransactionName()) &&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
-                                .anyMatch(c -> StringUtils.equals(c.getCsdCode(),
+                                .anyMatch(c -> org.apache.commons.lang3.StringUtils.equals(c.getCsdCode(),
                                         EventType.DISPENSATION_SERVICE_DISCARD.getIheCode())) /*&&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
@@ -462,22 +465,22 @@ public class ClientAbuseDetectionService implements Job {
                 }
                 if (!evtPresent && StringUtils.equals(au.getEventIdentification().getEventID().getCsdCode(),
                         EventType.ORCD_SERVICE_LIST.getCsdCode()) &&
-                        StringUtils.equals("XCA::CrossGatewayQuery",
+                        org.apache.commons.lang3.StringUtils.equals("XCA::CrossGatewayQuery",
                                 EventType.ORCD_SERVICE_LIST.getIheTransactionName()) &&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
-                                .anyMatch(c -> StringUtils.equals(c.getCsdCode(),
+                                .anyMatch(c -> org.apache.commons.lang3.StringUtils.equals(c.getCsdCode(),
                                         EventType.ORCD_SERVICE_LIST.getIheCode()))) {
                     evtPresent = true;
                     transactionType = eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType.XCA_SERVICE_REQUEST;
                 }
                 if (!evtPresent && StringUtils.equals(au.getEventIdentification().getEventID().getCsdCode(),
                         EventType.ORCD_SERVICE_RETRIEVE.getIheCode()) &&
-                        StringUtils.equals("XCA::CrossGatewayRetrieve",
+                        org.apache.commons.lang3.StringUtils.equals("XCA::CrossGatewayRetrieve",
                                 EventType.ORCD_SERVICE_RETRIEVE.getIheTransactionName()) &&
                         au.getEventIdentification().getEventTypeCode()
                                 .stream()
-                                .anyMatch(c -> StringUtils.equals(c.getCsdCode(),
+                                .anyMatch(c -> org.apache.commons.lang3.StringUtils.equals(c.getCsdCode(),
                                         EventType.ORCD_SERVICE_RETRIEVE.getIheCode()))) {
                     evtPresent = true;
                     transactionType = eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType.XCA_SERVICE_REQUEST;
@@ -497,7 +500,7 @@ public class ClientAbuseDetectionService implements Job {
                             .collect(Collectors.joining());
 
                     String participant = au.getParticipantObjectIdentification().stream()
-                            .filter(a -> a.getParticipantObjectTypeCode().equals("1") && a.getParticipantObjectTypeCodeRole().equals("1"))
+                            .filter(a -> a.getParticipantObjectTypeCode().equals("1") && a.getParticipantObjectTypeCodeRole().equals(""))
                             .map(ParticipantObjectIdentificationContents::getParticipantObjectID)
                             .collect(Collectors.joining());
 
@@ -543,12 +546,12 @@ public class ClientAbuseDetectionService implements Job {
     private List<eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent> checkAnomalies(List<eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent> list) {
 
         int areqr = Integer.parseInt(Constants.ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD);
-        int upatr = 0; // No Patient discovery on client only on server
-        int upocr = Integer.parseInt(Constants.ABUSE_UNIQUE_POC_REFERENCE_REQUEST_PERIOD);
+        int upatr = Integer.parseInt(Constants.ABUSE_UNIQUE_PATIENT_REFERENCE_REQUEST_PERIOD);
+        int upocr = 0; // No Point of Care discovery on Server, only on Client
 
         int areqThreshold = Integer.parseInt(Constants.ABUSE_ALL_REQUEST_THRESHOLD);
-        int upatThreshold = 0; // No Patient discovery on client only on server
-        int upocThreshold = Integer.parseInt(Constants.ABUSE_UNIQUE_POC_REQUEST_THRESHOLD);
+        int upatThreshold = Integer.parseInt(Constants.ABUSE_UNIQUE_PATIENT_REQUEST_THRESHOLD);
+        int upocThreshold = 0; // No Point of Care discovery on Server, only on Client
 
         if (areqr <= 0 && upatr <= 0 && upocr <= 0) { // no check
             return list;
@@ -597,15 +600,20 @@ public class ClientAbuseDetectionService implements Job {
 
         //////////////////////////////////////////////////////////////////////
 
-        List<eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent> distinctPointOfCareIds = list.stream()
-                .filter(distinctByKey(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent::getPointOfCare))
+        // No Point of Care discovery on Server, only on Client
+
+        //////////////////////////////////////////////////////////////////////
+
+        List<eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent> distinctPatientIds = list.stream()
+                .filter(distinctByKey(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent::getPatientId))
                 .collect(Collectors.toList());
-        if (upocr > 0 && sortedAllList.size() > upocThreshold) { // analyze unique POC requests
-            if (!distinctPointOfCareIds.isEmpty()) {
-                distinctPointOfCareIds.forEach(poc -> {
-                    List<eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent> sortedPocList = list.stream()
-                            .filter(p -> p.getPointOfCare().equals(poc.getPointOfCare()))
-                            .sorted(Comparator.comparing(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent::getPointOfCare))
+        if (upatr > 0 && sortedAllList.size() > upatThreshold) { // Analyze unique Patient requests
+            if (!distinctPatientIds.isEmpty()) {
+                distinctPatientIds.forEach(pat -> {
+                    List<eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent> sortedXcpdList = list.stream()
+                            .filter(p -> p.getTransactionType().equals(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType.XCPD_SERVICE_REQUEST))
+                            .filter(p -> p.getPatientId().equals(pat.getPatientId()))
+                            .sorted(Comparator.comparing(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent::getPatientId))
                             .sorted(Comparator.comparing(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseEvent::getRequestDateTime))
                             .collect(Collectors.toList());
 
@@ -616,46 +624,40 @@ public class ClientAbuseDetectionService implements Job {
                         int tot = 0;
                         int beg = 0;
                         int end = 0;
-                        for (index = lastValidIndex; index < sortedPocList.size(); index++) {
+                        for (index = lastValidIndex; index < sortedXcpdList.size(); index++) {
                             beg = lastValidIndex;
                             end = index;
-                            int elapsed = getElapsedTimeBetweenEvents(sortedPocList, beg, end);
-                            if (elapsed > upocr) {
+                            int elapsed = getElapsedTimeBetweenEvents(sortedXcpdList, beg, end);
+                            if (elapsed > upatr) {
                                 lastValidIndex = index;
                                 break;
                             }
                             tot++;
                         }
-                        if (tot > upocThreshold) {
-                            if (lastValidIndex > 0 && index < sortedPocList.size()) {
+                        if (tot > upatThreshold) {
+                            if (lastValidIndex > 0 && index < sortedXcpdList.size()) {
                                 end = lastValidIndex - 1;
                             } else {
-                                end = sortedPocList.size() - 1;
+                                end = sortedXcpdList.size() - 1;
                             }
-                            int elapsed = getElapsedTimeBetweenEvents(sortedPocList, beg, end);
-                            if (elapsed < upocr) {
-                                String abuseDescription = String.format(DESCRIPTION_POC, tot, elapsed, upocThreshold);
-                                if (setAbuseErrorEvent(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseType.POC, abuseDescription, tot, sortedPocList.get(beg), sortedPocList.get(end))) {
+                            int elapsed = getElapsedTimeBetweenEvents(sortedXcpdList, beg, end);
+                            if (elapsed < upatr) {
+                                String abuseDescription = String.format(DESCRIPTION_PAT, tot, elapsed, upatThreshold);
+                                if (setAbuseErrorEvent(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseType.PAT, abuseDescription, tot, sortedXcpdList.get(beg), sortedXcpdList.get(end))) {
                                     if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && loggerClinical.isDebugEnabled()) {
-                                        loggerClinical.error("WARNING_SEC_UNEXPECTED_NUMBER_OF_REQUESTS_FOR_UNIQUE_POINT_OF_CARE : " +
+                                        loggerClinical.error("WARNING_SEC_UNEXPECTED_NUMBER_OF_REQUESTS_FOR_UNIQUE_PATIENT : " +
                                                         "[Total requests: '{}' exceeding threshold of: '{}' requests inside an interval " +
                                                         "of '{}' seconds] - begin event : ['{}'] end event : ['{}']",
-                                                tot, upocThreshold, elapsed,
-                                                sortedPocList.get(beg), sortedPocList.get(end));
+                                                tot, upatThreshold, elapsed,
+                                                sortedXcpdList.get(beg), sortedXcpdList.get(end));
                                     }
                                 }
                             }
                         }
-                    } while (index < sortedPocList.size() && lastValidIndex < sortedPocList.size());
+                    } while (index < sortedXcpdList.size() && lastValidIndex < sortedXcpdList.size());
                 });
             }
         }
-
-        ///////////////////////////////////////////////////
-
-        // No Patient discovery on client only on server
-
-        ///////////////////////////////////////////////////
 
         // strip from table file older than ABUSE_ALL_REQUEST_REFERENCE_REQUEST_PERIOD
         int purgeLimit = NumberUtils.max(new int[]{areqr, upocr, upatr});
@@ -667,8 +669,9 @@ public class ClientAbuseDetectionService implements Job {
                                         DateTimeZone.forTimeZone(TimeZone.getDefault())
                                 )) <= purgeLimit
                         //Period.fieldDifference(p.getRequestDateTime(),
-                        //        new LocalDateTime(DateTimeZone.forTimeZone(TimeZone.getDefault())))
-                        //.toStandardSeconds().getSeconds() <= purgeLimit
+                        // new LocalDateTime(DateTimeZone.forTimeZone(TimeZone.getDefault())))
+                        // .toStandardSeconds().getSeconds() <= purgeLimit
+
                 )
                 .collect(Collectors.toList());
 
@@ -680,5 +683,21 @@ public class ClientAbuseDetectionService implements Job {
             }
         }
         return ret;
+    }
+
+    private String getActiveParticipants(List<ActiveParticipantContents> activeParticipant) {
+        StringBuilder val = new StringBuilder();
+        for (ActiveParticipantContents p : activeParticipant) {
+            val.append("ActiveParticipant ").append(p.getUserID()).append(" - ").append(p.isUserIsRequestor()).append(" ");
+        }
+        return StringUtils.trim(val.toString());
+    }
+
+    private String getTypeCodes(List<CodedValueType> eventTypeCode) {
+        StringBuilder val = new StringBuilder();
+        for (CodedValueType t : eventTypeCode) {
+            val.append("EventTypeCode ").append(t.getCode()).append(" - ").append(t.getDisplayName()).append(" ");
+        }
+        return StringUtils.trim(val.toString());
     }
 }
