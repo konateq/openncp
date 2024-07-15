@@ -41,7 +41,7 @@
         <url-pattern>/services/*</url-pattern>
     </servlet-mapping>
 
-    <!--context-param>
+    <context-param>
         <param-name>quartz:shutdown-on-unload</param-name>
         <param-value>false</param-value>
     </context-param>
@@ -52,11 +52,10 @@
     <context-param>
         <param-name>quartz:start-scheduler-on-load</param-name>
         <param-value>true</param-value>
-    </context-param-->
-    <!--listener>
+    </context-param>
+    <listener>
         <listener-class>
-            eu.europa.ec.sante.ehdsi.openncp.cc.QuartzInitializerListener
+            eu.europa.ec.sante.openncp.core.server.QuartzInitializerListener
         </listener-class>
-    </listener-->
-
+    </listener>
 </web-app>

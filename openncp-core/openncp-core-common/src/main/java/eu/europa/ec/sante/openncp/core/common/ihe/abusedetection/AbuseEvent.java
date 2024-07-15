@@ -14,12 +14,12 @@ public class AbuseEvent {
     String patientId;
     LocalDateTime requestDateTime;
     String recordId;
-    AbuseTransactionType transactionType;
+    eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType transactionType;
 
     AuditMessage audit;
 
     public AbuseEvent(EventID requestEventType, String pointOfCare, String patientId, LocalDateTime requestDateTime,
-                      String recordId, AbuseTransactionType transactionType, AuditMessage audit) {
+                      String recordId, eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType transactionType, AuditMessage audit) {
         this.requestEventType = requestEventType;
         this.pointOfCare = pointOfCare;
         this.patientId = patientId;
@@ -69,11 +69,11 @@ public class AbuseEvent {
         this.recordId = recordId;
     }
 
-    public AbuseTransactionType getTransactionType() {
+    public eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType getTransactionType() {
         return transactionType;
     }
 
-    public void setTransactionType(AbuseTransactionType transactionType) {
+    public void setTransactionType(eu.europa.ec.sante.openncp.core.common.abusedetection.AbuseTransactionType transactionType) {
         this.transactionType = transactionType;
     }
 

@@ -1,6 +1,6 @@
-package eu.europa.ec.sante.openncp.core.server;
+package eu.europa.ec.sante.openncp.core.client;
 
-import eu.europa.ec.sante.openncp.core.server.abusedetection.AbuseDetectionHelper;
+import eu.europa.ec.sante.openncp.core.client.abusedetection.ClientAbuseDetectionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +8,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 public class QuartzInitializerListener implements ServletContextListener {
-
     private final Logger logger = LoggerFactory.getLogger(QuartzInitializerListener.class);
 
     @Override
@@ -18,7 +17,7 @@ public class QuartzInitializerListener implements ServletContextListener {
         }
 
         try {
-            AbuseDetectionHelper.abuseDetectionInit();
+            ClientAbuseDetectionHelper.abuseDetectionInit();
         } catch (Exception e) {
             logger.debug(e.getMessage());
         }
@@ -31,7 +30,7 @@ public class QuartzInitializerListener implements ServletContextListener {
         }
 
         try {
-            AbuseDetectionHelper.abuseDetectionShutdown();
+            ClientAbuseDetectionHelper.abuseDetectionShutdown();
         } catch (Exception e) {
             logger.debug(e.getMessage());
         }
