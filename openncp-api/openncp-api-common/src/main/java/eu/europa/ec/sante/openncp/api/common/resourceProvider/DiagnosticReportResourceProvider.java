@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class DiagnosticReportResourceProvider implements IResourceProvider {
+public class DiagnosticReportResourceProvider extends AbstractResourceProvider implements IResourceProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticReportResourceProvider.class);
 
@@ -59,20 +59,11 @@ public class DiagnosticReportResourceProvider implements IResourceProvider {
                               @Description(shortDefinition = "Date range for the search") @OptionalParam(
                                       name = "date") final DateRangeParam dateRange) {
 
-        String JWTToken = getJwtFromRequest(theServletRequest);
+        final String JWTToken = getJwtFromRequest(theServletRequest);
 
         final Bundle serverResponse = dispatchingService.dispatchSearch(EuRequestDetails.of(theRequestDetails), JWTToken);
         final Bundle handledBundle = bundleHandler.handle(serverResponse);
 
         return handledBundle;
-    }
-
-    public String getJwtFromRequest(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-
-        if (header != null && header.startsWith("Bearer ")) {
-            return header;
-        }
-        throw new RuntimeException("JWT Token is missing");
     }
 }

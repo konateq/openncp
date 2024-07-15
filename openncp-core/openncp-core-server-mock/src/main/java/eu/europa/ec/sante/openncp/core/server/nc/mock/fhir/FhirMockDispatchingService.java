@@ -29,7 +29,7 @@ public class FhirMockDispatchingService implements DispatchingService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends IBaseResource> T dispatchSearch(final EuRequestDetails requestDetails, String JWTToken) {
+    public <T extends IBaseResource> T dispatchSearch(final EuRequestDetails requestDetails, final String JWTToken) {
         Validate.notNull(requestDetails, "The request details cannot be null");
 
         final FhirDispatchingClient hapiWebClient = webClientFactory.createClient("https://sandbox.hl7europe.eu/laboratory/fhir/");
@@ -41,7 +41,7 @@ public class FhirMockDispatchingService implements DispatchingService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends IBaseResource> T dispatchRead(final EuRequestDetails requestDetails, String JWTToken) {
+    public <T extends IBaseResource> T dispatchRead(final EuRequestDetails requestDetails, final String JWTToken) {
         Validate.notNull(requestDetails, "The request details cannot be null");
         final FhirDispatchingClient hapiWebClient = webClientFactory.createClient("https://sandbox.hl7europe.eu/laboratory/fhir/");
         final Bundle result = hapiWebClient.dispatch(requestDetails, null);

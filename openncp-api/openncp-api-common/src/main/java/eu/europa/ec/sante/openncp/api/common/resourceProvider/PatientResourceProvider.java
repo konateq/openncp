@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
-public class PatientResourceProvider implements IResourceProvider {
+public class PatientResourceProvider extends AbstractResourceProvider implements IResourceProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PatientResourceProvider.class);
 
@@ -77,20 +77,11 @@ public class PatientResourceProvider implements IResourceProvider {
 
                               @RawParam final Map<String, List<String>> theAdditionalRawParams) {
 
-        String jwt = getJwtFromRequest(theServletRequest);
+        final String jwt = getJwtFromRequest(theServletRequest);
 
         final Bundle serverResponse = dispatchingService.dispatchSearch(EuRequestDetails.of(theRequestDetails), jwt);
         final Bundle handledBundle = bundleHandler.handle(serverResponse);
 
         return handledBundle;
-    }
-
-    public String getJwtFromRequest(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-
-        if (header != null && header.startsWith("Bearer ")) {
-            return header;
-        }
-        throw new RuntimeException("JWT Token is missing");
     }
 }
