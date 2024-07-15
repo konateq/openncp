@@ -90,18 +90,6 @@
                             <clearOutputDir>false</clearOutputDir>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>rfc3881</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/main/resources/RFC3881.xsd</source>
-                            </sources>
-                            <clearOutputDir>false</clearOutputDir>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>
