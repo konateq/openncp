@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
@@ -15,14 +15,14 @@ public class XACMLRequestCreator {
     static {
         try {
             InitializationService.initialize();
-        } catch (InitializationException e) {
+        } catch (final InitializationException e) {
             throw new IllegalStateException("Unable to bootstrap OpenSAML!!! Did you endorse the XML libraries?", e);
         }
     }
 
     private final AttributeTypeImplBuilder atib;
     private final AttributeValueTypeImplBuilder avtib;
-    private Element request;
+    private final Element request;
 
     /**
      * @param messageType
@@ -32,28 +32,28 @@ public class XACMLRequestCreator {
      * @param environmentAttributes
      * @throws TOElementException
      */
-    public XACMLRequestCreator(MessageType messageType, List<XACMLAttributes> subjectAttributes, List<XACMLAttributes> resourceAttributes,
-                               List<XACMLAttributes> actionAttributes, List<XACMLAttributes> environmentAttributes)
+    public XACMLRequestCreator(final MessageType messageType, final List<XACMLAttributes> subjectAttributes, final List<XACMLAttributes> resourceAttributes,
+                               final List<XACMLAttributes> actionAttributes, final List<XACMLAttributes> environmentAttributes)
             throws TOElementException {
 
-        XMLObjectBuilderFactory bf = XMLObjectProviderRegistrySupport.getBuilderFactory();
+        final XMLObjectBuilderFactory bf = XMLObjectProviderRegistrySupport.getBuilderFactory();
         atib = (AttributeTypeImplBuilder) bf.getBuilder(AttributeType.DEFAULT_ELEMENT_NAME);
         avtib = (AttributeValueTypeImplBuilder) bf.getBuilder(AttributeValueType.DEFAULT_ELEMENT_NAME);
 
-        RequestTypeImplBuilder rtb = (RequestTypeImplBuilder) bf.getBuilder(RequestType.DEFAULT_ELEMENT_NAME);
-        RequestType requestType = rtb.buildObject();
+        final RequestTypeImplBuilder rtb = (RequestTypeImplBuilder) bf.getBuilder(RequestType.DEFAULT_ELEMENT_NAME);
+        final RequestType requestType = rtb.buildObject();
 
-        SubjectTypeImplBuilder stib = (SubjectTypeImplBuilder) bf.getBuilder(SubjectType.DEFAULT_ELEMENT_NAME);
-        SubjectType subject = stib.buildObject();
+        final SubjectTypeImplBuilder stib = (SubjectTypeImplBuilder) bf.getBuilder(SubjectType.DEFAULT_ELEMENT_NAME);
+        final SubjectType subject = stib.buildObject();
 
-        ResourceTypeImplBuilder rtib = (ResourceTypeImplBuilder) bf.getBuilder(ResourceType.DEFAULT_ELEMENT_NAME);
-        ResourceType resource = rtib.buildObject();
+        final ResourceTypeImplBuilder rtib = (ResourceTypeImplBuilder) bf.getBuilder(ResourceType.DEFAULT_ELEMENT_NAME);
+        final ResourceType resource = rtib.buildObject();
 
-        ActionTypeImplBuilder actib = (ActionTypeImplBuilder) bf.getBuilder(ActionType.DEFAULT_ELEMENT_NAME);
-        ActionType action = actib.buildObject();
+        final ActionTypeImplBuilder actib = (ActionTypeImplBuilder) bf.getBuilder(ActionType.DEFAULT_ELEMENT_NAME);
+        final ActionType action = actib.buildObject();
 
-        EnvironmentTypeImplBuilder etib = (EnvironmentTypeImplBuilder) bf.getBuilder(EnvironmentType.DEFAULT_ELEMENT_NAME);
-        EnvironmentType environment = etib.buildObject();
+        final EnvironmentTypeImplBuilder etib = (EnvironmentTypeImplBuilder) bf.getBuilder(EnvironmentType.DEFAULT_ELEMENT_NAME);
+        final EnvironmentType environment = etib.buildObject();
 
         requestType.getSubjects().add(subject);
         requestType.getResources().add(resource);
@@ -62,12 +62,12 @@ public class XACMLRequestCreator {
 
         if (subjectAttributes != null) {
 
-            for (XACMLAttributes attributeItem : subjectAttributes) {
-                AttributeType attribute = atib.buildObject();
+            for (final XACMLAttributes attributeItem : subjectAttributes) {
+                final AttributeType attribute = atib.buildObject();
                 attribute.setAttributeID(attributeItem.getIdentifier().toASCIIString());
                 attribute.setDataType(attributeItem.getDataType().toASCIIString());
 
-                AttributeValueType attributeValue = avtib.buildObject();
+                final AttributeValueType attributeValue = avtib.buildObject();
                 attributeValue.setValue(attributeItem.getValue());
                 attribute.getAttributeValues().add(attributeValue);
                 subject.getAttributes().add(attribute);
@@ -76,12 +76,12 @@ public class XACMLRequestCreator {
         }
         if (resourceAttributes != null) {
 
-            for (XACMLAttributes attributeItem : resourceAttributes) {
-                AttributeType attribute = atib.buildObject();
+            for (final XACMLAttributes attributeItem : resourceAttributes) {
+                final AttributeType attribute = atib.buildObject();
                 attribute.setAttributeID(attributeItem.getIdentifier().toASCIIString());
                 attribute.setDataType(attributeItem.getDataType().toASCIIString());
 
-                AttributeValueType attributeValue = avtib.buildObject();
+                final AttributeValueType attributeValue = avtib.buildObject();
                 attributeValue.setValue(attributeItem.getValue());
                 attribute.getAttributeValues().add(attributeValue);
                 resource.getAttributes().add(attribute);
@@ -90,12 +90,12 @@ public class XACMLRequestCreator {
 
         if (actionAttributes != null) {
 
-            for (XACMLAttributes attributeItem : actionAttributes) {
-                AttributeType attribute = atib.buildObject();
+            for (final XACMLAttributes attributeItem : actionAttributes) {
+                final AttributeType attribute = atib.buildObject();
                 attribute.setAttributeID(attributeItem.getIdentifier().toASCIIString());
                 attribute.setDataType(attributeItem.getDataType().toASCIIString());
 
-                AttributeValueType attributeValue = avtib.buildObject();
+                final AttributeValueType attributeValue = avtib.buildObject();
                 attributeValue.setValue(attributeItem.getValue());
                 attribute.getAttributeValues().add(attributeValue);
                 action.getAttributes().add(attribute);
@@ -104,12 +104,12 @@ public class XACMLRequestCreator {
 
         if (environmentAttributes != null) {
 
-            for (XACMLAttributes attributeItem : environmentAttributes) {
-                AttributeType attribute = atib.buildObject();
+            for (final XACMLAttributes attributeItem : environmentAttributes) {
+                final AttributeType attribute = atib.buildObject();
                 attribute.setAttributeID(attributeItem.getIdentifier().toASCIIString());
                 attribute.setDataType(attributeItem.getDataType().toASCIIString());
 
-                AttributeValueType attributeValue = avtib.buildObject();
+                final AttributeValueType attributeValue = avtib.buildObject();
                 attributeValue.setValue(attributeItem.getValue());
                 attribute.getAttributeValues().add(attributeValue);
                 environment.getAttributes().add(attribute);

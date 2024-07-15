@@ -1,9 +1,9 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.w3c.dom.Document;
 
 public class UnknownMessageType implements MessageType {
 
-    public UnknownMessageType(Document incomingMsg) {
+    public UnknownMessageType(final Document incomingMsg) {
     }
 }

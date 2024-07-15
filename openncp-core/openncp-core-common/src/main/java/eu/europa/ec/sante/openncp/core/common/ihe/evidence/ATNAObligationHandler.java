@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.herasaf.xacml.core.policy.impl.AttributeAssignmentType;
 import org.w3c.dom.Document;
@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 
-public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.common.evidence.ObligationHandler {
+public class ATNAObligationHandler implements ObligationHandler {
 
     private static final String ATNA_PREFIX = "urn:eSENS:obligations:nrr:ATNA";
     private static final String EVENT_ACTION_CODE = "EventActionCode";
@@ -45,14 +45,14 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
     private static final String N_A = "N/A";
 
     private final HashMap<String, String> auditValueMap = new HashMap<>();
-    private final eu.europa.ec.sante.openncp.core.common.evidence.IHEMessageType messageType;
-    private final List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations;
+    private final IHEMessageType messageType;
+    private final List<ESensObligation> obligations;
     private final Context context;
     private Document audit = null;
 
-    public ATNAObligationHandler(MessageType messageType, List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations, Context context) {
+    public ATNAObligationHandler(final MessageType messageType, final List<ESensObligation> obligations, final Context context) {
 
-        this.messageType = (eu.europa.ec.sante.openncp.core.common.evidence.IHEMessageType) messageType;
+        this.messageType = (IHEMessageType) messageType;
         this.obligations = obligations;
         this.context = context;
     }
@@ -61,37 +61,36 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
      * Discharge returns the object discharged, or exception(non-Javadoc)
      *
      * @throws ObligationDischargeException
-     * @see eu.esens.abb.nonrep.ObligationHandler#discharge()
      */
 
     @Override
-    public void discharge() throws eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException {
+    public void discharge() throws ObligationDischargeException {
 
         // Here I need to check the IHE message type. It can be XCA, XCF, whatever
-        if (messageType instanceof eu.europa.ec.sante.openncp.core.common.evidence.IHEXCARetrieve) {
+        if (messageType instanceof IHEXCARetrieve) {
             try {
                 makeIHEXCARetrieveAudit(obligations);
-            } catch (ParserConfigurationException e) {
-                throw new eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException(e);
+            } catch (final ParserConfigurationException e) {
+                throw new ObligationDischargeException(e);
             }
         } else {
-            throw new eu.europa.ec.sante.openncp.core.common.evidence.ObligationDischargeException("Unkwnon message type");
+            throw new ObligationDischargeException("Unkwnon message type");
         }
     }
 
-    private void makeIHEXCARetrieveAudit(List<eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation> obligations2)
+    private void makeIHEXCARetrieveAudit(final List<ESensObligation> obligations2)
                         throws ParserConfigurationException {
 
-        for (eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation eSensObl : obligations2) {
+        for (final ESensObligation eSensObl : obligations2) {
             // Here I am in the ATNA handler, thus I have to check if it is prefixed by ATNA
             if (eSensObl.getObligationID().startsWith(ATNA_PREFIX)) {
-                String outcome = getOutcome(eSensObl);
+                final String outcome = getOutcome(eSensObl);
 
                 // Here the real mapping happens: are we NRR or NRO? I think both, and it depends on the policy
-                List<AttributeAssignmentType> attributeAssignments = eSensObl.getAttributeAssignments();
+                final List<AttributeAssignmentType> attributeAssignments = eSensObl.getAttributeAssignments();
 
                 if (attributeAssignments != null) {
-                    for (AttributeAssignmentType aat : attributeAssignments) {
+                    for (final AttributeAssignmentType aat : attributeAssignments) {
                         if (aat.getAttributeId().startsWith(ATNA_PREFIX)) {
                             fillHash(aat.getAttributeId(), aat.getContent());
                         }
@@ -103,9 +102,9 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         }
     }
 
-    private String getOutcome(eu.europa.ec.sante.openncp.core.common.evidence.ESensObligation eSensObl) {
-        String outcome;
-        if (eSensObl instanceof eu.europa.ec.sante.openncp.core.common.evidence.PERMITEsensObligation) {
+    private String getOutcome(final ESensObligation eSensObl) {
+        final String outcome;
+        if (eSensObl instanceof PERMITEsensObligation) {
             outcome = "SUCCESS";
         } else {
             outcome = "MINOR FAILURE";
@@ -123,21 +122,21 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
          *
          * The idea is to call here the OpenNCP implementation. This is just a placeholder
          */
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setXIncludeAware(false);
         dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         dbf.setNamespaceAware(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document auditDocument = db.newDocument();
+        final DocumentBuilder db = dbf.newDocumentBuilder();
+        final Document auditDocument = db.newDocument();
 
-        Element auditMessage = auditDocument.createElement("AuditMessage");
+        final Element auditMessage = auditDocument.createElement("AuditMessage");
         auditDocument.appendChild(auditMessage);
-        Element eventIdentification = auditDocument.createElement("EventIdentification");
+        final Element eventIdentification = auditDocument.createElement("EventIdentification");
         eventIdentification.setAttribute(EVENT_ACTION_CODE, auditValueMap.get(EVENT_ACTION_CODE).trim().isEmpty() ? N_A : auditValueMap.get(EVENT_ACTION_CODE).trim());
         eventIdentification.setAttribute(EVENT_DATE_TIME, Instant.now().toString());
         eventIdentification.setAttribute(EVENT_OUTCOME_INDICATOR, auditValueMap.get(EVENT_OUTCOME_INDICATOR).trim().isEmpty() ? N_A : auditValueMap.get(EVENT_OUTCOME_INDICATOR).trim()); // by default, we fail
 
-        Element eventId = auditDocument.createElement(EVENT_ID);
+        final Element eventId = auditDocument.createElement(EVENT_ID);
         eventIdentification.appendChild(eventId);
         eventId.setAttribute(CODE, auditValueMap.get(EVENT_ID).isEmpty() ? N_A : auditValueMap.get(EVENT_ID).trim());
         eventId.setAttribute(CODE_SYSTEM, "");
@@ -145,7 +144,7 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         eventId.setAttribute(DISPLAY_NAME, "Export");
 
         //What have been done?
-        Element eventTypeCode = auditDocument.createElement(EVENT_TYPE_CODE);
+        final Element eventTypeCode = auditDocument.createElement(EVENT_TYPE_CODE);
         eventIdentification.appendChild(eventTypeCode);
         eventTypeCode.setAttribute(CODE, auditValueMap.get(EVENT_TYPE_CODE).trim().isEmpty() ? N_A : auditValueMap.get(EVENT_TYPE_CODE).trim());
         eventTypeCode.setAttribute(CODE_SYSTEM, "");
@@ -155,14 +154,14 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         auditMessage.appendChild(eventIdentification);
 
         // Initiated from where
-        Element activeParticipant1 = auditDocument.createElement(ACTIVE_PARTICIPANT);
+        final Element activeParticipant1 = auditDocument.createElement(ACTIVE_PARTICIPANT);
         activeParticipant1.setAttribute(ALTERNATIVE_USER_ID, context.getUsername().isEmpty() ? N_A : context.getUsername().trim());
         activeParticipant1.setAttribute(NETWORK_ACCESS_POINT_ID, context.getCurrentHost().isEmpty() ? N_A : context.getCurrentHost().trim());
         activeParticipant1.setAttribute(NETWORK_ACCESS_POINT_TYPE_CODE, "2");
         activeParticipant1.setAttribute(USER_ID, "1.2.3.4.5.1.1000.990.1.1.1.22");
         activeParticipant1.setAttribute(USER_IS_REQUESTOR, "false");
         activeParticipant1.setAttribute(USER_NAME, "");
-        Element roleIdCode1 = auditDocument.createElement(ROLE_ID_CODE);
+        final Element roleIdCode1 = auditDocument.createElement(ROLE_ID_CODE);
         activeParticipant1.appendChild(roleIdCode1);
         roleIdCode1.setAttribute(CODE, "110153");
         roleIdCode1.setAttribute(CODE_SYSTEM, "");
@@ -170,13 +169,13 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         roleIdCode1.setAttribute(DISPLAY_NAME, SOURCE);
 
         // What is the recipient?
-        Element activeParticipant2 = auditDocument.createElement(ACTIVE_PARTICIPANT);
+        final Element activeParticipant2 = auditDocument.createElement(ACTIVE_PARTICIPANT);
         activeParticipant2.setAttribute(NETWORK_ACCESS_POINT_ID, context.getRemoteHost().trim().isEmpty() ? N_A : context.getRemoteHost().trim());
         activeParticipant2.setAttribute(NETWORK_ACCESS_POINT_TYPE_CODE, "2");
         activeParticipant2.setAttribute(USER_ID, "http://www.w3.org/2005/08/addressing/anonymous");
         activeParticipant2.setAttribute(USER_IS_REQUESTOR, "true");
         activeParticipant2.setAttribute(USER_NAME, "");
-        Element roleIdCode2 = auditDocument.createElement(ROLE_ID_CODE);
+        final Element roleIdCode2 = auditDocument.createElement(ROLE_ID_CODE);
         activeParticipant2.appendChild(roleIdCode2);
         roleIdCode2.setAttribute(CODE, "110152");
         roleIdCode2.setAttribute(CODE_SYSTEM, "");
@@ -184,11 +183,11 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         roleIdCode2.setAttribute(DISPLAY_NAME, "Destination");
 
         // Who is the physician?
-        Element activeParticipant3 = auditDocument.createElement(ACTIVE_PARTICIPANT);
+        final Element activeParticipant3 = auditDocument.createElement(ACTIVE_PARTICIPANT);
         activeParticipant3.setAttribute(USER_ID, context.getUsername().trim().isEmpty() ? N_A : context.getUsername().trim());
         activeParticipant3.setAttribute(USER_IS_REQUESTOR, "true");
         activeParticipant3.setAttribute(USER_NAME, "");
-        Element roleIdCode3 = auditDocument.createElement(ROLE_ID_CODE);
+        final Element roleIdCode3 = auditDocument.createElement(ROLE_ID_CODE);
         activeParticipant3.appendChild(roleIdCode3);
         roleIdCode3.setAttribute(CODE, "USR");
         roleIdCode3.setAttribute(CODE_SYSTEM, "1.3.6.1.4.1.21998.2.1.5");
@@ -200,10 +199,10 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         auditMessage.appendChild(activeParticipant3);
 
         // Who is the audit client?
-        Element auditSourceIdentification = auditDocument.createElement(AUDIT_SOURCE_IDENTIFICATION);
+        final Element auditSourceIdentification = auditDocument.createElement(AUDIT_SOURCE_IDENTIFICATION);
         auditSourceIdentification.setAttribute(AUDIT_ENTERPRISE_SITE_ID, auditValueMap.get(AUDIT_ENTERPRISE_SITE_ID).trim().isEmpty() ? N_A : auditValueMap.get(AUDIT_ENTERPRISE_SITE_ID).trim());
         auditSourceIdentification.setAttribute(AUDIT_SOURCE_ID, "urn:epsos:ncpa");
-        Element auditSourceTypeCode = auditDocument.createElement(AUDIT_SOURCE_TYPE_CODE);
+        final Element auditSourceTypeCode = auditDocument.createElement(AUDIT_SOURCE_TYPE_CODE);
         auditSourceIdentification.appendChild(auditSourceTypeCode);
         auditSourceTypeCode.setAttribute(CODE, "DOC_REPOSITORY");
         auditSourceTypeCode.setAttribute(CODE_SYSTEM, "");
@@ -213,12 +212,12 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         auditMessage.appendChild(auditSourceIdentification);
 
         //To which patient?
-        Element participantObjectIdentification1 = auditDocument.createElement(PARTICIPANT_OBJECT_IDENTIFICATION);
+        final Element participantObjectIdentification1 = auditDocument.createElement(PARTICIPANT_OBJECT_IDENTIFICATION);
         participantObjectIdentification1.setAttribute(PARTICIPANT_OBJECT_DATA_LIFE_CYCLE, "1");
         participantObjectIdentification1.setAttribute(PARTICIPANT_OBJECT_ID, "");
         participantObjectIdentification1.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE, "1");
         participantObjectIdentification1.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE_ROLE, "1");
-        Element participantObjectIdTypeCode1 = auditDocument.createElement(PARTICIPANT_OBJECT_ID_TYPE_CODE);
+        final Element participantObjectIdTypeCode1 = auditDocument.createElement(PARTICIPANT_OBJECT_ID_TYPE_CODE);
         participantObjectIdentification1.appendChild(participantObjectIdTypeCode1);
         participantObjectIdTypeCode1.setAttribute(CODE, "2");
         participantObjectIdTypeCode1.setAttribute(CODE_SYSTEM, "");
@@ -226,32 +225,32 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         participantObjectIdTypeCode1.setAttribute(DISPLAY_NAME, "Patient Number");
 
         // To which resource?
-        Element participantObjectIdentification2 = auditDocument.createElement(PARTICIPANT_OBJECT_IDENTIFICATION);
+        final Element participantObjectIdentification2 = auditDocument.createElement(PARTICIPANT_OBJECT_IDENTIFICATION);
         participantObjectIdentification2.setAttribute(PARTICIPANT_OBJECT_ID, "1.2.40.0.13.1.1.2117081378.20130402104335703.34529");
         participantObjectIdentification2.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE, "2");
         participantObjectIdentification2.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE_ROLE, "3");
-        Element participantObjectIdTypeCode2 = auditDocument.createElement(PARTICIPANT_OBJECT_ID_TYPE_CODE);
+        final Element participantObjectIdTypeCode2 = auditDocument.createElement(PARTICIPANT_OBJECT_ID_TYPE_CODE);
         participantObjectIdentification2.appendChild(participantObjectIdTypeCode2);
         participantObjectIdTypeCode2.setAttribute(CODE, "9");
         participantObjectIdTypeCode2.setAttribute(CODE_SYSTEM, "");
         participantObjectIdTypeCode2.setAttribute(CODE_SYSTEM_NAME, "RFC-3881");
         participantObjectIdTypeCode2.setAttribute(DISPLAY_NAME, "Report Number");
 
-        Element participantObjectIdentification3 = auditDocument.createElement(PARTICIPANT_OBJECT_IDENTIFICATION);
+        final Element participantObjectIdentification3 = auditDocument.createElement(PARTICIPANT_OBJECT_IDENTIFICATION);
         participantObjectIdentification3.setAttribute(PARTICIPANT_OBJECT_DATA_LIFE_CYCLE, "9");
         participantObjectIdentification3.setAttribute(PARTICIPANT_OBJECT_ID, "17d77343-88b5-4aad-8d37-ce68ce720060");
         participantObjectIdentification3.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE, "2");
         participantObjectIdentification3.setAttribute(PARTICIPANT_OBJECT_TYPE_CODE_ROLE, "3");
-        Element participantObjectIdTypeCode3 = auditDocument.createElement(PARTICIPANT_OBJECT_ID_TYPE_CODE);
+        final Element participantObjectIdTypeCode3 = auditDocument.createElement(PARTICIPANT_OBJECT_ID_TYPE_CODE);
         participantObjectIdentification3.appendChild(participantObjectIdTypeCode3);
         participantObjectIdTypeCode3.setAttribute(CODE, auditValueMap.get(EVENT_TYPE_CODE).trim().isEmpty() ? N_A : auditValueMap.get(EVENT_TYPE_CODE).trim());
         participantObjectIdTypeCode3.setAttribute(CODE_SYSTEM, "");
         participantObjectIdTypeCode3.setAttribute(CODE_SYSTEM_NAME, "IHE Transactions");
         participantObjectIdTypeCode3.setAttribute(DISPLAY_NAME, "Retrieve Document Set");
-        Element participantObjectName = auditDocument.createElement("ParticipantObjectName");
+        final Element participantObjectName = auditDocument.createElement("ParticipantObjectName");
         participantObjectName.setTextContent("Transaction ID");
         participantObjectIdentification3.appendChild(participantObjectName);
-        Element participantObjectDetail = auditDocument.createElement("ParticipantObjectDetail");
+        final Element participantObjectDetail = auditDocument.createElement("ParticipantObjectDetail");
         participantObjectDetail.setAttribute("type", "DURATION");
         participantObjectDetail.setAttribute("value", "Mg==");
 
@@ -264,7 +263,7 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         setMessage(auditMessage.getOwnerDocument());
     }
 
-    private void fillHash(String attributeId, List<Object> content) {
+    private void fillHash(final String attributeId, final List<Object> content) {
         // +1 is the colon
         auditValueMap.put(attributeId.substring(ATNA_PREFIX.length() + 1), (String) content.get(0));
     }
@@ -274,7 +273,7 @@ public class ATNAObligationHandler implements eu.europa.ec.sante.openncp.core.co
         return audit;
     }
 
-    private void setMessage(Document audit) {
+    private void setMessage(final Document audit) {
         this.audit = audit;
     }
 }

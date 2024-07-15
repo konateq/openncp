@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +26,12 @@ public class IHEXCARetrieve implements IHEMessageType {
         NodeList nl = body.getElementsByTagNameNS(XDS_NS, "RetrieveDocumentSetRequest");
         Utilities.checkForNull(nl, "RetrieveDocumentSetRequest", LOGGER);
 
-        Element retrieveDoc = (Element) nl.item(0);
+        final Element retrieveDoc = (Element) nl.item(0);
 
         nl = retrieveDoc.getElementsByTagNameNS(XDS_NS, "DocumentRequest");
         Utilities.checkForNull(nl, "DocumentRequest", LOGGER);
 
-        Element docRequest = (Element) nl.item(0);
+        final Element docRequest = (Element) nl.item(0);
 
         // Now the values out of the message
         nl = docRequest.getElementsByTagNameNS(XDS_NS, "HomeCommunityId");

@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +34,12 @@ public class FileUtil {
      *                     cannot be deleted due to read-write locks
      * @author Gunes
      */
-    public static void constructNewFile(String filePath, byte[] content) throws IOException {
+    public static void constructNewFile(final String filePath, final byte[] content) throws IOException {
 
-        File file = new File(filePath);
-        boolean dirCreated = file.mkdirs();
+        final File file = new File(filePath);
+        final boolean dirCreated = file.mkdirs();
         boolean fileDeleted = false;
-        boolean fileCreated;
+        final boolean fileCreated;
 
         if (file.exists()) {
 
@@ -50,25 +50,25 @@ public class FileUtil {
         LOGGER.debug("New File result: Folder created: '{}' - Old File Deleted: '{}' - New File Created: '{}'",
                 dirCreated, fileDeleted, fileCreated);
 
-        try (FileOutputStream fos = new FileOutputStream(file)) {
+        try (final FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(content);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error(LOG_FMT_MESSAGE_IOEXCEPTION, e.getMessage(), e);
         }
     }
 
-    private static byte[] getBytes(File file) throws IOException {
+    private static byte[] getBytes(final File file) throws IOException {
 
-        try (InputStream is = new FileInputStream(file)) {
+        try (final InputStream is = new FileInputStream(file)) {
 
             // Get the size of the file
-            long length = file.length();
+            final long length = file.length();
             if (length > Integer.MAX_VALUE) {
                 LOGGER.error("File is too large to process");
                 return new byte[0];
             }
             // Create the byte array to hold the data
-            byte[] bytes = new byte[(int) length];
+            final byte[] bytes = new byte[(int) length];
 
             // Read in the bytes
             int offset = 0;
@@ -86,21 +86,21 @@ public class FileUtil {
         }
     }
 
-    public static byte[] getBytesFromFile(String fileURI) throws IOException {
-        File file = new File(fileURI);
+    public static byte[] getBytesFromFile(final String fileURI) throws IOException {
+        final File file = new File(fileURI);
         return getBytes(file);
     }
 
-    public static byte[] readFromURI(URI uri) throws IOException {
+    public static byte[] readFromURI(final URI uri) throws IOException {
 
         if (uri.toString().contains("http:")) {
-            URL url = uri.toURL();
-            URLConnection urlConnection = url.openConnection();
-            int length = urlConnection.getContentLength();
+            final URL url = uri.toURL();
+            final URLConnection urlConnection = url.openConnection();
+            final int length = urlConnection.getContentLength();
             LOGGER.info("length of content in URL = '{}'", length);
             if (length > -1) {
-                byte[] pureContent = new byte[length];
-                DataInputStream dis = new DataInputStream(urlConnection.getInputStream());
+                final byte[] pureContent = new byte[length];
+                final DataInputStream dis = new DataInputStream(urlConnection.getInputStream());
                 dis.readFully(pureContent, 0, length);
                 dis.close();
 
@@ -109,7 +109,7 @@ public class FileUtil {
                 throw new IOException("Unable to determine the content-length of the document pointed at " + url.toString());
             }
         } else {
-            String file = readWholeFile(uri);
+            final String file = readWholeFile(uri);
             if (file == null) {
                 throw new IllegalArgumentException("Content of the file is null");
             }
@@ -117,13 +117,13 @@ public class FileUtil {
         }
     }
 
-    public static List<String> readFileLines(String filePath) {
+    public static List<String> readFileLines(final String filePath) {
 
-        try (FileInputStream fis = new FileInputStream(filePath)) {
-            BufferedReader buf;
-            List<String> rules = new ArrayList<>();
+        try (final FileInputStream fis = new FileInputStream(filePath)) {
+            final BufferedReader buf;
+            final List<String> rules = new ArrayList<>();
 
-            InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            final InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
             buf = new BufferedReader(inputStreamReader);
 
             String temp;
@@ -133,55 +133,55 @@ public class FileUtil {
             buf.close();
 
             return rules;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error(LOG_FMT_MESSAGE_IOEXCEPTION, e.getMessage(), e);
             return Collections.emptyList();
         }
     }
 
-    public static String readWholeFile(File file) {
+    public static String readWholeFile(final File file) {
 
         return readInputStream(file, StandardCharsets.UTF_8);
     }
 
-    public static String readWholeFile(String filePath) {
+    public static String readWholeFile(final String filePath) {
 
         return readInputStream(new File(filePath), StandardCharsets.UTF_8);
     }
 
-    public static String readWholeFile(String filePath, String encoding) {
+    public static String readWholeFile(final String filePath, final String encoding) {
 
         return readInputStream(new File(filePath), Charset.forName(encoding));
     }
 
-    private static String readWholeFile(URI uri) {
+    private static String readWholeFile(final URI uri) {
 
         return readInputStream(new File(uri), StandardCharsets.UTF_8);
     }
 
-    public static void writeToFile(File file, String content) {
+    public static void writeToFile(final File file, final String content) {
 
 
-        try (FileOutputStream fos = new FileOutputStream(file)) {
+        try (final FileOutputStream fos = new FileOutputStream(file)) {
 
-            OutputStreamWriter outStreamWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-            BufferedWriter bufferedWriter = new BufferedWriter(outStreamWriter);
+            final OutputStreamWriter outStreamWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+            final BufferedWriter bufferedWriter = new BufferedWriter(outStreamWriter);
             bufferedWriter.write(content);
             bufferedWriter.flush();
             bufferedWriter.close();
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error(LOG_FMT_MESSAGE_IOEXCEPTION, e.getMessage(), e);
         }
     }
 
-    private static String readInputStream(File file, Charset charset) {
+    private static String readInputStream(final File file, final Charset charset) {
 
-        try (FileInputStream fis = new FileInputStream(file)) {
-            BufferedReader buf;
-            StringBuilder rules = new StringBuilder();
+        try (final FileInputStream fis = new FileInputStream(file)) {
+            final BufferedReader buf;
+            final StringBuilder rules = new StringBuilder();
 
-            InputStreamReader inputStreamReader = new InputStreamReader(fis, charset);
+            final InputStreamReader inputStreamReader = new InputStreamReader(fis, charset);
             buf = new BufferedReader(inputStreamReader);
             String temp;
             while ((temp = buf.readLine()) != null) {
@@ -189,7 +189,7 @@ public class FileUtil {
             }
             buf.close();
             return rules.toString();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error(LOG_FMT_MESSAGE_IOEXCEPTION, e.getMessage(), e);
             return null;
         }

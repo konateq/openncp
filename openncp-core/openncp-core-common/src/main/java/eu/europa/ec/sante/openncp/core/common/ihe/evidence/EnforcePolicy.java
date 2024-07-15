@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.herasaf.xacml.core.api.PDP;
 import org.herasaf.xacml.core.context.RequestMarshaller;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class EnforcePolicy {
 
-    private PDP pdp;
+    private final PDP pdp;
     private Document responseAsDocument;
     private ResponseType responseAsObject;
     private LinkedList<ESensObligation> obligationList;
@@ -36,52 +36,52 @@ public class EnforcePolicy {
 
     }
 
-    public void decide(Element request) throws EnforcePolicyException {
+    public void decide(final Element request) throws EnforcePolicyException {
 
         if (request == null) {
             throw new EnforcePolicyException("No request have been passed");
         }
         try {
-            RequestType myrequest = RequestMarshaller.unmarshal(request);
-            ResponseType response;
+            final RequestType myrequest = RequestMarshaller.unmarshal(request);
+            final ResponseType response;
             synchronized (this) {
                 response = pdp.evaluate(myrequest);
             }
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbf.setXIncludeAware(false);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.newDocument();
+            final DocumentBuilder db = dbf.newDocumentBuilder();
+            final Document doc = db.newDocument();
             ResponseMarshaller.marshal(response, doc);
             this.setResponseAsDocument(doc);
             this.setResponseAsObject(response);
 
             // now check the obligations. We assume in this implementation a single evaluation per request
-            List<ResultType> results = response.getResults();
+            final List<ResultType> results = response.getResults();
             if (results == null || results.size() != 1) {
                 throw new EnforcePolicyException("Wrong results size");
             }
 
-            ResultType result = results.get(0);
-            ObligationsType obligationsType = result.getObligations();
+            final ResultType result = results.get(0);
+            final ObligationsType obligationsType = result.getObligations();
             if (obligationsType != null) {
                 parseObligations(obligationsType);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new EnforcePolicyException("Unable to evaluate: "
                     + e.getMessage(), e);
         }
 
     }
 
-    private void parseObligations(ObligationsType obligationsType)
+    private void parseObligations(final ObligationsType obligationsType)
             throws EnforcePolicyException {
 
-        LinkedList<ESensObligation> obligationList = new LinkedList<>();
-        List<ObligationType> oblType = obligationsType.getObligations();
+        final LinkedList<ESensObligation> obligationList = new LinkedList<>();
+        final List<ObligationType> oblType = obligationsType.getObligations();
 
-        for (ObligationType obl : oblType) {
-            ESensObligation eSensObligation;
+        for (final ObligationType obl : oblType) {
+            final ESensObligation eSensObligation;
             if (obl.getFulfillOn().compareTo(EffectType.PERMIT) == 0) {
                 eSensObligation = new PERMITEsensObligation();
             } else if (obl.getFulfillOn().compareTo(EffectType.DENY) == 0) {
@@ -91,11 +91,11 @@ public class EnforcePolicy {
                         + obl.getFulfillOn().name());
             }
 
-            String oblId = obl.getObligationId();
+            final String oblId = obl.getObligationId();
 
-            List<AttributeAssignmentType> attrAssignments = obl
+            final List<AttributeAssignmentType> attrAssignments = obl
                     .getAttributeAssignments();
-            for (AttributeAssignmentType assignment : attrAssignments) {
+            for (final AttributeAssignmentType assignment : attrAssignments) {
                 assignment.getAttributeId();
                 assignment.getDataType().getDatatypeURI();
                 assignment.getContent();
@@ -112,7 +112,7 @@ public class EnforcePolicy {
         return this.obligationList;
     }
 
-    private void setObligationList(LinkedList<ESensObligation> obligationList) {
+    private void setObligationList(final LinkedList<ESensObligation> obligationList) {
 
         this.obligationList = obligationList;
     }
@@ -121,7 +121,7 @@ public class EnforcePolicy {
         return responseAsDocument;
     }
 
-    public void setResponseAsDocument(Document responseAsDocument) {
+    public void setResponseAsDocument(final Document responseAsDocument) {
         this.responseAsDocument = responseAsDocument;
     }
 
@@ -129,7 +129,7 @@ public class EnforcePolicy {
         return responseAsObject;
     }
 
-    public void setResponseAsObject(ResponseType responseAsObject) {
+    public void setResponseAsObject(final ResponseType responseAsObject) {
         this.responseAsObject = responseAsObject;
     }
 
