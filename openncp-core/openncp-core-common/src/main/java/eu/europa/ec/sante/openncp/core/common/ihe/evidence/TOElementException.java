@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 public class TOElementException extends Exception {
 
@@ -7,15 +7,15 @@ public class TOElementException extends Exception {
     public TOElementException() {
     }
 
-    public TOElementException(String message) {
+    public TOElementException(final String message) {
         super(message);
     }
 
-    public TOElementException(Throwable cause) {
+    public TOElementException(final Throwable cause) {
         super(cause);
     }
 
-    public TOElementException(String message, Throwable cause) {
+    public TOElementException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

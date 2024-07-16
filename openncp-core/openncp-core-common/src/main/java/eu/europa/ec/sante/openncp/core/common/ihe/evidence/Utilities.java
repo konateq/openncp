@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import com.sun.xml.messaging.saaj.soap.ver1_2.SOAPMessageFactory1_2Impl;
 import org.opensaml.core.xml.XMLObject;
@@ -44,15 +44,15 @@ public class Utilities {
     public static void checkForNull(final NodeList nodeList, final String toCheck, final Logger logger) throws MalformedIHESOAPException {
 
         if (nodeList == null || nodeList.getLength() != 1) {
-            String error = "No " + toCheck + " found";
+            final String error = "No " + toCheck + " found";
             logger.error(error);
             throw new MalformedIHESOAPException(error);
         }
     }
 
-    public static Element toElement(XMLObject a) throws TOElementException {
+    public static Element toElement(final XMLObject a) throws TOElementException {
 
-        MarshallerFactory marshallerFactory = XMLObjectProviderRegistrySupport.getMarshallerFactory();
+        final MarshallerFactory marshallerFactory = XMLObjectProviderRegistrySupport.getMarshallerFactory();
         if (marshallerFactory == null) {
             throw new TOElementException("No MarshallerFactory available. OpenSAML not initialized!!!");
         }
@@ -66,35 +66,35 @@ public class Utilities {
         marshallerFactory.registerMarshaller(PolicyType.DEFAULT_ELEMENT_NAME, new PolicyTypeMarshaller());
         marshallerFactory.registerMarshaller(XSDateTime.TYPE_NAME, new XSDateTimeMarshaller());
 
-        Marshaller marshaller = marshallerFactory.getMarshaller(a);
+        final Marshaller marshaller = marshallerFactory.getMarshaller(a);
 
         if (marshaller == null) {
 
             // The XACMLPolicyStatementType needs a separate marshaller
             if (a instanceof XACMLPolicyStatementType) {
-                Marshaller policyStmtMarshaller = marshallerFactory.getMarshaller(XACMLPolicyStatementType.DEFAULT_ELEMENT_NAME_XACML20);
+                final Marshaller policyStmtMarshaller = marshallerFactory.getMarshaller(XACMLPolicyStatementType.DEFAULT_ELEMENT_NAME_XACML20);
 
                 try {
                     return policyStmtMarshaller.marshall(a);
 
-                } catch (MarshallingException e) {
+                } catch (final MarshallingException e) {
                     throw new TOElementException(e);
                 }
             }
             throw new TOElementException("No marshaller found for the xmlobject");
         }
 
-        Element assertionElement;
+        final Element assertionElement;
         try {
             assertionElement = marshaller.marshall(a);
             return assertionElement;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new TOElementException("Unable to marshall the assertion: " + e.getMessage(), e);
         }
     }
 
-    public static void serialize(Element request) throws TransformerException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    public static void serialize(final Element request) throws TransformerException {
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         serialize(request, outputStream);
     }
 
@@ -105,15 +105,15 @@ public class Utilities {
      * @param out
      * @throws TransformerException
      */
-    public static void serialize(Element request, OutputStream out) throws TransformerException {
+    public static void serialize(final Element request, final OutputStream out) throws TransformerException {
 
         //TODO: @DG Sante - Validate this serialization
-        DOMSource source = new DOMSource(request);
-        StreamResult result = new StreamResult(out);
+        final DOMSource source = new DOMSource(request);
+        final StreamResult result = new StreamResult(out);
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        final TransformerFactory transformerFactory = TransformerFactory.newInstance();
         transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        Transformer transformer = transformerFactory.newTransformer();
+        final Transformer transformer = transformerFactory.newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "no");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
@@ -129,12 +129,12 @@ public class Utilities {
      * @return
      * @throws SOAPException
      */
-    public static synchronized SOAPMessage toSoap(Document doc, MimeHeaders requestMimeHeaders) throws SOAPException {
+    public static synchronized SOAPMessage toSoap(final Document doc, final MimeHeaders requestMimeHeaders) throws SOAPException {
 
-        MessageFactory messageFactory = new SOAPMessageFactory1_2Impl();
-        SOAPMessage message = messageFactory.createMessage();
+        final MessageFactory messageFactory = new SOAPMessageFactory1_2Impl();
+        final SOAPMessage message = messageFactory.createMessage();
 
-        DOMSource domSource = new DOMSource(doc);
+        final DOMSource domSource = new DOMSource(doc);
         message.getSOAPPart().setContent(domSource);
 
         LOGGER.info("Checking if I need to add mime headers");
@@ -143,11 +143,11 @@ public class Utilities {
         if (requestMimeHeaders != null) {
 
             LOGGER.info("Now adding the ones requested");
-            Iterator<?> it = requestMimeHeaders.getAllHeaders();
+            final Iterator<?> it = requestMimeHeaders.getAllHeaders();
             while (it.hasNext()) {
 
-                MimeHeader mimeItem = (MimeHeader) it.next();
-                String retValue = mimeItem.getValue().replace("Multipart/Related", "multipart/related");
+                final MimeHeader mimeItem = (MimeHeader) it.next();
+                final String retValue = mimeItem.getValue().replace("Multipart/Related", "multipart/related");
                 LOGGER.info("ADDING MIME: '{}' : '{}'", mimeItem.getName(), retValue);
                 message.getMimeHeaders().addHeader(mimeItem.getName(), retValue);
             }
@@ -158,8 +158,8 @@ public class Utilities {
             message.saveChanges();
         }
 
-        MimeHeaders mh = message.getMimeHeaders();
-        String content = mh.getHeader("Content-Type")[0].replace("Multipart/Related", "multipart/related");
+        final MimeHeaders mh = message.getMimeHeaders();
+        final String content = mh.getHeader("Content-Type")[0].replace("Multipart/Related", "multipart/related");
 
         mh.setHeader("Content-Type", content + ";");
 

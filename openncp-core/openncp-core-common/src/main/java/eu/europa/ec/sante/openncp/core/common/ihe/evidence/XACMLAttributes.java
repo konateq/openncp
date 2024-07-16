@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import java.net.URI;
 
@@ -33,7 +33,7 @@ public class XACMLAttributes {
         return identifier;
     }
 
-    public void setIdentifier(URI identifier) {
+    public void setIdentifier(final URI identifier) {
         this.identifier = identifier;
     }
 }

@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,9 +39,9 @@ public class MessageInspector {
         checkHeaders(incomingMsg);
     }
 
-    private void checkHeaders(Document incomingMsg) throws MalformedIHESOAPException {
+    private void checkHeaders(final Document incomingMsg) throws MalformedIHESOAPException {
 
-        Element docElement = incomingMsg.getDocumentElement();
+        final Element docElement = incomingMsg.getDocumentElement();
         logger.info("[Non Repudiation] '{}' - '{}'", docElement.getLocalName(), docElement.getNamespaceURI());
         if (StringUtils.equals(docElement.getLocalName(), SOAP_LOCAL_NAME)
                 && StringUtils.equals(docElement.getNamespaceURI(), SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE)) {
@@ -55,40 +55,40 @@ public class MessageInspector {
             Utilities.checkForNull(nodeList, "Header", logger);
 
             // get the body
-            NodeList nlBody = docElement.getElementsByTagNameNS(docElement.getNamespaceURI(), "Body");
+            final NodeList nlBody = docElement.getElementsByTagNameNS(docElement.getNamespaceURI(), "Body");
             Utilities.checkForNull(nlBody, "Body", logger);
-            Element body = (Element) nlBody.item(0);
+            final Element body = (Element) nlBody.item(0);
 
             // it can only be an element here, no classcast
-            Element header = (Element) nodeList.item(0);
+            final Element header = (Element) nodeList.item(0);
 
             // header must have one addressing action
             nodeList = header.getElementsByTagNameNS(WS_ADDRESSING_NS, "Action");
             Utilities.checkForNull(nodeList, "WS-Addressing action", logger);
 
 
-            Element action = (Element) nodeList.item(0);
-            String actionText = action.getTextContent();
+            final Element action = (Element) nodeList.item(0);
+            final String actionText = action.getTextContent();
             if (actionText == null) {
                 throw new MalformedIHESOAPException("No action text found");
             }
 
             if (StringUtils.equals(actionText, IHE_ITI_XCA_RETRIEVE)) {
                 logger.debug("Found an IHE ITI XCA RETRIEVE");
-                IHEXCARetrieve xcaRetrieve = new IHEXCARetrieve(body);
+                final IHEXCARetrieve xcaRetrieve = new IHEXCARetrieve(body);
                 this.setMessageType(xcaRetrieve);
             } else {
                 logger.warn("Action not recognized: '{}'", actionText);
                 //TODO: I differentiate here, since one may do some other guesses, to see if it is a valid message
-                UnknownMessageType umt = new UnknownMessageType(incomingMsg);
+                final UnknownMessageType umt = new UnknownMessageType(incomingMsg);
                 this.setMessageType(umt);
             }
 
             nodeList = header.getElementsByTagNameNS(WS_ADDRESSING_NS, "MessageID");
             Utilities.checkForNull(nodeList, "WS-Addressing MessageID", logger);
 
-            Element uuidEl = (Element) nodeList.item(0);
-            String uuidText = uuidEl.getTextContent();
+            final Element uuidEl = (Element) nodeList.item(0);
+            final String uuidText = uuidEl.getTextContent();
             if (uuidText == null) {
                 throw new MalformedIHESOAPException("No UUID can be found in the WS-Addressing header");
             } else {
@@ -96,7 +96,7 @@ public class MessageInspector {
             }
         } else {
             logger.warn("The document passed is not a SOAP.");
-            UnknownMessageType umt = new UnknownMessageType(incomingMsg);
+            final UnknownMessageType umt = new UnknownMessageType(incomingMsg);
             this.setMessageType(umt);
         }
     }

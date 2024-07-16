@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class ObligationHandlerFactory {
         if (instance == null) {
             try {
                 instance = new ObligationHandlerFactory();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOGGER.error("Exception: '{}'", e.getMessage(), e);
                 throw new IllegalStateException("Unable to instantiate the ObligationHandlerFactory: " + e.getMessage(), e);
             }
@@ -36,19 +36,19 @@ public class ObligationHandlerFactory {
      * @return
      * @throws ObligationDischargeException
      */
-    public List<ObligationHandler> createHandler(MessageType messageType, List<ESensObligation> obligations, Context context)
+    public List<ObligationHandler> createHandler(final MessageType messageType, final List<ESensObligation> obligations, final Context context)
             throws ObligationDischargeException {
 
         if (messageType == null) {
             throw new ObligationDischargeException("Message Type is null");
         }
 
-        int size = obligations.size();
+        final int size = obligations.size();
 
-        LinkedList<ObligationHandler> list = new LinkedList<>();
+        final LinkedList<ObligationHandler> list = new LinkedList<>();
         for (int i = 0; i < size; i++) {
-            ESensObligation obligation = obligations.get(i);
-            String obligationId = obligation.getObligationID();
+            final ESensObligation obligation = obligations.get(i);
+            final String obligationId = obligation.getObligationID();
 
             // Here it is static, but it will be a factory upon a configuration file
             switch (obligationId) {

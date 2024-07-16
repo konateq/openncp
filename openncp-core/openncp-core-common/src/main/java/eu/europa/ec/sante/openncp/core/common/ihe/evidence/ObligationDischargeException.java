@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 public class ObligationDischargeException extends Exception {
 
@@ -7,15 +7,15 @@ public class ObligationDischargeException extends Exception {
     public ObligationDischargeException() {
     }
 
-    public ObligationDischargeException(String message) {
+    public ObligationDischargeException(final String message) {
         super(message);
     }
 
-    public ObligationDischargeException(Throwable cause) {
+    public ObligationDischargeException(final Throwable cause) {
         super(cause);
     }
 
-    public ObligationDischargeException(String message, Throwable cause) {
+    public ObligationDischargeException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }
