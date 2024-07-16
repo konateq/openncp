@@ -1,9 +1,9 @@
-package eu.europa.ec.sante.openncp.core.common.handler;
+package eu.europa.ec.sante.openncp.core.common.ihe.handler;
 
 
 import eu.europa.ec.sante.openncp.common.audit.EventOutcomeIndicator;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
-import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
+import eu.europa.ec.sante.openncp.core.common.ihe.evidence.EvidenceUtils;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.context.MessageContext;
@@ -26,10 +26,10 @@ public class OutFlowEvidenceEmitterHandler extends AbstractHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(OutFlowEvidenceEmitterHandler.class);
 
     @Override
-    public InvocationResponse invoke(MessageContext msgcontext) {
+    public InvocationResponse invoke(final MessageContext msgcontext) {
 
         LOGGER.info("OutFlow Evidence Emitter handler is executing");
-        EvidenceEmitterHandlerUtils evidenceEmitterHandlerUtils = new EvidenceEmitterHandlerUtils();
+        final EvidenceEmitterHandlerUtils evidenceEmitterHandlerUtils = new EvidenceEmitterHandlerUtils();
 
         /* I'll leave this here as it might be useful in the future */
 
@@ -104,13 +104,13 @@ public class OutFlowEvidenceEmitterHandler extends AbstractHandler {
 
         try {
             /* Canonicalize the full SOAP message */
-            Document envCanonicalized = evidenceEmitterHandlerUtils.canonicalizeAxiomSoapEnvelope(msgcontext.getEnvelope());
+            final Document envCanonicalized = evidenceEmitterHandlerUtils.canonicalizeAxiomSoapEnvelope(msgcontext.getEnvelope());
 
-            SOAPHeader soapHeader = msgcontext.getEnvelope().getHeader();
-            SOAPBody soapBody = msgcontext.getEnvelope().getBody();
-            String eventType = evidenceEmitterHandlerUtils.getEventTypeFromMessage(soapBody);
-            String title = evidenceEmitterHandlerUtils.getTransactionNameFromMessage(soapBody);
-            String msgUUID = evidenceEmitterHandlerUtils.getMsgUUID(soapHeader, soapBody);
+            final SOAPHeader soapHeader = msgcontext.getEnvelope().getHeader();
+            final SOAPBody soapBody = msgcontext.getEnvelope().getBody();
+            final String eventType = evidenceEmitterHandlerUtils.getEventTypeFromMessage(soapBody);
+            final String title = evidenceEmitterHandlerUtils.getTransactionNameFromMessage(soapBody);
+            final String msgUUID = evidenceEmitterHandlerUtils.getMsgUUID(soapHeader, soapBody);
             LOGGER.debug("eventType: '{}'", eventType);
             LOGGER.debug("title: '{}'", title);
             LOGGER.debug("msgUUID: '{}", msgUUID);
@@ -122,7 +122,7 @@ public class OutFlowEvidenceEmitterHandler extends AbstractHandler {
                     Constants.SC_PRIVATEKEY_ALIAS, eventType, new DateTime(), EventOutcomeIndicator.FULL_SUCCESS.getCode().toString(),
                     title, msgUUID);
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 

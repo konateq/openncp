@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.herasaf.xacml.core.policy.impl.AttributeAssignmentType;
 
@@ -19,7 +19,7 @@ public class ESensObligation {
         return unknown;
     }
 
-    public void setAttributeAssignments(List<AttributeAssignmentType> attrAssignments) {
+    public void setAttributeAssignments(final List<AttributeAssignmentType> attrAssignments) {
         this.unknown = attrAssignments;
     }
 
@@ -27,7 +27,7 @@ public class ESensObligation {
         return obligationID;
     }
 
-    public void setObligationID(String obligationID) {
+    public void setObligationID(final String obligationID) {
         this.obligationID = obligationID;
     }
 }

@@ -464,7 +464,6 @@ export default {
       .get(process.env.VUE_APP_SERVER_URL + `/api/atna/messages/${this.id}`)
       .then((response) => {
         this.message = response.data
-        console.log(this.message.auditMessage.auditSourceIdentification)
         this.loading = false
       })
   },

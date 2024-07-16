@@ -9,7 +9,7 @@ import eu.europa.ec.sante.openncp.webmanager.backend.module.atna.persistence.mod
 import eu.europa.ec.sante.openncp.webmanager.backend.module.atna.persistence.repository.MessageRepository;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.atna.support.MessageMapper;
 import eu.europa.ec.sante.openncp.webmanager.backend.module.atna.support.SearchPredicatesBuilder;
-import generated.AuditMessage;
+import net.RFC3881.dicom.AuditMessage;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,20 +35,20 @@ public class MessageService {
 
     private final Jaxb2Marshaller marshaller;
 
-    public MessageService(MessageRepository messageRepository, Jaxb2Marshaller marshaller) {
+    public MessageService(final MessageRepository messageRepository, final Jaxb2Marshaller marshaller) {
         this.messageRepository = messageRepository;
         this.marshaller = marshaller;
     }
 
-    public Page<Message> findMessages(Pageable pageable) {
-        Page<MessageEntity> page = messageRepository.findAllMessages(pageable);
+    public Page<Message> findMessages(final Pageable pageable) {
+        final Page<MessageEntity> page = messageRepository.findAllMessages(pageable);
         return new PageImpl<>(messageMapper.map(page), pageable, page.getTotalElements());
     }
 
-    public Page<Message> searchMessages(String searchEventId, Instant searchEventStartDate, Instant searchEventEndDate,
-                                      String activeParticipantId, String activeTypeCode, String messageType, Pageable pageable) {
+    public Page<Message> searchMessages(final String searchEventId, final Instant searchEventStartDate, final Instant searchEventEndDate,
+                                        final String activeParticipantId, final String activeTypeCode, final String messageType, final Pageable pageable) {
 
-        SearchPredicatesBuilder builder = new SearchPredicatesBuilder();
+        final SearchPredicatesBuilder builder = new SearchPredicatesBuilder();
         builder.with(MessageEntity.class, "eventId.codeName", ":", searchEventId);
         builder.with(ParticipantEntity.class, "userId", ":", activeParticipantId);
         builder.with(Code.class, "codeName", ":", activeTypeCode);
@@ -56,22 +56,22 @@ public class MessageService {
         builder.with(MessageEntity.class, "eventDateTime", ">", searchEventStartDate);
         builder.with(MessageEntity.class, "eventDateTime", "<", searchEventEndDate);
 
-        BooleanExpression exp = builder.build();
+        final BooleanExpression exp = builder.build();
 
-        Page<MessageEntity> page = messageRepository.searchMessages(exp, pageable);
+        final Page<MessageEntity> page = messageRepository.searchMessages(exp, pageable);
         return new PageImpl<>(messageMapper.map(page), pageable, page.getTotalElements());
     }
 
-    public MessageWrapper getMessage(Long id) {
+    public MessageWrapper getMessage(final Long id) {
 
-        MessageEntity entity = messageRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
-        AuditMessage auditMessage = (AuditMessage) marshaller.unmarshal(
+        final MessageEntity entity = messageRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
+        final AuditMessage auditMessage = (AuditMessage) marshaller.unmarshal(
                 new StreamSource(new StringReader(new String(entity.getMessageContent(), StandardCharsets.UTF_8))));
-        StringWriter outWriter = new StringWriter();
-        StreamResult result = new StreamResult(outWriter);
+        final StringWriter outWriter = new StringWriter();
+        final StreamResult result = new StreamResult(outWriter);
         marshaller.marshal(auditMessage, result);
 
-        MessageWrapper messageWrapper = new MessageWrapper();
+        final MessageWrapper messageWrapper = new MessageWrapper();
         messageWrapper.setAuditMessage(auditMessage);
         messageWrapper.setXmlMessage(outWriter.toString());
         return messageWrapper;

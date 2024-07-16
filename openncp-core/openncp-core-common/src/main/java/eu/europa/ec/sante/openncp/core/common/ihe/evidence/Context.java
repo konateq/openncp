@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
@@ -39,7 +39,7 @@ public class Context {
         return currentHost;
     }
 
-    public final void setCurrentHost(String currentHost) {
+    public final void setCurrentHost(final String currentHost) {
         this.currentHost = currentHost;
     }
 
@@ -47,7 +47,7 @@ public class Context {
         return remoteHost;
     }
 
-    public final void setRemoteHost(String remoteHost) {
+    public final void setRemoteHost(final String remoteHost) {
         this.remoteHost = remoteHost;
     }
 
@@ -55,11 +55,11 @@ public class Context {
         return incomingMsg;
     }
 
-    public void setIncomingMsg(SOAPMessage incomingMsg) {
+    public void setIncomingMsg(final SOAPMessage incomingMsg) {
         this.incomingMsg = incomingMsg;
     }
 
-    public void setIncomingMsg(Document incomingMsg) {
+    public void setIncomingMsg(final Document incomingMsg) {
         this.icomingMsgAsDocument = incomingMsg;
     }
 
@@ -67,7 +67,7 @@ public class Context {
         return this.icomingMsgAsDocument;
     }
 
-    public void setRequest(XMLObject request) {
+    public void setRequest(final XMLObject request) {
         this.requestXMLObj = request;
     }
 
@@ -75,7 +75,7 @@ public class Context {
         return this.requestXMLObj;
     }
 
-    public void setRequest(Element request) {
+    public void setRequest(final Element request) {
         this.requestDOM = request;
     }
 
@@ -87,7 +87,7 @@ public class Context {
         return this.enforcer;
     }
 
-    public void setEnforcer(EnforcePolicy enforcePolicy) {
+    public void setEnforcer(final EnforcePolicy enforcePolicy) {
         this.enforcer = enforcePolicy;
     }
 
@@ -95,7 +95,7 @@ public class Context {
         return this.user;
     }
 
-    public void setUsername(String user) {
+    public void setUsername(final String user) {
         this.user = user;
     }
 
@@ -103,7 +103,7 @@ public class Context {
         return this.issuercertificate;
     }
 
-    public void setIssuerCertificate(X509Certificate cert) {
+    public void setIssuerCertificate(final X509Certificate cert) {
         this.issuercertificate = cert;
     }
 
@@ -111,7 +111,7 @@ public class Context {
         return this.sendercertificate;
     }
 
-    public void setSenderCertificate(X509Certificate cert) {
+    public void setSenderCertificate(final X509Certificate cert) {
         this.sendercertificate = cert;
     }
 
@@ -119,7 +119,7 @@ public class Context {
         return this.recipientcertificate;
     }
 
-    public void setRecipientCertificate(X509Certificate cert) {
+    public void setRecipientCertificate(final X509Certificate cert) {
         this.recipientcertificate = cert;
     }
 
@@ -127,7 +127,7 @@ public class Context {
         return this.submissionTime;
     }
 
-    public void setSubmissionTime(DateTime dateTime) {
+    public void setSubmissionTime(final DateTime dateTime) {
         this.submissionTime = dateTime;
     }
 
@@ -135,7 +135,7 @@ public class Context {
         return this.event;
     }
 
-    public void setEvent(String string) {
+    public void setEvent(final String string) {
         this.event = string;
     }
 
@@ -143,7 +143,7 @@ public class Context {
         return this.messageUUID;
     }
 
-    public void setMessageUUID(String messageUUID) {
+    public void setMessageUUID(final String messageUUID) {
         this.messageUUID = messageUUID;
     }
 
@@ -151,7 +151,7 @@ public class Context {
         return this.authenticationMethod;
     }
 
-    public void setAuthenticationMethod(String string) {
+    public void setAuthenticationMethod(final String string) {
         this.authenticationMethod = string;
     }
 
@@ -159,7 +159,7 @@ public class Context {
         return this.key;
     }
 
-    public void setSigningKey(PrivateKey key) {
+    public void setSigningKey(final PrivateKey key) {
         this.key = key;
     }
 
@@ -167,7 +167,7 @@ public class Context {
         return this.recipientNamePostalAddress;
     }
 
-    public void setRecipientNamePostalAddress(LinkedList<String> namesPostalAddress) {
+    public void setRecipientNamePostalAddress(final LinkedList<String> namesPostalAddress) {
         this.recipientNamePostalAddress = namesPostalAddress;
     }
 
@@ -175,7 +175,7 @@ public class Context {
         return this.senderNamePostalAddress;
     }
 
-    public void setSenderNamePostalAddress(LinkedList<String> sendernamesPostalAddress) {
+    public void setSenderNamePostalAddress(final LinkedList<String> sendernamesPostalAddress) {
         this.senderNamePostalAddress = sendernamesPostalAddress;
 
     }

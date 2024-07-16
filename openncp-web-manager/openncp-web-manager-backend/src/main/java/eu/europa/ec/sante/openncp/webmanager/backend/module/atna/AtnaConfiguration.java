@@ -56,7 +56,7 @@ public class AtnaConfiguration {
     @Bean
     public Jaxb2Marshaller marshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setPackagesToScan("generated");
+        marshaller.setPackagesToScan("net.RFC3881.dicom");
 
         final Map<String, Object> properties = new HashMap<>();
         properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);

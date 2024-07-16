@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 public class MalformedIHESOAPException extends Exception {
 
@@ -7,15 +7,15 @@ public class MalformedIHESOAPException extends Exception {
     public MalformedIHESOAPException() {
     }
 
-    public MalformedIHESOAPException(String message) {
+    public MalformedIHESOAPException(final String message) {
         super(message);
     }
 
-    public MalformedIHESOAPException(Throwable cause) {
+    public MalformedIHESOAPException(final Throwable cause) {
         super(cause);
     }
 
-    public MalformedIHESOAPException(String message, Throwable cause) {
+    public MalformedIHESOAPException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

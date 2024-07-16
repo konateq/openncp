@@ -1,10 +1,10 @@
-package eu.europa.ec.sante.openncp.core.common.handler;
+package eu.europa.ec.sante.openncp.core.common.ihe.handler;
 
 import eu.europa.ec.sante.openncp.common.audit.EventOutcomeIndicator;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
-import eu.europa.ec.sante.openncp.core.common.evidence.EvidenceUtils;
+import eu.europa.ec.sante.openncp.core.common.ihe.evidence.EvidenceUtils;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
@@ -37,22 +37,22 @@ public class InFlowEvidenceEmitterHandler extends AbstractHandler {
     private final Logger loggerClinical = LoggerFactory.getLogger("LOGGER_CLINICAL");
 
     @Override
-    public InvocationResponse invoke(MessageContext msgContext) {
+    public InvocationResponse invoke(final MessageContext msgContext) {
 
         logger.info("[NRR] InFlow Evidence Emitter handler is executing");
-        EvidenceEmitterHandlerUtils evidenceEmitterHandlerUtils = new EvidenceEmitterHandlerUtils();
-        SOAPHeader soapHeader = msgContext.getEnvelope().getHeader();
-        SOAPBody soapBody = msgContext.getEnvelope().getBody();
+        final EvidenceEmitterHandlerUtils evidenceEmitterHandlerUtils = new EvidenceEmitterHandlerUtils();
+        final SOAPHeader soapHeader = msgContext.getEnvelope().getHeader();
+        final SOAPBody soapBody = msgContext.getEnvelope().getBody();
         debugInflowEvidenceEmitter(msgContext);
 
         try {
             /* Canonicalization of the full SOAP message */
-            Document canonicalDocument = evidenceEmitterHandlerUtils.canonicalizeAxiomSoapEnvelope(msgContext.getEnvelope());
-            String eventType;
-            String title;
-            String msgUUID;
-            AxisService axisService = msgContext.getServiceContext().getAxisService();
-            boolean isClientSide = axisService.isClientSide();
+            final Document canonicalDocument = evidenceEmitterHandlerUtils.canonicalizeAxiomSoapEnvelope(msgContext.getEnvelope());
+            final String eventType;
+            final String title;
+            final String msgUUID;
+            final AxisService axisService = msgContext.getServiceContext().getAxisService();
+            final boolean isClientSide = axisService.isClientSide();
             logger.debug("[NRR] AxisService name: '{}' - isClientSide: '{}'", axisService.getName(), isClientSide);
             if (isClientSide) {
 
@@ -113,23 +113,23 @@ public class InFlowEvidenceEmitterHandler extends AbstractHandler {
                             new DateTime(), EventOutcomeIndicator.FULL_SUCCESS.getCode().toString(), title);
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 
         return InvocationResponse.CONTINUE;
     }
 
-    private void debugInflowEvidenceEmitter(MessageContext msgContext) {
+    private void debugInflowEvidenceEmitter(final MessageContext msgContext) {
 
         if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && loggerClinical.isDebugEnabled()) {
-            SOAPHeader soapHeader = msgContext.getEnvelope().getHeader();
+            final SOAPHeader soapHeader = msgContext.getEnvelope().getHeader();
             if (soapHeader != null) {
-                Iterator<?> blocks = soapHeader.examineAllHeaderBlocks();
+                final Iterator<?> blocks = soapHeader.examineAllHeaderBlocks();
                 loggerClinical.debug("Iterating over SOAP headers");
                 while (blocks.hasNext()) {
                     loggerClinical.debug("Processing header");
-                    SOAPHeaderBlock block = (SOAPHeaderBlock) blocks.next();
+                    final SOAPHeaderBlock block = (SOAPHeaderBlock) blocks.next();
                     if (loggerClinical.isDebugEnabled()) {
                         loggerClinical.debug(block.toString());
                     }
@@ -140,14 +140,14 @@ public class InFlowEvidenceEmitterHandler extends AbstractHandler {
             loggerClinical.debug("MessageContext properties: '{}'", msgContext.getProperties());
             loggerClinical.debug("MessageContext messageID: '{}'", msgContext.getMessageID());
 
-            SessionContext sessionCtx = msgContext.getSessionContext();
+            final SessionContext sessionCtx = msgContext.getSessionContext();
             if (sessionCtx != null) {
                 loggerClinical.debug("SessionContext CookieID: '{}'", sessionCtx.getCookieID());
             } else {
                 loggerClinical.debug("SessionContext is null!");
             }
 
-            OperationContext operationCtx = msgContext.getOperationContext();
+            final OperationContext operationCtx = msgContext.getOperationContext();
             if (operationCtx != null) {
                 loggerClinical.debug("OperationContext operationName: '{}'", operationCtx.getOperationName());
                 loggerClinical.debug("OperationContext serviceGroupName: '{}'", operationCtx.getServiceGroupName());
@@ -157,20 +157,20 @@ public class InFlowEvidenceEmitterHandler extends AbstractHandler {
                 loggerClinical.debug("OperationContext is null!");
             }
 
-            ServiceGroupContext serviceGroupCtx = msgContext.getServiceGroupContext();
+            final ServiceGroupContext serviceGroupCtx = msgContext.getServiceGroupContext();
             if (serviceGroupCtx != null) {
                 loggerClinical.debug("ServiceGroupContext ID: '{}'", serviceGroupCtx.getId());
-                AxisServiceGroup axisServiceGroup = serviceGroupCtx.getDescription();
-                Iterator<AxisService> itAxisService = axisServiceGroup.getServices();
+                final AxisServiceGroup axisServiceGroup = serviceGroupCtx.getDescription();
+                final Iterator<AxisService> itAxisService = axisServiceGroup.getServices();
                 while (itAxisService.hasNext()) {
-                    AxisService axisService = itAxisService.next();
+                    final AxisService axisService = itAxisService.next();
                     loggerClinical.debug("AxisService BindingName: '{}'", axisService.getBindingName());
                     loggerClinical.debug("AxisService CustomSchemaNamePrefix: '{}'", axisService.getCustomSchemaNamePrefix());
                     loggerClinical.debug("AxisService CustomSchemaNameSuffix: '{}'", axisService.getCustomSchemaNameSuffix());
                     loggerClinical.debug("AxisService endpointName: '{}'", axisService.getEndpointName());
-                    Map<String, AxisEndpoint> axisEndpoints = axisService.getEndpoints();
-                    for (String key : axisEndpoints.keySet()) {
-                        AxisEndpoint axisEndpoint = axisEndpoints.get(key);
+                    final Map<String, AxisEndpoint> axisEndpoints = axisService.getEndpoints();
+                    for (final String key : axisEndpoints.keySet()) {
+                        final AxisEndpoint axisEndpoint = axisEndpoints.get(key);
                         loggerClinical.debug("AxisEndpoint calculatedEndpointURL: '{}'", axisEndpoint.calculateEndpointURL());
                         loggerClinical.debug("AxisEndpoint alias: '{}'", axisEndpoint.getAlias());
                         loggerClinical.debug("AxisEndpoint endpointURL: '{}'", axisEndpoint.getEndpointURL());
@@ -184,7 +184,7 @@ public class InFlowEvidenceEmitterHandler extends AbstractHandler {
                 loggerClinical.debug("ServiceGroupContext is null!");
             }
 
-            ConfigurationContext configCtx = msgContext.getRootContext();
+            final ConfigurationContext configCtx = msgContext.getRootContext();
             if (configCtx != null) {
                 loggerClinical.debug("ConfigurationContext contextRoot: '{}'", configCtx.getContextRoot());
                 loggerClinical.debug("ConfigurationContext serviceGroupContextIDs: '{}'", Arrays.toString(configCtx.getServiceGroupContextIDs()));

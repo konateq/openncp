@@ -1,4 +1,4 @@
-package eu.europa.ec.sante.openncp.core.common.evidence;
+package eu.europa.ec.sante.openncp.core.common.ihe.evidence;
 
 public class EnforcePolicyException extends Exception {
     
@@ -7,15 +7,15 @@ public class EnforcePolicyException extends Exception {
     public EnforcePolicyException() {
     }
 
-    public EnforcePolicyException(String message) {
+    public EnforcePolicyException(final String message) {
         super(message);
     }
 
-    public EnforcePolicyException(Throwable cause) {
+    public EnforcePolicyException(final Throwable cause) {
         super(cause);
     }
 
-    public EnforcePolicyException(String message, Throwable cause) {
+    public EnforcePolicyException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

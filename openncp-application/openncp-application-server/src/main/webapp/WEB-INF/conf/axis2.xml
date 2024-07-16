@@ -475,7 +475,7 @@
         <phase name="soapmonitorPhase"/>
         <phase name="EvidenceEmitterPhase">
             <handler name="EvidenceEmitterHandler"
-                class="eu.europa.ec.sante.openncp.core.common.handler.InFlowEvidenceEmitterHandler"/>
+                     class="eu.europa.ec.sante.openncp.core.common.ihe.handler.InFlowEvidenceEmitterHandler"/>
                 <!--ee.affecto.epsos.ws.handler.InFlowEvidenceEmitterHandler -->
         </phase>
     </phaseOrder>
@@ -491,8 +491,7 @@
         <phase name="Security"/>
         <phase name="EvidenceEmitterPhase">
             <handler name="EvidenceEmitterHandler"
-                    class="eu.europa.ec.sante.openncp.core.common.handler.OutFlowEvidenceEmitterHandler"/>
-                    <!--ee.affecto.epsos.ws.handler.OutFlowEvidenceEmitterHandler -->
+                     class="eu.europa.ec.sante.openncp.core.common.ihe.handler.OutFlowEvidenceEmitterHandler"/>
         </phase>
     </phaseOrder>
     <phaseOrder type="InFaultFlow">

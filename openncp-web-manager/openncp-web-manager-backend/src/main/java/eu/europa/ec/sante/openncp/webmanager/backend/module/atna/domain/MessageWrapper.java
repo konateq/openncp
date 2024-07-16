@@ -1,6 +1,7 @@
 package eu.europa.ec.sante.openncp.webmanager.backend.module.atna.domain;
 
-import generated.AuditMessage;
+
+import net.RFC3881.dicom.AuditMessage;
 
 public class MessageWrapper {
 
@@ -14,7 +15,7 @@ public class MessageWrapper {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -22,7 +23,7 @@ public class MessageWrapper {
         return auditMessage;
     }
 
-    public void setAuditMessage(AuditMessage auditMessage) {
+    public void setAuditMessage(final AuditMessage auditMessage) {
         this.auditMessage = auditMessage;
     }
 
@@ -30,7 +31,7 @@ public class MessageWrapper {
         return xmlMessage;
     }
 
-    public void setXmlMessage(String xmlMessage) {
+    public void setXmlMessage(final String xmlMessage) {
         this.xmlMessage = xmlMessage;
     }
 }

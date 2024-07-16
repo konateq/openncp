@@ -255,7 +255,7 @@
                 <configuration>
                     <extension>true</extension>
                     <schemaDirectory>src/main/resources</schemaDirectory>
-                    <generatePackage>eu.europa.ec.sante.openncp.core.common.evidence.etsi.rem</generatePackage>
+                    <generatePackage>eu.europa.ec.sante.openncp.core.common.ihe.evidence.etsi.rem</generatePackage>
                 </configuration>
             </plugin>
         </plugins>
