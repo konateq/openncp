@@ -66,8 +66,6 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
             throw new AuthenticationException("Invalid SAML token.");
         }
 
-        String username = jwt.getSubject();
-
         return true;
     }
 
@@ -101,7 +99,7 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
 
                 saml2Validator.validateXCPDHeader(hcpIdentityAssertion);
 
-                addAssertionToSecurityContext(hcpIdentityAssertion);
+                addAssertionToSecurityContext(hcpIdentityAssertion, samlasRoot);
 
             } catch (UnmarshallingException | XMLParserException | ComponentInitializationException ex) {
                 throw new AuthenticationException(Msg.code(333) + ex.getMessage());
@@ -121,10 +119,9 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
         return true;
     }
 
-    public void addAssertionToSecurityContext(Assertion assertion) {
+    public void addAssertionToSecurityContext(Assertion assertion, Element samlasRoot) {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(assertion.getSubject().getNameID().getValue(), assertion.getIssuer().getValue(), null);
-        authentication.setDetails(assertion);
+        authentication.setDetails(samlasRoot);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
-
 }

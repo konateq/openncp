@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.core.common.fhir.audit.eventhandler;
 import eu.europa.ec.sante.openncp.common.context.LogContext;
 import eu.europa.ec.sante.openncp.core.common.fhir.audit.*;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.FhirSupportedResourceType;
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -10,7 +11,10 @@ import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Element;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -66,17 +70,23 @@ public class PatientResponseAuditEventProducer implements AuditEventProducer {
     }
 
     private List<AuditEventData.ParticipantData> createParticipants() {
+
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        Element soapHeader = (Element)   usernamePasswordAuthenticationToken.getDetails();
+
+
+
         //TODO build proper participant data
         final AuditEventData.ParticipantData serviceConsumer = ImmutableParticipantData.builder()
-                .id("consumer mock id")
-                .roleCode("consumer mock role")
+                .id(usernamePasswordAuthenticationToken.getName())
+                .roleCode(Helper.getRoleID(soapHeader))
                 .requestor(false)
                 .display("consumer mock display")
                 .network("consumer mock network")
                 .build();
 
         final AuditEventData.ParticipantData serviceProvider = ImmutableParticipantData.builder()
-                .id("provider mock id")
+                .id((String)usernamePasswordAuthenticationToken.getCredentials())
                 .roleCode("provider mock role")
                 .requestor(true)
                 .display("provider mock display")
