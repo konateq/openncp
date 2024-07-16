@@ -4,12 +4,13 @@ The HL7® FHIR technology (https://www.hl7.org/fhir/) is used in the OpenNCP Ref
 
 The FHIR implementation of OpenNCP is reusing as much as possible existing MyHealth@EU components and adds a new use case https://webgate.ec.europa.eu/fpfis/wikis/x/9AWiTQ using FHIR the HL7® FHIR technology.
 
-Main feature of MyHealth@EU should be present into the FHIR implementation:
+Main features of MyHealth@EU should be present into the FHIR implementation:
 
-Security and authorization.
-Patient demographics: search and retrieve.
-Laboratory Result report: search and retrieve.
-Secured Audit node.
+- Security and authorization. +
+- Patient demographics: search and retrieve. +
+- Laboratory Result report: search and retrieve. +
+- Transformation functionalities (mappings and translations)
+- Auditing. +
 
 Conceptually, the FHIR implemention can be divided in 3 parts:
 
