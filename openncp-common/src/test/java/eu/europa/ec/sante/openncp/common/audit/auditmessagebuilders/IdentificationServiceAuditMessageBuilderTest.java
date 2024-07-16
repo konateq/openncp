@@ -5,8 +5,6 @@ import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import net.RFC3881.dicom.AuditMessage;
-import net.sf.saxon.value.GDayValue;
-import net.sf.saxon.value.SaxonXMLGregorianCalendar;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -15,21 +13,21 @@ import org.junit.Test;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
-public class XCARetrieveAuditMessageBuilderTest extends XMLTestCase {
+public class IdentificationServiceAuditMessageBuilderTest extends XMLTestCase {
 
 
     @Test
     public void testBuild() throws Exception {
         {
+
             EventLog eventLog = new EventLog();
-            eventLog.setEventType(EventType.PATIENT_SERVICE_RETRIEVE);
+            eventLog.setEventType(EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS);
             eventLog.setNcpSide(NcpSide.NCP_A);
-            eventLog.setEI_TransactionName(TransactionName.PATIENT_SERVICE_RETRIEVE);
-            eventLog.setEI_EventActionCode(EventActionCode.VIEW);
+            eventLog.setEI_TransactionName(TransactionName.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS);
+            eventLog.setEI_EventActionCode(EventActionCode.EXECUTE);
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
             XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
             eventLog.setEI_EventDateTime(now);
@@ -47,26 +45,26 @@ public class XCARetrieveAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setHciIdentifier("42");
             eventLog.setMS_UserID("MS User ID");
             eventLog.setPC_RoleID("PC Role ID");
-            eventLog.setPC_UserID("PC User ID");
+            eventLog.setPC_UserID("eHealth OpenNCP EU Portal");
+
             eventLog.setPS_ParticipantObjectID("PS Participant Object ID");
             eventLog.setPT_ParticipantObjectID("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO");
             eventLog.setQueryByParameter("Query By Parameter");
             eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
-            eventLog.setReqM_ParticipantObjectID("urn:uuid:2d1a748a-b73e-47ef-96d2-50fdb92e1c0a");
+            eventLog.setReqM_ParticipantObjectID("urn:oid:1.3.6.1.4.1.48336");
 
             eventLog.setSourceip("127.0.0.1");
             eventLog.setTargetip("127.0.0.1");
 
-            XCARetrieveAuditMessageBuilder patientRetrieveAuditMessageBuilder = new XCARetrieveAuditMessageBuilder();
-            AuditMessage generatedAuditMessage = patientRetrieveAuditMessageBuilder.build(eventLog);
 
+            IdentificationServiceAuditMessageBuilder identificationServiceAuditMessageBuilder = new IdentificationServiceAuditMessageBuilder();
+            AuditMessage generatedAuditMessage = identificationServiceAuditMessageBuilder.build(eventLog);
 
-
-          URL url = Resources.getResource("patientserviceretrivetauditmessage.xml");
-           AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
-           expectedAuditMessage.getEventIdentification().setEventDateTime(now);
-           XMLUnit.setIgnoreWhitespace(true);
-          assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
+            URL url = Resources.getResource("Identityservicefindidentitybytraits.xml");
+            AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
+            expectedAuditMessage.getEventIdentification().setEventDateTime(now);
+            XMLUnit.setIgnoreWhitespace(true);
+            assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
         }
 
     }

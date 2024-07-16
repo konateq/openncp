@@ -22,8 +22,6 @@ public class XCAListAuditMessageBuilderTest extends XMLTestCase {
     @Test
     public void testBuild() throws Exception {
         {
-
-
             EventLog eventLog = new EventLog();
             eventLog.setEventType(EventType.PATIENT_SERVICE_LIST);
             eventLog.setNcpSide(NcpSide.NCP_A);
@@ -60,13 +58,11 @@ public class XCAListAuditMessageBuilderTest extends XMLTestCase {
             XCAListAuditMessageBuilder patientListAuditMessageBuilder = new XCAListAuditMessageBuilder();
             AuditMessage generatedAuditMessage = patientListAuditMessageBuilder.build(eventLog);
 
-            System.out.println(AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
-
-           URL url = Resources.getResource("patientservicelistauditmessage.xml");
-           AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
-           expectedAuditMessage.getEventIdentification().setEventDateTime(now);
-           XMLUnit.setIgnoreWhitespace(true);
-          assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
+            URL url = Resources.getResource("patientservicelistauditmessage.xml");
+            AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
+            expectedAuditMessage.getEventIdentification().setEventDateTime(now);
+            XMLUnit.setIgnoreWhitespace(true);
+            assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
         }
 
     }
