@@ -22,7 +22,7 @@ For testing purposes, a FHIR server containing various FHIR resources is configu
 The server that is used is the HL7 Sandbox FHIR server: https://sandbox.hl7europe.eu/laboratory/fhir
 
 .OpenNCP High level overview
-image::media/openncp_operview.png
+image::media/openncp_overview.png[]
 
 .High level architecture
 image::media/high_level_architecture.png[]
