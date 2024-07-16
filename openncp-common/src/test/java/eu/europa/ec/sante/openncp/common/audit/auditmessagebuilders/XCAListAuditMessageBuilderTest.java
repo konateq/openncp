@@ -5,18 +5,14 @@ import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import net.RFC3881.dicom.AuditMessage;
-import net.sf.saxon.value.GDayValue;
-import net.sf.saxon.value.SaxonXMLGregorianCalendar;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
@@ -29,40 +25,6 @@ public class XCAListAuditMessageBuilderTest extends XMLTestCase {
 
 
             EventLog eventLog = new EventLog();
-            eventLog.setAS_AuditSourceId("42");
-            eventLog.setEI_EventActionCode(EventActionCode.CREATE);
-            SaxonXMLGregorianCalendar EI_EventDateTime = new SaxonXMLGregorianCalendar(new GDayValue((byte) 'A', 1));
-            eventLog.setEI_EventDateTime(EI_EventDateTime);
-            eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
-            eventLog.setEI_TransactionName(TransactionName.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS);
-            eventLog.setEI_TransactionNumber("42");
-            eventLog.setEM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
-            eventLog.setEM_ParticipantObjectID("EM Participant Object ID");
-            eventLog.setEventTargetAdditionalObjectId("42");
-            eventLog.setEventTargetParticipantObjectIds(new ArrayList<>());
-            eventLog.setEventType(EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS);
-            eventLog.setHR_AlternativeUserID("HR Alternative User ID");
-            eventLog.setHR_RoleID("HR Role ID");
-            eventLog.setHR_UserID("HR User ID");
-            eventLog.setHR_UserName("janedoe");
-            eventLog.setHciIdentifier("42");
-            eventLog.setMS_UserID("MS User ID");
-            eventLog.setNcpSide(NcpSide.NCP_A);
-            eventLog.setPC_RoleID("PC Role ID");
-            eventLog.setPC_UserID("PC User ID");
-            eventLog.setPS_ParticipantObjectID("PS Participant Object ID");
-            eventLog.setPT_ParticipantObjectID("PT Participant Object ID");
-            eventLog.setQueryByParameter("Query By Parameter");
-            eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
-            eventLog.setReqM_ParticipantObjectID("Req M Participant Object ID");
-            eventLog.setResM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
-            eventLog.setResM_ParticipantObjectID("Res M Participant Object ID");
-            eventLog.setSC_UserID("SC User ID");
-            eventLog.setSP_UserID("SP User ID");
-            eventLog.setSourceip("127.0.0.1");
-            eventLog.setTargetip("127.0.0.1");
-
-            //EventLog eventLog = new EventLog();
             eventLog.setEventType(EventType.PATIENT_SERVICE_LIST);
             eventLog.setNcpSide(NcpSide.NCP_A);
             eventLog.setEI_TransactionName(TransactionName.PATIENT_SERVICE_LIST);
@@ -86,10 +48,10 @@ public class XCAListAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setPC_RoleID("PC Role ID");
             eventLog.setPC_UserID("PC User ID");
             eventLog.setPS_ParticipantObjectID("PS Participant Object ID");
-            eventLog.setPT_ParticipantObjectID("PT Participant Object ID");
+            eventLog.setPT_ParticipantObjectID("2-1234-W7;1.3.6.1.4.1.48336.1000;ISO");
             eventLog.setQueryByParameter("Query By Parameter");
             eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
-            eventLog.setReqM_ParticipantObjectID("Req M Participant Object ID");
+            eventLog.setReqM_ParticipantObjectID("urn:oid:1.3.6.1.4.1.48336");
 
             eventLog.setSourceip("127.0.0.1");
             eventLog.setTargetip("127.0.0.1");
@@ -97,6 +59,7 @@ public class XCAListAuditMessageBuilderTest extends XMLTestCase {
 
             XCAListAuditMessageBuilder patientListAuditMessageBuilder = new XCAListAuditMessageBuilder();
             AuditMessage generatedAuditMessage = patientListAuditMessageBuilder.build(eventLog);
+
             System.out.println(AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
 
            URL url = Resources.getResource("patientservicelistauditmessage.xml");
