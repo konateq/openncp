@@ -29,7 +29,7 @@ public class XCARetrieveAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setEventType(EventType.PATIENT_SERVICE_RETRIEVE);
             eventLog.setNcpSide(NcpSide.NCP_A);
             eventLog.setEI_TransactionName(TransactionName.PATIENT_SERVICE_RETRIEVE);
-            eventLog.setEI_EventActionCode(EventActionCode.EXECUTE);
+            eventLog.setEI_EventActionCode(EventActionCode.VIEW);
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
             XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
             eventLog.setEI_EventDateTime(now);
