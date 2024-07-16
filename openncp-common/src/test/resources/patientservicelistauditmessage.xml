@@ -22,7 +22,7 @@
     <ParticipantObjectIdentification ParticipantObjectID="2-1234-W7^^^&amp;1.3.6.1.4.1.48336.1000&amp;ISO" ParticipantObjectTypeCode="1" ParticipantObjectTypeCodeRole="1">
         <ParticipantObjectIDTypeCode csd-code="2" codeSystemName="DCM" displayName="Patient Number" originalText="Cross Gateway Patient Discovery"/>
     </ParticipantObjectIdentification>
-    <ParticipantObjectIdentification ParticipantObjectID="urn:oid:1.3.6.1.4.1.48336" ParticipantObjectTypeCode="2" ParticipantObjectTypeCodeRole="24">
+    <ParticipantObjectIdentification ParticipantObjectID="urn:uuid:2d1a748a-b73e-47ef-96d2-50fdb92e1c0a" ParticipantObjectTypeCode="2" ParticipantObjectTypeCodeRole="24">
         <ParticipantObjectIDTypeCode csd-code="ITI-38" codeSystemName="IHE Transactions" displayName="Patient Number" originalText="Cross Gateway Query"/>
         <ParticipantObjectQuery>UXVlcnkgQnkgUGFyYW1ldGVy</ParticipantObjectQuery>
         <ParticipantObjectDetail type="ihe:homeCommunityID" value="NDI="/>

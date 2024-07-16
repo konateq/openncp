@@ -51,7 +51,7 @@ public class XCAListAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setPT_ParticipantObjectID("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO");
             eventLog.setQueryByParameter("Query By Parameter");
             eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
-            eventLog.setReqM_ParticipantObjectID("urn:oid:1.3.6.1.4.1.48336");
+            eventLog.setReqM_ParticipantObjectID("urn:uuid:2d1a748a-b73e-47ef-96d2-50fdb92e1c0a");
 
             eventLog.setSourceip("127.0.0.1");
             eventLog.setTargetip("127.0.0.1");
