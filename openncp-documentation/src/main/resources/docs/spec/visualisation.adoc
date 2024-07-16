@@ -2,18 +2,9 @@
 
 For the visualisation of the FHIR bundle, the starting point is the JSON file representing the bundle.
 
-image::media/JSON_to_HTML.png[]
+Similarly to the CDA Display Tool reference implementation, that is part of OpenNCP, a FHIR Display reference implementation will be included in the future in OpenNCP.
+A service will be added accepting the FHIR resource in JSON format and returning the HTML version displaying the different included resources.
 
-==== Liquid
+==== Hapi FHIR Display
 
-https://shopify.github.io/liquid/[Liquid] is an open-source template language created by https://www.shopify.com/[Shopify] and written in Ruby.
-
-It is included in the MyHealth@EU FHIR IG to display the bundle example: https://fhir.ehdsi.eu/laboratory/Bundle-BundleLabResultReportPOC.html
-
-image::media/liquid_example.png[]
-
-==== Javascript
-
-JSON can very easily be translated into JavaScript. JavaScript can be used to make HTML in your web pages.
-
-JSON functions are a more useable method and can be easily incorporated into a web application. The key function that enables us to convert JSON to HTML at runtime is `JSON.parse()`. The `JSON.parse()` method takes textual JSON data and converts it to a JavaScript object. You can then easily use this object to display data in HTML.
+For the display of the resource, HAPI FHIR libraries will be used initially. When needed, more specific libraries can be included in a future release.

@@ -1,48 +1,56 @@
 === Architecture
 
-Our FHIR POC is based on the R4 version of the HL7 FHIR specification. Reason for this is that also the EU Lab Reports FHIR IG is currently also defined in r4 and most of the Member States are using r5. If ever there is a need to migrate to r5, this can easily be done by updating the HAPI dependencies.
+Our FHIR implementation is based on the R4 version of the HL7® FHIR specification.
+Reason for this is that also the EU Lab Reports FHIR IGs are currently defined in R4.
 
-The decision was taken to not integrate the portal UI into the current OpenNCP portal reference implementation, but to start from scratch with the design of a portal that just serves the needs of the POC. Later it can be integrated in the OpenNCP portal reference implementation.
+The user interface is not part of the current OpenNCP implementation and needs to be developed by implemented by the Member States.
+Similarly as with the CDA Display Tool, a visualization tool for the FHIR bundles will be included in the OpenNCP as a reference implementation in the near future.
 
 ==== High level architecture
 
-The high level setup for the technical POC consists of 4 parts:
+The high level layers of the OpenNCP related to FHIR are the following:
 
-*Portal*: User Interface and the entry point for the Health Professional to interact with the client. Implemented using JavaScript and the following tech stack: +
-*Svelte*: reactive front-end library +
-*Tailwind CSS* : CSS framework +
-*Daisyui*: html components based on taiwindcss +
-The build run on nodejs and using docker it run behind nginx as proxy server +
-*FHIR Client*: The FHIR based application, accepting HTTP REST request from the portal and forwarding them to the Country of affiliation. This is the component to run in the Country of treatment and in the context of OpenNCP, it corresponds with the NCP-B. +
-*FHIR Server*: The FHIR component that receives requests from the country of affiliation and forwards them to the national infrastructure to retrieve the requested resources. In the context of OpenNCP, it corresponds with the server deployed on NCP-A. +
-*JPA HAPI FHIR server*: a FHIR server, using a database where FHIR resources are injected. This FHIR server is able to answer to requests issues by the FHIR server and can be considered as a mock for the national implementation that must be implemented on Member States side
+*OpenNCP Client Connector*: JAR file that is to be used by the Member State portal as a dependency in order to interact with the OpenNCP client. +
+*OpenNCP Application*: The entry point of the OpenNCP application.
+Contains the Spring boot classes that startup the application. +
+*OpenNCP API*: All the logic related with the HTTP endpoints and the SOAP/REST interfaces to the application. +
+*OpenNCP Client* : The Client implementation, accepting HTTP REST request from the portal and forwarding them to the Country of affiliation.
+This is the component to run in the Country of treatment and in the context of OpenNCP, it corresponds with the NCP-B. +
+*OpenNCP Server*: The implementation for the Country of Treatment (NCP-A).
+
+For testing purposes, a FHIR server containing various FHIR resources is configured simulating the Member States national infrastructure.
+The server that is used is the HL7 Sandbox FHIR server: https://sandbox.hl7europe.eu/laboratory/fhir
+
+.OpenNCP High level overview
+image::media/openncp_operview.png
 
 .High level architecture
 image::media/high_level_architecture.png[]
 
 ==== Detailed architecture
 
-For the POC we use docker as a container that comprises the different components and required (populated) databases. This allow all users to startup all the necessary components using a simple docker command.
+To facilitate the deployment of OpenNCP, we use docker as a container management tool that comprises the different components, configuration and required (populated) databases.
+This allows users to startup all the necessary components using a simple docker command.
 
-Two parts are considered out of scope for the POC:
+*Starting the containers*: docker compose up -d +
+*Stopping the containers*: docker compose down --rmi local
 
-Connection with the SMP Server to retrieve the International Search Mask. This part is performed by the portal and is already done for OpenNCP.
-Audit logging: in OpenNCP we currently use the OpenATNA component to generate and store audit logs. The OpenNCP gateway is used to access and filter these log files. This component can be reused as is or we could look at a more FHIR based solution using a Basic Audit Log Patterns (BALP) Interceptor where audit messages could be accessed using a FHIR API.
+A new SMP file definition is created, "Fhir Endpoint service" where the FHIR REST API endpoint URL needs to be configured.
+This URL will be used by the application to connect the server from the client.
 
 .Detailed architecture
 image::media/detailed_architecture.png[]
 
 ==== Request/Response flows
 
-To retrieve a Patient resource, the /Patient REST API is used based on the PDQm (ITI-78) profile. The /Composition REST API is used to retrieve the different Compositions that match specific search criteria. The supported search parameters by the portal are the following:
+To retrieve a Patient resource, the /Patient REST API is used based on the PDQm (ITI-78) profile.
+The /DocumentReference REST API is used to retrieve the different Resources that match specific search criteria.
+The supported search parameters by the portal are the following:
 
-* one or more patient identifier(s)
-* study type
-* date interval
+When from the returned list of Document References, a specific Laboratory Result Report needs to be returned, the url contained in the DocumentReference resource is used to fetch the clinical document (Bundle).
 
-When from the returned list of Compositions, a specific Laboratory Result Report needs to be returned, the $document operator is used on the composition to return the Bundle.
-
-Also a translations-and-mappings module is implemented, accessible as a service or over a REST API. On its turn the translations-and-mappings uses the TSAM module to connect with the local terminology repository database (LTRDB) and containing the translations/mappings.
+Also a transformation module is implemented, accessible as a service or over a REST API.
+On its turn the transformation module uses the TSAM module to connect with the local terminology repository database (LTRDB) and containing the translations/mappings.
 
 On the server side, transcodings (mappings) are applied to the bundle, where on the client side, the received codeable elements are translated.
 
@@ -51,28 +59,7 @@ image::media/request_response_flow.png[]
 
 ==== Audit
 
-This part is not implemented in the POC.
-
-We identified two different approaches
-
-===== DICOM based audit events
-All the transactions used by the Prototype require to generate audit events according the specifications provided by IHE and customized by MyHealth@EU project.
-
-The non exhaustive list of transactions are:
-
-Mobile Patient Demographics Query Transaction (ITI-78)
-Internet User Authorization - get Token (IUA ITI-71)
-Laboratory Result Report Transaction (profile not yet identified)
-All these DICOM events are specified here: https://profiles.ihe.net/ITI/TF/Volume2/ITI-20.html#3.20.4.1.1.1
-
-For this type of audit events, the ATNA module can be reused and the Gateway frontend can be used to search/filter audit events.
-
-===== Basic Audit Log Patterns
-The IHE Basic Audit Log Patterns implementation guide describes a set of workflows and data models for the creation of AuditEvent resources based on user/client actions.
-
-HAPI FHIR provides an interceptor that can be registered against a server, and will observe events on that server and automatically generate AuditEvent resources which are conformant to the appropriate profiles within the BALP specification.
-
-The advantage of this approach is that Audit logs can be searched/filtered using the FHIR REST API. And the audit logs could be used to reference back to the exchanged resources.
+Audit messages for the FHIR flows are generated using an AuditInterceptor, generating AuditEvent resources in JSON format.
 
 ==== Validation
 
@@ -82,10 +69,11 @@ Instance Validator is validation of the raw or parsed resource against the offic
 
 The Instance Validator is used to validate resources against individual Implementation Guides which derive from the core specification, in our case the EU Lab Report FHIR IGs.
 
-Input for the POC are the packages of the EU Lab Report FHIR IGs and the IPS FHIR IGs.
+Input for the POC are the packages of the MyHealth@EU Lab Result Reports FHIR IG, the EU Lab Report FHIR IGs and the IPS FHIR IGs.
 
 These can be downloaded here:
 
+- MyHealth@EU Lab Result Report FHIR IG package: https://fhir.ehdsi.eu/laboratory/downloads.html
 - EU Lab Report FHIR IG package: https://build.fhir.org/ig/hl7-eu/laboratory/downloads.html
 - HL7 IPS FHIR IG package: 	https://build.fhir.org/ig/HL7/fhir-ips/downloads.html
 
@@ -132,7 +120,7 @@ In the case of a *validation error*, an error message is logged, together with t
 
 ===== Authentication
 
-All the endpoints require an authentication of the client, as MyHealth@EU is using SAML Token https://webgate.ec.europa.eu/fpfis/wikis/x/AeTzN, the prototype will re-use the SAML Token Option https://profiles.ihe.net/ITI/IUA/index.html#372432-saml-token-option (_Please note that only one assertion must be passed into the security header in Fhir, a solution MUST be found to support the TRC and NoK token if needed into the Use Case_).
+All the endpoints require an authentication of the client, as MyHealth@EU is using SAML Tokens https://webgate.ec.europa.eu/fpfis/wikis/x/AeTzN, the FHIR flows re-use the SAML Token Option https://profiles.ihe.net/ITI/IUA/index.html#372432-saml-token-option where the SAML Assertion is added as a JSON Web Token (JWT) in the header of each request.
 
 An Authorization Server that supports the SAML Token Options shall be able to format the access token as a SAML 2.0 assertion. The SAML 2.0 assertion content shall comply with XUA SAML assertion rules (see ITI TF-2: 3.40).
 
