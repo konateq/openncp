@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.core.common.fhir.audit.eventhandler;
 import eu.europa.ec.sante.openncp.common.context.LogContext;
 import eu.europa.ec.sante.openncp.core.common.fhir.audit.*;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.FhirSupportedResourceType;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.AuditInfo;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.Validate;
@@ -72,25 +73,23 @@ public class PatientResponseAuditEventProducer implements AuditEventProducer {
     private List<AuditEventData.ParticipantData> createParticipants() {
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        Element soapHeader = (Element)   usernamePasswordAuthenticationToken.getDetails();
+        AuditInfo auditInfo = (AuditInfo) usernamePasswordAuthenticationToken.getDetails();
 
 
 
         //TODO build proper participant data
         final AuditEventData.ParticipantData serviceConsumer = ImmutableParticipantData.builder()
                 .id(usernamePasswordAuthenticationToken.getName())
-                .roleCode(Helper.getRoleID(soapHeader))
+                .roleCode(Helper.getRoleID(auditInfo.getSamlasRoot()))
                 .requestor(false)
-                .display("consumer mock display")
-                .network("consumer mock network")
+                .network(auditInfo.getRequestIp())
                 .build();
 
         final AuditEventData.ParticipantData serviceProvider = ImmutableParticipantData.builder()
                 .id((String)usernamePasswordAuthenticationToken.getCredentials())
-                .roleCode("provider mock role")
+                .roleCode("provider role unknown")
                 .requestor(true)
-                .display("provider mock display")
-                .network("provider mock network")
+                .network(auditInfo.getHostIp())
                 .build();
 
         return List.of(serviceConsumer, serviceProvider);

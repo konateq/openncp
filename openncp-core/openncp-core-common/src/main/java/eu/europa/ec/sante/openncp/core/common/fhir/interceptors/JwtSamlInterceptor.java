@@ -15,6 +15,7 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Unmarshaller;
@@ -33,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class JwtSamlInterceptor extends InterceptorAdapter {
 
@@ -58,19 +61,39 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
         DecodedJWT jwt = tokenProvider.verifyToken(token);
 
         String saml = jwt.getClaim("saml").asString();
-
+        AuditInfo auditInfo = null;
         try {
-            validateSaml(saml);
+            auditInfo = validateSaml(saml);
         } catch (Exception e) {
             LOGGER.error("Invalid SAML token", e);
             throw new AuthenticationException("Invalid SAML token.");
+        }
+
+        if(auditInfo != null) {
+            String ipAddress = theRequest.getHeader("X-FORWARDED-FOR");
+            if (ipAddress == null) {
+                ipAddress = theRequest.getRemoteAddr();
+            }
+
+            auditInfo.setRequestIp(ipAddress);
+
+            try {
+                InetAddress hostIp = InetAddress.getLocalHost();
+                auditInfo.setHostIp(hostIp.getHostAddress());
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);
+            }
+
+            addAssertionToSecurityContext(auditInfo);
+        }else{
+            throw new AuthenticationException("Invalid SAML token: empty assertion.");
         }
 
         return true;
     }
 
 
-    private boolean validateSaml(String saml) throws AuthenticationException, InitializationException {
+    private AuditInfo validateSaml(String saml) throws AuthenticationException, InitializationException {
 
         Assertion hcpIdentityAssertion = null;
 
@@ -99,7 +122,7 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
 
                 saml2Validator.validateXCPDHeader(hcpIdentityAssertion);
 
-                addAssertionToSecurityContext(hcpIdentityAssertion, samlasRoot);
+                return new AuditInfo(hcpIdentityAssertion, samlasRoot);
 
             } catch (UnmarshallingException | XMLParserException | ComponentInitializationException ex) {
                 throw new AuthenticationException(Msg.code(333) + ex.getMessage());
@@ -114,14 +137,13 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
             } catch (XSDValidationException e) {
                 throw new RuntimeException(e);
             }
-            return true;
         }
-        return true;
+        return null;
     }
 
-    public void addAssertionToSecurityContext(Assertion assertion, Element samlasRoot) {
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(assertion.getSubject().getNameID().getValue(), assertion.getIssuer().getValue(), null);
-        authentication.setDetails(samlasRoot);
+    public void addAssertionToSecurityContext(AuditInfo auditInfo) {
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(auditInfo.getAssertion().getSubject().getNameID().getValue(), auditInfo.getAssertion().getIssuer().getValue(), null);
+        authentication.setDetails(auditInfo);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
