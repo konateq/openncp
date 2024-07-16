@@ -4,7 +4,7 @@ import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.util.SoapElementHelper;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeader;
@@ -124,8 +124,8 @@ public class EvidenceEmitterHandlerUtils {
         final String operation = soapBody.getFirstElementLocalName();
         if (isClientConnectorOperation(operation)) {
             // we're in a Portal-NCPB interaction
-            final Assertion identityAssertion = Helper.getHCPAssertion(elemSoapHeader);
-            final Assertion trca = Helper.getTRCAssertion(elemSoapHeader);
+            final Assertion identityAssertion = SoapElementHelper.getHCPAssertion(elemSoapHeader);
+            final Assertion trca = SoapElementHelper.getTRCAssertion(elemSoapHeader);
             if (identityAssertion != null && trca == null) {
                 // this is a XCPD request from Portal to NCP-B, we don't yet have the TRCA
                 msguuid = identityAssertion.getID();

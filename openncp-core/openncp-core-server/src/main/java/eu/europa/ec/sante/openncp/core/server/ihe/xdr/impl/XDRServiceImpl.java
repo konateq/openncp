@@ -16,7 +16,7 @@ import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.IHEEventType;
 import eu.europa.ec.sante.openncp.core.common.ihe.RegistryErrorSeverity;
 import eu.europa.ec.sante.openncp.core.common.ihe.XDRServiceInterface;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.util.SoapElementHelper;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.OpenNCPErrorCodeException;
@@ -132,10 +132,10 @@ public class XDRServiceImpl implements XDRServiceInterface {
         } else {
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
         }
-        final String userIdAlias = Helper.getAssertionsSPProvidedId(soapHeader);
-        eventLog.setHR_UserID(StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "<" + Helper.getUserID(soapHeader) + "@" + Helper.getAssertionsIssuer(soapHeader) + ">");
-        eventLog.setHR_AlternativeUserID(Helper.getAlternateUserID(soapHeader));
-        eventLog.setHR_RoleID(Helper.getRoleID(soapHeader));
+        final String userIdAlias = SoapElementHelper.getAssertionsSPProvidedId(soapHeader);
+        eventLog.setHR_UserID(StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "<" + SoapElementHelper.getUserID(soapHeader) + "@" + SoapElementHelper.getAssertionsIssuer(soapHeader) + ">");
+        eventLog.setHR_AlternativeUserID(SoapElementHelper.getAlternateUserID(soapHeader));
+        eventLog.setHR_RoleID(SoapElementHelper.getRoleID(soapHeader));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
         eventLog.setPT_ParticipantObjectID(getDocumentEntryPatientId(request));
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
@@ -186,10 +186,10 @@ public class XDRServiceImpl implements XDRServiceInterface {
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
         }
 
-        final String userIdAlias = Helper.getAssertionsSPProvidedId(sh);
-        eventLog.setHR_UserID(StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "<" + Helper.getUserID(sh) + "@" + Helper.getAssertionsIssuer(sh) + ">");
-        eventLog.setHR_AlternativeUserID(Helper.getAlternateUserID(sh));
-        eventLog.setHR_RoleID(Helper.getRoleID(sh));
+        final String userIdAlias = SoapElementHelper.getAssertionsSPProvidedId(sh);
+        eventLog.setHR_UserID(StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "<" + SoapElementHelper.getUserID(sh) + "@" + SoapElementHelper.getAssertionsIssuer(sh) + ">");
+        eventLog.setHR_AlternativeUserID(SoapElementHelper.getAlternateUserID(sh));
+        eventLog.setHR_RoleID(SoapElementHelper.getRoleID(sh));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
         eventLog.setPT_ParticipantObjectID(getDocumentEntryPatientId(request));
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
@@ -322,7 +322,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
                         Constants.NCP_SIG_KEYSTORE_PASSWORD, Constants.NCP_SIG_PRIVATEKEY_ALIAS,
                         IHEEventType.DISPENSATION_SERVICE_INITIALIZE.getCode(), new DateTime(),
                         EventOutcomeIndicator.FULL_SUCCESS.getCode().toString(), "NI_XDR_DISP_REQ",
-                        Objects.requireNonNull(Helper.getTRCAssertion(soapHeaderElement)).getID() + "__" + DateUtil.getCurrentTimeGMT());
+                        Objects.requireNonNull(SoapElementHelper.getTRCAssertion(soapHeaderElement)).getID() + "__" + DateUtil.getCurrentTimeGMT());
             } catch (final Exception e) {
                 logger.error(ExceptionUtils.getStackTrace(e));
             }
@@ -355,11 +355,11 @@ public class XDRServiceImpl implements XDRServiceInterface {
             discardDetails.setDiscardId(discardId);
             discardDetails.setDiscardDate(simpleDateFormat.parse(discardDate));
             discardDetails.setPatientId(fullPatientId);
-            discardDetails.setHealthCareProvider(Helper.getAlternateUserID(soapHeaderElement));
-            discardDetails.setHealthCareProviderId(Helper.getAssertionsSPProvidedId(soapHeaderElement));
-            discardDetails.setHealthCareProviderFacility(Helper.getXSPALocality(soapHeaderElement));
-            discardDetails.setHealthCareProviderOrganization(Helper.getOrganization(soapHeaderElement));
-            discardDetails.setHealthCareProviderOrganizationId(Helper.getOrganizationId(soapHeaderElement));
+            discardDetails.setHealthCareProvider(SoapElementHelper.getAlternateUserID(soapHeaderElement));
+            discardDetails.setHealthCareProviderId(SoapElementHelper.getAssertionsSPProvidedId(soapHeaderElement));
+            discardDetails.setHealthCareProviderFacility(SoapElementHelper.getXSPALocality(soapHeaderElement));
+            discardDetails.setHealthCareProviderOrganization(SoapElementHelper.getOrganization(soapHeaderElement));
+            discardDetails.setHealthCareProviderOrganizationId(SoapElementHelper.getOrganizationId(soapHeaderElement));
             documentSubmitInterface.cancelDispensation(discardDetails, epsosDocument);
 
         } catch (final NIException e) {
@@ -530,7 +530,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
                                 Constants.NCP_SIG_KEYSTORE_PASSWORD, Constants.NCP_SIG_PRIVATEKEY_ALIAS,
                                 IHEEventType.DISPENSATION_SERVICE_INITIALIZE.getCode(), new DateTime(),
                                 EventOutcomeIndicator.FULL_SUCCESS.getCode().toString(), "NI_XDR_DISP_REQ",
-                                Objects.requireNonNull(Helper.getTRCAssertion(shElement)).getID() + "__" + DateUtil.getCurrentTimeGMT());
+                                Objects.requireNonNull(SoapElementHelper.getTRCAssertion(shElement)).getID() + "__" + DateUtil.getCurrentTimeGMT());
                     } catch (final Exception e) {
                         logger.error(ExceptionUtils.getStackTrace(e));
                     }

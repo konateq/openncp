@@ -16,7 +16,7 @@ import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.RegistryErrorSeverity;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.util.SoapElementHelper;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
@@ -170,11 +170,11 @@ public class XCAServiceImpl implements XCAServiceInterface {
         // Set the operation status to the response
         handleEventLogStatus(eventLog, response, request);
 
-        final String userIdAlias = Helper.getAssertionsSPProvidedId(sh);
+        final String userIdAlias = SoapElementHelper.getAssertionsSPProvidedId(sh);
         eventLog.setHR_UserID(
-                StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "<" + Helper.getUserID(sh) + "@" + Helper.getAssertionsIssuer(sh) + ">");
-        eventLog.setHR_AlternativeUserID(Helper.getAlternateUserID(sh));
-        eventLog.setHR_RoleID(Helper.getRoleID(sh));
+                StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "<" + SoapElementHelper.getUserID(sh) + "@" + SoapElementHelper.getAssertionsIssuer(sh) + ">");
+        eventLog.setHR_AlternativeUserID(SoapElementHelper.getAlternateUserID(sh));
+        eventLog.setHR_RoleID(SoapElementHelper.getRoleID(sh));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
         eventLog.setPT_ParticipantObjectID(getDocumentEntryPatientId(request));
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
@@ -262,13 +262,13 @@ public class XCAServiceImpl implements XCAServiceInterface {
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.TEMPORAL_FAILURE);
         }
 
-        final String userIdAlias = Helper.getAssertionsSPProvidedId(sh);
+        final String userIdAlias = SoapElementHelper.getAssertionsSPProvidedId(sh);
         eventLog.setHR_UserID(
-                StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "<" + Helper.getUserID(sh) + "@" + Helper.getAssertionsIssuer(sh) + ">");
-        eventLog.setHR_AlternativeUserID(Helper.getAlternateUserID(sh));
-        eventLog.setHR_RoleID(Helper.getRoleID(sh));
+                StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "<" + SoapElementHelper.getUserID(sh) + "@" + SoapElementHelper.getAssertionsIssuer(sh) + ">");
+        eventLog.setHR_AlternativeUserID(SoapElementHelper.getAlternateUserID(sh));
+        eventLog.setHR_RoleID(SoapElementHelper.getRoleID(sh));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
-        eventLog.setPT_ParticipantObjectID(Helper.getDocumentEntryPatientIdFromTRCAssertion(sh));
+        eventLog.setPT_ParticipantObjectID(SoapElementHelper.getDocumentEntryPatientIdFromTRCAssertion(sh));
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
 
         if (errorsDiscovered) {
@@ -436,7 +436,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
             throw e;
         }
 
-        final String fullPatientId = Helper.getDocumentEntryPatientIdFromTRCAssertion(shElement);
+        final String fullPatientId = SoapElementHelper.getDocumentEntryPatientIdFromTRCAssertion(shElement);
         if (!getDocumentEntryPatientId(request).contains(fullPatientId)) {
             // Patient ID in TRC assertion does not match the one given in the request. Return "No documents found".
             OpenNCPErrorCode code = OpenNCPErrorCode.ERROR_DOCUMENT_NOT_FOUND;
@@ -494,7 +494,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
             //  e-Sens: we MUST generate NRO when NCPA sends to NI. This was throwing errors because we were not
             //  passing an XML document. We're passing data like:"SearchCriteria: {patientId = 12445ASD}".
             //  So we provided a XML representation of such data.
-            final Assertion assertionTRC = Helper.getTRCAssertion(shElement);
+            final Assertion assertionTRC = SoapElementHelper.getTRCAssertion(shElement);
             final String messageUUID = UUIDHelper.encodeAsURN(assertionTRC.getID()) + "_" + assertionTRC.getIssueInstant();
 
             EvidenceUtils.createEvidenceREMNRO(DocumentFactory.createSearchCriteria().addPatientId(fullPatientId).asXml(),
@@ -767,7 +767,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
             documentSearchService.setSOAPHeader(soapHeaderElement);
 
             final String documentId = request.getDocumentRequest().get(0).getDocumentUniqueId();
-            final String fullPatientId = Helper.getDocumentEntryPatientIdFromTRCAssertion(soapHeaderElement);
+            final String fullPatientId = SoapElementHelper.getDocumentEntryPatientIdFromTRCAssertion(soapHeaderElement);
             final String repositoryId = getRepositoryUniqueId(request);
             if (OpenNCPConstants.NCP_SERVER_MODE != ServerMode.PRODUCTION && loggerClinical.isDebugEnabled()) {
                 loggerClinical.debug("Retrieving clinical document by criteria:\nPatient ID: '{}'\nDocument ID: '{}'\nRepository ID: '{}'",
@@ -823,7 +823,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
                         Constants.NCP_SIG_KEYSTORE_PASSWORD, Constants.NCP_SIG_PRIVATEKEY_ALIAS,
                         EventType.PATIENT_SERVICE_RETRIEVE.getIheCode(), new DateTime(),
                         EventOutcomeIndicator.FULL_SUCCESS.getCode().toString(), "NI_XCA_RETRIEVE_REQ",
-                        Helper.getTRCAssertion(soapHeaderElement).getID() + "__" + DateUtil.getCurrentTimeGMT());
+                        SoapElementHelper.getTRCAssertion(soapHeaderElement).getID() + "__" + DateUtil.getCurrentTimeGMT());
             } catch (final Exception e) {
                 logger.error("createEvidenceREMNRO: '{}'", ExceptionUtils.getStackTrace(e), e);
             }

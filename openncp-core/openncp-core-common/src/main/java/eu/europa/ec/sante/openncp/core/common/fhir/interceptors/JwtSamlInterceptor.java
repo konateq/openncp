@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.interceptor.InterceptorAdapter;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.core.common.fhir.audit.AuditSecurityInfo;
 import eu.europa.ec.sante.openncp.core.common.fhir.security.TokenProvider;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
@@ -15,7 +16,6 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Unmarshaller;
@@ -61,30 +61,28 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
         DecodedJWT jwt = tokenProvider.verifyToken(token);
 
         String saml = jwt.getClaim("saml").asString();
-        AuditInfo auditInfo = null;
+        final AuditSecurityInfo auditSecurityInfo;
         try {
-            auditInfo = validateSaml(saml);
+            auditSecurityInfo = validateSaml(saml);
         } catch (Exception e) {
             LOGGER.error("Invalid SAML token", e);
             throw new AuthenticationException("Invalid SAML token.");
         }
 
-        if(auditInfo != null) {
+        if(auditSecurityInfo != null) {
             String ipAddress = theRequest.getHeader("X-FORWARDED-FOR");
             if (ipAddress == null) {
                 ipAddress = theRequest.getRemoteAddr();
             }
 
-            auditInfo.setRequestIp(ipAddress);
-
+            InetAddress hostIp = null;
             try {
-                InetAddress hostIp = InetAddress.getLocalHost();
-                auditInfo.setHostIp(hostIp.getHostAddress());
+                 hostIp =InetAddress.getLocalHost();
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
 
-            addAssertionToSecurityContext(auditInfo);
+            addAssertionToSecurityContext(AuditSecurityInfo.from(auditSecurityInfo.getAssertion(), auditSecurityInfo.getSamlAsRoot(), ipAddress, hostIp.getHostAddress()));
         }else{
             throw new AuthenticationException("Invalid SAML token: empty assertion.");
         }
@@ -93,7 +91,7 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
     }
 
 
-    private AuditInfo validateSaml(String saml) throws AuthenticationException, InitializationException {
+    private AuditSecurityInfo validateSaml(String saml) throws AuthenticationException, InitializationException {
 
         Assertion hcpIdentityAssertion = null;
 
@@ -122,7 +120,7 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
 
                 saml2Validator.validateXCPDHeader(hcpIdentityAssertion);
 
-                return new AuditInfo(hcpIdentityAssertion, samlasRoot);
+                return AuditSecurityInfo.from(hcpIdentityAssertion, samlasRoot, null, null);
 
             } catch (UnmarshallingException | XMLParserException | ComponentInitializationException ex) {
                 throw new AuthenticationException(Msg.code(333) + ex.getMessage());
@@ -141,9 +139,9 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
         return null;
     }
 
-    public void addAssertionToSecurityContext(AuditInfo auditInfo) {
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(auditInfo.getAssertion().getSubject().getNameID().getValue(), auditInfo.getAssertion().getIssuer().getValue(), null);
-        authentication.setDetails(auditInfo);
+    public void addAssertionToSecurityContext(AuditSecurityInfo auditSecurityInfo) {
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(auditSecurityInfo.getAssertion().getSubject().getNameID().getValue(), auditSecurityInfo.getAssertion().getIssuer().getValue(), null);
+        authentication.setDetails(auditSecurityInfo);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

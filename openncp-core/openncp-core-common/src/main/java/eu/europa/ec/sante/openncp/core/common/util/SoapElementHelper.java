@@ -1,5 +1,6 @@
-package eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator;
+package eu.europa.ec.sante.openncp.core.common.util;
 
+import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.AssertionConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.saml.SAML;
 import org.apache.commons.lang3.StringUtils;
@@ -16,11 +17,11 @@ import javax.xml.transform.dom.DOMSource;
 /**
  * TODO: improve the implementation by implementing a method which picks attribute values by attribute names
  */
-public class Helper {
+public class SoapElementHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(Helper.class);
+    private static final Logger logger = LoggerFactory.getLogger(SoapElementHelper.class);
 
-    private Helper() {
+    private SoapElementHelper() {
     }
 
     public static Assertion getHCPAssertion(Element soapHeader) {
