@@ -120,7 +120,7 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
 
                 saml2Validator.validateXCPDHeader(hcpIdentityAssertion);
 
-                return AuditSecurityInfo.from(hcpIdentityAssertion, samlasRoot, null, null);
+                return AuditSecurityInfo.from(hcpIdentityAssertion, samlasRoot, "", "");
 
             } catch (UnmarshallingException | XMLParserException | ComponentInitializationException ex) {
                 throw new AuthenticationException(Msg.code(333) + ex.getMessage());
