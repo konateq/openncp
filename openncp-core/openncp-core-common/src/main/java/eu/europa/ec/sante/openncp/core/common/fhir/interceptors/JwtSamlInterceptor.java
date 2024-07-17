@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.interceptor.InterceptorAdapter;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
+import eu.europa.ec.sante.openncp.core.common.fhir.audit.AuditSecurityInfo;
 import eu.europa.ec.sante.openncp.core.common.fhir.security.TokenProvider;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
@@ -33,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Base64;
 
 public class JwtSamlInterceptor extends InterceptorAdapter {
@@ -60,20 +63,39 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
 
         String saml = jwt.getClaim("saml").asString();
 
-        Base64.Decoder decoder = Base64.getDecoder();
 
+        Base64.Decoder decoder = Base64.getDecoder();
+        final AuditSecurityInfo auditSecurityInfo;
         try {
-            validateSaml(new String(decoder.decode(saml)));
+            auditSecurityInfo = validateSaml(new String(decoder.decode(saml)));
         } catch (Exception e) {
             LOGGER.error("Invalid SAML token", e);
             throw new AuthenticationException("Invalid SAML token.");
+        }
+
+        if(auditSecurityInfo != null) {
+            String ipAddress = theRequest.getHeader("X-FORWARDED-FOR");
+            if (ipAddress == null) {
+                ipAddress = theRequest.getRemoteAddr();
+            }
+
+            InetAddress hostIp = null;
+            try {
+                 hostIp =InetAddress.getLocalHost();
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);
+            }
+
+            addAssertionToSecurityContext(AuditSecurityInfo.from(auditSecurityInfo.getAssertion(), auditSecurityInfo.getSamlAsRoot(), ipAddress, hostIp.getHostAddress()));
+        }else{
+            throw new AuthenticationException("Invalid SAML token: empty assertion.");
         }
 
         return true;
     }
 
 
-    private boolean validateSaml(String saml) throws AuthenticationException, InitializationException {
+    private AuditSecurityInfo validateSaml(String saml) throws AuthenticationException, InitializationException {
 
         Assertion hcpIdentityAssertion = null;
 
@@ -102,7 +124,7 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
 
                 saml2Validator.validateXCPDHeader(hcpIdentityAssertion);
 
-                addAssertionToSecurityContext(hcpIdentityAssertion);
+                return AuditSecurityInfo.from(hcpIdentityAssertion, samlasRoot, "", "");
 
             } catch (UnmarshallingException | XMLParserException | ComponentInitializationException ex) {
                 throw new AuthenticationException(Msg.code(333) + ex.getMessage());
@@ -117,15 +139,13 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
             } catch (XSDValidationException e) {
                 throw new RuntimeException(e);
             }
-            return true;
         }
-        return true;
+        return null;
     }
 
-    public void addAssertionToSecurityContext(Assertion assertion) {
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(assertion.getSubject().getNameID().getValue(), assertion.getIssuer().getValue(), null);
-        authentication.setDetails(assertion);
+    public void addAssertionToSecurityContext(AuditSecurityInfo auditSecurityInfo) {
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(auditSecurityInfo.getAssertion().getSubject().getNameID().getValue(), auditSecurityInfo.getAssertion().getIssuer().getValue(), null);
+        authentication.setDetails(auditSecurityInfo);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
-
 }

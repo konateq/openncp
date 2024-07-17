@@ -7,7 +7,7 @@ import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.util.SoapElementHelper;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.OpenNCPErrorCodeException;
@@ -83,14 +83,14 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         eventLog.setEI_TransactionName(TransactionName.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS);
         eventLog.setEI_EventActionCode(EventActionCode.EXECUTE);
         eventLog.setEI_EventDateTime(DATATYPE_FACTORY.newXMLGregorianCalendar(new GregorianCalendar()));
-        final String userIdAlias = Helper.getAssertionsSPProvidedId(soapHeader);
-        eventLog.setHR_UserID(StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "" + "<" + Helper.getUserID(soapHeader)
-                + "@" + Helper.getAssertionsIssuer(soapHeader) + ">");
-        eventLog.setHR_AlternativeUserID(Helper.getAlternateUserID(soapHeader));
-        eventLog.setHR_RoleID(Helper.getRoleID(soapHeader));
+        final String userIdAlias = SoapElementHelper.getAssertionsSPProvidedId(soapHeader);
+        eventLog.setHR_UserID(StringUtils.isNotBlank(userIdAlias) ? userIdAlias : "" + "<" + SoapElementHelper.getUserID(soapHeader)
+                + "@" + SoapElementHelper.getAssertionsIssuer(soapHeader) + ">");
+        eventLog.setHR_AlternativeUserID(SoapElementHelper.getAlternateUserID(soapHeader));
+        eventLog.setHR_RoleID(SoapElementHelper.getRoleID(soapHeader));
         // Add point of care to the event log for assertion purposes
-        eventLog.setPC_UserID(Helper.getPointOfCareUserId(soapHeader));
-        eventLog.setPC_RoleID(Helper.getPC_RoleID(soapHeader));
+        eventLog.setPC_UserID(SoapElementHelper.getPointOfCareUserId(soapHeader));
+        eventLog.setPC_RoleID(SoapElementHelper.getPC_RoleID(soapHeader));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
 
         // Update audit with Patient ID returned
@@ -652,7 +652,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
                             Constants.SP_PRIVATEKEY_ALIAS, Constants.NCP_SIG_KEYSTORE_PATH, Constants.NCP_SIG_KEYSTORE_PASSWORD,
                             Constants.NCP_SIG_PRIVATEKEY_ALIAS, EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS.getIheCode(),
                             new DateTime(), EventOutcomeIndicator.FULL_SUCCESS.getCode().toString(), "NI_XCPD_REQ",
-                            Helper.getHCPAssertion(shElement).getID() + "__" + DateUtil.getCurrentTimeGMT());
+                            SoapElementHelper.getHCPAssertion(shElement).getID() + "__" + DateUtil.getCurrentTimeGMT());
                 } catch (final Exception e) {
                     logger.error(ExceptionUtils.getStackTrace(e));
                 }

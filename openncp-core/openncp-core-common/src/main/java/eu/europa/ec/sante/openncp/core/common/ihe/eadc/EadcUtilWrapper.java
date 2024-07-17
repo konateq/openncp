@@ -11,7 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.util.XMLUtil;
-import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.Helper;
+import eu.europa.ec.sante.openncp.core.common.util.SoapElementHelper;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.xsd.ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.datamodel.ObjectFactory;
 import eu.europa.ec.sante.openncp.core.common.ihe.eadc.datamodel.TransactionInfo;
@@ -261,7 +261,7 @@ public class EadcUtilWrapper {
 
         final var soapHeader = requestMessageContext.getEnvelope().getHeader();
         final Element soapHeaderElement = XMLUtils.toDOM(soapHeader);
-        return Helper.getHCPAssertion(soapHeaderElement);
+        return SoapElementHelper.getHCPAssertion(soapHeaderElement);
     }
 
     /**
