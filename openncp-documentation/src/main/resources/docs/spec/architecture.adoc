@@ -59,7 +59,16 @@ image::media/request_response_flow.png[]
 
 ==== Audit
 
-Audit messages for the FHIR flows are generated using an AuditInterceptor, generating AuditEvent resources in JSON format.
+Audit logging leverages the FHIR https://www.hl7.org/fhir/auditevent.html[AuditEvent]. +
+This AuditEvent is based on http://tools.ietf.org/html/rfc3881[RFC 3881], now managed by http://medical.nema.org/medical/dicom/current/output/html/part15.html#sect_A.5[DICOM Part 15 Annex A5] and is formatted as https://www.json.org/json-en.html[json]. +
+
+For now these audit events are only saved to the local filesystem. +
+The location where this file is saved is currently `$\{EPSOS_PROPS_PATH\} + /validation` and the filename is `fhir_audit_\{timestamp\}_\{random\}.json` where:
+
+* `timestamp` has the https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns[date format] `yyyyMMddHHmmss`
+ * `random` is a random 4 character sequence consisting of letters and numbers.
+
+Currently, only *outgoing* fhir message from NCP-A and NCP-B are being audited.
 
 ==== Validation
 

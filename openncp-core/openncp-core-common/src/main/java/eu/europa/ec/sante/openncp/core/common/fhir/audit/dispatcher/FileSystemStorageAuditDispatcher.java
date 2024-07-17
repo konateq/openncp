@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
@@ -33,7 +32,7 @@ public class FileSystemStorageAuditDispatcher implements AuditDispatcher {
 
     @Override
     public DispatchResult dispatch(final AuditEvent auditEvent) {
-        final String filename = String.format("fhir_audit_%s_%s.json", DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneOffset.UTC).format(Instant.now()), RandomStringUtils.random(4, true, false));
+        final String filename = String.format("fhir_audit_%s_%s.json", DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneOffset.UTC).format(Instant.now()), RandomStringUtils.random(4, true, true));
         final Path file = Paths.get(epsosPropsPath, "validation", filename);
 
         final DispatchMetadata dispatchingMetadata = ImmutableDispatchMetadata.builder()
