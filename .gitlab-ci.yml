@@ -7,7 +7,6 @@ stages:
     - package
     - deploy
 
-
 cache:
   paths:
     - .m2/repository
@@ -27,10 +26,25 @@ test_job:
   stage: test
   tags:
     - docker 
-
-  script: 
+  script:
     - echo "Maven test started"
-    - "mvn test"
+    - "mvn $MAVEN_CLI_OPTS clean org.jacoco:jacoco-maven-plugin:prepare-agent test jacoco:report
+  artifacts:
+    paths:
+      - target/site/jacoco/jacoco.xml
+
+coverage-jdk11:
+  stage: test
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.9
+  script:
+    # convert report from jacoco to cobertura, using relative project path
+    - python /opt/cover2cover.py target/site/jacoco/jacoco.xml $CI_PROJECT_DIR/src/main/java/ > target/site/cobertura.xml
+  needs: ["test_job"]
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: target/site/cobertura.xml
 
 package_job:
   stage: package
@@ -46,7 +60,6 @@ Deploy_job:
   stage: deploy
   tags:
     - docker 
-
   script: 
     - echo "Maven deploy started"
 
