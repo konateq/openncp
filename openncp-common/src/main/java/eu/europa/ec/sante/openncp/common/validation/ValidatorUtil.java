@@ -21,12 +21,14 @@ public class ValidatorUtil {
     public static final String EHDSI_AUDIT_IDENTIFICATION_SERVICE_SP;
     public static final String EHDSI_AUDIT_IMPORT_NCP_TRUSTED_LIST;
     public static final String EHDSI_AUDIT_HCP_ASSURANCE;
+    public static final String EHDSI_AUDIT_FETCH_ORDER_SERVICE_SC;
     public static final String EHDSI_AUDIT_FETCH_DOC_SERVICE_SC;
     public static final String EHDSI_AUDIT_ISSUANCE_TRC_ASSERTION;
     public static final String EHDSI_AUDIT_ISSUANCE_NOK_ASSERTION;
     public static final String EHDSI_AUDIT_PIVOT_TRANSLATION;
     public static final String EHDSI_AUDIT_PROVIDE_DATA_SERVICE_SP;
     public static final String EHDSI_AUDIT_ISSUANCE_HCP_ASSERTION;
+    public static final String EHDSI_AUDIT_FETCH_ORDER_SERVICE_SP;
     public static final String EHDSI_AUDIT_FETCH_DOC_SERVICE_SP;
     public static final String EHDSI_AUDIT_SMP_SERVICE_CONSUMER_QUERY;
     public static final String EHDSI_AUDIT_SMP_SERVICE_CONSUMER_PUSH;
@@ -77,11 +79,13 @@ public class ValidatorUtil {
             EHDSI_AUDIT_IDENTIFICATION_SERVICE_SP = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_IDENTIFICATION_SERVICE_SP");
             EHDSI_AUDIT_IMPORT_NCP_TRUSTED_LIST = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_IMPORT_NCP_TRUSTED_LIST");
             EHDSI_AUDIT_HCP_ASSURANCE = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_HCP_ASSURANCE_AUDIT");
+            EHDSI_AUDIT_FETCH_ORDER_SERVICE_SC = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_FETCH_ORDER_SERVICE_SC");
             EHDSI_AUDIT_FETCH_DOC_SERVICE_SC = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_FETCH_DOC_SERVICE_SC");
             EHDSI_AUDIT_ISSUANCE_TRC_ASSERTION = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_ISSUANCE_TRC_ASSERTION");
             EHDSI_AUDIT_ISSUANCE_NOK_ASSERTION = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_ISSUANCE_NOK_ASSERTION");
             EHDSI_AUDIT_PROVIDE_DATA_SERVICE_SP = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_PROVIDE_DATA_SERVICE_SP");
             EHDSI_AUDIT_ISSUANCE_HCP_ASSERTION = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_ISSUANCE_HCP_ASSERTION");
+            EHDSI_AUDIT_FETCH_ORDER_SERVICE_SP = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_FETCH_ORDER_SERVICE_SP");
             EHDSI_AUDIT_FETCH_DOC_SERVICE_SP = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_FETCH_DOC_SERVICE_SP");
             EHDSI_AUDIT_PIVOT_TRANSLATION = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_PIVOT_TRANSLATION");
             EHDSI_AUDIT_SMP_SERVICE_CONSUMER_QUERY = (String) GazelleConfiguration.getInstance().getConfiguration().getProperty("EHDSI_AUDIT_SMP_SERVICE_CONSUMER_QUERY");
@@ -120,7 +124,7 @@ public class ValidatorUtil {
     private ValidatorUtil() {
     }
 
-    public static String obtainAuditModel(String eventType, NcpSide ncpSide) {
+    public static String obtainAuditModel(String eventType, String eventIheType, NcpSide ncpSide) {
 
         String model = "";
         // Infer model according to NCP Side and EventCode
@@ -142,7 +146,13 @@ public class ValidatorUtil {
                     || StringUtils.equals(eventType, "EHDSI-95")
                     || StringUtils.equals(eventType, "EHDSI-97")) {
 
-                model = ValidatorUtil.EHDSI_AUDIT_FETCH_DOC_SERVICE_SP;
+                if(StringUtils.equals(eventIheType, "ITI-38")) {
+                    model = ValidatorUtil.EHDSI_AUDIT_FETCH_ORDER_SERVICE_SP;
+                } else if(StringUtils.equals(eventIheType, "ITI-39")) {
+                    model = ValidatorUtil.EHDSI_AUDIT_FETCH_DOC_SERVICE_SP;
+                } else {
+                    model = ValidatorUtil.EHDSI_AUDIT_FETCH_DOC_SERVICE_SP;
+                }
             }
             if (StringUtils.equals(eventType, "EHDSI-41") || StringUtils.equals(eventType, "EHDSI-42")
                     || StringUtils.equals(eventType, "EHDSI-51")) {
@@ -171,7 +181,13 @@ public class ValidatorUtil {
                     || StringUtils.equals(eventType, "EHDSI-31") || StringUtils.equals(eventType, "EHDSI-32")
                     || StringUtils.equals(eventType, "EHDSI-61") || StringUtils.equals(eventType, "EHDSI-62")) {
 
-                model = ValidatorUtil.EHDSI_AUDIT_FETCH_DOC_SERVICE_SC;
+                if(StringUtils.equals(eventIheType, "ITI-38")) {
+                    model = ValidatorUtil.EHDSI_AUDIT_FETCH_ORDER_SERVICE_SC;
+                } else if(StringUtils.equals(eventIheType, "ITI-39")) {
+                    model = ValidatorUtil.EHDSI_AUDIT_FETCH_DOC_SERVICE_SC;
+                } else {
+                    model = ValidatorUtil.EHDSI_AUDIT_FETCH_DOC_SERVICE_SC;
+                }
             }
             if (StringUtils.equals(eventType, "EHDSI-41") || StringUtils.equals(eventType, "EHDSI-42")
                     || StringUtils.equals(eventType, "EHDSI-51")) {

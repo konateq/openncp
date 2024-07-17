@@ -12,11 +12,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.validation.FhirValidator;
 import eu.europa.ec.sante.openncp.core.common.fhir.context.EuFhirContextFactory;
-import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.EuCorsInterceptor;
-import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.JwtSamlInterceptor;
-import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.FhirCustomInterceptor;
-import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.SecuredOpenApiInterceptor;
-import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.UnsecuredOpenApiInterceptor;
+import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.*;
 import eu.europa.ec.sante.openncp.core.common.fhir.security.TokenProvider;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.saml.SAML2Validator;
 import org.apache.commons.lang3.Validate;
@@ -71,10 +67,12 @@ public class FhirConfiguration {
     public FhirValidator fhirValidator(final FhirContext fhirContext) {
         final NpmPackageValidationSupport npmPackageSupport = new NpmPackageValidationSupport(fhirContext);
         try {
-            LOG.info("Loading eulab_0.1.0-ballot.tgz package");
-            npmPackageSupport.loadPackageFromClasspath("classpath:package/eulab_0.1.0-ballot.tgz");
-            LOG.info("Loading ips.r4_1.1.0.tgz package");
-            npmPackageSupport.loadPackageFromClasspath("classpath:package/ips.r4_1.1.0.tgz");
+            LOG.info("Loading hl7.fhir.eu.extensions.0.1.0.tgz package");
+            npmPackageSupport.loadPackageFromClasspath("classpath:package/hl7.fhir.eu.extensions.0.1.0.tgz");
+            LOG.info("Loading hl7.fhir.eu.laboratory.0.1.0.tgz package");
+            npmPackageSupport.loadPackageFromClasspath("classpath:package/hl7.fhir.eu.laboratory.0.1.0.tgz");
+            LOG.info("Loading hl7.fhir.uv.ips.1.1.0.tgz package");
+            npmPackageSupport.loadPackageFromClasspath("classpath:package/hl7.fhir.uv.ips.1.1.0.tgz");
             LOG.info("Loading myhealtheu_lab_0.0.1.tgz package");
             npmPackageSupport.loadPackageFromClasspath("classpath:package/myhealtheu_lab_0.0.1.tgz");
         } catch (final IOException e) {
@@ -101,7 +99,7 @@ public class FhirConfiguration {
 
 
     @Bean
-    public JwtSamlInterceptor getJwtSamlInterceptor(TokenProvider tokenProvider, SAML2Validator saml2Validator){
+    public JwtSamlInterceptor getJwtSamlInterceptor(final TokenProvider tokenProvider, final SAML2Validator saml2Validator) {
         return new JwtSamlInterceptor(tokenProvider, saml2Validator);
     }
 

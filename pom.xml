@@ -33,8 +33,6 @@
         <module>openncp-api</module>
         <module>openncp-application</module>
         <module>openncp-common</module>
-        <module>openncp-connectors</module>
-        <module>openncp-context</module>
         <module>openncp-core</module>
         <module>openncp-web-manager</module>
         <module>openncp-tools</module>
@@ -136,7 +134,7 @@
         <commons-fileupload.version>1.5</commons-fileupload.version>
         <cxf.version>3.6.3</cxf.version>
         <bcprov.version>1.70</bcprov.version>
-
+        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <sonar.organization>abc123s</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
@@ -758,6 +756,27 @@
     </repositories>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -779,21 +798,20 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.7</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.3.1</version>
                     <executions>
                         <execution>
+                            <id>integration-test</id>
                             <goals>
-                                <goal>prepare-agent</goal>
+                                <goal>integration-test</goal>
                             </goals>
                         </execution>
-                        <!-- attached to Maven test phase -->
                         <execution>
-                            <id>report</id>
-                            <phase>test</phase>
+                            <id>verify</id>
                             <goals>
-                                <goal>report</goal>
+                                <goal>verify</goal>
                             </goals>
                         </execution>
                     </executions>

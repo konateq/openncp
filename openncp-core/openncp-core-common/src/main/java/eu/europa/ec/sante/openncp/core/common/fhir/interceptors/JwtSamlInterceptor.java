@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Base64;
 
 public class JwtSamlInterceptor extends InterceptorAdapter {
 
@@ -61,9 +62,12 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
         DecodedJWT jwt = tokenProvider.verifyToken(token);
 
         String saml = jwt.getClaim("saml").asString();
+
+
+        Base64.Decoder decoder = Base64.getDecoder();
         final AuditSecurityInfo auditSecurityInfo;
         try {
-            auditSecurityInfo = validateSaml(saml);
+            auditSecurityInfo = validateSaml(new String(decoder.decode(saml)));
         } catch (Exception e) {
             LOGGER.error("Invalid SAML token", e);
             throw new AuthenticationException("Invalid SAML token.");
