@@ -5,7 +5,7 @@
 
     <groupId>eu.europa.ec.sante</groupId>
     <artifactId>openncp</artifactId>
-    <version>8.0.0-SNAPSHOT</version>
+    <version>8.0.0</version>
     <packaging>pom</packaging>
 
     <name>OpenNCP Reference Implementation</name>
@@ -38,6 +38,7 @@
         <module>openncp-tools</module>
         <module>openncp-docker</module>
         <module>openncp-documentation</module>
+        <module>openncp-coverage</module>
     </modules>
 
     <scm>
@@ -761,6 +762,10 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <destFile>${session.executionRootDirectory}/target/site/jacoco.exec</destFile>
+                    <append>true</append>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
