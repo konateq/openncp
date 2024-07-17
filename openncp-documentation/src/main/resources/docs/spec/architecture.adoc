@@ -13,7 +13,7 @@ The high level layers of the OpenNCP related to FHIR are the following:
 *OpenNCP Client Connector*: JAR file that is to be used by the Member State portal as a dependency in order to interact with the OpenNCP client. +
 *OpenNCP Application*: The entry point of the OpenNCP application.
 Contains the Spring boot classes that startup the application. +
-*OpenNCP API*: All the logic related with the HTTP endpoints and the SOAP/REST interfaces to the application. +
+*OpenNCP API*: All the logic related with the HTTP endpoints and the SOAP/REST interfaces. +
 *OpenNCP Client* : The Client implementation, accepting HTTP REST request from the portal and forwarding them to the Country of affiliation.
 This is the component to run in the Country of treatment and in the context of OpenNCP, it corresponds with the NCP-B. +
 *OpenNCP Server*: The implementation for the Country of Treatment (NCP-A).
@@ -31,9 +31,6 @@ image::media/high_level_architecture.png[]
 
 To facilitate the deployment of OpenNCP, we use docker as a container management tool that comprises the different components, configuration and required (populated) databases.
 This allows users to startup all the necessary components using a simple docker command.
-
-*Starting the containers*: docker compose up -d +
-*Stopping the containers*: docker compose down --rmi local
 
 A new SMP file definition is created, "Fhir Endpoint service" where the FHIR REST API endpoint URL needs to be configured.
 This URL will be used by the application to connect the server from the client.
