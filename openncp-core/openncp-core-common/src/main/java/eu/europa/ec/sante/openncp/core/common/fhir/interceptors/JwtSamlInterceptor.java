@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Base64;
 
 public class JwtSamlInterceptor extends InterceptorAdapter {
 
@@ -59,14 +60,14 @@ public class JwtSamlInterceptor extends InterceptorAdapter {
 
         String saml = jwt.getClaim("saml").asString();
 
+        Base64.Decoder decoder = Base64.getDecoder();
+
         try {
-            validateSaml(saml);
+            validateSaml(new String(decoder.decode(saml)));
         } catch (Exception e) {
             LOGGER.error("Invalid SAML token", e);
             throw new AuthenticationException("Invalid SAML token.");
         }
-
-        String username = jwt.getSubject();
 
         return true;
     }
