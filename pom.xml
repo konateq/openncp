@@ -132,7 +132,7 @@
         <axis2.version>1.8.2</axis2.version>
         <axiom-api.version>1.4.0</axiom-api.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
-        <cxf.version>3.6.3</cxf.version>
+        <cxf.version>3.6.4</cxf.version>
         <bcprov.version>1.70</bcprov.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <sonar.organization>abc123s</sonar.organization>
