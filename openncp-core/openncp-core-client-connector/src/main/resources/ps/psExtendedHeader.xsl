@@ -89,7 +89,7 @@
                     </tr>
                     <xsl:for-each select="$participantPRS">
                         <xsl:call-template name="displayAssignedPerson">
-                            <xsl:with-param name="assignedPerson" select="../n1:associatedPerson"/>
+                            <xsl:with-param name="assignedPerson" select="n1:associatedPerson"/>
                             <xsl:with-param name="contactInfoRoot" select="."/>
                         </xsl:call-template>
                         <xsl:call-template name="displayRepresentedOrganization">
