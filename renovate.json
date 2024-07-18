@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "commitMessagePrefix": "[EHEALTH-11984] ",
   "extends": [
     "config:recommended"
   ]
+   
 }
