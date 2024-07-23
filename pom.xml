@@ -117,7 +117,7 @@
         <springfox.version>3.0.0</springfox.version>
         <xerces.version>2.12.2</xerces.version>
         <xmlbeans.version>3.1.0</xmlbeans.version>
-        <xmlsec.version>2.3.0</xmlsec.version>
+        <xmlsec.version>2.3.4</xmlsec.version>
         <xmlunit.version>1.1</xmlunit.version>
         <guava.version>31.0.1-jre</guava.version>
         <commons-io.version>2.11.0</commons-io.version>
