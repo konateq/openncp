@@ -4,6 +4,7 @@ import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
+import eu.europa.ec.sante.openncp.common.error.ErrorCode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
@@ -120,18 +121,14 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
         if (!outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()) {
             final String detail = outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getContent();
-            if (detail.startsWith("(")) {
-                if(detail.startsWith("(ERROR_PS_NOT_FOUND")) {
-                    eventLog.setEM_ParticipantObjectID("ERROR_PS_NOT_FOUND");
-                    eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.TEMPORAL_FAILURE);
-                } else {
-                    eventLog.setEM_ParticipantObjectID(detail.substring(1, 5));
-                    eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.PERMANENT_FAILURE);
-                }
-            } else {
-                eventLog.setEM_ParticipantObjectID("0");
+            final String errorCode = outputMessage.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getCode().getCode();
+
+            if(errorCode.equals(OpenNCPErrorCode.ERROR_PI_NO_MATCH.getCode())) {
+                eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.TEMPORAL_FAILURE);
+            }else{
                 eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.PERMANENT_FAILURE);
             }
+            eventLog.setEM_ParticipantObjectID(errorCode);
             eventLog.setEM_ParticipantObjectDetail(detail.getBytes());
         } else {
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);

@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.core.common.ihe.util;
 import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
+import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.org.hl7.v3.II;
@@ -58,16 +59,13 @@ public class EventLogUtil {
         if (!response.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()) {
 
             String detail = response.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getContent();
-            if (detail.startsWith("(")) {
-                if(detail.startsWith("(ERROR_PS_NOT_FOUND")) {
-                    eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.TEMPORAL_FAILURE);
-                } else {
-                    eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.PERMANENT_FAILURE);
-                }
-            } else {
-                eventLog.setEM_ParticipantObjectID("0");
+            String errorCode = response.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getCode().getCode();
+            if(errorCode.equals(OpenNCPErrorCode.ERROR_PI_NO_MATCH.getCode())) {
+                eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.TEMPORAL_FAILURE);
+            }else{
                 eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.PERMANENT_FAILURE);
             }
+            eventLog.setEM_ParticipantObjectID(errorCode);
             eventLog.setEM_ParticipantObjectDetail(detail.getBytes());
         } else {
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
@@ -95,8 +93,9 @@ public class EventLogUtil {
         // Set Participant Object: Error Message
         if (!response.getAcknowledgement().get(0).getAcknowledgementDetail().isEmpty()) {
 
+            String errorCode = response.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getCode().getCode();
             String error = response.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText().getContent();
-            eventLog.setEM_ParticipantObjectID(error);
+            eventLog.setEM_ParticipantObjectID(errorCode);
             eventLog.setEM_ParticipantObjectDetail(error.getBytes());
         }
 
