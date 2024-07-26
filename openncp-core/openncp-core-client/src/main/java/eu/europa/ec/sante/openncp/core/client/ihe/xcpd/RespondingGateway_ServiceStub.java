@@ -46,6 +46,7 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -614,7 +615,7 @@ public class RespondingGateway_ServiceStub extends Stub {
         public void serialize(final OutputStream output) throws XMLStreamException {
 
             try {
-                marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
+                marshaller.marshal(new javax.xml.bind.JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
 
             } catch (final JAXBException e) {
                 throw new XMLStreamException("Error in JAXB marshalling", e);
