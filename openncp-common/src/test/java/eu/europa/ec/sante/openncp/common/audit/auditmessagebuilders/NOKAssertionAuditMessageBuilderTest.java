@@ -23,13 +23,13 @@ public class NOKAssertionAuditMessageBuilderTest extends XMLTestCase {
     public void testBuild() throws Exception {
         {
 
-            EventLog eventLog = new EventLog();
+            final EventLog eventLog = new EventLog();
             eventLog.setEventType(EventType.NOK_ASSERTION);
             eventLog.setNcpSide(NcpSide.NCP_A);
             eventLog.setEI_TransactionName(TransactionName.NOK_ASSERTION);
             eventLog.setEI_EventActionCode(EventActionCode.EXECUTE);
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
-            XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
+            final XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
             eventLog.setEI_EventDateTime(now);
             eventLog.setSC_UserID("Service Consumer");
             eventLog.setSP_UserID("Service Provider");
@@ -56,11 +56,11 @@ public class NOKAssertionAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setSourceip("127.0.0.1");
             eventLog.setTargetip("127.0.0.1");
 
-            NOKAssertionAuditMessageBuilder nOKAssertionAuditMessageBuilder = new NOKAssertionAuditMessageBuilder();
-            AuditMessage generatedAuditMessage = nOKAssertionAuditMessageBuilder.build(eventLog);
+            final NOKAssertionAuditMessageBuilder nOKAssertionAuditMessageBuilder = new NOKAssertionAuditMessageBuilder();
+            final AuditMessage generatedAuditMessage = nOKAssertionAuditMessageBuilder.build(eventLog);
 
-            URL url = Resources.getResource("nokassertionauditmessage.xml");
-            AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
+            final URL url = Resources.getResource("nokassertionauditmessage.xml");
+            final AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
             expectedAuditMessage.getEventIdentification().setEventDateTime(now);
             XMLUnit.setIgnoreWhitespace(true);
             assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));

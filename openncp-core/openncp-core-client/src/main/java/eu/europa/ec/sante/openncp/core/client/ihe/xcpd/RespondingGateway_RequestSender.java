@@ -52,17 +52,18 @@ public final class RespondingGateway_RequestSender {
             LOGGER.debug("ClientConnector is trying to contact remote NCP-A:\nEndpoint: '{}'\nHomeCommunityId: '{}'", endpointUrl,
                          dstHomeCommunityId);
         }
-        return sendRequest(endpointUrl, hl7Request, assertionMap, countryCode);
+        return sendRequest(endpointUrl, hl7Request, assertionMap, countryCode, dstHomeCommunityId);
     }
 
     private static PRPAIN201306UV02 sendRequest(final String endpointUrl, final PRPAIN201305UV02 pRPAIN201305UV022, final Map<AssertionEnum, Assertion> assertionMap,
-                                                final String countryCode) throws NoPatientIdDiscoveredException {
+                                                final String countryCode,
+                                                final String dstHomeCommunityId) throws NoPatientIdDiscoveredException {
 
         final var respondingGatewayServiceStub = new RespondingGateway_ServiceStub(endpointUrl);
         // Dummy handler for any mustUnderstand
         EventLogClientUtil.createDummyMustUnderstandHandler(respondingGatewayServiceStub);
         respondingGatewayServiceStub.setCountryCode(countryCode);
 
-        return respondingGatewayServiceStub.respondingGateway_PRPA_IN201305UV02(pRPAIN201305UV022, assertionMap);
+        return respondingGatewayServiceStub.respondingGateway_PRPA_IN201305UV02(pRPAIN201305UV022, assertionMap, dstHomeCommunityId);
     }
 }
