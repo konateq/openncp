@@ -5,8 +5,6 @@ import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import net.RFC3881.dicom.AuditMessage;
-import net.sf.saxon.value.GDayValue;
-import net.sf.saxon.value.SaxonXMLGregorianCalendar;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -15,7 +13,6 @@ import org.junit.Test;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
@@ -25,13 +22,13 @@ public class XCARetrieveAuditMessageBuilderTest extends XMLTestCase {
     @Test
     public void testBuild() throws Exception {
         {
-            EventLog eventLog = new EventLog();
+            final EventLog eventLog = new EventLog();
             eventLog.setEventType(EventType.PATIENT_SERVICE_RETRIEVE);
             eventLog.setNcpSide(NcpSide.NCP_A);
             eventLog.setEI_TransactionName(TransactionName.PATIENT_SERVICE_RETRIEVE);
             eventLog.setEI_EventActionCode(EventActionCode.VIEW);
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
-            XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
+            final XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
             eventLog.setEI_EventDateTime(now);
             eventLog.setSC_UserID("Service Consumer");
             eventLog.setSP_UserID("Service Provider");
@@ -57,13 +54,12 @@ public class XCARetrieveAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setSourceip("127.0.0.1");
             eventLog.setTargetip("127.0.0.1");
 
-            XCARetrieveAuditMessageBuilder patientRetrieveAuditMessageBuilder = new XCARetrieveAuditMessageBuilder();
-            AuditMessage generatedAuditMessage = patientRetrieveAuditMessageBuilder.build(eventLog);
+            final XCARetrieveAuditMessageBuilder patientRetrieveAuditMessageBuilder = new XCARetrieveAuditMessageBuilder();
+            final AuditMessage generatedAuditMessage = patientRetrieveAuditMessageBuilder.build(eventLog);
 
 
-
-          URL url = Resources.getResource("patientserviceretrivetauditmessage.xml");
-           AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
+            final URL url = Resources.getResource("patientserviceretrievetauditmessage.xml");
+            final AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
            expectedAuditMessage.getEventIdentification().setEventDateTime(now);
            XMLUnit.setIgnoreWhitespace(true);
           assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));

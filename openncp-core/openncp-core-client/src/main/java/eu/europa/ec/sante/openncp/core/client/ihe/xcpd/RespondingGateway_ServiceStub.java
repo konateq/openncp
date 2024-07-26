@@ -46,7 +46,6 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -183,7 +182,7 @@ public class RespondingGateway_ServiceStub extends Stub {
      * @param assertionMap
      * @return
      */
-    public PRPAIN201306UV02 respondingGateway_PRPA_IN201305UV02(final PRPAIN201305UV02 prpain201305UV02, final Map<AssertionEnum, Assertion> assertionMap) throws NoPatientIdDiscoveredException {
+    public PRPAIN201306UV02 respondingGateway_PRPA_IN201305UV02(final PRPAIN201305UV02 prpain201305UV02, final Map<AssertionEnum, Assertion> assertionMap, final String dstHomeCommunityId) throws NoPatientIdDiscoveredException {
 
         MessageContext _messageContext = null;
         MessageContext _returnMessageContext = null;
@@ -409,7 +408,7 @@ public class RespondingGateway_ServiceStub extends Stub {
 
             // eventLog
             final EventLog eventLog = createAndSendEventLog(prpain201305UV02, (PRPAIN201306UV02) object, messageContext,
-                    _returnEnv, env, assertionMap.get(AssertionEnum.CLINICIAN), this._getServiceClient().getOptions().getTo().getAddress());
+                    _returnEnv, env, assertionMap.get(AssertionEnum.CLINICIAN), this._getServiceClient().getOptions().getTo().getAddress(), dstHomeCommunityId);
 
             try {
                 LOGGER.info("SOAP MESSAGE IS: '{}'", XMLUtils.toDOM(_returnEnv));
@@ -565,9 +564,9 @@ public class RespondingGateway_ServiceStub extends Stub {
     }
 
     private EventLog createAndSendEventLog(final PRPAIN201305UV02 sended, final PRPAIN201306UV02 received, final MessageContext msgContext,
-                                           final SOAPEnvelope _returnEnv, final SOAPEnvelope env, final Assertion idAssertion, final String address) {
+                                           final SOAPEnvelope _returnEnv, final SOAPEnvelope env, final Assertion idAssertion, final String address, final String dstHomeCommunityId) {
 
-        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address);
+        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address, dstHomeCommunityId);
         eventLog.setNcpSide(NcpSide.NCP_B);
         EventLogClientUtil.logIdAssertion(eventLog, idAssertion);
         EventLogUtil.prepareXCPDCommonLog(eventLog, msgContext, sended, received);
