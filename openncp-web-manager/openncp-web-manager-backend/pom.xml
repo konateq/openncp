@@ -21,7 +21,7 @@
         <poi-ooxml.version>5.2.2</poi-ooxml.version>
         <querydsl.version>5.0.0</querydsl.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
-        <xmlbeans.version>5.0.3</xmlbeans.version>
+        <xmlbeans.version>5.2.1</xmlbeans.version>
     </properties>
 
     <build>
