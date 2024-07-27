@@ -14,7 +14,7 @@
         <bootstrap.version>5.2.2</bootstrap.version>
         <locator-core.version>0.52</locator-core.version>
         <commons-compress.version>1.21</commons-compress.version>
-        <java-jwt.version>3.18.3</java-jwt.version>
+        <java-jwt.version>3.19.4</java-jwt.version>
         <jaxb-runtime.version>2.4.0-b180830.0438</jaxb-runtime.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <passay.version>1.6.4</passay.version>
