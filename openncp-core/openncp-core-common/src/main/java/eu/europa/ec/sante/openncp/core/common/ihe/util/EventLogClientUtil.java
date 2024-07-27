@@ -84,7 +84,7 @@ public class EventLogClientUtil {
         }
     }
 
-    public static EventLog prepareEventLog(final MessageContext msgContext, final SOAPEnvelope soapEnvelope, final String endpointReference) {
+    public static EventLog prepareEventLog(final MessageContext msgContext, final SOAPEnvelope soapEnvelope, final String endpointReference, final String dstHomeCommunityId) {
 
         final var eventLog = new EventLog();
         eventLog.setEI_EventDateTime(DateUtil.getDateAsXMLGregorian(new Date()));
@@ -111,6 +111,8 @@ public class EventLogClientUtil {
         final String rspMessageId = appendUrnUuid(EventLogUtil.getMessageID(soapEnvelope));
         eventLog.setResM_ParticipantObjectID(rspMessageId);
         eventLog.setResM_ParticipantObjectDetail(soapEnvelope.getHeader().toString().getBytes());
+
+        eventLog.setHciIdentifier(dstHomeCommunityId);
 
         return eventLog;
     }

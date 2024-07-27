@@ -23,13 +23,13 @@ public class IdentificationServiceAuditMessageBuilderTest extends XMLTestCase {
     public void testBuild() throws Exception {
         {
 
-            EventLog eventLog = new EventLog();
+            final EventLog eventLog = new EventLog();
             eventLog.setEventType(EventType.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS);
             eventLog.setNcpSide(NcpSide.NCP_A);
             eventLog.setEI_TransactionName(TransactionName.IDENTIFICATION_SERVICE_FIND_IDENTITY_BY_TRAITS);
             eventLog.setEI_EventActionCode(EventActionCode.EXECUTE);
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
-            XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
+            final XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
             eventLog.setEI_EventDateTime(now);
             eventLog.setSC_UserID("Service Consumer");
             eventLog.setSP_UserID("Service Provider");
@@ -56,14 +56,17 @@ public class IdentificationServiceAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setSourceip("127.0.0.1");
             eventLog.setTargetip("127.0.0.1");
 
+            eventLog.setHciIdentifier("2.16.17.710.850.1000.990.1");
 
-            IdentificationServiceAuditMessageBuilder identificationServiceAuditMessageBuilder = new IdentificationServiceAuditMessageBuilder();
-            AuditMessage generatedAuditMessage = identificationServiceAuditMessageBuilder.build(eventLog);
 
-            URL url = Resources.getResource("Identityservicefindidentitybytraits.xml");
-            AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
+            final IdentificationServiceAuditMessageBuilder identificationServiceAuditMessageBuilder = new IdentificationServiceAuditMessageBuilder();
+            final AuditMessage generatedAuditMessage = identificationServiceAuditMessageBuilder.build(eventLog);
+
+            final URL url = Resources.getResource("Identityservicefindidentitybytraits.xml");
+            final AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
             expectedAuditMessage.getEventIdentification().setEventDateTime(now);
             XMLUnit.setIgnoreWhitespace(true);
+            System.out.println(AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
             assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
         }
 
