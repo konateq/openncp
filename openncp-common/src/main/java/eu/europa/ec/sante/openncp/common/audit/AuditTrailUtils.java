@@ -327,7 +327,7 @@ public enum AuditTrailUtils {
             if (StringUtils.equals(eventLog.getEventType().getCode(), "EHDSI-CF")) {
                 throw new UnsupportedOperationException("EventCode not supported.");
             }
-            OpenNCPValidation.validateAuditMessage(convertAuditObjectToXML(auditMessage), eventLog.getEventType().getCode(), eventLog.getEventType().getIheCode(), ncpSide);
+            OpenNCPValidation.validateAuditMessage(convertAuditObjectToXML(auditMessage), eventLog.getEventType().getCode(), ncpSide);
         } catch (JAXBException e) {
             LOGGER.error("JAXBException: {}", e.getMessage(), e);
         } catch (Exception e) {
