@@ -183,7 +183,7 @@ public class RespondingGateway_ServiceStub extends Stub {
      * @param assertionMap
      * @return
      */
-    public PRPAIN201306UV02 respondingGateway_PRPA_IN201305UV02(final PRPAIN201305UV02 prpain201305UV02, final Map<AssertionEnum, Assertion> assertionMap) throws NoPatientIdDiscoveredException {
+    public PRPAIN201306UV02 respondingGateway_PRPA_IN201305UV02(final PRPAIN201305UV02 prpain201305UV02, final Map<AssertionEnum, Assertion> assertionMap, final String dstHomeCommunityId) throws NoPatientIdDiscoveredException {
 
         MessageContext _messageContext = null;
         MessageContext _returnMessageContext = null;
@@ -336,12 +336,13 @@ public class RespondingGateway_ServiceStub extends Stub {
 
                     /* add the new message context to the new operation client */
                     newOperationClient.addMessageContext(newMessageContext);
-                    /* we retry the request */
-                    newOperationClient.execute(true);
+
                     /* we need to reset the previous variables with the new content, to be used later */
                     operationClient = newOperationClient;
                     messageContext = newMessageContext;
                     env = newEnv;
+                    /* we retry the request */
+                    newOperationClient.execute(true);
                     LOGGER.debug("Successfully retried the request! Proceeding with the normal workflow...");
                 } else {
                     /* if we cannot solve this issue through the Central Services, then there's nothing we can do, so we let it be thrown */
@@ -409,7 +410,7 @@ public class RespondingGateway_ServiceStub extends Stub {
 
             // eventLog
             final EventLog eventLog = createAndSendEventLog(prpain201305UV02, (PRPAIN201306UV02) object, messageContext,
-                    _returnEnv, env, assertionMap.get(AssertionEnum.CLINICIAN), this._getServiceClient().getOptions().getTo().getAddress());
+                    _returnEnv, env, assertionMap.get(AssertionEnum.CLINICIAN), this._getServiceClient().getOptions().getTo().getAddress(), dstHomeCommunityId);
 
             try {
                 LOGGER.info("SOAP MESSAGE IS: '{}'", XMLUtils.toDOM(_returnEnv));
@@ -565,9 +566,9 @@ public class RespondingGateway_ServiceStub extends Stub {
     }
 
     private EventLog createAndSendEventLog(final PRPAIN201305UV02 sended, final PRPAIN201306UV02 received, final MessageContext msgContext,
-                                           final SOAPEnvelope _returnEnv, final SOAPEnvelope env, final Assertion idAssertion, final String address) {
+                                           final SOAPEnvelope _returnEnv, final SOAPEnvelope env, final Assertion idAssertion, final String address, final String dstHomeCommunityId) {
 
-        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address);
+        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address, dstHomeCommunityId);
         eventLog.setNcpSide(NcpSide.NCP_B);
         EventLogClientUtil.logIdAssertion(eventLog, idAssertion);
         EventLogUtil.prepareXCPDCommonLog(eventLog, msgContext, sended, received);
@@ -615,7 +616,7 @@ public class RespondingGateway_ServiceStub extends Stub {
         public void serialize(final OutputStream output) throws XMLStreamException {
 
             try {
-                marshaller.marshal(new JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
+                marshaller.marshal(new javax.xml.bind.JAXBElement(new QName(nsuri, name), outObject.getClass(), outObject), output);
 
             } catch (final JAXBException e) {
                 throw new XMLStreamException("Error in JAXB marshalling", e);

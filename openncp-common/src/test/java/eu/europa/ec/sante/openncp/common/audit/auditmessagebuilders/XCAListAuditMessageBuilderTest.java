@@ -22,13 +22,13 @@ public class XCAListAuditMessageBuilderTest extends XMLTestCase {
     @Test
     public void testBuild() throws Exception {
         {
-            EventLog eventLog = new EventLog();
+            final EventLog eventLog = new EventLog();
             eventLog.setEventType(EventType.PATIENT_SERVICE_LIST);
             eventLog.setNcpSide(NcpSide.NCP_A);
             eventLog.setEI_TransactionName(TransactionName.PATIENT_SERVICE_LIST);
             eventLog.setEI_EventActionCode(EventActionCode.EXECUTE);
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
-            XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
+            final XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
             eventLog.setEI_EventDateTime(now);
             eventLog.setSC_UserID("Service Consumer");
             eventLog.setSP_UserID("Service Provider");
@@ -55,13 +55,14 @@ public class XCAListAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setTargetip("127.0.0.1");
 
 
-            XCAListAuditMessageBuilder patientListAuditMessageBuilder = new XCAListAuditMessageBuilder();
-            AuditMessage generatedAuditMessage = patientListAuditMessageBuilder.build(eventLog);
+            final XCAListAuditMessageBuilder patientListAuditMessageBuilder = new XCAListAuditMessageBuilder();
+            final AuditMessage generatedAuditMessage = patientListAuditMessageBuilder.build(eventLog);
 
-            URL url = Resources.getResource("patientservicelistauditmessage.xml");
-            AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
+            final URL url = Resources.getResource("patientservicelistauditmessage.xml");
+            final AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
             expectedAuditMessage.getEventIdentification().setEventDateTime(now);
             XMLUnit.setIgnoreWhitespace(true);
+            System.out.println(AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
             assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
         }
 
