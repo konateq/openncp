@@ -16,7 +16,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <asciidoctor.maven.plugin.version>3.0.0</asciidoctor.maven.plugin.version>
-        <asciidoctorj.pdf.version>2.3.17</asciidoctorj.pdf.version>
+        <asciidoctorj.pdf.version>2.3.18</asciidoctorj.pdf.version>
         <asciidoctorj.version>2.5.13</asciidoctorj.version>
         <jruby.version>9.4.8.0</jruby.version>
     </properties>
