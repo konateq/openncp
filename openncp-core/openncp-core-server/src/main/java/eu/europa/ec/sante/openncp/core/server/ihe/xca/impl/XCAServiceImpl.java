@@ -16,7 +16,6 @@ import eu.europa.ec.sante.openncp.common.validation.OpenNCPValidation;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xca.XCAConstants;
 import eu.europa.ec.sante.openncp.core.common.constants.ihe.xdr.XDRConstants;
 import eu.europa.ec.sante.openncp.core.common.ihe.RegistryErrorSeverity;
-import eu.europa.ec.sante.openncp.core.common.util.SoapElementHelper;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InsufficientRightsException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
@@ -40,6 +39,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.transformation.service.CDATran
 import eu.europa.ec.sante.openncp.core.common.ihe.transformation.util.Base64Util;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.ITMTSAMError;
 import eu.europa.ec.sante.openncp.core.common.tsam.error.TMError;
+import eu.europa.ec.sante.openncp.core.common.util.SoapElementHelper;
 import eu.europa.ec.sante.openncp.core.server.api.ihe.xca.DocumentSearchInterface;
 import eu.europa.ec.sante.openncp.core.server.ihe.AdhocQueryResponseStatus;
 import eu.europa.ec.sante.openncp.core.server.ihe.IheErrorCode;
@@ -176,7 +176,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
         eventLog.setHR_AlternativeUserID(SoapElementHelper.getAlternateUserID(sh));
         eventLog.setHR_RoleID(SoapElementHelper.getRoleID(sh));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
-        eventLog.setPT_ParticipantObjectID(getDocumentEntryPatientId(request));
+        eventLog.setPT_ParticipantObjectID(Collections.singletonList(getDocumentEntryPatientId(request)));
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
 
         if (response.getRegistryErrorList() != null) {
