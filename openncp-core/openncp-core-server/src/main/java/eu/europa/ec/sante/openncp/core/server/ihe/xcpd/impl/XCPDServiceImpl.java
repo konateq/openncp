@@ -94,9 +94,6 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
 
         // Update audit with Patient ID returned
-        final II sourceII;
-        final II targetII;
-
         final ArrayList<String> requestParticipantObjectIds = new ArrayList<>();
         for (final PRPAMT201306UV02LivingSubjectId livingSubjectId : inputMessage.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId()) {
             requestParticipantObjectIds.add(getParticipantObjectID(livingSubjectId.getValue().get(0)));
@@ -105,7 +102,7 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         for (final PRPAIN201306UV02MFMIMT700711UV01Subject1 subject1 : outputMessage.getControlActProcess().getSubject()) {
             responseParticipantObjectIds.add(getParticipantObjectID(subject1.getRegistrationEvent().getSubject1().getPatient().getId().get(0)));
         }
-        eventLog.setPT_ParticipantObjectID(CollectionUtils.isNotEmpty(responseParticipantObjectIds) ? responseParticipantObjectIds : requestParticipantObjectIds);
+        eventLog.setPT_ParticipantObjectIDs(CollectionUtils.isNotEmpty(responseParticipantObjectIds) ? responseParticipantObjectIds : requestParticipantObjectIds);
 
         // Check if patient id mapping has occurred, prepare event log for patient audit mapping in this case
         if (!CollectionUtils.isEqualCollection(responseParticipantObjectIds, requestParticipantObjectIds)) {

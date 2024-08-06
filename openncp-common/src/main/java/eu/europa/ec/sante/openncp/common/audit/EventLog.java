@@ -57,9 +57,9 @@ public class EventLog {
     // Audit Source
     private String AS_AuditSourceId; // The authority that is legally responsible for the audit source
     // Patient Source
-    private String PS_ParticipantObjectID; // Patient Code in HL7 format
+    private List<String> PS_ParticipantObjectIDs; // Patient Code in HL7 format
     // Patient Target
-    private List<String> PT_ParticipantObjectID; // Mapped PatientCode in HL7 format
+    private List<String> PT_ParticipantObjectIDs; // Mapped PatientCode in HL7 format
     // Error Message
     private String EM_ParticipantObjectID;  // String-encoded error code
     private byte[] EM_ParticipantObjectDetail;  // Base64 encoded error message
@@ -325,7 +325,7 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs       Patient Identifier in HL7 II format
      * @param EM_ParticipantObjectID       The error code included with the response
      *                                     message
      * @param EM_ParticipantObjectDetail   Contains the base64 encoded error
@@ -347,7 +347,7 @@ public class EventLog {
                                                       final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
                                                       final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_AlternativeUserID,
                                                       final String HR_RoleID, final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId,
-                                                      final List<String> PT_ParticipantObjectID, final String EM_ParticipantObjectID,
+                                                      final List<String> PT_ParticipantObjectIDs, final String EM_ParticipantObjectID,
                                                       final byte[] EM_ParticipantObjectDetail, final String eventTargetObjectId,
                                                       final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
                                                       final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
@@ -367,7 +367,7 @@ public class EventLog {
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
         eventLog.setAS_AuditSourceId(nullToEmptyString(AS_AuditSourceId));
-        eventLog.setPT_ParticipantObjectID(PT_ParticipantObjectID);
+        eventLog.setPT_ParticipantObjectIDs(PT_ParticipantObjectIDs);
         eventLog.setEM_ParticipantObjectID(nullToEmptyString(EM_ParticipantObjectID));
         eventLog.setEM_ParticipantObjectDetail(EM_ParticipantObjectDetail);
         eventLog.getEventTargetParticipantObjectIds().add(nullToEmptyString(eventTargetObjectId));
@@ -494,7 +494,7 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs       Patient Identifier in HL7 II format
      * @param eventTargetObjectId          The string encoded UUID of the returned document
      * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
      *                                     message
@@ -512,7 +512,7 @@ public class EventLog {
                                               final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
                                               final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_RoleID,
                                               final String HR_AlternativeUserID, final String SC_UserID, final String SP_UserID,
-                                              final String AS_AuditSourceId, final List<String> PT_ParticipantObjectID, final String eventTargetObjectId,
+                                              final String AS_AuditSourceId, final List<String> PT_ParticipantObjectIDs, final String eventTargetObjectId,
                                               final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
                                               final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
                                               final String sourceIp, final String targetIp, final NcpSide ncpSide) {
@@ -531,7 +531,7 @@ public class EventLog {
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
         eventLog.setAS_AuditSourceId(nullToEmptyString(AS_AuditSourceId));
-        eventLog.setPT_ParticipantObjectID(PT_ParticipantObjectID);
+        eventLog.setPT_ParticipantObjectIDs(PT_ParticipantObjectIDs);
         eventLog.getEventTargetParticipantObjectIds().add(nullToEmptyString(eventTargetObjectId));
         //  TODO: Audit - Event Target
         eventLog.setReqM_ParticipantObjectID(nullToEmptyString(ReqM_ParticipantObjectID));
@@ -572,7 +572,7 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param NOK_ParticipantObjectID      Next of Kin Identifier in HL7 II format
+     * @param NOK_ParticipantObjectIDs      Next of Kin Identifiers in HL7 II format
      * @param eventTargetObjectId          The string encoded UUID of the returned document
      * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
      *                                     message
@@ -590,7 +590,7 @@ public class EventLog {
                                               final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
                                               final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_RoleID,
                                               final String HR_AlternativeUserID, final String SC_UserID, final String SP_UserID,
-                                              final String AS_AuditSourceId, final List<String> NOK_ParticipantObjectID, final String eventTargetObjectId,
+                                              final String AS_AuditSourceId, final List<String> NOK_ParticipantObjectIDs, final String eventTargetObjectId,
                                               final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
                                               final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
                                               final String sourceIp, final String targetIp, final NcpSide ncpSide) {
@@ -609,7 +609,7 @@ public class EventLog {
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
         eventLog.setAS_AuditSourceId(nullToEmptyString(AS_AuditSourceId));
-        eventLog.setPT_ParticipantObjectID(NOK_ParticipantObjectID);
+        eventLog.setPT_ParticipantObjectIDs(NOK_ParticipantObjectIDs);
         eventLog.getEventTargetParticipantObjectIds().add(nullToEmptyString(eventTargetObjectId));
         //  TODO: Audit - Event Target
         eventLog.setReqM_ParticipantObjectID(nullToEmptyString(ReqM_ParticipantObjectID));
@@ -650,9 +650,9 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param PS_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PS_ParticipantObjectIDs      Patient Identifiers in HL7 II format
      *                                     (Patient Source)
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs      Patient Identifiers in HL7 II format
      *                                     (Patient Target)
      * @param EM_ParticipantObjectID       The error code included with the response
      *                                     message
@@ -676,7 +676,7 @@ public class EventLog {
                                                         final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
                                                         final String HR_UserID, final String HR_RoleID, final String HR_AlternativeUserID,
                                                         final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId,
-                                                        final String PS_ParticipantObjectID, final List<String> PT_ParticipantObjectID,
+                                                        final List<String> PS_ParticipantObjectIDs, final List<String> PT_ParticipantObjectIDs,
                                                         final String EM_ParticipantObjectID, final byte[] EM_ParticipantObjectDetail,
                                                         final String MS_UserID, final String ReqM_ParticipantObjectID,
                                                         final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
@@ -694,8 +694,8 @@ public class EventLog {
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
         eventLog.setAS_AuditSourceId(nullToEmptyString(AS_AuditSourceId));
-        eventLog.setPS_ParticipantObjectID(nullToEmptyString(PS_ParticipantObjectID));
-        eventLog.setPT_ParticipantObjectID(PT_ParticipantObjectID);
+        eventLog.setPS_ParticipantObjectIDs(PS_ParticipantObjectIDs);
+        eventLog.setPT_ParticipantObjectIDs(PT_ParticipantObjectIDs);
         eventLog.setEM_ParticipantObjectID(nullToEmptyString(EM_ParticipantObjectID));
         eventLog.setEM_ParticipantObjectDetail(EM_ParticipantObjectDetail);
         eventLog.setMS_UserID(nullToEmptyString(MS_UserID));
@@ -734,7 +734,7 @@ public class EventLog {
      *                                     triggered the epsos operation
      * @param SP_UserID                    The string encoded CN of the TLS certificate of the NCP
      *                                     processed the epsos operation
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs      Patient Identifiers in HL7 II format
      * @param EM_ParticipantObjectID       The error code included with the response
      *                                     message
      * @param EM_ParticipantObjectDetail   Contains the base64 encoded error
@@ -755,7 +755,7 @@ public class EventLog {
                                                               final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
                                                               final String PC_UserID, final String PC_RoleID, final String HR_UserID,
                                                               final String HR_RoleID, final String HR_AlternativeUserID, final String SC_UserID,
-                                                              final String SP_UserID, final List<String> PT_ParticipantObjectID, final String EM_ParticipantObjectID,
+                                                              final String SP_UserID, final List<String> PT_ParticipantObjectIDs, final String EM_ParticipantObjectID,
                                                               final byte[] EM_ParticipantObjectDetail, final String ReqM_ParticipantObjectID,
                                                               final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
                                                               final byte[] ResM_ParticipantObjectDetail, final String sourceip, final String targetip) {
@@ -773,7 +773,7 @@ public class EventLog {
         eventLog.setHR_AlternativeUserID(nullToEmptyString(HR_AlternativeUserID));
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
-        eventLog.setPT_ParticipantObjectID(PT_ParticipantObjectID);
+        eventLog.setPT_ParticipantObjectIDs(PT_ParticipantObjectIDs);
         eventLog.setEM_ParticipantObjectID(nullToEmptyString(EM_ParticipantObjectID));
         eventLog.setEM_ParticipantObjectDetail(EM_ParticipantObjectDetail);
         eventLog.setReqM_ParticipantObjectID(nullToEmptyString(ReqM_ParticipantObjectID));
@@ -992,20 +992,20 @@ public class EventLog {
         this.PC_UserID = PC_UserID;
     }
 
-    public String getPS_ParticipantObjectID() {
-        return PS_ParticipantObjectID;
+    public List<String> getPS_ParticipantObjectIDs() {
+        return PS_ParticipantObjectIDs;
     }
 
-    public void setPS_ParticipantObjectID(final String PS_ParticipantObjectID) {
-        this.PS_ParticipantObjectID = PS_ParticipantObjectID;
+    public void setPS_ParticipantObjectIDs(final List<String> PS_ParticipantObjectIDs) {
+        this.PS_ParticipantObjectIDs = PS_ParticipantObjectIDs;
     }
 
-    public List<String> getPT_ParticipantObjectID() {
-        return PT_ParticipantObjectID;
+    public List<String> getPT_ParticipantObjectIDs() {
+        return PT_ParticipantObjectIDs;
     }
 
-    public void setPT_ParticipantObjectID(final List<String> PT_ParticipantObjectID) {
-        this.PT_ParticipantObjectID = PT_ParticipantObjectID;
+    public void setPT_ParticipantObjectIDs(final List<String> PT_ParticipantObjectIDs) {
+        this.PT_ParticipantObjectIDs = PT_ParticipantObjectIDs;
     }
 
     public String getSC_UserID() {
@@ -1068,8 +1068,8 @@ public class EventLog {
                 .append("SC_UserID", SC_UserID)
                 .append("SP_UserID", SP_UserID)
                 .append("AS_AuditSourceId", AS_AuditSourceId)
-                .append("PS_ParticipantObjectID", PS_ParticipantObjectID)
-                .append("PT_ParticipantObjectID", PT_ParticipantObjectID)
+                .append("PS_ParticipantObjectIDs", PS_ParticipantObjectIDs)
+                .append("PT_ParticipantObjectIDs", PT_ParticipantObjectIDs)
                 .append("EM_ParticipantObjectID", EM_ParticipantObjectID)
                 .append("EM_ParticipantObjectDetail", EM_ParticipantObjectDetail)
                 .append("MS_UserID", MS_UserID)

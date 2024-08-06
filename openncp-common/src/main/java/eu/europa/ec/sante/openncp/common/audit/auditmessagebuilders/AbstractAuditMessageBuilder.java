@@ -79,9 +79,11 @@ public abstract class AbstractAuditMessageBuilder {
             addService(message, eventLog.getSP_UserID(), false, AuditConstant.SERVICE_PROVIDER,
                     AuditConstant.CODE_SYSTEM_EHDSI, AuditConstant.SERVICE_PROVIDER_DISPLAY_NAME); // eventLog.getTargetip()
             addAuditSource(message, eventLog.getAS_AuditSourceId());
-            addParticipantObject(message, eventLog.getPT_ParticipantObjectID(), Short.valueOf("1"), Short.valueOf("1"),
-                    "Patient", "2", AuditConstant.RFC3881, "Patient Number",
-                    "Cross Gateway Patient Discovery", eventLog.getQueryByParameter(), eventLog.getHciIdentifier());
+            for (final String ptParticipantObjectID : eventLog.getPT_ParticipantObjectIDs()) {
+                addParticipantObject(message, ptParticipantObjectID, Short.valueOf("1"), Short.valueOf("1"),
+                        "Patient", "2", AuditConstant.RFC3881, "Patient Number",
+                        "Cross Gateway Patient Discovery", eventLog.getQueryByParameter(), eventLog.getHciIdentifier());
+            }
             addError(message, eventLog.getEM_ParticipantObjectID(), eventLog.getEM_ParticipantObjectDetail(), Short.valueOf("2"),
                     Short.valueOf("3"), "9", "errormsg");
         } catch (final Exception e) {
@@ -92,9 +94,9 @@ public abstract class AbstractAuditMessageBuilder {
 
     private boolean getUserIsRequestor(final EventLog eventLog) {
         if (eventLog.getEventType().equals(EventType.DISPENSATION_SERVICE_INITIALIZE) || eventLog.getEventType().equals(EventType.DISPENSATION_SERVICE_DISCARD)) {
-            return eventLog.getNcpSide().equals(NcpSide.NCP_B) ? false : true;
+            return !eventLog.getNcpSide().equals(NcpSide.NCP_B);
         } else {
-            return eventLog.getNcpSide().equals(NcpSide.NCP_B) ? true : false;
+            return eventLog.getNcpSide().equals(NcpSide.NCP_B);
         }
     }
 

@@ -138,7 +138,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
         eventLog.setHR_AlternativeUserID(SoapElementHelper.getAlternateUserID(soapHeader));
         eventLog.setHR_RoleID(SoapElementHelper.getRoleID(soapHeader));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
-        eventLog.setPT_ParticipantObjectID(Collections.singletonList(getDocumentEntryPatientId(request)));
+        eventLog.setPT_ParticipantObjectIDs(Collections.singletonList(getDocumentEntryPatientId(request)));
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
 
         if (response.getRegistryErrorList() != null) {
@@ -192,7 +192,7 @@ public class XDRServiceImpl implements XDRServiceInterface {
         eventLog.setHR_AlternativeUserID(SoapElementHelper.getAlternateUserID(sh));
         eventLog.setHR_RoleID(SoapElementHelper.getRoleID(sh));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
-        eventLog.setPT_ParticipantObjectID(Collections.singletonList(getDocumentEntryPatientId(request)));
+        eventLog.setPT_ParticipantObjectIDs(Collections.singletonList(getDocumentEntryPatientId(request)));
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
 
         if (response.getRegistryErrorList() != null) {
