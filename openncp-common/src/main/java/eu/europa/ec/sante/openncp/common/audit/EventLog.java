@@ -57,9 +57,9 @@ public class EventLog {
     // Audit Source
     private String AS_AuditSourceId; // The authority that is legally responsible for the audit source
     // Patient Source
-    private String PS_ParticipantObjectID; // Patient Code in HL7 format
+    private List<String> PS_ParticipantObjectIDs; // List of Patient Codes in HL7 format
     // Patient Target
-    private String PT_ParticipantObjectID; // Mapped PatientCode in HL7 format
+    private List<String> PT_ParticipantObjectIDs; // List of Mapped Patient Codes in HL7 format
     // Error Message
     private String EM_ParticipantObjectID;  // String-encoded error code
     private byte[] EM_ParticipantObjectDetail;  // Base64 encoded error message
@@ -117,18 +117,18 @@ public class EventLog {
      * @param sourceIp                            The IP Address of the source Gateway
      * @param targetIp                            The IP Address of the target Gateway
      */
-    public static EventLog createEventLogHCPIdentity(TransactionName eventIdentificationTransactionName, EventActionCode eventIdentificationActionCode,
-                                                     XMLGregorianCalendar eventIdentificationTime, EventOutcomeIndicator eventIdentificationOutcomeIndicator,
-                                                     String PC_UserID, String PC_RoleID, String HR_UserID, String HR_RoleID,
-                                                     String HR_AlternativeUserID, String SC_UserID, String SP_UserID,
-                                                     String AS_AuditSourceId, String eventTargetObjectId, String ReqM_ParticipantObjectID,
-                                                     byte[] ReqM_ParticipantObjectDetail, String ResM_ParticipantObjectID,
-                                                     byte[] ResM_ParticipantObjectDetail, String sourceIp, String targetIp,
-                                                     NcpSide ncpSide) {
+    public static EventLog createEventLogHCPIdentity(final TransactionName eventIdentificationTransactionName, final EventActionCode eventIdentificationActionCode,
+                                                     final XMLGregorianCalendar eventIdentificationTime, final EventOutcomeIndicator eventIdentificationOutcomeIndicator,
+                                                     final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_RoleID,
+                                                     final String HR_AlternativeUserID, final String SC_UserID, final String SP_UserID,
+                                                     final String AS_AuditSourceId, final String eventTargetObjectId, final String ReqM_ParticipantObjectID,
+                                                     final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
+                                                     final byte[] ResM_ParticipantObjectDetail, final String sourceIp, final String targetIp,
+                                                     final NcpSide ncpSide) {
 
         LOGGER.info("Creating EventLog for HCP Identification: '{}'-'{}'",
                 eventIdentificationTransactionName, eventIdentificationActionCode);
-        EventLog eventLog = new EventLog();
+        final EventLog eventLog = new EventLog();
         // Setup Event Identification information
         eventLog.setEI_TransactionName(eventIdentificationTransactionName);
         eventLog.setEI_EventActionCode(eventIdentificationActionCode);
@@ -193,16 +193,16 @@ public class EventLog {
      * @param sourceip                     The IP Address of the source Gateway
      * @param targetip                     The IP Address of the target Gateway
      */
-    public static EventLog createEventLogNCPTrustedServiceList(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                                               XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                                               String SC_UserID, String SP_UserID, String eventTargetObjectId,
-                                                               String ReqM_ParticipantObjectID, byte[] ReqM_ParticipantObjectDetail,
-                                                               String ResM_ParticipantObjectID, byte[] ResM_ParticipantObjectDetail,
-                                                               String sourceip, String targetip) {
+    public static EventLog createEventLogNCPTrustedServiceList(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                                               final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                                               final String SC_UserID, final String SP_UserID, final String eventTargetObjectId,
+                                                               final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
+                                                               final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
+                                                               final String sourceip, final String targetip) {
 
         LOGGER.info("Creating EventLog for NCP Trust Service List: '{}'-'{}'",
                 EI_TransactionName, EI_EventActionCode);
-        EventLog eventLog = new EventLog();
+        final EventLog eventLog = new EventLog();
         eventLog.setAS_AuditSourceId("EP-00");
         eventLog.setEI_TransactionName(EI_TransactionName);
         eventLog.setEI_EventActionCode(EI_EventActionCode);
@@ -251,17 +251,17 @@ public class EventLog {
      *                                     encoded security header.
      * @param targetip                     The IP Address of the target Gateway
      */
-    public static EventLog createEventLogPivotTranslation(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                                          XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                                          String SP_UserID, String eventTargetObjectIdIn, String eventTargetObjectIdOut,
-                                                          String ReqM_ParticipantObjectID, byte[] ReqM_ParticipantObjectDetail,
-                                                          String ResM_ParticipantObjectID, byte[] ResM_ParticipantObjectDetail,
-                                                          String targetip) {
+    public static EventLog createEventLogPivotTranslation(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                                          final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                                          final String SP_UserID, final String eventTargetObjectIdIn, final String eventTargetObjectIdOut,
+                                                          final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
+                                                          final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
+                                                          final String targetip) {
 
         LOGGER.info("Creating EventLog for CDA Pivot Translation: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
-        EventLog eventLog = new EventLog();
+        final EventLog eventLog = new EventLog();
         // Set Audit Source
-        ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
+        final ConfigurationManager configurationManager = ConfigurationManagerFactory.getConfigurationManager();
         eventLog.setAS_AuditSourceId(configurationManager.getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"));
         eventLog.setEI_TransactionName(EI_TransactionName);
         eventLog.setEI_EventActionCode(EI_EventActionCode);
@@ -285,15 +285,15 @@ public class EventLog {
         return eventLog;
     }
 
-    public static EventLog createEventLogPatientPrivacy(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                                        XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                                        String HR_UserID, String HR_AlternativeUserID, String HR_RoleID,
-                                                        String SC_UserID, String SP_UserID, String AS_AuditSourceId,
-                                                        String PT_ParticipantObjectID, String EM_ParticipantObjectID,
-                                                        byte[] EM_ParticipantObjectDetail, String eventTargetObjectId,
-                                                        String ReqM_ParticipantObjectID, byte[] ReqM_ParticipantObjectDetail,
-                                                        String ResM_ParticipantObjectID, byte[] ResM_ParticipantObjectDetail,
-                                                        String sourceip, String targetip) {
+    public static EventLog createEventLogPatientPrivacy(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                                        final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                                        final String HR_UserID, final String HR_AlternativeUserID, final String HR_RoleID,
+                                                        final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId,
+                                                        final List<String> PT_ParticipantObjectID, final String EM_ParticipantObjectID,
+                                                        final byte[] EM_ParticipantObjectDetail, final String eventTargetObjectId,
+                                                        final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
+                                                        final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
+                                                        final String sourceip, final String targetip) {
 
         LOGGER.info("Creating EventLog for Patient Privacy: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
         return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime,
@@ -301,111 +301,6 @@ public class EventLog {
                 SC_UserID, SP_UserID, AS_AuditSourceId, PT_ParticipantObjectID, EM_ParticipantObjectID,
                 EM_ParticipantObjectDetail, eventTargetObjectId, ReqM_ParticipantObjectID, ReqM_ParticipantObjectDetail,
                 ResM_ParticipantObjectID, ResM_ParticipantObjectDetail, sourceip, targetip);
-    }
-
-    /**
-     * This method creates an EventLog object for use in Consent PIN
-     *
-     * @param EI_TransactionName           value is epsosConsentServicePin
-     * @param EI_EventActionCode           Possible values according to D4.5.6 are E,R,U,D
-     * @param EI_EventDateTime             The datetime the event occurred
-     * @param EI_EventOutcomeIndicator     <br>
-     *                                     0 for full success <br>
-     *                                     4 in case of partial delivery <br>
-     *                                     8 for temporal failures <br>
-     *                                     12 for permanent failure <br>
-     * @param PC_UserID                    Point of Care: Oid of the department
-     * @param PC_RoleID                    Role of the point of care
-     * @param HR_UserID                    Identifier of the HCP initiated the event
-     * @param HR_AlternativeUserID         Human-readable name of the HCP as given in
-     *                                     the Subject-ID
-     * @param HR_RoleID                    Role of the HCP initiated the event
-     * @param SC_UserID                    The string encoded CN of the TLS certificate of the NCP
-     *                                     triggered the epsos operation
-     * @param SP_UserID                    The string encoded CN of the TLS certificate of the NCP
-     *                                     processed the epsos operation
-     * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
-     *                                     the audit source
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
-     * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
-     *                                     message
-     * @param ReqM_ParticipantObjectDetail The value MUST contain the base64
-     *                                     encoded security header.
-     * @param ResM_ParticipantObjectID     String-encoded UUID of the response
-     *                                     message
-     * @param ResM_ParticipantObjectDetail The value MUST contain the base64
-     *                                     encoded security header.
-     * @param sourceip                     The IP Address of the source Gateway
-     * @param targetip                     The IP Address of the target Gateway
-     * @return the EventLog object
-     */
-    public static EventLog createEventLogConsentPINack(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                                       XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                                       String PC_UserID, String PC_RoleID, String HR_UserID, String HR_AlternativeUserID,
-                                                       String HR_RoleID, String SC_UserID, String SP_UserID, String AS_AuditSourceId,
-                                                       String PT_ParticipantObjectID, String ReqM_ParticipantObjectID,
-                                                       byte[] ReqM_ParticipantObjectDetail, String ResM_ParticipantObjectID,
-                                                       byte[] ResM_ParticipantObjectDetail, String sourceip, String targetip) {
-
-        LOGGER.info("Creating EventLog for Consent PIN ACK: '{}'-'{}'",
-                EI_TransactionName, EI_EventActionCode);
-        return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime, EI_EventOutcomeIndicator,
-                PC_UserID, PC_RoleID, HR_UserID, HR_AlternativeUserID, HR_RoleID, SC_UserID, SP_UserID, AS_AuditSourceId,
-                PT_ParticipantObjectID, null, null, "PINack",
-                ReqM_ParticipantObjectID, ReqM_ParticipantObjectDetail, ResM_ParticipantObjectID, ResM_ParticipantObjectDetail,
-                sourceip, targetip);
-    }
-
-    /**
-     * This method creates an EventLog object for use in Consent PIN
-     *
-     * @param EI_TransactionName           value is epsosConsentServicePin
-     * @param EI_EventActionCode           Possible values according to D4.5.6 are E,R,U,D
-     * @param EI_EventDateTime             The datetime the event occurred
-     * @param EI_EventOutcomeIndicator     <br>
-     *                                     0 for full success <br>
-     *                                     4 in case of partial delivery <br>
-     *                                     8 for temporal failures <br>
-     *                                     12 for permanent failure <br>
-     * @param PC_UserID                    Point of Care: Oid of the department
-     * @param PC_RoleID                    Role of the point of care
-     * @param HR_UserID                    Identifier of the HCP initiated the event
-     * @param HR_AlternativeUserID         Human-readable name of the HCP as given in
-     *                                     the Subject-ID
-     * @param HR_RoleID                    Role of the HCP initiated the event
-     * @param SC_UserID                    The string encoded CN of the TLS certificate of the NCP
-     *                                     triggered the epsos operation
-     * @param SP_UserID                    The string encoded CN of the TLS certificate of the NCP
-     *                                     processed the epsos operation
-     * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
-     *                                     the audit source
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
-     * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
-     *                                     message
-     * @param ReqM_ParticipantObjectDetail The value MUST contain the base64
-     *                                     encoded security header.
-     * @param ResM_ParticipantObjectID     String-encoded UUID of the response
-     *                                     message
-     * @param ResM_ParticipantObjectDetail The value MUST contain the base64
-     *                                     encoded security header.
-     * @param sourceip                     The IP Address of the source Gateway
-     * @param targetip                     The IP Address of the target Gateway
-     * @return the EventLog object
-     */
-    public static EventLog createEventLogConsentPINdny(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                                       XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                                       String PC_UserID, String PC_RoleID, String HR_UserID, String HR_AlternativeUserID,
-                                                       String HR_RoleID, String SC_UserID, String SP_UserID, String AS_AuditSourceId,
-                                                       String PT_ParticipantObjectID, String ReqM_ParticipantObjectID,
-                                                       byte[] ReqM_ParticipantObjectDetail, String ResM_ParticipantObjectID,
-                                                       byte[] ResM_ParticipantObjectDetail, String sourceip, String targetip) {
-
-        LOGGER.info("Creating EventLog for Consent PIN Deny: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
-        return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime, EI_EventOutcomeIndicator,
-                PC_UserID, PC_RoleID, HR_UserID, HR_AlternativeUserID, HR_RoleID, SC_UserID, SP_UserID, AS_AuditSourceId,
-                PT_ParticipantObjectID, null, null, "PINdny",
-                ReqM_ParticipantObjectID, ReqM_ParticipantObjectDetail, ResM_ParticipantObjectID, ResM_ParticipantObjectDetail,
-                sourceip, targetip);
     }
 
     /**
@@ -430,7 +325,7 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs      List of Patient Identifiers in HL7 II format
      * @param EM_ParticipantObjectID       The error code included with the response
      *                                     message
      * @param EM_ParticipantObjectDetail   Contains the base64 encoded error
@@ -448,18 +343,18 @@ public class EventLog {
      * @param targetip                     The IP Address of the target Gateway
      * @return the EventLog object
      */
-    public static EventLog createEventLogHCPAssurance(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                                      XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                                      String PC_UserID, String PC_RoleID, String HR_UserID, String HR_AlternativeUserID,
-                                                      String HR_RoleID, String SC_UserID, String SP_UserID, String AS_AuditSourceId,
-                                                      String PT_ParticipantObjectID, String EM_ParticipantObjectID,
-                                                      byte[] EM_ParticipantObjectDetail, String eventTargetObjectId,
-                                                      String ReqM_ParticipantObjectID, byte[] ReqM_ParticipantObjectDetail,
-                                                      String ResM_ParticipantObjectID, byte[] ResM_ParticipantObjectDetail,
-                                                      String sourceip, String targetip) {
+    public static EventLog createEventLogHCPAssurance(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                                      final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                                      final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_AlternativeUserID,
+                                                      final String HR_RoleID, final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId,
+                                                      final List<String> PT_ParticipantObjectIDs, final String EM_ParticipantObjectID,
+                                                      final byte[] EM_ParticipantObjectDetail, final String eventTargetObjectId,
+                                                      final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
+                                                      final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
+                                                      final String sourceip, final String targetip) {
 
         LOGGER.info("Creating EventLog for Healthcare Provider Assurance: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
-        EventLog eventLog = new EventLog();
+        final EventLog eventLog = new EventLog();
         eventLog.setEI_TransactionName(EI_TransactionName);
         eventLog.setEI_EventActionCode(EI_EventActionCode);
         eventLog.setEI_EventDateTime(EI_EventDateTime);
@@ -472,7 +367,7 @@ public class EventLog {
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
         eventLog.setAS_AuditSourceId(nullToEmptyString(AS_AuditSourceId));
-        eventLog.setPT_ParticipantObjectID(nullToEmptyString(PT_ParticipantObjectID));
+        eventLog.setPT_ParticipantObjectIDs(PT_ParticipantObjectIDs);
         eventLog.setEM_ParticipantObjectID(nullToEmptyString(EM_ParticipantObjectID));
         eventLog.setEM_ParticipantObjectDetail(EM_ParticipantObjectDetail);
         eventLog.getEventTargetParticipantObjectIds().add(nullToEmptyString(eventTargetObjectId));
@@ -517,57 +412,15 @@ public class EventLog {
      * @param targetip
      * @return
      */
-    public static EventLog createEventLogPAC(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                             XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                             String PC_UserID, String PC_RoleID, String HR_UserID, String HR_AlternativeUserID, String HR_RoleID,
-                                             String SC_UserID, String SP_UserID, String AS_AuditSourceId, String PT_ParticipantObjectID,
-                                             String EM_ParticipantObjectID, byte[] EM_ParticipantObjectDetail,
-                                             String eventTargetObjectId, String ReqM_ParticipantObjectID,
-                                             byte[] ReqM_ParticipantObjectDetail, String ResM_ParticipantObjectID,
-                                             byte[] ResM_ParticipantObjectDetail, String sourceip, String targetip) {
-
-        LOGGER.info("Creating EventLog for Patient Access Control(PAC): '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
-        return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime, EI_EventOutcomeIndicator,
-                PC_UserID, PC_RoleID, HR_UserID, HR_AlternativeUserID, HR_RoleID, SC_UserID, SP_UserID, AS_AuditSourceId,
-                PT_ParticipantObjectID, EM_ParticipantObjectID, EM_ParticipantObjectDetail, eventTargetObjectId,
-                ReqM_ParticipantObjectID, ReqM_ParticipantObjectDetail, ResM_ParticipantObjectID, ResM_ParticipantObjectDetail,
-                sourceip, targetip);
-    }
-
-    /**
-     * @param EI_TransactionName
-     * @param EI_EventActionCode
-     * @param EI_EventDateTime
-     * @param EI_EventOutcomeIndicator
-     * @param PC_UserID
-     * @param PC_RoleID
-     * @param HR_UserID
-     * @param HR_AlternativeUserID
-     * @param HR_RoleID
-     * @param SC_UserID
-     * @param SP_UserID
-     * @param AS_AuditSourceId
-     * @param PT_ParticipantObjectID
-     * @param EM_ParticipantObjectID
-     * @param EM_ParticipantObjectDetail
-     * @param eventTargetObjectId
-     * @param ReqM_ParticipantObjectID
-     * @param ReqM_ParticipantObjectDetail
-     * @param ResM_ParticipantObjectID
-     * @param ResM_ParticipantObjectDetail
-     * @param sourceip
-     * @param targetip
-     * @return
-     */
-    public static EventLog createEventLogPatientService(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                                        XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                                        String PC_UserID, String PC_RoleID, String HR_UserID,
-                                                        String HR_AlternativeUserID, String HR_RoleID, String SC_UserID,
-                                                        String SP_UserID, String AS_AuditSourceId, String PT_ParticipantObjectID,
-                                                        String EM_ParticipantObjectID, byte[] EM_ParticipantObjectDetail,
-                                                        String eventTargetObjectId, String ReqM_ParticipantObjectID,
-                                                        byte[] ReqM_ParticipantObjectDetail, String ResM_ParticipantObjectID,
-                                                        byte[] ResM_ParticipantObjectDetail, String sourceip, String targetip) {
+    public static EventLog createEventLogPatientService(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                                        final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                                        final String PC_UserID, final String PC_RoleID, final String HR_UserID,
+                                                        final String HR_AlternativeUserID, final String HR_RoleID, final String SC_UserID,
+                                                        final String SP_UserID, final String AS_AuditSourceId, final List<String> PT_ParticipantObjectID,
+                                                        final String EM_ParticipantObjectID, final byte[] EM_ParticipantObjectDetail,
+                                                        final String eventTargetObjectId, final String ReqM_ParticipantObjectID,
+                                                        final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
+                                                        final byte[] ResM_ParticipantObjectDetail, final String sourceip, final String targetip) {
 
         LOGGER.info("Creating EventLog for Patient Service: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
         return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime, EI_EventOutcomeIndicator,
@@ -599,7 +452,7 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs      List of Patient Identifiers in HL7 II format
      * @param eventTargetObjectId          The string encoded UUID of the returned document
      * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
      *                                     message
@@ -613,17 +466,17 @@ public class EventLog {
      * @param targetIp                     The IP Address of the target Gateway
      * @return the EventLog object
      */
-    public static EventLog createEventLogTRCA(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                              XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                              String PC_UserID, String PC_RoleID, String HR_UserID, String HR_RoleID,
-                                              String HR_AlternativeUserID, String SC_UserID, String SP_UserID,
-                                              String AS_AuditSourceId, String PT_ParticipantObjectID, String eventTargetObjectId,
-                                              String ReqM_ParticipantObjectID, byte[] ReqM_ParticipantObjectDetail,
-                                              String ResM_ParticipantObjectID, byte[] ResM_ParticipantObjectDetail,
-                                              String sourceIp, String targetIp, NcpSide ncpSide) {
+    public static EventLog createEventLogTRCA(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                              final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                              final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_RoleID,
+                                              final String HR_AlternativeUserID, final String SC_UserID, final String SP_UserID,
+                                              final String AS_AuditSourceId, final List<String> PT_ParticipantObjectIDs, final String eventTargetObjectId,
+                                              final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
+                                              final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
+                                              final String sourceIp, final String targetIp, final NcpSide ncpSide) {
 
         LOGGER.info("Creating EventLog for TRC Assertions: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
-        EventLog eventLog = new EventLog();
+        final EventLog eventLog = new EventLog();
         eventLog.setEI_TransactionName(EI_TransactionName);
         eventLog.setEI_EventActionCode(EI_EventActionCode);
         eventLog.setEI_EventDateTime(EI_EventDateTime);
@@ -636,7 +489,7 @@ public class EventLog {
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
         eventLog.setAS_AuditSourceId(nullToEmptyString(AS_AuditSourceId));
-        eventLog.setPT_ParticipantObjectID(nullToEmptyString(PT_ParticipantObjectID));
+        eventLog.setPT_ParticipantObjectIDs(PT_ParticipantObjectIDs);
         eventLog.getEventTargetParticipantObjectIds().add(nullToEmptyString(eventTargetObjectId));
         //  TODO: Audit - Event Target
         eventLog.setReqM_ParticipantObjectID(nullToEmptyString(ReqM_ParticipantObjectID));
@@ -677,7 +530,7 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param NOK_ParticipantObjectID      Next of Kin Identifier in HL7 II format
+     * @param NOK_ParticipantObjectIDs      Next of Kin Identifiers in HL7 II format
      * @param eventTargetObjectId          The string encoded UUID of the returned document
      * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
      *                                     message
@@ -691,17 +544,17 @@ public class EventLog {
      * @param targetIp                     The IP Address of the target Gateway
      * @return the EventLog object
      */
-    public static EventLog createEventLogNOKA(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                              XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                              String PC_UserID, String PC_RoleID, String HR_UserID, String HR_RoleID,
-                                              String HR_AlternativeUserID, String SC_UserID, String SP_UserID,
-                                              String AS_AuditSourceId, String NOK_ParticipantObjectID, String eventTargetObjectId,
-                                              String ReqM_ParticipantObjectID, byte[] ReqM_ParticipantObjectDetail,
-                                              String ResM_ParticipantObjectID, byte[] ResM_ParticipantObjectDetail,
-                                              String sourceIp, String targetIp, NcpSide ncpSide) {
+    public static EventLog createEventLogNOKA(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                              final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                              final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_RoleID,
+                                              final String HR_AlternativeUserID, final String SC_UserID, final String SP_UserID,
+                                              final String AS_AuditSourceId, final List<String> NOK_ParticipantObjectIDs, final String eventTargetObjectId,
+                                              final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
+                                              final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
+                                              final String sourceIp, final String targetIp, final NcpSide ncpSide) {
 
         LOGGER.info("Creating EventLog for NOK Assertions: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
-        EventLog eventLog = new EventLog();
+        final EventLog eventLog = new EventLog();
         eventLog.setEI_TransactionName(EI_TransactionName);
         eventLog.setEI_EventActionCode(EI_EventActionCode);
         eventLog.setEI_EventDateTime(EI_EventDateTime);
@@ -714,7 +567,7 @@ public class EventLog {
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
         eventLog.setAS_AuditSourceId(nullToEmptyString(AS_AuditSourceId));
-        eventLog.setPT_ParticipantObjectID(nullToEmptyString(NOK_ParticipantObjectID));
+        eventLog.setPT_ParticipantObjectIDs(NOK_ParticipantObjectIDs);
         eventLog.getEventTargetParticipantObjectIds().add(nullToEmptyString(eventTargetObjectId));
         //  TODO: Audit - Event Target
         eventLog.setReqM_ParticipantObjectID(nullToEmptyString(ReqM_ParticipantObjectID));
@@ -755,9 +608,9 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param PS_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PS_ParticipantObjectIDs      Patient Identifiers in HL7 II format
      *                                     (Patient Source)
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs      Patient Identifiers in HL7 II format
      *                                     (Patient Target)
      * @param EM_ParticipantObjectID       The error code included with the response
      *                                     message
@@ -777,18 +630,18 @@ public class EventLog {
      * @param targetip                     The IP Address of the target Gateway
      * @return the EventLog object
      */
-    public static EventLog createEventLogPatientMapping(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                                        XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                                        String HR_UserID, String HR_RoleID, String HR_AlternativeUserID,
-                                                        String SC_UserID, String SP_UserID, String AS_AuditSourceId,
-                                                        String PS_ParticipantObjectID, String PT_ParticipantObjectID,
-                                                        String EM_ParticipantObjectID, byte[] EM_ParticipantObjectDetail,
-                                                        String MS_UserID, String ReqM_ParticipantObjectID,
-                                                        byte[] ReqM_ParticipantObjectDetail, String ResM_ParticipantObjectID,
-                                                        byte[] ResM_ParticipantObjectDetail, String sourceip, String targetip) {
+    public static EventLog createEventLogPatientMapping(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                                        final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                                        final String HR_UserID, final String HR_RoleID, final String HR_AlternativeUserID,
+                                                        final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId,
+                                                        final List<String> PS_ParticipantObjectIDs, final List<String> PT_ParticipantObjectIDs,
+                                                        final String EM_ParticipantObjectID, final byte[] EM_ParticipantObjectDetail,
+                                                        final String MS_UserID, final String ReqM_ParticipantObjectID,
+                                                        final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
+                                                        final byte[] ResM_ParticipantObjectDetail, final String sourceip, final String targetip) {
 
         LOGGER.info("Creating EventLog for Patient ID Mapping: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
-        EventLog eventLog = new EventLog();
+        final EventLog eventLog = new EventLog();
         eventLog.setEI_TransactionName(EI_TransactionName);
         eventLog.setEI_EventActionCode(EI_EventActionCode);
         eventLog.setEI_EventDateTime(EI_EventDateTime);
@@ -799,8 +652,8 @@ public class EventLog {
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
         eventLog.setAS_AuditSourceId(nullToEmptyString(AS_AuditSourceId));
-        eventLog.setPS_ParticipantObjectID(nullToEmptyString(PS_ParticipantObjectID));
-        eventLog.setPT_ParticipantObjectID(nullToEmptyString(PT_ParticipantObjectID));
+        eventLog.setPS_ParticipantObjectIDs(PS_ParticipantObjectIDs);
+        eventLog.setPT_ParticipantObjectIDs(PT_ParticipantObjectIDs);
         eventLog.setEM_ParticipantObjectID(nullToEmptyString(EM_ParticipantObjectID));
         eventLog.setEM_ParticipantObjectDetail(EM_ParticipantObjectDetail);
         eventLog.setMS_UserID(nullToEmptyString(MS_UserID));
@@ -839,7 +692,7 @@ public class EventLog {
      *                                     triggered the epsos operation
      * @param SP_UserID                    The string encoded CN of the TLS certificate of the NCP
      *                                     processed the epsos operation
-     * @param PT_ParticipantObjectID       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs      Patient Identifiers in HL7 II format
      * @param EM_ParticipantObjectID       The error code included with the response
      *                                     message
      * @param EM_ParticipantObjectDetail   Contains the base64 encoded error
@@ -856,17 +709,17 @@ public class EventLog {
      * @param targetip                     The IP Address of the target Gateway
      * @return the EventLog object
      */
-    public static EventLog createEventLogCommunicationFailure(TransactionName EI_TransactionName, EventActionCode EI_EventActionCode,
-                                                              XMLGregorianCalendar EI_EventDateTime, EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                                              String PC_UserID, String PC_RoleID, String HR_UserID,
-                                                              String HR_RoleID, String HR_AlternativeUserID, String SC_UserID,
-                                                              String SP_UserID, String PT_ParticipantObjectID, String EM_ParticipantObjectID,
-                                                              byte[] EM_ParticipantObjectDetail, String ReqM_ParticipantObjectID,
-                                                              byte[] ReqM_ParticipantObjectDetail, String ResM_ParticipantObjectID,
-                                                              byte[] ResM_ParticipantObjectDetail, String sourceip, String targetip) {
+    public static EventLog createEventLogCommunicationFailure(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                                              final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                                              final String PC_UserID, final String PC_RoleID, final String HR_UserID,
+                                                              final String HR_RoleID, final String HR_AlternativeUserID, final String SC_UserID,
+                                                              final String SP_UserID, final List<String> PT_ParticipantObjectIDs, final String EM_ParticipantObjectID,
+                                                              final byte[] EM_ParticipantObjectDetail, final String ReqM_ParticipantObjectID,
+                                                              final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
+                                                              final byte[] ResM_ParticipantObjectDetail, final String sourceip, final String targetip) {
 
         LOGGER.info("Creating EventLog for System Communication Failure: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
-        EventLog eventLog = new EventLog();
+        final EventLog eventLog = new EventLog();
         eventLog.setEI_TransactionName(EI_TransactionName);
         eventLog.setEI_EventActionCode(EI_EventActionCode);
         eventLog.setEI_EventDateTime(EI_EventDateTime);
@@ -878,7 +731,7 @@ public class EventLog {
         eventLog.setHR_AlternativeUserID(nullToEmptyString(HR_AlternativeUserID));
         eventLog.setSC_UserID(nullToEmptyString(SC_UserID));
         eventLog.setSP_UserID(nullToEmptyString(SP_UserID));
-        eventLog.setPT_ParticipantObjectID(nullToEmptyString(PT_ParticipantObjectID));
+        eventLog.setPT_ParticipantObjectIDs(PT_ParticipantObjectIDs);
         eventLog.setEM_ParticipantObjectID(nullToEmptyString(EM_ParticipantObjectID));
         eventLog.setEM_ParticipantObjectDetail(EM_ParticipantObjectDetail);
         eventLog.setReqM_ParticipantObjectID(nullToEmptyString(ReqM_ParticipantObjectID));
@@ -900,7 +753,7 @@ public class EventLog {
      * @param str represents a string
      * @return empty string if the param is null. Otherwise returns the string as is
      */
-    private static String nullToEmptyString(String str) {
+    private static String nullToEmptyString(final String str) {
 
         return str == null ? "" : str;
     }
@@ -909,7 +762,7 @@ public class EventLog {
         return HR_RoleID;
     }
 
-    public void setHR_RoleID(String HR_RoleID) {
+    public void setHR_RoleID(final String HR_RoleID) {
         this.HR_RoleID = HR_RoleID;
     }
 
@@ -917,7 +770,7 @@ public class EventLog {
         return eventTargetAdditionalObjectId;
     }
 
-    public void setEventTargetAdditionalObjectId(String eventTargetAdditionalObjectId) {
+    public void setEventTargetAdditionalObjectId(final String eventTargetAdditionalObjectId) {
         this.eventTargetAdditionalObjectId = eventTargetAdditionalObjectId;
     }
 
@@ -925,7 +778,7 @@ public class EventLog {
         return PC_RoleID;
     }
 
-    public void setPC_RoleID(String PC_RoleID) {
+    public void setPC_RoleID(final String PC_RoleID) {
         this.PC_RoleID = PC_RoleID;
     }
 
@@ -933,7 +786,7 @@ public class EventLog {
         return sourceip;
     }
 
-    public void setSourceip(String sourceip) {
+    public void setSourceip(final String sourceip) {
         this.sourceip = sourceip;
     }
 
@@ -941,7 +794,7 @@ public class EventLog {
         return targetip;
     }
 
-    public void setTargetip(String targetip) {
+    public void setTargetip(final String targetip) {
         this.targetip = targetip;
     }
 
@@ -949,7 +802,7 @@ public class EventLog {
         return ReqM_ParticipantObjectID;
     }
 
-    public void setReqM_ParticipantObjectID(String ReqM_ParticipantObjectID) {
+    public void setReqM_ParticipantObjectID(final String ReqM_ParticipantObjectID) {
         this.ReqM_ParticipantObjectID = ReqM_ParticipantObjectID;
     }
 
@@ -957,7 +810,7 @@ public class EventLog {
         return ReqM_ParticipantObjectDetail;
     }
 
-    public void setReqM_ParticipantObjectDetail(byte[] ReqM_ParticipantObjectDetail) {
+    public void setReqM_ParticipantObjectDetail(final byte[] ReqM_ParticipantObjectDetail) {
         this.ReqM_ParticipantObjectDetail = ReqM_ParticipantObjectDetail;
     }
 
@@ -965,7 +818,7 @@ public class EventLog {
         return ResM_ParticipantObjectID;
     }
 
-    public void setResM_ParticipantObjectID(String ResM_ParticipantObjectID) {
+    public void setResM_ParticipantObjectID(final String ResM_ParticipantObjectID) {
         this.ResM_ParticipantObjectID = ResM_ParticipantObjectID;
     }
 
@@ -973,7 +826,7 @@ public class EventLog {
         return ResM_ParticipantObjectDetail;
     }
 
-    public void setResM_ParticipantObjectDetail(byte[] ResM_ParticipantObjectDetail) {
+    public void setResM_ParticipantObjectDetail(final byte[] ResM_ParticipantObjectDetail) {
         this.ResM_ParticipantObjectDetail = ResM_ParticipantObjectDetail;
     }
 
@@ -981,7 +834,7 @@ public class EventLog {
         return eventTargetParticipantObjectIds;
     }
 
-    public void setEventTargetParticipantObjectIds(List<String> eventTargetParticipantObjectIds) {
+    public void setEventTargetParticipantObjectIds(final List<String> eventTargetParticipantObjectIds) {
         this.eventTargetParticipantObjectIds = eventTargetParticipantObjectIds;
     }
 
@@ -989,7 +842,7 @@ public class EventLog {
         return this.eventType;
     }
 
-    public void setEventType(EventType eventType) {
+    public void setEventType(final EventType eventType) {
         this.eventType = eventType;
     }
 
@@ -997,7 +850,7 @@ public class EventLog {
         return EM_ParticipantObjectDetail;
     }
 
-    public void setEM_ParticipantObjectDetail(byte[] EM_ParticipantObjectDetail) {
+    public void setEM_ParticipantObjectDetail(final byte[] EM_ParticipantObjectDetail) {
         this.EM_ParticipantObjectDetail = EM_ParticipantObjectDetail;
     }
 
@@ -1005,7 +858,7 @@ public class EventLog {
         return AS_AuditSourceId;
     }
 
-    public void setAS_AuditSourceId(String AS_AuditSourceId) {
+    public void setAS_AuditSourceId(final String AS_AuditSourceId) {
         this.AS_AuditSourceId = AS_AuditSourceId;
     }
 
@@ -1013,7 +866,7 @@ public class EventLog {
         return EI_EventActionCode;
     }
 
-    public void setEI_EventActionCode(EventActionCode EI_EventActionCode) {
+    public void setEI_EventActionCode(final EventActionCode EI_EventActionCode) {
         this.EI_EventActionCode = EI_EventActionCode.getCode();
     }
 
@@ -1021,7 +874,7 @@ public class EventLog {
         return EI_EventDateTime;
     }
 
-    public void setEI_EventDateTime(XMLGregorianCalendar EI_EventDateTime) {
+    public void setEI_EventDateTime(final XMLGregorianCalendar EI_EventDateTime) {
         this.EI_EventDateTime = EI_EventDateTime;
     }
 
@@ -1029,7 +882,7 @@ public class EventLog {
         return EI_EventOutcomeIndicator;
     }
 
-    public void setEI_EventOutcomeIndicator(EventOutcomeIndicator EI_EventOutcomeIndicator) {
+    public void setEI_EventOutcomeIndicator(final EventOutcomeIndicator EI_EventOutcomeIndicator) {
         this.EI_EventOutcomeIndicator = EI_EventOutcomeIndicator.getCode();
     }
 
@@ -1037,7 +890,7 @@ public class EventLog {
         return EI_TransactionName;
     }
 
-    public void setEI_TransactionName(TransactionName EI_TransactionName) {
+    public void setEI_TransactionName(final TransactionName EI_TransactionName) {
         this.EI_TransactionName = EI_TransactionName.getCode();
     }
 
@@ -1045,7 +898,7 @@ public class EventLog {
         return EI_TransactionNumber;
     }
 
-    public void setEI_TransactionNumber(String EI_TransactionNumber) {
+    public void setEI_TransactionNumber(final String EI_TransactionNumber) {
         this.EI_TransactionNumber = EI_TransactionNumber;
     }
 
@@ -1053,7 +906,7 @@ public class EventLog {
         return EM_ParticipantObjectID;
     }
 
-    public void setEM_ParticipantObjectID(String EM_ParticipantObjectID) {
+    public void setEM_ParticipantObjectID(final String EM_ParticipantObjectID) {
         this.EM_ParticipantObjectID = EM_ParticipantObjectID;
     }
 
@@ -1061,7 +914,7 @@ public class EventLog {
         return HR_AlternativeUserID;
     }
 
-    public void setHR_AlternativeUserID(String HR_AlternativeUserID) {
+    public void setHR_AlternativeUserID(final String HR_AlternativeUserID) {
         this.HR_AlternativeUserID = HR_AlternativeUserID;
     }
 
@@ -1069,7 +922,7 @@ public class EventLog {
         return HR_UserID;
     }
 
-    public void setHR_UserID(String HR_UserID) {
+    public void setHR_UserID(final String HR_UserID) {
         this.HR_UserID = HR_UserID;
     }
 
@@ -1077,7 +930,7 @@ public class EventLog {
         return HR_UserName;
     }
 
-    public void setHR_UserName(String HR_UserName) {
+    public void setHR_UserName(final String HR_UserName) {
         this.HR_UserName = HR_UserName;
     }
 
@@ -1085,7 +938,7 @@ public class EventLog {
         return MS_UserID;
     }
 
-    public void setMS_UserID(String MS_UserID) {
+    public void setMS_UserID(final String MS_UserID) {
         this.MS_UserID = MS_UserID;
     }
 
@@ -1093,31 +946,31 @@ public class EventLog {
         return PC_UserID;
     }
 
-    public void setPC_UserID(String PC_UserID) {
+    public void setPC_UserID(final String PC_UserID) {
         this.PC_UserID = PC_UserID;
     }
 
-    public String getPS_ParticipantObjectID() {
-        return PS_ParticipantObjectID;
+    public List<String> getPS_ParticipantObjectIDs() {
+        return PS_ParticipantObjectIDs;
     }
 
-    public void setPS_ParticipantObjectID(String PS_ParticipantObjectID) {
-        this.PS_ParticipantObjectID = PS_ParticipantObjectID;
+    public void setPS_ParticipantObjectIDs(final List<String> PS_ParticipantObjectIDs) {
+        this.PS_ParticipantObjectIDs = PS_ParticipantObjectIDs;
     }
 
-    public String getPT_ParticipantObjectID() {
-        return PT_ParticipantObjectID;
+    public List<String> getPT_ParticipantObjectIDs() {
+        return PT_ParticipantObjectIDs;
     }
 
-    public void setPT_ParticipantObjectID(String PT_ParticipantObjectID) {
-        this.PT_ParticipantObjectID = PT_ParticipantObjectID;
+    public void setPT_ParticipantObjectIDs(final List<String> PT_ParticipantObjectIDs) {
+        this.PT_ParticipantObjectIDs = PT_ParticipantObjectIDs;
     }
 
     public String getSC_UserID() {
         return SC_UserID;
     }
 
-    public void setSC_UserID(String SC_UserID) {
+    public void setSC_UserID(final String SC_UserID) {
         this.SC_UserID = SC_UserID;
     }
 
@@ -1125,7 +978,7 @@ public class EventLog {
         return SP_UserID;
     }
 
-    public void setSP_UserID(String SP_UserID) {
+    public void setSP_UserID(final String SP_UserID) {
         this.SP_UserID = SP_UserID;
     }
 
@@ -1133,7 +986,7 @@ public class EventLog {
         return ncpSide;
     }
 
-    public void setNcpSide(NcpSide ncpSide) {
+    public void setNcpSide(final NcpSide ncpSide) {
         this.ncpSide = ncpSide;
     }
 
@@ -1141,7 +994,7 @@ public class EventLog {
         return queryByParameter;
     }
 
-    public void setQueryByParameter(String queryByParameter) {
+    public void setQueryByParameter(final String queryByParameter) {
         this.queryByParameter = queryByParameter;
     }
 
@@ -1149,7 +1002,7 @@ public class EventLog {
         return hciIdentifier;
     }
 
-    public void setHciIdentifier(String hciIdentifier) {
+    public void setHciIdentifier(final String hciIdentifier) {
         this.hciIdentifier = hciIdentifier;
     }
 
@@ -1173,8 +1026,8 @@ public class EventLog {
                 .append("SC_UserID", SC_UserID)
                 .append("SP_UserID", SP_UserID)
                 .append("AS_AuditSourceId", AS_AuditSourceId)
-                .append("PS_ParticipantObjectID", PS_ParticipantObjectID)
-                .append("PT_ParticipantObjectID", PT_ParticipantObjectID)
+                .append("PS_ParticipantObjectIDs", PS_ParticipantObjectIDs)
+                .append("PT_ParticipantObjectIDs", PT_ParticipantObjectIDs)
                 .append("EM_ParticipantObjectID", EM_ParticipantObjectID)
                 .append("EM_ParticipantObjectDetail", EM_ParticipantObjectDetail)
                 .append("MS_UserID", MS_UserID)

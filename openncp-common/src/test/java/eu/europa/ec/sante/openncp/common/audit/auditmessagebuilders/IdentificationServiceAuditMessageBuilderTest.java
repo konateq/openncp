@@ -13,8 +13,10 @@ import org.junit.Test;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class IdentificationServiceAuditMessageBuilderTest extends XMLTestCase {
 
@@ -47,8 +49,11 @@ public class IdentificationServiceAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setPC_RoleID("PC Role ID");
             eventLog.setPC_UserID("eHealth OpenNCP EU Portal");
 
-            eventLog.setPS_ParticipantObjectID("PS Participant Object ID");
-            eventLog.setPT_ParticipantObjectID("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO");
+            eventLog.setPS_ParticipantObjectIDs(Collections.singletonList("PS Participant Object ID"));
+            final List<String> patientIds = new ArrayList<>();
+            patientIds.add("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO");
+            patientIds.add("secondIdentifier");
+            eventLog.setPT_ParticipantObjectIDs(patientIds);
             eventLog.setQueryByParameter("Query By Parameter");
             eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
             eventLog.setReqM_ParticipantObjectID("urn:oid:1.3.6.1.4.1.48336");

@@ -23,13 +23,13 @@ public class NCPTrustedServiceListAuditMessageBuilderTest extends XMLTestCase {
     public void testBuild() throws Exception {
         {
 
-            EventLog eventLog = new EventLog();
+            final EventLog eventLog = new EventLog();
             eventLog.setEventType(EventType.NCP_TRUSTED_SERVICE_LIST);
             eventLog.setNcpSide(NcpSide.NCP_A);
             eventLog.setEI_TransactionName(TransactionName.NCP_TRUSTED_SERVICE_LIST);
             eventLog.setEI_EventActionCode(EventActionCode.EXECUTE);
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
-            XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
+            final XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
             eventLog.setEI_EventDateTime(now);
             eventLog.setSC_UserID("Service Consumer");
             eventLog.setSP_UserID("Service Provider");
@@ -47,8 +47,8 @@ public class NCPTrustedServiceListAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setPC_RoleID("PC Role ID");
             eventLog.setPC_UserID("eHealth OpenNCP EU Portal");
 
-            eventLog.setPS_ParticipantObjectID("PS Participant Object ID");
-            eventLog.setPT_ParticipantObjectID("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO");
+            eventLog.setPS_ParticipantObjectIDs(Collections.singletonList("PS Participant Object ID"));
+            eventLog.setPT_ParticipantObjectIDs(Collections.singletonList("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO"));
             eventLog.setQueryByParameter("Query By Parameter");
             eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
             eventLog.setReqM_ParticipantObjectID("urn:oid:1.3.6.1.4.1.48336");
@@ -57,11 +57,11 @@ public class NCPTrustedServiceListAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setTargetip("127.0.0.1");
 
 
-            NCPTrustedServiceListAuditMessageBuilder nCPTrustedServiceListAuditMessageBuilder = new NCPTrustedServiceListAuditMessageBuilder();
-            AuditMessage generatedAuditMessage = nCPTrustedServiceListAuditMessageBuilder.build(eventLog);
+            final NCPTrustedServiceListAuditMessageBuilder nCPTrustedServiceListAuditMessageBuilder = new NCPTrustedServiceListAuditMessageBuilder();
+            final AuditMessage generatedAuditMessage = nCPTrustedServiceListAuditMessageBuilder.build(eventLog);
 
-            URL url = Resources.getResource("importnslauditmessage.xml");
-            AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
+            final URL url = Resources.getResource("importnslauditmessage.xml");
+            final AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
             expectedAuditMessage.getEventIdentification().setEventDateTime(now);
             XMLUnit.setIgnoreWhitespace(true);
             assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));
