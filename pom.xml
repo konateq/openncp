@@ -76,7 +76,7 @@
         <dynamic-discovery-client.version>1.13</dynamic-discovery-client.version>
         <ehealth.termservice.rest.model.version>2.1.2</ehealth.termservice.rest.model.version>
         <gson.version>2.11.0</gson.version>
-        <h2database.version>2.1.214</h2database.version>
+        <h2database.version>2.3.230</h2database.version>
         <hapi.fhir.version>6.10.5</hapi.fhir.version>
         <herasaf-xacml.version>1.0.4.RELEASE</herasaf-xacml.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
