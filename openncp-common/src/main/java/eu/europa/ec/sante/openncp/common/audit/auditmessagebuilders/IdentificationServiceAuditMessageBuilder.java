@@ -4,6 +4,7 @@ import eu.europa.ec.sante.openncp.common.audit.AuditConstant;
 import eu.europa.ec.sante.openncp.common.audit.EventLog;
 import net.RFC3881.dicom.AuditMessage;
 import net.RFC3881.dicom.ObjectFactory;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ public class IdentificationServiceAuditMessageBuilder extends AbstractAuditMessa
     public AuditMessage build(final EventLog eventLog) {
         final AuditMessage message;
         // If patient id mapping has occurred (there is a patient source ID), use patient mapping audit scheme
-        if (eventLog.getPS_ParticipantObjectIDs() != null) {
+        if (CollectionUtils.isNotEmpty(eventLog.getPS_ParticipantObjectIDs())) {
             message = createAuditTrailForPatientMapping(eventLog);
         } else {
             message = createAuditTrailForHCPAssurance(eventLog);
