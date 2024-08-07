@@ -321,7 +321,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
     /**
      * Util method extracting the XDS Patient Identifier from the XCA query.
      *
-     * @return HL7v2 Patient Identifier formatted String.
+     * @return List of HL7v2 Patient Identifier formatted Strings.
      */
     private List<String> getDocumentEntryPatientId(final AdhocQueryRequest request) {
 

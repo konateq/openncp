@@ -57,9 +57,9 @@ public class EventLog {
     // Audit Source
     private String AS_AuditSourceId; // The authority that is legally responsible for the audit source
     // Patient Source
-    private List<String> PS_ParticipantObjectIDs; // Patient Code in HL7 format
+    private List<String> PS_ParticipantObjectIDs; // List of Patient Codes in HL7 format
     // Patient Target
-    private List<String> PT_ParticipantObjectIDs; // Mapped PatientCode in HL7 format
+    private List<String> PT_ParticipantObjectIDs; // List of Mapped Patient Codes in HL7 format
     // Error Message
     private String EM_ParticipantObjectID;  // String-encoded error code
     private byte[] EM_ParticipantObjectDetail;  // Base64 encoded error message
@@ -325,7 +325,7 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param PT_ParticipantObjectIDs       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs      List of Patient Identifiers in HL7 II format
      * @param EM_ParticipantObjectID       The error code included with the response
      *                                     message
      * @param EM_ParticipantObjectDetail   Contains the base64 encoded error
@@ -412,48 +412,6 @@ public class EventLog {
      * @param targetip
      * @return
      */
-    public static EventLog createEventLogPAC(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
-                                             final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
-                                             final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_AlternativeUserID, final String HR_RoleID,
-                                             final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId, final List<String> PT_ParticipantObjectID,
-                                             final String EM_ParticipantObjectID, final byte[] EM_ParticipantObjectDetail,
-                                             final String eventTargetObjectId, final String ReqM_ParticipantObjectID,
-                                             final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
-                                             final byte[] ResM_ParticipantObjectDetail, final String sourceip, final String targetip) {
-
-        LOGGER.info("Creating EventLog for Patient Access Control(PAC): '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
-        return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime, EI_EventOutcomeIndicator,
-                PC_UserID, PC_RoleID, HR_UserID, HR_AlternativeUserID, HR_RoleID, SC_UserID, SP_UserID, AS_AuditSourceId,
-                PT_ParticipantObjectID, EM_ParticipantObjectID, EM_ParticipantObjectDetail, eventTargetObjectId,
-                ReqM_ParticipantObjectID, ReqM_ParticipantObjectDetail, ResM_ParticipantObjectID, ResM_ParticipantObjectDetail,
-                sourceip, targetip);
-    }
-
-    /**
-     * @param EI_TransactionName
-     * @param EI_EventActionCode
-     * @param EI_EventDateTime
-     * @param EI_EventOutcomeIndicator
-     * @param PC_UserID
-     * @param PC_RoleID
-     * @param HR_UserID
-     * @param HR_AlternativeUserID
-     * @param HR_RoleID
-     * @param SC_UserID
-     * @param SP_UserID
-     * @param AS_AuditSourceId
-     * @param PT_ParticipantObjectID
-     * @param EM_ParticipantObjectID
-     * @param EM_ParticipantObjectDetail
-     * @param eventTargetObjectId
-     * @param ReqM_ParticipantObjectID
-     * @param ReqM_ParticipantObjectDetail
-     * @param ResM_ParticipantObjectID
-     * @param ResM_ParticipantObjectDetail
-     * @param sourceip
-     * @param targetip
-     * @return
-     */
     public static EventLog createEventLogPatientService(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
                                                         final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
                                                         final String PC_UserID, final String PC_RoleID, final String HR_UserID,
@@ -494,7 +452,7 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param PT_ParticipantObjectIDs       Patient Identifier in HL7 II format
+     * @param PT_ParticipantObjectIDs      List of Patient Identifiers in HL7 II format
      * @param eventTargetObjectId          The string encoded UUID of the returned document
      * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
      *                                     message

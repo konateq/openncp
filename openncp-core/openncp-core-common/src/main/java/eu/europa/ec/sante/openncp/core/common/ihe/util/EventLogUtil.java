@@ -412,7 +412,7 @@ public class EventLogUtil {
     }
 
     /**
-     * Extracts the XDS patient ID from the XCA query.
+     * Extracts the XDS patient IDs from the XCA query.
      *
      * @param request
      * @return
