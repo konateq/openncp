@@ -3,6 +3,7 @@ package eu.europa.ec.sante.openncp.core.common.fhir.context;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import eu.europa.ec.sante.openncp.common.immutables.Domain;
+import eu.europa.ec.sante.openncp.core.common.CountryCode;
 import eu.europa.ec.sante.openncp.core.common.fhir.interceptors.CountryCodeInterceptor;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.instance.model.api.IIdType;
