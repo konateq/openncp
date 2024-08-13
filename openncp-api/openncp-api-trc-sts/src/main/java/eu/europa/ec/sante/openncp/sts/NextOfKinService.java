@@ -124,7 +124,7 @@ public class NextOfKinService extends SecurityTokenServiceWS implements Provider
             sslCommonName = HttpUtil.getSubjectDN(false);
             sendNOKAuditMessage(samlNextOfKinIssuer.getPointOfCare(), samlNextOfKinIssuer.getHumanRequestorNameId(),
                                 samlNextOfKinIssuer.getHumanRequestorSubjectId(), samlNextOfKinIssuer.getFunctionalRole(),
-                    nextOfKinDetail.getLivingSubjectIds(), samlNextOfKinIssuer.getFacilityType(), nextOfKinAssertion.getID(),
+                                nextOfKinDetail.getLivingSubjectIds(), samlNextOfKinIssuer.getFacilityType(), nextOfKinAssertion.getID(),
                                 sslCommonName, messageId, strReqHeader.getBytes(StandardCharsets.UTF_8),
                                 getMessageIdFromHeader(response.getSOAPHeader()), strRespHeader.getBytes(StandardCharsets.UTF_8));
 

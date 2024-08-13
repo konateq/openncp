@@ -96,6 +96,10 @@ public class EventLogUtil {
 
     }
 
+    private static String getParticipantObjectID(final II id) {
+        return id.getExtension() + "^^^&" + id.getRoot() + "&ISO";
+    }
+
     /**
      * @param eventLog
      * @param msgContext

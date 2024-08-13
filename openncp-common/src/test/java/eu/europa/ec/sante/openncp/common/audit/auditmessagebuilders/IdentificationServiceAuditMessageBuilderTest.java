@@ -13,6 +13,7 @@ import org.junit.Test;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
