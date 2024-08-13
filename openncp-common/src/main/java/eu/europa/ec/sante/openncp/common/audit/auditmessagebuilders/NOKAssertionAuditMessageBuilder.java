@@ -24,8 +24,7 @@ public class NOKAssertionAuditMessageBuilder extends AbstractAuditMessageBuilder
             addEventIdentification(message, eventLog.getEventType(), eventLog.getEI_TransactionName(), EventActionCode.EXECUTE.getCode(),
                     eventLog.getEI_EventDateTime(), eventLog.getEI_EventOutcomeIndicator(), eventLog.getNcpSide());
             // Point Of Care
-            addPointOfCare(message, eventLog.getPC_UserID(), true,
-                    eventLog.getSourceip());
+            addPointOfCare(message, eventLog.getPC_UserID(), eventLog.getSourceip());
             // Human Requestor
             addHumanRequestor(message, eventLog.getHR_UserID(), eventLog.getHR_AlternativeUserID(), eventLog.getHR_RoleID(),
                     true, eventLog.getSourceip());
@@ -33,9 +32,11 @@ public class NOKAssertionAuditMessageBuilder extends AbstractAuditMessageBuilder
                     eventLog.getSourceip());
             addService(message, eventLog.getSP_UserID(), false, AuditConstant.SERVICE_PROVIDER, AuditConstant.CODE_SYSTEM_EHDSI, AuditConstant.SERVICE_PROVIDER_DISPLAY_NAME,
                     eventLog.getTargetip());
-            addParticipantObject(message, eventLog.getPT_ParticipantObjectID(), Short.valueOf("1"), Short.valueOf("10"), "Guarantor",
-                    "7", AuditConstant.RFC3881, "Guarantor Number",
-                    "Patient Number", eventLog.getQueryByParameter(), eventLog.getHciIdentifier());
+            for (final String ptParticipantObjectID : eventLog.getPT_ParticipantObjectIDs()) {
+                addParticipantObject(message, ptParticipantObjectID, Short.valueOf("1"), Short.valueOf("10"), "Guarantor",
+                        "7", AuditConstant.RFC3881, "Guarantor Number",
+                        "Patient Number", eventLog.getQueryByParameter(), eventLog.getHciIdentifier());
+            }
         } catch (final Exception e) {
             LOGGER.error(e.getLocalizedMessage(), e);
         }

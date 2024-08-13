@@ -6,8 +6,8 @@ import net.RFC3881.dicom.AuditMessage;
 
 public class DispensationDiscardServiceAuditMessageBuilder extends AbstractAuditMessageBuilder implements AuditMessageBuilder {
     @Override
-    public AuditMessage build(EventLog eventLog) {
-        AuditMessage message = createAuditTrailForHCPAssurance(eventLog);
+    public AuditMessage build(final EventLog eventLog) {
+        final AuditMessage message = createAuditTrailForHCPAssurance(eventLog);
         // Event Target
         if (message != null) {
             addParticipantObject(message, eventLog.getReqM_ParticipantObjectID(), Short.valueOf("2"), Short.valueOf("20"),

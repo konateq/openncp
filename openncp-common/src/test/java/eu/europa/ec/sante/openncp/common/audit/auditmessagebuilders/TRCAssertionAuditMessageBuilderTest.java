@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class TRCAssertionAuditMessageBuilderTest extends XMLTestCase {
 
@@ -43,8 +44,8 @@ public class TRCAssertionAuditMessageBuilderTest extends XMLTestCase {
         eventLog.setMS_UserID("MS User ID");
         eventLog.setPC_RoleID("PC Role ID");
         eventLog.setPC_UserID("PC User ID");
-        eventLog.setPS_ParticipantObjectID("PS Participant Object ID");
-        eventLog.setPT_ParticipantObjectID("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO");
+        eventLog.setPS_ParticipantObjectIDs(List.of("PS Participant Object ID"));
+        eventLog.setPT_ParticipantObjectIDs(List.of("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO"));
         eventLog.setQueryByParameter("Query By Parameter");
         eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
         eventLog.setReqM_ParticipantObjectID("urn:uuid:2d1a748a-b73e-47ef-96d2-50fdb92e1c0a");

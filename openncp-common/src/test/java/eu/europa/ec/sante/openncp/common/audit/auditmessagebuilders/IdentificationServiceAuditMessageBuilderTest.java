@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class IdentificationServiceAuditMessageBuilderTest extends XMLTestCase {
 
@@ -42,13 +43,12 @@ public class IdentificationServiceAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setHR_RoleID("HR Role ID");
             eventLog.setHR_UserID("HR User ID");
             eventLog.setHR_UserName("janedoe");
-            eventLog.setHciIdentifier("42");
+            eventLog.setHciIdentifier("2.16.17.710.850.1000.990.1");
             eventLog.setMS_UserID("MS User ID");
             eventLog.setPC_RoleID("PC Role ID");
             eventLog.setPC_UserID("eHealth OpenNCP EU Portal");
-
-            eventLog.setPS_ParticipantObjectID("PS Participant Object ID");
-            eventLog.setPT_ParticipantObjectID("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO");
+            eventLog.setPS_ParticipantObjectIDs(List.of("PS Participant Object ID"));
+            eventLog.setPT_ParticipantObjectIDs(List.of("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO", "secondIdentifier"));
             eventLog.setQueryByParameter("Query By Parameter");
             eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
             eventLog.setReqM_ParticipantObjectID("urn:oid:1.3.6.1.4.1.48336");

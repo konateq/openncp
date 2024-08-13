@@ -4,11 +4,9 @@ import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.OpenNCPConstants;
 import eu.europa.ec.sante.openncp.common.configuration.util.ServerMode;
-import eu.europa.ec.sante.openncp.common.error.ErrorCode;
 import eu.europa.ec.sante.openncp.common.error.OpenNCPErrorCode;
 import eu.europa.ec.sante.openncp.common.util.DateUtil;
 import eu.europa.ec.sante.openncp.common.util.HttpUtil;
-import eu.europa.ec.sante.openncp.core.common.util.SoapElementHelper;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.InvalidFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.MissingFieldException;
 import eu.europa.ec.sante.openncp.core.common.ihe.assertionvalidator.exceptions.OpenNCPErrorCodeException;
@@ -18,6 +16,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.PatientId;
 import eu.europa.ec.sante.openncp.core.common.ihe.datamodel.org.hl7.v3.*;
 import eu.europa.ec.sante.openncp.core.common.ihe.evidence.EvidenceUtils;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XCPDErrorCode;
+import eu.europa.ec.sante.openncp.core.common.util.SoapElementHelper;
 import eu.europa.ec.sante.openncp.core.server.api.ihe.xcpd.PatientSearchInterface;
 import eu.europa.ec.sante.openncp.core.server.api.ihe.xcpd.PatientSearchInterfaceWithDemographics;
 import eu.europa.ec.sante.openncp.core.server.api.ihe.xcpd.XCPDNIException;
@@ -95,27 +94,18 @@ public class XCPDServiceImpl implements XCPDServiceInterface {
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
 
         // Update audit with Patient ID returned
-        final II sourceII;
-        final II targetII;
-        if (!inputMessage.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().isEmpty()) {
-
-            sourceII = inputMessage.getControlActProcess().getQueryByParameter().getValue().getParameterList()
-                    .getLivingSubjectId().get(0).getValue().get(0);
-            if (!CollectionUtils.isEmpty(outputMessage.getControlActProcess().getSubject())) {
-                targetII = outputMessage.getControlActProcess().getSubject().get(0).getRegistrationEvent().getSubject1()
-                        .getPatient().getId().get(0);
-            } else {
-                // To be reviewed - No Patient details return then audit message is reporting Patient search criteria
-                targetII = sourceII;
-            }
-        } else {
-            sourceII = new II();
-            targetII = new II();
+        final ArrayList<String> requestParticipantObjectIds = new ArrayList<>();
+        for (final PRPAMT201306UV02LivingSubjectId livingSubjectId : inputMessage.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId()) {
+            requestParticipantObjectIds.add(getParticipantObjectID(livingSubjectId.getValue().get(0)));
         }
-        eventLog.setPT_ParticipantObjectID(getParticipantObjectID(targetII));
+        final ArrayList<String> responseParticipantObjectIds = new ArrayList<>();
+        for (final PRPAIN201306UV02MFMIMT700711UV01Subject1 subject1 : outputMessage.getControlActProcess().getSubject()) {
+            responseParticipantObjectIds.add(getParticipantObjectID(subject1.getRegistrationEvent().getSubject1().getPatient().getId().get(0)));
+        }
+        eventLog.setPT_ParticipantObjectIDs(CollectionUtils.isNotEmpty(responseParticipantObjectIds) ? responseParticipantObjectIds : requestParticipantObjectIds);
 
         // Check if patient id mapping has occurred, prepare event log for patient audit mapping in this case
-        if (!sourceII.getRoot().equals(targetII.getRoot()) || !sourceII.getExtension().equals(targetII.getExtension())) {
+        if (!CollectionUtils.isEqualCollection(responseParticipantObjectIds, requestParticipantObjectIds)) {
             logger.warn("Patient Source and Target are different: Identifier has been mapped, Patient Mapping audit scheme might be used");
         }
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
