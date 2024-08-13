@@ -62,9 +62,9 @@ public class EventLog {
     // Audit Source
     private String AS_AuditSourceId; // The authority that is legally responsible for the audit source
     // Patient Source
-    private List<String> PS_ParticipantObjectIDs; // List of Patient Codes in HL7 format
+    private List<String> PS_ParticipantObjectIDs; // List of patient Code in HL7 format
     // Patient Target
-    private List<String> PT_ParticipantObjectIDs; // List of Mapped Patient Codes in HL7 format
+    private List<String> PT_ParticipantObjectIDs; // Mapped PatientCode in HL7 format
     // Error Message
     private String EM_ParticipantObjectID;  // String-encoded error code
     private byte[] EM_ParticipantObjectDetail;  // Base64 encoded error message
@@ -294,7 +294,7 @@ public class EventLog {
                                                         final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
                                                         final String HR_UserID, final String HR_AlternativeUserID, final String HR_RoleID,
                                                         final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId,
-                                                        final List<String> PT_ParticipantObjectID, final String EM_ParticipantObjectID,
+                                                        final List<String> PT_ParticipantObjectIDs, final String EM_ParticipantObjectID,
                                                         final byte[] EM_ParticipantObjectDetail, final String eventTargetObjectId,
                                                         final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
                                                         final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
