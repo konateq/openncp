@@ -22,7 +22,7 @@ public class IdentificationServiceAuditMessageBuilder extends AbstractAuditMessa
             message = createAuditTrailForHCPAssurance(eventLog);
         }
 
-        addParticipantObject(message, "42", Short.valueOf("2"), Short.valueOf("24"),
+        addParticipantObject(message, eventLog.getHciIdentifier(), Short.valueOf("2"), Short.valueOf("24"),
                 "Patient", "ITI-55", "IHE Transactions", "Patient Number",
                 "Cross Gateway Patient Discovery", eventLog.getQueryByParameter(), eventLog.getHciIdentifier());
 
@@ -57,7 +57,6 @@ public class IdentificationServiceAuditMessageBuilder extends AbstractAuditMessa
                         "PatientTarget", "2", AuditConstant.DICOM, "Patient Number",
                         "Patient Number", eventLog.getQueryByParameter(), eventLog.getHciIdentifier());
             }
-
             addError(message, eventLog.getEM_ParticipantObjectID(), eventLog.getEM_ParticipantObjectDetail(), Short.valueOf("2"),
                     Short.valueOf("3"), "9", "errormsg");
             if (LOGGER.isDebugEnabled()) {

@@ -15,10 +15,15 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * EventLog is a java object with the minimal input variables needed to construct an AuditMessage according to DICOM.
  * Java Bean object for the Event Log object.
  * Getters and setters for all the properties Constructors for OpenNCP audit schemas.
+ *
+ * @author Kostas Karkaletsis
+ * @author Organization: Gnomon
+ * @author mail:k.karkaletsis@gnomon.com.gr
  */
 public class EventLog {
 
@@ -45,7 +50,7 @@ public class EventLog {
 
     // Human Requester
     private String HR_UserID;  // Identifier of the HCP initiated the event
-    private String HR_AlternativeUserID; // Human-readable name of the HCP as given in the Subject-ID
+    private String HR_AlternativeUserID; // Human readable name of the HCP as given in the Subject-ID
     private String HR_UserName;
     private String HR_RoleID;
     // Service Consumer NCP
@@ -57,9 +62,9 @@ public class EventLog {
     // Audit Source
     private String AS_AuditSourceId; // The authority that is legally responsible for the audit source
     // Patient Source
-    private List<String> PS_ParticipantObjectIDs; // List of Patient Codes in HL7 format
+    private List<String> PS_ParticipantObjectIDs; // List of patient Code in HL7 format
     // Patient Target
-    private List<String> PT_ParticipantObjectIDs; // List of Mapped Patient Codes in HL7 format
+    private List<String> PT_ParticipantObjectIDs; // Mapped PatientCode in HL7 format
     // Error Message
     private String EM_ParticipantObjectID;  // String-encoded error code
     private byte[] EM_ParticipantObjectDetail;  // Base64 encoded error message
@@ -97,7 +102,7 @@ public class EventLog {
      * @param PC_RoleID                           Role of the department
      * @param HR_UserID                           Identifier of the HCP initiated the event
      * @param HR_RoleID                           Role of the HCP initiated the event
-     * @param HR_AlternativeUserID                Human-readable name of the HCP as given in
+     * @param HR_AlternativeUserID                Human readable name of the HCP as given in
      *                                            the Subject-ID
      * @param SC_UserID                           The string encoded CN of the TLS certificate of the NCP
      *                                            triggered the epsos operation
@@ -289,7 +294,7 @@ public class EventLog {
                                                         final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
                                                         final String HR_UserID, final String HR_AlternativeUserID, final String HR_RoleID,
                                                         final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId,
-                                                        final List<String> PT_ParticipantObjectID, final String EM_ParticipantObjectID,
+                                                        final List<String> PT_ParticipantObjectIDs, final String EM_ParticipantObjectID,
                                                         final byte[] EM_ParticipantObjectDetail, final String eventTargetObjectId,
                                                         final String ReqM_ParticipantObjectID, final byte[] ReqM_ParticipantObjectDetail,
                                                         final String ResM_ParticipantObjectID, final byte[] ResM_ParticipantObjectDetail,
@@ -298,9 +303,114 @@ public class EventLog {
         LOGGER.info("Creating EventLog for Patient Privacy: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
         return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime,
                 EI_EventOutcomeIndicator, null, null, HR_UserID, HR_AlternativeUserID, HR_RoleID,
-                SC_UserID, SP_UserID, AS_AuditSourceId, PT_ParticipantObjectID, EM_ParticipantObjectID,
+                SC_UserID, SP_UserID, AS_AuditSourceId, PT_ParticipantObjectIDs, EM_ParticipantObjectID,
                 EM_ParticipantObjectDetail, eventTargetObjectId, ReqM_ParticipantObjectID, ReqM_ParticipantObjectDetail,
                 ResM_ParticipantObjectID, ResM_ParticipantObjectDetail, sourceip, targetip);
+    }
+
+    /**
+     * This method creates an EventLog object for use in Consent PIN
+     *
+     * @param EI_TransactionName           value is epsosConsentServicePin
+     * @param EI_EventActionCode           Possible values according to D4.5.6 are E,R,U,D
+     * @param EI_EventDateTime             The datetime the event occurred
+     * @param EI_EventOutcomeIndicator     <br>
+     *                                     0 for full success <br>
+     *                                     4 in case of partial delivery <br>
+     *                                     8 for temporal failures <br>
+     *                                     12 for permanent failure <br>
+     * @param PC_UserID                    Point of Care: Oid of the department
+     * @param PC_RoleID                    Role of the point of care
+     * @param HR_UserID                    Identifier of the HCP initiated the event
+     * @param HR_AlternativeUserID         Human readable name of the HCP as given in
+     *                                     the Subject-ID
+     * @param HR_RoleID                    Role of the HCP initiated the event
+     * @param SC_UserID                    The string encoded CN of the TLS certificate of the NCP
+     *                                     triggered the epsos operation
+     * @param SP_UserID                    The string encoded CN of the TLS certificate of the NCP
+     *                                     processed the epsos operation
+     * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
+     *                                     the audit source
+     * @param PT_ParticipantObjectIDs      List of Patient Identifiers in HL7 II format
+     * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
+     *                                     message
+     * @param ReqM_ParticipantObjectDetail The value MUST contain the base64
+     *                                     encoded security header.
+     * @param ResM_ParticipantObjectID     String-encoded UUID of the response
+     *                                     message
+     * @param ResM_ParticipantObjectDetail The value MUST contain the base64
+     *                                     encoded security header.
+     * @param sourceip                     The IP Address of the source Gateway
+     * @param targetip                     The IP Address of the target Gateway
+     * @return the EventLog object
+     */
+    public static EventLog createEventLogConsentPINack(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                                       final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                                       final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_AlternativeUserID,
+                                                       final String HR_RoleID, final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId,
+                                                       final List<String> PT_ParticipantObjectIDs, final String ReqM_ParticipantObjectID,
+                                                       final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
+                                                       final byte[] ResM_ParticipantObjectDetail, final String sourceip, final String targetip) {
+
+        LOGGER.info("Creating EventLog for Consent PIN ACK: '{}'-'{}'",
+                EI_TransactionName, EI_EventActionCode);
+        return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime, EI_EventOutcomeIndicator,
+                PC_UserID, PC_RoleID, HR_UserID, HR_AlternativeUserID, HR_RoleID, SC_UserID, SP_UserID, AS_AuditSourceId,
+                PT_ParticipantObjectIDs, null, null, "PINack",
+                ReqM_ParticipantObjectID, ReqM_ParticipantObjectDetail, ResM_ParticipantObjectID, ResM_ParticipantObjectDetail,
+                sourceip, targetip);
+    }
+
+    /**
+     * This method creates an EventLog object for use in Consent PIN
+     *
+     * @param EI_TransactionName           value is epsosConsentServicePin
+     * @param EI_EventActionCode           Possible values according to D4.5.6 are E,R,U,D
+     * @param EI_EventDateTime             The datetime the event occurred
+     * @param EI_EventOutcomeIndicator     <br>
+     *                                     0 for full success <br>
+     *                                     4 in case of partial delivery <br>
+     *                                     8 for temporal failures <br>
+     *                                     12 for permanent failure <br>
+     * @param PC_UserID                    Point of Care: Oid of the department
+     * @param PC_RoleID                    Role of the point of care
+     * @param HR_UserID                    Identifier of the HCP initiated the event
+     * @param HR_AlternativeUserID         Human readable name of the HCP as given in
+     *                                     the Subject-ID
+     * @param HR_RoleID                    Role of the HCP initiated the event
+     * @param SC_UserID                    The string encoded CN of the TLS certificate of the NCP
+     *                                     triggered the epsos operation
+     * @param SP_UserID                    The string encoded CN of the TLS certificate of the NCP
+     *                                     processed the epsos operation
+     * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
+     *                                     the audit source
+     * @param PT_ParticipantObjectIDs      List of Patient Identifiers in HL7 II format
+     * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
+     *                                     message
+     * @param ReqM_ParticipantObjectDetail The value MUST contain the base64
+     *                                     encoded security header.
+     * @param ResM_ParticipantObjectID     String-encoded UUID of the response
+     *                                     message
+     * @param ResM_ParticipantObjectDetail The value MUST contain the base64
+     *                                     encoded security header.
+     * @param sourceip                     The IP Address of the source Gateway
+     * @param targetip                     The IP Address of the target Gateway
+     * @return the EventLog object
+     */
+    public static EventLog createEventLogConsentPINdny(final TransactionName EI_TransactionName, final EventActionCode EI_EventActionCode,
+                                                       final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
+                                                       final String PC_UserID, final String PC_RoleID, final String HR_UserID, final String HR_AlternativeUserID,
+                                                       final String HR_RoleID, final String SC_UserID, final String SP_UserID, final String AS_AuditSourceId,
+                                                       final List<String> PT_ParticipantObjectIDs, final String ReqM_ParticipantObjectID,
+                                                       final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
+                                                       final byte[] ResM_ParticipantObjectDetail, final String sourceip, final String targetip) {
+
+        LOGGER.info("Creating EventLog for Consent PIN Deny: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
+        return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime, EI_EventOutcomeIndicator,
+                PC_UserID, PC_RoleID, HR_UserID, HR_AlternativeUserID, HR_RoleID, SC_UserID, SP_UserID, AS_AuditSourceId,
+                PT_ParticipantObjectIDs, null, null, "PINdny",
+                ReqM_ParticipantObjectID, ReqM_ParticipantObjectDetail, ResM_ParticipantObjectID, ResM_ParticipantObjectDetail,
+                sourceip, targetip);
     }
 
     /**
@@ -317,7 +427,7 @@ public class EventLog {
      * @param PC_RoleID                    Role of the point of care
      * @param HR_UserID                    Identifier of the HCP initiated the event
      * @param HR_RoleID                    Role of the HCP initiated the event
-     * @param HR_AlternativeUserID         Human-readable name of the HCP as given in
+     * @param HR_AlternativeUserID         Human readable name of the HCP as given in
      *                                     the Subject-ID
      * @param SC_UserID                    The string encoded CN of the TLS certificate of the NCP
      *                                     triggered the epsos operation
@@ -400,7 +510,7 @@ public class EventLog {
      * @param SC_UserID
      * @param SP_UserID
      * @param AS_AuditSourceId
-     * @param PT_ParticipantObjectID
+     * @param PT_ParticipantObjectIDs
      * @param EM_ParticipantObjectID
      * @param EM_ParticipantObjectDetail
      * @param eventTargetObjectId
@@ -416,7 +526,7 @@ public class EventLog {
                                                         final XMLGregorianCalendar EI_EventDateTime, final EventOutcomeIndicator EI_EventOutcomeIndicator,
                                                         final String PC_UserID, final String PC_RoleID, final String HR_UserID,
                                                         final String HR_AlternativeUserID, final String HR_RoleID, final String SC_UserID,
-                                                        final String SP_UserID, final String AS_AuditSourceId, final List<String> PT_ParticipantObjectID,
+                                                        final String SP_UserID, final String AS_AuditSourceId, final List<String> PT_ParticipantObjectIDs,
                                                         final String EM_ParticipantObjectID, final byte[] EM_ParticipantObjectDetail,
                                                         final String eventTargetObjectId, final String ReqM_ParticipantObjectID,
                                                         final byte[] ReqM_ParticipantObjectDetail, final String ResM_ParticipantObjectID,
@@ -425,7 +535,7 @@ public class EventLog {
         LOGGER.info("Creating EventLog for Patient Service: '{}'-'{}'", EI_TransactionName, EI_EventActionCode);
         return EventLog.createEventLogHCPAssurance(EI_TransactionName, EI_EventActionCode, EI_EventDateTime, EI_EventOutcomeIndicator,
                 PC_UserID, PC_RoleID, HR_UserID, HR_AlternativeUserID, HR_RoleID, SC_UserID, SP_UserID, AS_AuditSourceId,
-                PT_ParticipantObjectID, EM_ParticipantObjectID, EM_ParticipantObjectDetail, eventTargetObjectId,
+                PT_ParticipantObjectIDs, EM_ParticipantObjectID, EM_ParticipantObjectDetail, eventTargetObjectId,
                 ReqM_ParticipantObjectID, ReqM_ParticipantObjectDetail, ResM_ParticipantObjectID, ResM_ParticipantObjectDetail,
                 sourceip, targetip);
     }
@@ -444,7 +554,7 @@ public class EventLog {
      * @param PC_RoleID                    Role of the Point of Care: Oid of the department
      * @param HR_UserID                    Identifier of the HCP initiated the event
      * @param HR_RoleID                    Role of HCP initiated the event
-     * @param HR_AlternativeUserID         Human-readable name of the HCP as given in
+     * @param HR_AlternativeUserID         Human readable name of the HCP as given in
      *                                     the Subject-ID
      * @param SC_UserID                    The string encoded CN of the TLS certificate of the NCP
      *                                     triggered the epsos operation
@@ -530,7 +640,7 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param NOK_ParticipantObjectIDs      Next of Kin Identifiers in HL7 II format
+     * @param NOK_ParticipantObjectIDs     List of Next of Kin Identifiers in HL7 II format
      * @param eventTargetObjectId          The string encoded UUID of the returned document
      * @param ReqM_ParticipantObjectID     String-encoded UUID of the request
      *                                     message
@@ -600,7 +710,7 @@ public class EventLog {
      *                                     12 for permanent failure <br>
      * @param HR_UserID                    Identifier of the HCP initiated the event
      * @param HR_RoleID                    Role of the HCP initiated the event
-     * @param HR_AlternativeUserID         Human-readable name of the HCP as given in
+     * @param HR_AlternativeUserID         Human readable name of the HCP as given in
      *                                     the Subject-ID attrbute of the HCP identity assertion
      * @param SC_UserID                    The string encoded CN of the TLS certificate of the NCP
      *                                     triggered the epsos operation
@@ -608,9 +718,9 @@ public class EventLog {
      *                                     processed the epsos operation
      * @param AS_AuditSourceId             the iso3166-2 code of the country responsible for
      *                                     the audit source
-     * @param PS_ParticipantObjectIDs      Patient Identifiers in HL7 II format
+     * @param PS_ParticipantObjectIDs      List of Patient Identifiers in HL7 II format
      *                                     (Patient Source)
-     * @param PT_ParticipantObjectIDs      Patient Identifiers in HL7 II format
+     * @param PT_ParticipantObjectIDs      List of Patient Identifiers in HL7 II format
      *                                     (Patient Target)
      * @param EM_ParticipantObjectID       The error code included with the response
      *                                     message
@@ -686,13 +796,13 @@ public class EventLog {
      * @param PC_RoleID                    Point of Care: Role of the department
      * @param HR_UserID                    Identifier of the HCP initiated the event
      * @param HR_RoleID                    Role of the HCP initiated the event
-     * @param HR_AlternativeUserID         Human-readable name of the HCP as given in
+     * @param HR_AlternativeUserID         Human readable name of the HCP as given in
      *                                     the Subject-ID
      * @param SC_UserID                    The string encoded CN of the TLS certificate of the NCP
      *                                     triggered the epsos operation
      * @param SP_UserID                    The string encoded CN of the TLS certificate of the NCP
      *                                     processed the epsos operation
-     * @param PT_ParticipantObjectIDs      Patient Identifiers in HL7 II format
+     * @param PT_ParticipantObjectIDs      List of Patient Identifiers in HL7 II format
      * @param EM_ParticipantObjectID       The error code included with the response
      *                                     message
      * @param EM_ParticipantObjectDetail   Contains the base64 encoded error

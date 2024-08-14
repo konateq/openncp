@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class HCPAuthenticationAuditMessageBuilderTest extends XMLTestCase {
 
@@ -47,8 +48,8 @@ public class HCPAuthenticationAuditMessageBuilderTest extends XMLTestCase {
             eventLog.setPC_RoleID("PC Role ID");
             eventLog.setPC_UserID("eHealth OpenNCP EU Portal");
 
-            eventLog.setPS_ParticipantObjectIDs(Collections.singletonList("PS Participant Object ID"));
-            eventLog.setPT_ParticipantObjectIDs(Collections.singletonList("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO"));
+            eventLog.setPS_ParticipantObjectIDs(List.of("PS Participant Object ID"));
+            eventLog.setPT_ParticipantObjectIDs(List.of("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO"));
             eventLog.setQueryByParameter("Query By Parameter");
             eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
             eventLog.setReqM_ParticipantObjectID("urn:oid:1.3.6.1.4.1.48336");

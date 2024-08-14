@@ -85,7 +85,6 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
             final String prescriptionId = STSUtils.getPrescriptionId(body);
             final List<String> patientIDs = getPatientIDs(body);
             final String messageId = getMessageIdFromHeader(header);
-
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);

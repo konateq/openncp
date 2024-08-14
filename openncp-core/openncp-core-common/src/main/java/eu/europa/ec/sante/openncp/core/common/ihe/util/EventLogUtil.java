@@ -96,10 +96,6 @@ public class EventLogUtil {
 
     }
 
-    private static String getParticipantObjectID(final II id) {
-        return id.getExtension() + "^^^&" + id.getRoot() + "&ISO";
-    }
-
     /**
      * @param eventLog
      * @param msgContext
@@ -482,5 +478,9 @@ public class EventLogUtil {
 
         final HttpServletRequest servletRequest = (HttpServletRequest) messageContext.getProperty(HTTPConstants.MC_HTTP_SERVLETREQUEST);
         return HttpUtil.getClientCertificate(servletRequest);
+    }
+
+    private static String getParticipantObjectID(final II id) {
+        return id.getExtension() + "^^^&" + id.getRoot() + "&ISO";
     }
 }

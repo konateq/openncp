@@ -268,7 +268,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
         eventLog.setHR_AlternativeUserID(SoapElementHelper.getAlternateUserID(sh));
         eventLog.setHR_RoleID(SoapElementHelper.getRoleID(sh));
         eventLog.setSP_UserID(HttpUtil.getSubjectDN(true));
-        eventLog.setPT_ParticipantObjectIDs(Collections.singletonList(SoapElementHelper.getDocumentEntryPatientIdFromTRCAssertion(sh)));
+        eventLog.setPT_ParticipantObjectIDs(List.of(SoapElementHelper.getDocumentEntryPatientIdFromTRCAssertion(sh)));
         eventLog.setAS_AuditSourceId(Constants.COUNTRY_PRINCIPAL_SUBDIVISION);
 
         if (errorsDiscovered) {
@@ -319,7 +319,7 @@ public class XCAServiceImpl implements XCAServiceInterface {
     }
 
     /**
-     * Util method extracting the XDS Patient Identifier from the XCA query.
+     * Util method extracting the XDS Patient Identifiers from the XCA query.
      *
      * @return List of HL7v2 Patient Identifier formatted Strings.
      */

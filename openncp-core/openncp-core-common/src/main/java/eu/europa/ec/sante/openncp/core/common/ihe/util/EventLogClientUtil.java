@@ -149,7 +149,7 @@ public class EventLogClientUtil {
         for (final AttributeStatement attributeStatement : idAssertion.getAttributeStatements()) {
             for (final Attribute attribute : attributeStatement.getAttributes()) {
                 if (StringUtils.equalsIgnoreCase(attribute.getName(), "urn:oasis:names:tc:xspa:1.0:subject:subject-id")) {
-                    eventLog.setPT_ParticipantObjectIDs(Collections.singletonList(EventLogUtil.getAttributeValue(attribute)));
+                    eventLog.setPT_ParticipantObjectIDs(List.of(EventLogUtil.getAttributeValue(attribute)));
                     break;
                 }
             }
