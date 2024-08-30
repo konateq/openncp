@@ -104,7 +104,7 @@
         <servlet-api.version>3.1.0</servlet-api.version>
         <slf4j.version>1.7.36</slf4j.version>
         <saaj-impl.version>1.5.3</saaj-impl.version>
-        <saxon-he.version>10.6</saxon-he.version>
+        <saxon-he.version>10.9</saxon-he.version>
         <spring-boot.version>2.7.18</spring-boot.version>
         <spring-tx.version>5.3.37</spring-tx.version>
         <spring-ws.version>3.0.9.RELEASE</spring-ws.version>
