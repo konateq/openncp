@@ -12,17 +12,10 @@ public class Kpi1_2Strategy implements KpiStrategy {
     private final List<String> transactionTypes =
             List.of("PATIENT_IDENTIFICATION_QUERY",
                     "PATIENT_IDENTIFICATION_RESPONSE",
-                    "PATIENT_IDENTIFICATION_UNKNOWN",
                     "DOCUMENT_LIST_QUERY",
                     "DOCUMENT_LIST_RESPONSE",
-                    "DOCUMENT_LIST_UNKNOWN",
                     "DOCUMENT_EXCHANGED_QUERY",
-                    "DOCUMENT_EXCHANGED_RESPONSE",
-                    "DOCUMENT_EXCHANGED_UNKNOWN",
-                    "DISPENSATION_QUERY",
-                    "DISPENSATION_RESPONSE",
-                    "DISPENSATION_UNKNOWN",
-                    "DISPENSATION_DISCARD_REQUEST"
+                    "DOCUMENT_EXCHANGED_RESPONSE"
             );
 
     @Override
