@@ -12,10 +12,16 @@ public class Kpi1_2Strategy implements KpiStrategy {
     private final List<String> transactionTypes =
             List.of("PATIENT_IDENTIFICATION_QUERY",
                     "PATIENT_IDENTIFICATION_RESPONSE",
+                    "PATIENT_IDENTIFICATION_UNKNOWN", // not used anymore but has been historically, best not to remove it yet
                     "DOCUMENT_LIST_QUERY",
                     "DOCUMENT_LIST_RESPONSE",
+                    "DOCUMENT_LIST_UNKNOWN", // not used anymore but has been historically, best not to remove it yet
                     "DOCUMENT_EXCHANGED_QUERY",
-                    "DOCUMENT_EXCHANGED_RESPONSE"
+                    "DOCUMENT_EXCHANGED_RESPONSE",
+                    "DOCUMENT_EXCHANGED_UNKNOWN", // not used anymore but has been historically, best not to remove it yet
+                    "DISPENSATION_QUERY",
+                    "DISPENSATION_RESPONSE",
+                    "DISPENSATION_UNKNOWN" // not used anymore but has been historically, best not to remove it yet
             );
 
     @Override
