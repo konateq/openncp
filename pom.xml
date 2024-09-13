@@ -106,9 +106,9 @@
         <saaj-impl.version>1.5.3</saaj-impl.version>
         <saxon-he.version>10.6</saxon-he.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-tx.version>5.3.37</spring-tx.version>
+        <spring-tx.version>5.3.39</spring-tx.version>
         <spring-ws.version>3.0.9.RELEASE</spring-ws.version>
-        <spring.version>5.3.37</spring.version>
+        <spring.version>5.3.39</spring.version>
         <spring.security.version>5.5.8</spring.security.version>
         <javamelody.version>1.99.0</javamelody.version>
         <commons-collections.version>3.2.2</commons-collections.version>
