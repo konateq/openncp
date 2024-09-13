@@ -13,7 +13,7 @@
     <properties>
         <bootstrap.version>5.2.2</bootstrap.version>
         <locator-core.version>0.52</locator-core.version>
-        <commons-compress.version>1.21</commons-compress.version>
+        <commons-compress.version>1.27.1</commons-compress.version>
         <java-jwt.version>3.19.4</java-jwt.version>
         <jaxb-runtime.version>2.4.0-b180830.0438</jaxb-runtime.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
