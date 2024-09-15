@@ -121,7 +121,7 @@
         <xmlunit.version>1.1</xmlunit.version>
         <guava.version>31.0.1-jre</guava.version>
         <commons-io.version>2.11.0</commons-io.version>
-        <commons-text.version>1.10.0</commons-text.version>
+        <commons-text.version>1.12.0</commons-text.version>
         <hikaricp.version>4.0.3</hikaricp.version>
         <xalan.version>2.7.3</xalan.version>
         <servlet-api.version>3.1.0</servlet-api.version>
