@@ -15,18 +15,19 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class TRCAssertionAuditMessageBuilderTest extends XMLTestCase {
 
     @Test
     public void testBuild() throws Exception {
-        EventLog eventLog = new EventLog();
+        final EventLog eventLog = new EventLog();
         eventLog.setEventType(EventType.TRC_ASSERTION);
         eventLog.setNcpSide(NcpSide.NCP_A);
         eventLog.setEI_TransactionName(TransactionName.TRC_ASSERTION);
         eventLog.setEI_EventActionCode(EventActionCode.EXECUTE);
         eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
-        XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
+        final XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
         eventLog.setEI_EventDateTime(now);
         eventLog.setSC_UserID("Service Consumer");
         eventLog.setSP_UserID("Service Provider");
@@ -43,8 +44,8 @@ public class TRCAssertionAuditMessageBuilderTest extends XMLTestCase {
         eventLog.setMS_UserID("MS User ID");
         eventLog.setPC_RoleID("PC Role ID");
         eventLog.setPC_UserID("PC User ID");
-        eventLog.setPS_ParticipantObjectID("PS Participant Object ID");
-        eventLog.setPT_ParticipantObjectID("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO");
+        eventLog.setPS_ParticipantObjectIDs(List.of("PS Participant Object ID"));
+        eventLog.setPT_ParticipantObjectIDs(List.of("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO"));
         eventLog.setQueryByParameter("Query By Parameter");
         eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
         eventLog.setReqM_ParticipantObjectID("urn:uuid:2d1a748a-b73e-47ef-96d2-50fdb92e1c0a");
@@ -52,11 +53,11 @@ public class TRCAssertionAuditMessageBuilderTest extends XMLTestCase {
         eventLog.setSourceip("127.0.0.1");
         eventLog.setTargetip("127.0.0.1");
 
-        TRCAssertionAuditMessageBuilder tRCAssertionAuditMessageBuilder = new TRCAssertionAuditMessageBuilder();
-        AuditMessage generatedAuditMessage = tRCAssertionAuditMessageBuilder.build(eventLog);
+        final TRCAssertionAuditMessageBuilder tRCAssertionAuditMessageBuilder = new TRCAssertionAuditMessageBuilder();
+        final AuditMessage generatedAuditMessage = tRCAssertionAuditMessageBuilder.build(eventLog);
 
-        URL url = Resources.getResource("trcassertionauditmessage.xml");
-        AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
+        final URL url = Resources.getResource("trcassertionauditmessage.xml");
+        final AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
         expectedAuditMessage.getEventIdentification().setEventDateTime(now);
         XMLUnit.setIgnoreWhitespace(true);
         assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));

@@ -6,7 +6,7 @@
     <parent>
         <groupId>eu.europa.ec.sante</groupId>
         <artifactId>openncp-application-openatna</artifactId>
-        <version>8.0.0</version>
+        <version>8.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>openatna-jaxb</artifactId>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
-            <version>1.1</version>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.santuario</groupId>

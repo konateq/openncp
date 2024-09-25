@@ -2,16 +2,16 @@ package eu.europa.ec.sante.openncp.common.security;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
+import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import javax.security.auth.x500.X500Principal;
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.XMLStructure;
@@ -124,6 +124,24 @@ public class SignatureManager {
             }
             final var certificateValidator = new CertificateValidator(keyManager.getTrustStore());
             certificateValidator.validateCertificate(cert);
+
+            final TrustManagerFactory trustManagerFactory;
+            try {
+                trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+            } catch (final NoSuchAlgorithmException e) {
+                throw new RuntimeException("Could not create the trust manager factory", e);
+            }
+
+            try {
+                trustManagerFactory.init(keyManager.getTrustStore());
+            } catch (final KeyStoreException e) {
+                throw new RuntimeException("Could not initialize the truststore", e);
+            }
+
+            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+            X509TrustManager x509TrustManager = (X509TrustManager) trustManagers[0];
+
+            x509TrustManager.checkClientTrusted(certificates.toArray(new X509Certificate[0]), "RSA");
         } catch (final CertificateException ex) {
             logger.error(null, ex);
         }

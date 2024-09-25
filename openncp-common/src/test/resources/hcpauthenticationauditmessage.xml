@@ -4,17 +4,20 @@
         <EventID csd-code="110112" codeSystemName="DCM" displayName="XUA::ProvideX-UserAssertion" originalText="Query"/>
         <EventTypeCode csd-code="ITI-40" codeSystemName="IHE Transactions" displayName="identityProvider::HPAuthentication" originalText="XUA::ProvideX-UserAssertion"/>
     </EventIdentification>
-    <ActiveParticipant UserID="eHealth OpenNCP EU Portal" AlternativeUserID="eHealth OpenNCP EU Portal" UserIsRequestor="true" NetworkAccessPointID="127.0.0.1" NetworkAccessPointTypeCode="1">
-        <RoleIDCode csd-code="110152" codeSystemName="DCM" originalText="1.3.6.1.4.1.12559.11.10.1.3.2.2.2"/>
+    <ActiveParticipant UserID="eHealth OpenNCP EU Portal" AlternativeUserID="eHealth OpenNCP EU Portal"
+                       UserIsRequestor="false" NetworkAccessPointID="127.0.0.1" NetworkAccessPointTypeCode="2">
+        <RoleIDCode csd-code="110152" codeSystemName="DCM" originalText="Destination Role ID"/>
     </ActiveParticipant>
     <ActiveParticipant UserID="HR User ID" AlternativeUserID="HR Alternative User ID" UserIsRequestor="true" NetworkAccessPointID="127.0.0.1" NetworkAccessPointTypeCode="2">
         <RoleIDCode csd-code="110153" codeSystemName="DCM" originalText="Source Role ID"/>
     </ActiveParticipant>
     <ActiveParticipant UserID="Service Consumer" AlternativeUserID="Service Consumer" UserIsRequestor="true" NetworkAccessPointID="127.0.0.1" NetworkAccessPointTypeCode="2">
-        <RoleIDCode csd-code="ServiceConsumer" codeSystemName="eHealth DSI" displayName="Service Consumer" originalText="Service Consumer"/>
+        <RoleIDCode csd-code="ServiceConsumer" codeSystemName="eHealth DSI" displayName="eHealth DSI Service Consumer"
+                    originalText="eHealth DSI Service Consumer"/>
     </ActiveParticipant>
     <ActiveParticipant UserID="Service Provider" AlternativeUserID="Service Provider" UserIsRequestor="false" NetworkAccessPointID="127.0.0.1" NetworkAccessPointTypeCode="2">
-        <RoleIDCode csd-code="ServiceProvider" codeSystemName="eHealth DSI" displayName="Service Provider" originalText="Service Provider"/>
+        <RoleIDCode csd-code="ServiceProvider" codeSystemName="eHealth DSI" displayName="eHealth DSI Service Provider"
+                    originalText="eHealth DSI Service Provider"/>
     </ActiveParticipant>
     <AuditSourceIdentification AuditEnterpriseSiteID="42" AuditSourceID="42">
         <AuditSourceTypeCode csd-code="4"/>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.sante</groupId>
         <artifactId>openncp-application</artifactId>
-        <version>8.0.0</version>
+        <version>8.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>openncp-application-server</artifactId>
     <name>openncp-application-server</name>
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>eu.europa.ec.sante</groupId>
             <artifactId>openncp-core-server</artifactId>
-            <version>8.0.0</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

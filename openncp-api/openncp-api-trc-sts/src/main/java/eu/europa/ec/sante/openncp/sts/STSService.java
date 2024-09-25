@@ -6,10 +6,10 @@ import eu.europa.ec.sante.openncp.common.audit.*;
 import eu.europa.ec.sante.openncp.common.configuration.ConfigurationManager;
 import eu.europa.ec.sante.openncp.common.configuration.util.Constants;
 import eu.europa.ec.sante.openncp.common.configuration.util.http.IPUtil;
-import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import eu.europa.ec.sante.openncp.common.security.SignatureManager;
 import eu.europa.ec.sante.openncp.common.security.exception.SMgrException;
 import eu.europa.ec.sante.openncp.common.security.issuer.SamlTRCIssuer;
+import eu.europa.ec.sante.openncp.common.util.HttpUtil;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTimeZone;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -33,6 +33,7 @@ import javax.xml.ws.handler.MessageContext;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 @ServiceMode(value = Mode.MESSAGE)
 @WebServiceProvider(targetNamespace = "https://ehdsi.eu/", serviceName = "SecurityTokenService", portName = "ISecurityTokenService_Port")
@@ -42,10 +43,10 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
 
     private final Logger logger = LoggerFactory.getLogger(STSService.class);
 
-    private SamlTRCIssuer samlTRCIssuer;
+    private final SamlTRCIssuer samlTRCIssuer;
     private final ConfigurationManager configurationManager;
 
-    public STSService(SamlTRCIssuer samlTRCIssuer, SignatureManager signatureManager, ConfigurationManager configurationManager) {
+    public STSService(final SamlTRCIssuer samlTRCIssuer, final SignatureManager signatureManager, final ConfigurationManager configurationManager) {
         super(signatureManager);
         this.samlTRCIssuer = Validate.notNull(samlTRCIssuer);
         this.configurationManager = Validate.notNull(configurationManager);
@@ -82,9 +83,8 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
             final String purposeOfUse = STSUtils.getPurposeOfUse(body);
             final String dispensationPinCode = STSUtils.getDispensationPinCode(body);
             final String prescriptionId = STSUtils.getPrescriptionId(body);
-            final String patientID = getPatientID(body);
+            final List<String> patientIDs = getPatientIDs(body);
             final String messageId = getMessageIdFromHeader(header);
-
             final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilderFactory.setXIncludeAware(false);
             documentBuilderFactory.setNamespaceAware(true);
@@ -99,7 +99,7 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
                     logger.info("hcpIdAssertion Issue Instant: '{}'", hcpIdAssertion.getIssueInstant());
                 }
             }
-            final Assertion trc = samlTRCIssuer.issueTrcToken(hcpIdAssertion, patientID, purposeOfUse, dispensationPinCode, prescriptionId, null);
+            final Assertion trc = samlTRCIssuer.issueTrcToken(hcpIdAssertion, patientIDs.get(0), purposeOfUse, dispensationPinCode, prescriptionId, null);
             if (hcpIdAssertion != null) {
                 logger.info("HCP Assertion Date: '{}' TRC Assertion Date: '{}' -- '{}'", hcpIdAssertion.getIssueInstant().withZone(DateTimeZone.UTC),
                             trc.getIssueInstant().withZone(DateTimeZone.UTC), trc.getAuthnStatements().isEmpty());
@@ -127,7 +127,7 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
 
             sslCommonName = HttpUtil.getSubjectDN(false);
             sendTRCAuditMessage(samlTRCIssuer.getPointOfCare(), samlTRCIssuer.getHumanRequestorNameId(), samlTRCIssuer.getHumanRequestorSubjectId(),
-                                samlTRCIssuer.getFunctionalRole(), patientID, samlTRCIssuer.getFacilityType(), trc.getID(), sslCommonName, messageId,
+                    samlTRCIssuer.getFunctionalRole(), patientIDs, samlTRCIssuer.getFacilityType(), trc.getID(), sslCommonName, messageId,
                                 strReqHeader.getBytes(StandardCharsets.UTF_8), getMessageIdFromHeader(response.getSOAPHeader()),
                                 strRespHeader.getBytes(StandardCharsets.UTF_8));
 
@@ -139,7 +139,7 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
     }
 
     private void sendTRCAuditMessage(final String pointOfCareID, final String humanRequestorNameID, final String humanRequestorSubjectID,
-                                     final String humanRequestorRole, final String patientID, final String facilityType, final String assertionId,
+                                     final String humanRequestorRole, final List<String> patientIDs, final String facilityType, final String assertionId,
                                      final String certificateCommonName, final String reqMid, final byte[] reqSecHeader, final String resMid,
                                      final byte[] resSecHeader) {
 
@@ -164,7 +164,7 @@ public class STSService extends SecurityTokenServiceWS implements Provider<SOAPM
         final EventLog eventLogTRCA = EventLog.createEventLogTRCA(TransactionName.TRC_ASSERTION, EventActionCode.EXECUTE, date2,
                                                                   EventOutcomeIndicator.FULL_SUCCESS, pointOfCareID, facilityType,
                                                                   humanRequestorNameID, humanRequestorRole, humanRequestorSubjectID,
-                                                                  certificateCommonName, trcCommonName, configurationManager.getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"), patientID,
+                certificateCommonName, trcCommonName, configurationManager.getProperty("COUNTRY_PRINCIPAL_SUBDIVISION"), patientIDs,
                                                                   Constants.UUID_PREFIX + assertionId, reqMid, reqSecHeader, resMid, resSecHeader,
                                                                   IPUtil.isLocalLoopbackIp(sourceGateway) ? serverName : sourceGateway,
                                                                   STSUtils.getSTSServerIP(), NcpSide.NCP_B);

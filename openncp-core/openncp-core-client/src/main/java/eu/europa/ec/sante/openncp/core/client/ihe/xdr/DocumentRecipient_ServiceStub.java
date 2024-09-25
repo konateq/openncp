@@ -26,6 +26,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XDRException;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
+import eu.europa.ec.sante.openncp.core.common.util.OidUtil;
 import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.*;
 import org.apache.axiom.om.ds.AbstractOMDataSource;
@@ -338,7 +339,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
             if (!EadcUtilWrapper.hasTransactionErrors(returnEnv)) {
                 EadcUtilWrapper.invokeEadc(messageContext, returnMessageContext, this._getServiceClient(), eDispenseCda,
                         transactionStartTime, transactionEndTime, this.countryCode, EadcEntry.DsTypes.EADC,
-                        EadcUtil.Direction.OUTBOUND, ServiceType.DOCUMENT_EXCHANGED_QUERY);
+                        EadcUtil.Direction.OUTBOUND, ServiceType.DISPENSATION_QUERY);
             } else {
                 eadcError = EadcUtilWrapper.getTransactionErrorDescription(returnEnv);
             }
@@ -396,7 +397,7 @@ public class DocumentRecipient_ServiceStub extends Stub {
             if (!eadcError.isEmpty()) {
                 EadcUtilWrapper.invokeEadcFailure(messageContext, returnMessageContext, this._getServiceClient(), eDispenseCda,
                         transactionStartTime, transactionEndTime, this.countryCode, EadcEntry.DsTypes.EADC,
-                        EadcUtil.Direction.OUTBOUND, ServiceType.DOCUMENT_EXCHANGED_QUERY, eadcError);
+                        EadcUtil.Direction.OUTBOUND, ServiceType.DISPENSATION_QUERY, eadcError);
             }
         }
     }
@@ -525,7 +526,8 @@ public class DocumentRecipient_ServiceStub extends Stub {
                                                   final MessageContext msgContext, final SOAPEnvelope returnEnv,
                                                   final Assertion idAssertion, final Assertion trcAssertion, final String address) {
 
-        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, returnEnv, address);
+        final String dstHomeCommunityId = OidUtil.getHomeCommunityId(countryCode.toLowerCase(Locale.ENGLISH));
+        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, returnEnv, address, dstHomeCommunityId);
         EventLogClientUtil.logIdAssertion(eventLog, idAssertion);
         EventLogClientUtil.logTrcAssertion(eventLog, trcAssertion);
         EventLogUtil.prepareXDRCommonLog(eventLog, request, rel);

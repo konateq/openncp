@@ -25,6 +25,7 @@ import eu.europa.ec.sante.openncp.core.common.ihe.eadc.ServiceType;
 import eu.europa.ec.sante.openncp.core.common.ihe.exception.XCAException;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogClientUtil;
 import eu.europa.ec.sante.openncp.core.common.ihe.util.EventLogUtil;
+import eu.europa.ec.sante.openncp.core.common.util.OidUtil;
 import org.apache.axiom.om.*;
 import org.apache.axiom.om.ds.AbstractOMDataSource;
 import org.apache.axiom.soap.SOAP12Constants;
@@ -423,12 +424,15 @@ public class RespondingGateway_ServiceStub extends Stub {
 
                     /* add the new message context to the new operation client */
                     newOperationClient.addMessageContext(newMessageContext);
-                    /* we retry the request */
-                    newOperationClient.execute(true);
+
                     /* we need to reset the previous variables with the new content, to be used later */
                     _operationClient = newOperationClient;
                     _messageContext = newMessageContext;
                     env = newEnv;
+
+                    /* we retry the request */
+                    newOperationClient.execute(true);
+
                     LOGGER.debug("Successfully retried the request! Proceeding with the normal workflow...");
                 } else {
                     /* if we cannot solve this issue through the Central Services, then there's nothing we can do, so we let it be thrown */
@@ -511,11 +515,14 @@ public class RespondingGateway_ServiceStub extends Stub {
                     AdhocQueryResponse.class,
                     getEnvelopeNamespaces(_returnEnv));
             final AdhocQueryResponse adhocQueryResponse = (AdhocQueryResponse) object;
+
+            final String dstHomeCommunityId = OidUtil.getHomeCommunityId(countryCode.toLowerCase(Locale.ENGLISH));
+
             for (final ClassCode classCode : classCodes) {
                 createAndSendEventLogQuery(adhocQueryRequest, adhocQueryResponse,
                         _messageContext, _returnEnv, env, assertionMap.get(AssertionEnum.CLINICIAN), assertionMap.get(AssertionEnum.TREATMENT),
                         this._getServiceClient().getOptions().getTo().getAddress(),
-                        classCode); // Audit
+                        classCode, dstHomeCommunityId); // Audit
             }
             // TMP
             // Audit end time
@@ -810,12 +817,13 @@ public class RespondingGateway_ServiceStub extends Stub {
 
                     /* add the new message context to the new operation client */
                     newOperationClient.addMessageContext(newMessageContext);
-                    /* we retry the request */
-                    newOperationClient.execute(true);
+
                     /* we need to reset the previous variables with the new content, to be used later */
                     _operationClient = newOperationClient;
                     _messageContext = newMessageContext;
                     env = newEnv;
+                    /* we retry the request */
+                    newOperationClient.execute(true);
                     LOGGER.debug("Successfully retried the request! Proceeding with the normal workflow...");
                 } else {
                     /* if we cannot solve this issue through the Central Services, then there's nothing we can do, so we let it be thrown */
@@ -869,11 +877,13 @@ public class RespondingGateway_ServiceStub extends Stub {
                         EadcUtil.Direction.OUTBOUND, ServiceType.DOCUMENT_EXCHANGED_QUERY);
             }
 
+            final String dstHomeCommunityId = OidUtil.getHomeCommunityId(countryCode.toLowerCase(Locale.ENGLISH));
+
             //  Create Audit messages
             final EventLog eventLog = createAndSendEventLogRetrieve(retrieveDocumentSetRequest, retrieveDocumentSetResponse,
                     _messageContext, returnEnv, env, assertionMap.get(AssertionEnum.CLINICIAN),
                     assertionMap.get(AssertionEnum.TREATMENT), this._getServiceClient().getOptions().getTo().getAddress(),
-                    classCode);
+                    classCode, dstHomeCommunityId);
             LOGGER.info("[Audit Service] Event Log '{}' sent to ATNA server", eventLog.getEventType());
 
             return retrieveDocumentSetResponse;
@@ -1080,9 +1090,9 @@ public class RespondingGateway_ServiceStub extends Stub {
 
     private EventLog createAndSendEventLogQuery(final AdhocQueryRequest request, final AdhocQueryResponse response, final MessageContext msgContext,
                                                 final SOAPEnvelope _returnEnv, final SOAPEnvelope env, final Assertion idAssertion, final Assertion trcAssertion,
-                                                final String address, final ClassCode classCode) {
+                                                final String address, final ClassCode classCode, final String dstHomeCommunityId) {
 
-        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address);
+        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address, dstHomeCommunityId);
         EventLogClientUtil.logIdAssertion(eventLog, idAssertion);
         EventLogClientUtil.logTrcAssertion(eventLog, trcAssertion);
         EventLogUtil.prepareXCACommonLogQuery(eventLog, msgContext, request, response, classCode);
@@ -1094,9 +1104,9 @@ public class RespondingGateway_ServiceStub extends Stub {
 
     private EventLog createAndSendEventLogRetrieve(final RetrieveDocumentSetRequestType request, final RetrieveDocumentSetResponseType response,
                                                    final MessageContext msgContext, final SOAPEnvelope _returnEnv, final SOAPEnvelope env,
-                                                   final Assertion idAssertion, final Assertion trcAssertion, final String address, final ClassCode classCode) {
+                                                   final Assertion idAssertion, final Assertion trcAssertion, final String address, final ClassCode classCode, final String dstHomeCommunityId) {
 
-        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address);
+        final EventLog eventLog = EventLogClientUtil.prepareEventLog(msgContext, _returnEnv, address, dstHomeCommunityId);
         EventLogClientUtil.logIdAssertion(eventLog, idAssertion);
         EventLogClientUtil.logTrcAssertion(eventLog, trcAssertion);
         EventLogUtil.prepareXCACommonLogRetrieve(eventLog, msgContext, request, response, classCode);

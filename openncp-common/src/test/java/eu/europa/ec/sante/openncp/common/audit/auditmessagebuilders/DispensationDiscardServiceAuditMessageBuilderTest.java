@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class DispensationDiscardServiceAuditMessageBuilderTest extends XMLTestCase {
 
@@ -23,13 +24,13 @@ public class DispensationDiscardServiceAuditMessageBuilderTest extends XMLTestCa
     public void testBuild() throws Exception {
         {
 
-            EventLog eventLog = new EventLog();
+            final EventLog eventLog = new EventLog();
             eventLog.setEventType(EventType.DISPENSATION_SERVICE_DISCARD);
             eventLog.setNcpSide(NcpSide.NCP_B);
             eventLog.setEI_TransactionName(TransactionName.DISPENSATION_SERVICE_DISCARD);
             eventLog.setEI_EventActionCode(EventActionCode.QUERY);
             eventLog.setEI_EventOutcomeIndicator(EventOutcomeIndicator.FULL_SUCCESS);
-            XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
+            final XMLGregorianCalendar now = DateUtil.getDateAsXMLGregorian(new Date());
             eventLog.setEI_EventDateTime(now);
             eventLog.setSC_UserID("Service Consumer");
             eventLog.setSP_UserID("Service Provider");
@@ -47,8 +48,8 @@ public class DispensationDiscardServiceAuditMessageBuilderTest extends XMLTestCa
             eventLog.setPC_RoleID("PC Role ID");
             eventLog.setPC_UserID("eHealth OpenNCP EU Portal");
 
-            eventLog.setPS_ParticipantObjectID("PS Participant Object ID");
-            eventLog.setPT_ParticipantObjectID("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO");
+            eventLog.setPS_ParticipantObjectIDs(List.of("PS Participant Object ID"));
+            eventLog.setPT_ParticipantObjectIDs(List.of("2-1234-W7^^^&1.3.6.1.4.1.48336.1000&ISO"));
             eventLog.setQueryByParameter("Query By Parameter");
             eventLog.setReqM_ParticipantObjectDetail("AXAXAXAX".getBytes("UTF-8"));
             eventLog.setReqM_ParticipantObjectID("urn:oid:1.3.6.1.4.1.48336");
@@ -57,11 +58,11 @@ public class DispensationDiscardServiceAuditMessageBuilderTest extends XMLTestCa
             eventLog.setTargetip("127.0.0.1");
 
 
-            DispensationDiscardServiceAuditMessageBuilder dispensationDiscardServiceAuditMessageBuilder = new DispensationDiscardServiceAuditMessageBuilder();
-            AuditMessage generatedAuditMessage = dispensationDiscardServiceAuditMessageBuilder.build(eventLog);
+            final DispensationDiscardServiceAuditMessageBuilder dispensationDiscardServiceAuditMessageBuilder = new DispensationDiscardServiceAuditMessageBuilder();
+            final AuditMessage generatedAuditMessage = dispensationDiscardServiceAuditMessageBuilder.build(eventLog);
 
-            URL url = Resources.getResource("dispensationServicediscardauditmessage.xml");
-            AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
+            final URL url = Resources.getResource("dispensationservicediscardauditmessage.xml");
+            final AuditMessage expectedAuditMessage = AuditTrailUtils.convertXMLToAuditObject(IOUtils.toInputStream(Resources.toString(url, StandardCharsets.UTF_8)));
             expectedAuditMessage.getEventIdentification().setEventDateTime(now);
             XMLUnit.setIgnoreWhitespace(true);
             assertXMLEqual(AuditTrailUtils.convertAuditObjectToXML(expectedAuditMessage), AuditTrailUtils.convertAuditObjectToXML(generatedAuditMessage));

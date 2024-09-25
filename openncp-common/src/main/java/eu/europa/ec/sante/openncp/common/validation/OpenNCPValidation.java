@@ -36,10 +36,10 @@ public class OpenNCPValidation {
      * @param eventType
      * @param ncpSide
      */
-    public static void validateAuditMessage(final String document, final String eventType, final String eventIheType, final NcpSide ncpSide) {
+    public static void validateAuditMessage(final String document, final String eventType, final NcpSide ncpSide) {
 
         LOGGER.info("Audit Message Validation: '{}'-'{}'", eventType, ncpSide.getName());
-        final String validator = ValidatorUtil.obtainAuditModel(eventType, eventIheType, ncpSide);
+        final String validator = ValidatorUtil.obtainAuditModel(eventType, ncpSide);
 
         if (isRemoteValidationEnable()) {
 

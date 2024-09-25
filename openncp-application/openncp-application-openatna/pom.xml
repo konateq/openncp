@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.sante</groupId>
         <artifactId>openncp-application</artifactId>
-        <version>8.0.0</version>
+        <version>8.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>openncp-application-openatna</artifactId>
@@ -13,7 +13,7 @@
     <properties>
         <commons-lang.version>2.6</commons-lang.version>
         <itextpdf.version>7.2.6</itextpdf.version>
-        <jasperreports.version>6.18.1</jasperreports.version>
+        <jasperreports.version>6.21.3</jasperreports.version>
     </properties>
 
     <name>OpenNCP OpenATNA</name>
@@ -104,7 +104,7 @@
                         <inherited>false</inherited>
                         <groupId>com.mycila.maven-license-plugin</groupId>
                         <artifactId>maven-license-plugin</artifactId>
-                        <version>1.5.0</version>
+                        <version>1.9.0</version>
                         <configuration>
                             <properties>
                                 <year>2009-2010</year>

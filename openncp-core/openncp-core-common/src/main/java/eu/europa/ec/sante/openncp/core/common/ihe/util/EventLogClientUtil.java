@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class EventLogClientUtil {
         }
     }
 
-    public static EventLog prepareEventLog(final MessageContext msgContext, final SOAPEnvelope soapEnvelope, final String endpointReference) {
+    public static EventLog prepareEventLog(final MessageContext msgContext, final SOAPEnvelope soapEnvelope, final String endpointReference, final String dstHomeCommunityId) {
 
         final var eventLog = new EventLog();
         eventLog.setEI_EventDateTime(DateUtil.getDateAsXMLGregorian(new Date()));
@@ -111,6 +112,8 @@ public class EventLogClientUtil {
         final String rspMessageId = appendUrnUuid(EventLogUtil.getMessageID(soapEnvelope));
         eventLog.setResM_ParticipantObjectID(rspMessageId);
         eventLog.setResM_ParticipantObjectDetail(soapEnvelope.getHeader().toString().getBytes());
+
+        eventLog.setHciIdentifier(dstHomeCommunityId);
 
         return eventLog;
     }
@@ -146,7 +149,7 @@ public class EventLogClientUtil {
         for (final AttributeStatement attributeStatement : idAssertion.getAttributeStatements()) {
             for (final Attribute attribute : attributeStatement.getAttributes()) {
                 if (StringUtils.equalsIgnoreCase(attribute.getName(), "urn:oasis:names:tc:xspa:1.0:subject:subject-id")) {
-                    eventLog.setPT_ParticipantObjectID(EventLogUtil.getAttributeValue(attribute));
+                    eventLog.setPT_ParticipantObjectIDs(List.of(EventLogUtil.getAttributeValue(attribute)));
                     break;
                 }
             }
