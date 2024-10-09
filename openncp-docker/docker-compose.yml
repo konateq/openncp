@@ -135,6 +135,8 @@ services:
       - 5005:5005
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    dns:
+      - 10.0.0.1
     depends_on:
       mysql:
         condition: service_healthy
@@ -263,6 +265,8 @@ services:
       - "5002:5002"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    dns:
+      - 10.0.0.1
     depends_on:
       mysql:
         condition: service_healthy
