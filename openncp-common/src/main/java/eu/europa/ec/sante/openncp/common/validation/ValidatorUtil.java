@@ -4,7 +4,6 @@ import eu.europa.ec.sante.openncp.common.ClassCode;
 import eu.europa.ec.sante.openncp.common.NcpSide;
 import eu.europa.ec.sante.openncp.common.validation.util.ObjectType;
 import eu.europa.ec.sante.openncp.common.validation.util.XdsModel;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
