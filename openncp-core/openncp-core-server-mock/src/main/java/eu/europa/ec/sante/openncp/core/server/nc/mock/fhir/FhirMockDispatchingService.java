@@ -10,6 +10,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +22,8 @@ public class FhirMockDispatchingService implements DispatchingService {
 
     private final HapiWebClientFactory webClientFactory;
 
+    @Value("${fhirserver.url}")
+    private String fhirServerBaseUrl;
 
     public FhirMockDispatchingService(final FhirContext fhirContext, final HapiWebClientFactory webClientFactory) {
         this.fhirContext = Validate.notNull(fhirContext, "FhirContext cannot be null");
@@ -32,7 +35,7 @@ public class FhirMockDispatchingService implements DispatchingService {
     public <T extends IBaseResource> T dispatchSearch(final EuRequestDetails requestDetails, final String JWTToken) {
         Validate.notNull(requestDetails, "The request details cannot be null");
 
-        final FhirDispatchingClient hapiWebClient = webClientFactory.createClient("https://sandbox.hl7europe.eu/laboratory/fhir/");
+        final FhirDispatchingClient hapiWebClient = webClientFactory.createClient(fhirServerBaseUrl);
         final Bundle result = hapiWebClient.dispatch(requestDetails, null);
 
         return (T) result;
@@ -43,7 +46,7 @@ public class FhirMockDispatchingService implements DispatchingService {
     @SuppressWarnings("unchecked")
     public <T extends IBaseResource> T dispatchRead(final EuRequestDetails requestDetails, final String JWTToken) {
         Validate.notNull(requestDetails, "The request details cannot be null");
-        final FhirDispatchingClient hapiWebClient = webClientFactory.createClient("https://sandbox.hl7europe.eu/laboratory/fhir/");
+        final FhirDispatchingClient hapiWebClient = webClientFactory.createClient(fhirServerBaseUrl);
         final Bundle result = hapiWebClient.dispatch(requestDetails, null);
 
         return (T) result;

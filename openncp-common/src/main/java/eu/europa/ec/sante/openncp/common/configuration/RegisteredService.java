@@ -14,6 +14,7 @@ public enum RegisteredService {
     PATIENT_IDENTIFICATION_SERVICE("PatientIdentificationService", "urn:ehealth:PatientIdentificationAndAuthentication::XCPD::CrossGatewayPatientDiscovery##ITI-55"),
     PATIENT_SERVICE("PatientService", "urn:ehealth:RequestOfData::XCA::CrossGatewayQuery##ITI-38"),
     FHIR_SERVICE("FhirService", "urn:ehealth:FhirService"),
+    OPENEHR_QUERY_SERVICE("openEHRQueryService", "urn:ehealth:openEHRQueryService"),
     ITI_39("ITI-39", "urn:ehealth:RequestOfData::XCA::CrossGatewayRetrieve##ITI-39"),
     ITI_40("ITI-40", "urn:ehealth:CountryBIdentityProvider::XUA::ProvideX-UserAssertion##ITI-40"),
     ITI_63("ITI-63", "urn:ehealth:RequestOfData::XCF::CrossGatewayFetchRequest##ITI-63"),
